@@ -28,6 +28,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | `right-4.0-rfa-dummy-filled.pdf` | The same RFA packet with every state form filled in for one **fictional** organization. | PDF. Explained in `right-4.0-application-example.md`. |
 | `hsi-hack-pack-2026.html` | Saved copy of the hackathon's Notion page (schedule, judging, submission rules). | Mostly JavaScript, so it reads poorly as raw text. Open it in a browser, or read the summary in `kickoff-briefing.md`. Large file (about 4.5 MB). |
 | `img/right-4.0-attachment-a-filled.png` | Image of the filled Attachment A grid from the dummy application. | Used by `right-4.0-application-example.md`. |
+| `img/tpw-hierarchy-infographic.png` (and `.svg`) | One-page graphic of the vocabulary: CDCR → institution (also called a facility) → yard, where programmes run, which partner runs them, and why the form is refilled once per programme per yard. Placements in it are made up. | Open the PNG. The SVG is the editable original. |
 
 ### Our write-ups (edit and extend)
 

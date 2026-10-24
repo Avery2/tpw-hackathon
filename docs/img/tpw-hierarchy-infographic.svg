@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1040" width="1400" height="1040" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#1d3557"/></marker></defs>
+<rect x="0" y="0" width="1400" height="1040" rx="0" fill="#fbf8f3" stroke="none" stroke-width="1"/>
+<text x="60" y="55" font-size="30" font-weight="700" fill="#1f2933" text-anchor="start" >Where TPW partners work: how the pieces fit together</text>
+<text x="60" y="85" font-size="16" font-weight="400" fill="#52606d" text-anchor="start" >Places sit inside each other. Programmes are not a place: a partner organisation runs each one, and it happens in a yard.</text>
+<rect x="60" y="112" width="1280" height="72" rx="10" fill="#1d3557" stroke="none" stroke-width="1"/>
+<text x="700" y="143" font-size="22" font-weight="700" fill="#ffffff" text-anchor="middle" >CDCR: California Department of Corrections and Rehabilitation</text>
+<text x="700" y="168" font-size="15" font-weight="400" fill="#dbe4f0" text-anchor="middle" >The state department that runs the prisons. It is an organisation, not a place.</text>
+<line x1="260.0" y1="184" x2="260.0" y2="222" stroke="#1d3557" stroke-width="2.5" marker-end="url(#arrow)"/>
+<line x1="700.0" y1="184" x2="700.0" y2="222" stroke="#1d3557" stroke-width="2.5" marker-end="url(#arrow)"/>
+<line x1="1140.0" y1="184" x2="1140.0" y2="222" stroke="#1d3557" stroke-width="2.5" marker-end="url(#arrow)"/>
+<text x="712" y="210" font-size="13" font-weight="400" fill="#1d3557" text-anchor="start" font-style="italic">runs many institutions</text>
+<rect x="60" y="225" width="400" height="260" rx="10" fill="#e8eff7" stroke="#1d3557" stroke-width="2"/>
+<text x="80" y="259" font-size="22" font-weight="700" fill="#1d3557" text-anchor="start" >San Quentin</text>
+<text x="80" y="279" font-size="13" font-weight="400" fill="#52606d" text-anchor="start" >Institution (CDCR also calls it a facility)</text>
+<rect x="80" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="92" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard A</text>
+<rect x="90" y="327" width="150" height="56" rx="7" fill="#1f7a70" stroke="#f0a500" stroke-width="4"/>
+<text x="100" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Mindfulness</text>
+<text x="100" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner A</text>
+<rect x="90" y="393" width="150" height="56" rx="7" fill="#c4472a" stroke="none" stroke-width="0"/>
+<text x="100" y="417" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Art</text>
+<text x="100" y="437" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner B</text>
+<rect x="270" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="282" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard B</text>
+<rect x="280" y="327" width="150" height="56" rx="7" fill="#1f7a70" stroke="#f0a500" stroke-width="4"/>
+<text x="290" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Mindfulness</text>
+<text x="290" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner A</text>
+<rect x="280" y="393" width="150" height="56" rx="7" fill="#6b4c9a" stroke="none" stroke-width="0"/>
+<text x="290" y="417" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Dog training</text>
+<text x="290" y="437" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner C</text>
+<rect x="500" y="225" width="400" height="260" rx="10" fill="#e8eff7" stroke="#1d3557" stroke-width="2"/>
+<text x="520" y="259" font-size="22" font-weight="700" fill="#1d3557" text-anchor="start" >Solano</text>
+<text x="520" y="279" font-size="13" font-weight="400" fill="#52606d" text-anchor="start" >Institution (CDCR also calls it a facility)</text>
+<rect x="520" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="532" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard A</text>
+<rect x="530" y="327" width="150" height="56" rx="7" fill="#1f7a70" stroke="#f0a500" stroke-width="4"/>
+<text x="540" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Mindfulness</text>
+<text x="540" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner A</text>
+<rect x="530" y="393" width="150" height="56" rx="7" fill="#c4472a" stroke="none" stroke-width="0"/>
+<text x="540" y="417" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Victim dialogue</text>
+<text x="540" y="437" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner B</text>
+<rect x="710" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="722" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard B</text>
+<rect x="720" y="327" width="150" height="56" rx="7" fill="#c4472a" stroke="none" stroke-width="0"/>
+<text x="730" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Art</text>
+<text x="730" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner B</text>
+<rect x="940" y="225" width="400" height="260" rx="10" fill="#e8eff7" stroke="#1d3557" stroke-width="2"/>
+<text x="960" y="259" font-size="22" font-weight="700" fill="#1d3557" text-anchor="start" >CIW</text>
+<text x="960" y="279" font-size="13" font-weight="400" fill="#52606d" text-anchor="start" >Institution (CDCR also calls it a facility)</text>
+<rect x="960" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="972" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard A</text>
+<rect x="970" y="327" width="150" height="56" rx="7" fill="#c4472a" stroke="none" stroke-width="0"/>
+<text x="980" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Art</text>
+<text x="980" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner B</text>
+<rect x="1150" y="293" width="170" height="170" rx="8" fill="#ffffff" stroke="#9aa5b1" stroke-width="1.5"/>
+<text x="1162" y="315" font-size="16" font-weight="700" fill="#1f2933" text-anchor="start" >Yard B</text>
+<rect x="1160" y="327" width="150" height="56" rx="7" fill="#6b4c9a" stroke="none" stroke-width="0"/>
+<text x="1170" y="351" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Dog training</text>
+<text x="1170" y="371" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner C</text>
+<rect x="1160" y="393" width="150" height="56" rx="7" fill="#1f7a70" stroke="#f0a500" stroke-width="4"/>
+<text x="1170" y="417" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Mindfulness</text>
+<text x="1170" y="437" font-size="12" font-weight="400" fill="#ffffff" text-anchor="start" >Partner A</text>
+<text x="60" y="515" font-size="13" font-weight="400" fill="#52606d" text-anchor="start" >Each coloured block is one programme. The colour shows which partner organisation runs it. Illustration only: the programmes and placements are made up.</text>
+<text x="60" y="560" font-size="22" font-weight="700" fill="#1f2933" text-anchor="start" >Partner organisations</text>
+<text x="60" y="582" font-size="15" font-weight="400" fill="#52606d" text-anchor="start" >A partner runs one or more programmes, and can work in many yards at many institutions.</text>
+<rect x="60" y="600" width="400" height="84" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+<rect x="60" y="600" width="12" height="84" rx="6" fill="#1f7a70" stroke="none" stroke-width="1"/>
+<text x="90" y="630" font-size="19" font-weight="700" fill="#1f7a70" text-anchor="start" >Partner A</text>
+<text x="90" y="654" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Runs: Mindfulness</text>
+<text x="90" y="674" font-size="15" font-weight="400" fill="#52606d" text-anchor="start" >Works in 4 yards across 3 institutions</text>
+<rect x="500" y="600" width="400" height="84" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+<rect x="500" y="600" width="12" height="84" rx="6" fill="#c4472a" stroke="none" stroke-width="1"/>
+<text x="530" y="630" font-size="19" font-weight="700" fill="#c4472a" text-anchor="start" >Partner B</text>
+<text x="530" y="654" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Runs: Art, Victim dialogue</text>
+<text x="530" y="674" font-size="15" font-weight="400" fill="#52606d" text-anchor="start" >Works in 4 yards across 3 institutions</text>
+<rect x="940" y="600" width="400" height="84" rx="10" fill="#ffffff" stroke="#cbd2d9" stroke-width="1.5"/>
+<rect x="940" y="600" width="12" height="84" rx="6" fill="#6b4c9a" stroke="none" stroke-width="1"/>
+<text x="970" y="630" font-size="19" font-weight="700" fill="#6b4c9a" text-anchor="start" >Partner C</text>
+<text x="970" y="654" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Runs: Dog training</text>
+<text x="970" y="674" font-size="15" font-weight="400" fill="#52606d" text-anchor="start" >Works in 2 yards across 2 institutions</text>
+<text x="60" y="730" font-size="22" font-weight="700" fill="#1f2933" text-anchor="start" >Why the data form is so much work</text>
+<text x="60" y="754" font-size="15" font-weight="400" fill="#52606d" text-anchor="start" >TPW's form wants one row per programme, per yard. Partner A's Mindfulness programme runs in 4 yards (outlined in gold above), so Partner A fills the form in 4 times.</text>
+<rect x="60" y="774" width="1280" height="34" rx="6" fill="#1d3557" stroke="none" stroke-width="1"/>
+<text x="76" y="797" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Partner</text>
+<text x="276" y="797" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Programme</text>
+<text x="576" y="797" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Institution</text>
+<text x="916" y="797" font-size="15" font-weight="700" fill="#ffffff" text-anchor="start" >Yard</text>
+<rect x="60" y="808" width="1280" height="40" rx="0" fill="#fff7e0" stroke="#f0d9a0" stroke-width="1"/>
+<text x="76" y="834" font-size="15" font-weight="700" fill="#1f7a70" text-anchor="start" >Partner A</text>
+<text x="276" y="834" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Mindfulness</text>
+<text x="576" y="834" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >San Quentin</text>
+<text x="916" y="834" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Yard A</text>
+<text x="1320" y="834" font-size="14" font-weight="700" fill="#9a6b00" text-anchor="end" >Submission 1</text>
+<rect x="60" y="848" width="1280" height="40" rx="0" fill="#ffffff" stroke="#f0d9a0" stroke-width="1"/>
+<text x="76" y="874" font-size="15" font-weight="700" fill="#1f7a70" text-anchor="start" >Partner A</text>
+<text x="276" y="874" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Mindfulness</text>
+<text x="576" y="874" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >San Quentin</text>
+<text x="916" y="874" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Yard B</text>
+<text x="1320" y="874" font-size="14" font-weight="700" fill="#9a6b00" text-anchor="end" >Submission 2</text>
+<rect x="60" y="888" width="1280" height="40" rx="0" fill="#fff7e0" stroke="#f0d9a0" stroke-width="1"/>
+<text x="76" y="914" font-size="15" font-weight="700" fill="#1f7a70" text-anchor="start" >Partner A</text>
+<text x="276" y="914" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Mindfulness</text>
+<text x="576" y="914" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Solano</text>
+<text x="916" y="914" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Yard A</text>
+<text x="1320" y="914" font-size="14" font-weight="700" fill="#9a6b00" text-anchor="end" >Submission 3</text>
+<rect x="60" y="928" width="1280" height="40" rx="0" fill="#ffffff" stroke="#f0d9a0" stroke-width="1"/>
+<text x="76" y="954" font-size="15" font-weight="700" fill="#1f7a70" text-anchor="start" >Partner A</text>
+<text x="276" y="954" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Mindfulness</text>
+<text x="576" y="954" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >CIW</text>
+<text x="916" y="954" font-size="15" font-weight="400" fill="#1f2933" text-anchor="start" >Yard B</text>
+<text x="1320" y="954" font-size="14" font-weight="700" fill="#9a6b00" text-anchor="end" >Submission 4</text>
+<text x="700" y="1002" font-size="18" font-weight="700" fill="#1d3557" text-anchor="middle" >Same partner, same programme, 4 separate submissions.</text>
+</svg>
