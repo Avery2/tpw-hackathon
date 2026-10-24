@@ -37,6 +37,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | `faq.md` | Questions and answers about TPW, the challenge, the data and the numbers to handle with care, each with its source. Includes what TPW staff told us in person on 24 October 2026, and the questions still to ask TPW. |
 | `tpw-google-form.md` | TPW's current Google Form ("TPW - Collective Impact Data"), rebuilt question by question from screenshots of a screen recording, because we don't have the form's own link. One submission covers one program at one yard at one prison. |
 | `public-data-sources.md` | Every public source we checked, verified 24 October 2026. Short version: *who runs what, where* is public; *how many people, how many hours* is not public for anyone. Includes dead ends, so nobody re-checks them, and how the public data joins to TPW's form. |
+| `crob-2024-credit-groups.md` | A 2024 state list of every credit-earning group at 32 prisons. It exists, but we decided on 24 October 2026 it's too old to use, and no newer version will come. Read before anyone suggests pre-filling from it. |
 | `kickoff-briefing.md` | What the hackathon pack and the kickoff video actually contain, including the video transcript, and what that implies for what we build. |
 | `right-4.0-application-example.md` | Page-by-page guide to the dummy filled application, and what's still missing from it. |
 
