@@ -116,6 +116,7 @@
       "label": "Quarter",
       "title": "Report the quarter",
       "blurb": "One organization per entry. One row per program per quarter, for an org that counts its own numbers. If you file sessions, don't also file the quarter.",
+      "tab": false,
       "submit": "Add the quarter",
       "fields": [
         {

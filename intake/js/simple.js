@@ -97,10 +97,11 @@ const current = () => state.forms.find((f) => f.kind === kind);
 
 /* ----------------------------------------------------------------- tabs */
 /**
- * The row of ways in. Session and Quarter come from the contract; the guided
- * form does not, because it files nothing — it asks the same questions in order
- * and saves to the browser. So it is a way in, not a form, and it is the one
- * a new member meets first.
+ * The row of ways in. Session comes from the contract; the guided form does not,
+ * because it files nothing — it asks the same questions in order and saves to
+ * the browser. Quarter is still in the contract and still routable at
+ * #aggregate, but it is not offered: the guided form replaces it as the way a
+ * member who counts their own numbers walks through the year.
  */
 const DEMO_KIND = 'demo';
 
@@ -113,6 +114,12 @@ function tabs() {
 }
 
 /* ----------------------------------------------------------------- render */
+/** The bar at the top says where a filing goes, so it has to match the tab. */
+function note(text) {
+  const el = document.getElementById('bar-note');
+  if (el) el.textContent = text;
+}
+
 function render() {
   const form = current();
   document.getElementById('tabs').innerHTML = tabs()
@@ -121,10 +128,16 @@ function render() {
 
   const app = document.getElementById('app');
   if (kind === DEMO_KIND) {
+    note(
+      'For TPW member organizations only — this is not a public form. Demo build: the guided form keeps its answers in this browser and files nothing.'
+    );
     app.innerHTML = demoPanel();
     window.scrollTo({ top: 0 });
     return;
   }
+  note(
+    'For TPW member organizations only — this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.'
+  );
   app.innerHTML = done ? doneScreen() : formScreen(form);
 
   if (done) {
@@ -207,18 +220,20 @@ function render() {
   syncConditional(form);
 }
 
-/** The guided form is a page, not a panel: it is wide, and it is a demo. */
+/**
+ * The guided form in the tab row, not behind a door. It runs as its own document
+ * because that is how it was built and because it is the wide one; the panel
+ * breaks out of this page's single column to give it the width it asks for.
+ * `?embed` there hides its banner, header and footer, so this tab row is the
+ * only nav on the screen.
+ */
 function demoPanel() {
   return `
-    <h1>The guided form</h1>
-    <p class="lede">Organization, then the prisons and yards you work in, then each
-      program you run: hours, participants, completions. One question per screen.</p>
-    <a class="open-demo" href="../form-demo/">
-      <span>Open the guided form</span>
-      <span class="arrow" aria-hidden="true">→</span>
-    </a>
-    <p class="hint">A submission on that page stays in this browser — it is a demonstration.
-      To file a record that counts, use <a href="#session">Session</a> or <a href="#aggregate">Quarter</a>.</p>`;
+    <p class="hint demo-note">The guided form keeps its answers in this browser and files nothing.
+      To file a record that counts, use <a href="#session">Session</a>.</p>
+    <div class="demo-panel">
+      <iframe src="../form-demo/?embed=1" title="Guided program form" loading="lazy"></iframe>
+    </div>`;
 }
 
 function formScreen(form) {

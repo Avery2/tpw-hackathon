@@ -398,9 +398,18 @@
   .start-over { justify-self: center; }
   /* Headings get focus only so screen readers announce the new step; they don't need a focus box. */
   [tabindex="-1"]:focus { outline: none; }
+
+  /* Embedded as a tab in the intake (?embed=1): that page's tab row is the nav,
+     so this page drops its own banner, header, title band and footer. */
+  body.embed .demo-banner,
+  body.embed .site-header,
+  body.embed .page-heading,
+  body.embed footer { display: none; }
+  body.embed .form-section { padding-top: clamp(20px, 3vw, 34px); }
 </style>
 </head>
 <body id="top">
+<script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
 
 <div class="demo-banner">
   <b>Demo</b>
