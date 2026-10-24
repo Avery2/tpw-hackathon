@@ -90,6 +90,19 @@ def validate_record(record: dict) -> list[dict]:
             allowed = {o["value"] for o in field.get("options", [])}
             if value not in allowed:
                 err(key, f"{field['label']} must be one of {sorted(allowed)}")
+        elif ftype == "facilities":
+            names = {
+                f["name"]
+                for f in json.loads((ROOT / "data" / "intake" / "facilities.json").read_text())["facilities"]
+            }
+            if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+                err(key, f"{field['label']} must be a list of facilities")
+            elif len(value) > 20:
+                err(key, f"{field['label']}: too many facilities")
+            else:
+                bad = [x for x in value if x not in names]
+                if bad:
+                    err(key, f"Not in the facility reference list: {', '.join(bad[:3])}")
         elif ftype == "facility":
             names = {
                 f["name"]
@@ -112,7 +125,9 @@ def summary(record: dict) -> str:
     if kind == "weekly":
         return f"{record.get('program', '?')} · week of {record.get('week_ending', '?')}"
     if kind == "aggregate":
-        return f"{record.get('org', '?')} — {record.get('program', '?')} · {record.get('quarter', '?')}"
+        fac = record.get("facilities") or ([record["facility"]] if record.get("facility") else [])
+        where = f" · {len(fac)} facilities" if len(fac) > 1 else (f" · {fac[0]}" if fac else "")
+        return f"{record.get('org', '?')} — {record.get('program', '?')} · {record.get('quarter', '?')}{where}"
     if kind == "session":
         return f"{record.get('program', '?')} · {record.get('session_date', '?')} · {record.get('present_count', record.get('present', '?'))} present"
     return f"follow-up · {str(record.get('token', ''))[:8]}… · {record.get('status', '?')}"

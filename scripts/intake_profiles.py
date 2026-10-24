@@ -17,6 +17,12 @@ cycle are grouped by organization and program, and the result is committed as
 `data/intake/orgs/index.json`. Derived means it cannot drift from the ledger,
 because it is a function of it.
 
+A profile record — what intake/upload.html reads out of an organization's RIGHT
+4.0 application packet — joins the same pass. A cycle says this program ran at
+this institution; a profile says this program exists and intends to run at these
+institutions. The second is where an organization starts, and it is the only
+statement we have about an organization with no cycles yet.
+
 Run standalone to regenerate after a hand edit:
 
     python3 scripts/intake_profiles.py
@@ -35,6 +41,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 SEED = ROOT / "data" / "intake" / "seed.json"
 CYCLES = ROOT / "data" / "intake" / "cycles"
+RECORDS = ROOT / "data" / "intake" / "records"
 ORGS = ROOT / "data" / "intake" / "orgs"
 INDEX = ORGS / "index.json"
 
@@ -88,7 +95,25 @@ def load_ledger() -> list[dict]:
     return cycles
 
 
-def derive(cycles: list[dict]) -> list[dict]:
+def load_profiles() -> dict[str, dict]:
+    """The latest packet read per organization. Same rule as the ledger: newest wins."""
+    profiles: dict[str, dict] = {}
+    for path in sorted(RECORDS.glob("profile/*.json")):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        name = ((record.get("org") or {}).get("legal_name") or "").strip()
+        if not name:
+            continue
+        key = slug(name)
+        prior = profiles.get(key)
+        if prior is None or (record.get("submitted_at") or "") >= (prior.get("submitted_at") or ""):
+            profiles[key] = record
+    return profiles
+
+
+def derive(cycles: list[dict], profiles: dict[str, dict] | None = None) -> list[dict]:
     orgs: OrderedDict[str, dict] = OrderedDict()
 
     for c in cycles:
@@ -166,6 +191,9 @@ def derive(cycles: list[dict]) -> list[dict]:
                     "_at": at,
                 }
 
+    if profiles:
+        _fold_profiles(orgs, profiles)
+
     ranked = sorted(
         orgs.values(),
         key=lambda o: (-(o["cycles"] - o["sample_cycles"]), -o["cycles"], o["org"].lower()),
@@ -173,11 +201,108 @@ def derive(cycles: list[dict]) -> list[dict]:
     return [_finish(o) for o in ranked]
 
 
+def _fold_profiles(orgs: OrderedDict[str, dict], profiles: dict[str, dict]) -> None:
+    """Attach what a packet said about an organization to what its cycles say.
+
+    A profile is allowed to *create* an organization that has filed no cycles —
+    that is the case this exists for, an applicant with a packet and no ledger
+    history — and it is allowed to fill in blanks. It is never allowed to
+    overwrite a fact a signed cycle reported.
+    """
+    for key, record in profiles.items():
+        entry = record.get("org") or {}
+        name = (entry.get("legal_name") or "").strip()
+        if not name:
+            continue
+        org = orgs.get(key)
+        if org is None:
+            org = orgs[key] = {
+                "id": key,
+                "org": name,
+                "cycles": 0,
+                "sample_cycles": 0,
+                "programs": OrderedDict(),
+                "contact": None,
+                "last_activity": None,
+            }
+        org["legal_name"] = name
+        if entry.get("dba"):
+            org["_dba"] = entry["dba"]
+
+        program = record.get("program") or {}
+        grant = record.get("grant") or {}
+        org["profile"] = {
+            "updated_at": record.get("submitted_at"),
+            "program": {
+                k: program.get(k)
+                for k in ("name", "summary", "delivery", "languages", "capacity", "frequency")
+                if program.get(k)
+            },
+            "sites": [
+                {"facility_code": s.get("facility_code"), "populations": s.get("populations") or []}
+                for s in record.get("sites") or []
+            ],
+            "points": record.get("points") or {},
+            "vendor_id": grant.get("vendor_id"),
+            "funding_start": grant.get("funding_start"),
+            "documents": len(record.get("documents") or []),
+            "missing": record.get("missing") or [],
+        }
+
+        signatory = record.get("signatory") or {}
+        if not org["contact"] and signatory.get("email"):
+            org["contact"] = {
+                "name": signatory.get("name"),
+                "email": signatory["email"],
+                "role": signatory.get("title"),
+            }
+
+        # A program named in the packet is a program this organization offers,
+        # even with no cycles behind it yet. It is what the organizations page
+        # offers to start a report from.
+        pname = (program.get("name") or "").strip()
+        if not pname:
+            continue
+        pid = slug(pname)
+        prog = org["programs"].setdefault(
+            pid,
+            {
+                "id": pid,
+                "name": pname,
+                "cycles": 0,
+                "sample_cycles": 0,
+                "hours": [],
+                "funding": [],
+                "sites": OrderedDict(),
+                "last_cycle": None,
+                "source": "packet",
+            },
+        )
+        for site in record.get("sites") or []:
+            facility = site.get("facility") or ""
+            code = site.get("facility_code")
+            if not facility:
+                continue
+            sid = slug(facility)
+            prog["sites"].setdefault(
+                sid,
+                {
+                    "id": sid,
+                    "facility": facility,
+                    "facility_code": code,
+                    "yard": None,
+                    "cycles": 0,
+                    "source": "attachment-a",
+                },
+            )
+
+
 def _finish(org: dict) -> dict:
     programs = []
     for p in org["programs"].values():
         programs.append(
             {
+                **({"source": p["source"]} if p.get("source") else {}),
                 "id": p["id"],
                 "name": p["name"],
                 "cycles": p["cycles"],
@@ -198,6 +323,13 @@ def _finish(org: dict) -> dict:
         contact = {k: v for k, v in contact.items() if k != "_at"}
 
     real = org["cycles"] - org["sample_cycles"]
+    extra = {}
+    if org.get("legal_name") and org["legal_name"] != org["org"]:
+        extra["legal_name"] = org["legal_name"]
+    if org.get("_dba"):
+        extra["dba"] = org["_dba"]
+    if org.get("profile"):
+        extra["profile"] = org["profile"]
     return {
         "id": org["id"],
         "org": org["org"],
@@ -210,6 +342,7 @@ def _finish(org: dict) -> dict:
         "sample_only": real == 0 and org["cycles"] > 0,
         "contact": contact,
         "last_activity": org["last_activity"],
+        **extra,
         "programs": programs,
     }
 
@@ -227,7 +360,8 @@ def _read_previous() -> dict | None:
 
 def build() -> dict:
     cycles = load_ledger()
-    orgs = derive(cycles)
+    profiles = load_profiles()
+    orgs = derive(cycles, profiles)
     payload = {
         "schema": SCHEMA,
         "generated_at": _now(),
@@ -237,6 +371,7 @@ def build() -> dict:
             "It exists so a returning submitter does not retype what the ledger already knows."
         ),
         "source_cycles": len(cycles),
+        "source_profiles": len(profiles),
         "orgs": orgs,
     }
 
@@ -246,7 +381,12 @@ def build() -> dict:
     # actually changed — the same reason cycles/index.json carries a null
     # updated_at instead of a fresh date.
     previous = _read_previous()
-    if previous and previous.get("orgs") == orgs and previous.get("source_cycles") == len(cycles):
+    if (
+        previous
+        and previous.get("orgs") == orgs
+        and previous.get("source_cycles") == len(cycles)
+        and previous.get("source_profiles") == len(profiles)
+    ):
         payload["generated_at"] = previous.get("generated_at", payload["generated_at"])
 
     return payload

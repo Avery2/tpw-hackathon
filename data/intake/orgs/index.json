@@ -1,8 +1,9 @@
 {
   "schema": "tpw.intake.orgs/1",
-  "generated_at": "2026-10-24T21:28:09Z",
+  "generated_at": "2026-10-24T21:57:37Z",
   "note": "Derived from data/intake/seed.json plus every committed cycle by scripts/intake_profiles.py. Regenerated on every push \u2014 do not edit by hand. It exists so a returning submitter does not retype what the ledger already knows.",
   "source_cycles": 37,
+  "source_profiles": 0,
   "orgs": [
     {
       "id": "defy-ventures",

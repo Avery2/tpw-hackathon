@@ -81,10 +81,11 @@
           "placeholder": "CEO of Your New Life"
         },
         {
-          "key": "facility",
-          "label": "Facility",
-          "type": "facility",
-          "required": true
+          "key": "facilities",
+          "label": "Facilities",
+          "type": "facilities",
+          "required": true,
+          "help": "Add every facility this quarter's totals cover. If you track them separately, file one entry per facility instead."
         },
         {
           "key": "quarter",

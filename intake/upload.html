@@ -54,6 +54,7 @@
   .doc.off .what { color:var(--faint); }
   .doc .what { flex:1; min-width:0; }
   .doc .name { color:var(--ink); font-weight:700; font-size:15px; }
+  .doc .opt { font-weight:400; color:var(--faint); font-size:12.5px; margin-left:6px; }
   .doc .why { color:var(--muted); font-size:13px; }
   .doc .pages { color:var(--faint); font-size:12.5px; font-family:var(--mono); white-space:nowrap; }
   .doc select { font:inherit; font-size:13px; padding:5px 8px; border:1px solid var(--rule-2); border-radius:7px; background:#fff; color:var(--ink); max-width:150px; }
@@ -135,16 +136,25 @@
     .field.half + .field.half { margin-left:0; }
     .grid td:first-child { font-size:12.5px; }
   }
+.internal-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  background: #101010; color: #fff; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.internal-bar b { background: #edca72; color: #000; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.internal-bar span { opacity: .82; max-width: 74ch; }
 </style>
 </head>
 <body>
+<div class="internal-bar">
+  <b>Internal</b>
+  <span>For TPW member organizations only &mdash; this is not a public form. The packet is read in this browser and never uploaded; only the facts you approve are saved to a GitHub repository.</span>
+</div>
 <div class="wrap">
   <header>
-    <a href="index.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+    <a href="simple.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
     <div class="links">
       <a class="back" href="simple.html">Quick forms</a>
       <a class="back" href="scan.html">Scan</a>
-      <a class="back" href="index.html">Full intake →</a>
+      <a class="back" href="sheet.html">Print a sheet</a>
     </div>
   </header>
   <div id="app"><p class="lede">Loading…</p></div>

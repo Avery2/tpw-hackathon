@@ -1,0 +1,964 @@
+{
+  "schema": "tpw.documents/1",
+  "note": "The RIGHT 4.0 application packet, as data. Which documents make a complete packet, what each one can tell us, and where that fact lands in the record. Read by intake/js/upload.js (which parses PDFs in the browser) and by scripts/intake_documents.py (which validates a filed profile and enforces the privacy split). Change the contract here, not in either reader. A document is recognised by its own title text, never by a phrase that merely appears in the RFA narrative: eleven pages of this packet talk about the other forms, and one loose pattern classifies them all wrong. A page with no form fields is never treated as one of the state's fillable forms: the RFA narrative discusses every one of them by name, which is enough for a text pattern and not enough for a fact.",
+  "why": "An applying organization answers the same twenty questions four or five times across the state's forms. The packet already contains the answers, typed by the organization itself. Reading it back is cheaper than asking, and it makes the ledger agree with what CDCR was told.",
+  "limits": {
+    "files": 12,
+    "bytes": 20000000
+  },
+  "groups": [
+    {
+      "id": "org",
+      "title": "Organization",
+      "blurb": "The legal facts. These arrive on five different forms and rarely disagree, which is how we know they are right."
+    },
+    {
+      "id": "signatory",
+      "title": "Who signs for it",
+      "blurb": "The authorized representative, as printed on the payee forms."
+    },
+    {
+      "id": "program",
+      "title": "Program",
+      "blurb": "What is being delivered, how often, and to how many."
+    },
+    {
+      "id": "sites",
+      "title": "Institutions and populations",
+      "blurb": "Attachment A, cell by cell. This is the join spine: which program at which institution, for which population."
+    },
+    {
+      "id": "grant",
+      "title": "Grant round",
+      "blurb": "Which solicitation this packet answers, and the dates it commits the organization to."
+    }
+  ],
+  "fields": [
+    {
+      "key": "org.legal_name",
+      "label": "Legal name",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit",
+      "required": true,
+      "help": "Must match the IRS and Secretary of State records. The state rejects mismatches."
+    },
+    {
+      "key": "org.dba",
+      "label": "DBA or business name",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "org.entity",
+      "label": "Entity type",
+      "group": "org",
+      "type": "choice",
+      "privacy": "commit",
+      "options": [
+        {
+          "value": "nonprofit_corp",
+          "label": "Non-profit corporation"
+        },
+        {
+          "value": "fiscal_sponsor",
+          "label": "Under a fiscal sponsor"
+        },
+        {
+          "value": "other",
+          "label": "Something else"
+        }
+      ]
+    },
+    {
+      "key": "org.nonprofit_status",
+      "label": "Non-profit status",
+      "group": "org",
+      "type": "choice",
+      "privacy": "commit",
+      "options": [
+        {
+          "value": "501c3",
+          "label": "501(c)(3)"
+        },
+        {
+          "value": "fiscal_sponsor",
+          "label": "Through a fiscal sponsor"
+        },
+        {
+          "value": "unknown",
+          "label": "Not stated"
+        }
+      ]
+    },
+    {
+      "key": "org.fiscal_sponsor",
+      "label": "Fiscal sponsor",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "org.nonprofit_cert",
+      "label": "Non-profit certification number",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit",
+      "help": "Department of General Services number from the vendor form, if the organization has one."
+    },
+    {
+      "key": "org.website",
+      "label": "Website",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "org.email",
+      "label": "Organization email",
+      "group": "org",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "org.address_street",
+      "label": "Street address",
+      "group": "org",
+      "type": "text",
+      "privacy": "local"
+    },
+    {
+      "key": "org.address_city",
+      "label": "City",
+      "group": "org",
+      "type": "text",
+      "privacy": "local"
+    },
+    {
+      "key": "org.address_state",
+      "label": "State",
+      "group": "org",
+      "type": "text",
+      "privacy": "local",
+      "max": 2
+    },
+    {
+      "key": "org.address_zip",
+      "label": "ZIP",
+      "group": "org",
+      "type": "text",
+      "privacy": "local",
+      "max": 10
+    },
+    {
+      "key": "signatory.name",
+      "label": "Name",
+      "group": "signatory",
+      "type": "text",
+      "privacy": "commit",
+      "required": true
+    },
+    {
+      "key": "signatory.title",
+      "label": "Title",
+      "group": "signatory",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "signatory.email",
+      "label": "Email",
+      "group": "signatory",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "signatory.phone",
+      "label": "Telephone",
+      "group": "signatory",
+      "type": "text",
+      "privacy": "local"
+    },
+    {
+      "key": "signatory.signed_on",
+      "label": "Signed on",
+      "group": "signatory",
+      "type": "date",
+      "privacy": "commit"
+    },
+    {
+      "key": "program.name",
+      "label": "Program name",
+      "group": "program",
+      "type": "text",
+      "privacy": "commit",
+      "required": true,
+      "help": "The packet describes the program but rarely names it. Take the name from the organization's own summary."
+    },
+    {
+      "key": "program.summary",
+      "label": "What is delivered",
+      "group": "program",
+      "type": "textarea",
+      "privacy": "commit",
+      "max": 600,
+      "help": "One or two sentences, in the organization's words. Keep it short enough to sit in a record."
+    },
+    {
+      "key": "program.delivery",
+      "label": "Delivery",
+      "group": "program",
+      "type": "choice",
+      "privacy": "commit",
+      "options": [
+        {
+          "value": "in_person",
+          "label": "In person"
+        },
+        {
+          "value": "correspondence",
+          "label": "Correspondence"
+        },
+        {
+          "value": "hybrid",
+          "label": "Hybrid"
+        }
+      ]
+    },
+    {
+      "key": "program.languages",
+      "label": "Languages other than English",
+      "group": "program",
+      "type": "list",
+      "privacy": "commit",
+      "help": "Worth half a point to the applicant, so get it right."
+    },
+    {
+      "key": "program.capacity",
+      "label": "Current capacity",
+      "group": "program",
+      "type": "int",
+      "privacy": "commit",
+      "min": 0,
+      "max": 5000
+    },
+    {
+      "key": "program.frequency",
+      "label": "Schedule",
+      "group": "program",
+      "type": "text",
+      "privacy": "commit",
+      "max": 80
+    },
+    {
+      "key": "sites",
+      "label": "Institutions and populations",
+      "group": "sites",
+      "type": "grid",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.round",
+      "label": "Round",
+      "group": "grant",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.solicitation",
+      "label": "Solicitation",
+      "group": "grant",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.vendor_id",
+      "label": "Vendor ID",
+      "group": "grant",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.agreement_no",
+      "label": "Bid or agreement number",
+      "group": "grant",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.executed_county",
+      "label": "Executed in",
+      "group": "grant",
+      "type": "text",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.funding_start",
+      "label": "Funding period starts",
+      "group": "grant",
+      "type": "date",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.funding_end",
+      "label": "Funding period ends",
+      "group": "grant",
+      "type": "date",
+      "privacy": "commit"
+    },
+    {
+      "key": "grant.application_due",
+      "label": "Application due",
+      "group": "grant",
+      "type": "date",
+      "privacy": "commit"
+    }
+  ],
+  "verifiers": [
+    {
+      "id": "fein",
+      "label": "Federal Employer Identification Number",
+      "pattern": "\\b([0-9]{2})[- ]?([0-9]{7})\\b",
+      "kind": "tax_id",
+      "note": "Read only to check the packet is internally consistent: the same seven digits appear on six of these forms. The number itself is never written to a record."
+    },
+    {
+      "id": "signature",
+      "label": "Signature",
+      "pattern": "/s/\\s*([A-Z][^\\n]{2,60})",
+      "kind": "signature",
+      "note": "Confirms the packet was signed, and by whom. The signature is not copied."
+    }
+  ],
+  "blockers": [
+    {
+      "id": "ssn",
+      "label": "Social Security number",
+      "pattern": "\\b[0-9]{3}-[0-9]{2}-[0-9]{4}\\b",
+      "note": "Never expected on these forms. If a packet contains one, the file is refused rather than parsed."
+    },
+    {
+      "id": "participant_id",
+      "label": "CDCR number or date of birth",
+      "pattern": "\\b[A-Z]{1,2}-?[0-9]{4,7}\\b",
+      "note": "A participant identifier has no business in a grant packet.",
+      "warn": true
+    }
+  ],
+  "documents": [
+    {
+      "id": "rfa",
+      "label": "The RFA itself",
+      "short": "RFA",
+      "section": "Reference",
+      "required": false,
+      "fingerprints": [
+        "REQUEST FOR APPLICATIONS",
+        "RIGHT"
+      ],
+      "continues": "Page \\d+ of 12",
+      "reads": [
+        "grant.round",
+        "grant.funding_start",
+        "grant.funding_end",
+        "grant.application_due"
+      ],
+      "why": "Not something the organization fills in, but it sets the funding period and the deadline for the whole packet.",
+      "note": "Not something the organization fills in, but it dates the whole packet, so it is worth keeping the cover pages.",
+      "text": [
+        {
+          "key": "grant.round",
+          "pattern": "RIGHT Grant\\s*([0-9]\\.[0-9])",
+          "prefix": "RIGHT ",
+          "weight": 2
+        },
+        {
+          "key": "grant.funding_start",
+          "pattern": "Funding Period:\\s*([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})",
+          "transform": "us_date",
+          "weight": 2
+        },
+        {
+          "key": "grant.funding_end",
+          "pattern": "Funding Period:[^\\n]*? to ([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})",
+          "transform": "us_date",
+          "weight": 2
+        },
+        {
+          "key": "grant.application_due",
+          "pattern": "Application Due\\s+([A-Z][a-z]+ [0-9]{1,2}, [0-9]{4})",
+          "transform": "us_date",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "irs_letter",
+      "label": "IRS 501(c)(3) determination letter",
+      "short": "IRS letter",
+      "section": "Non-profit status",
+      "required": true,
+      "head": true,
+      "fingerprints": [
+        "Internal Revenue Service|Department of the Treasury"
+      ],
+      "reads": [
+        "org.legal_name",
+        "org.nonprofit_status"
+      ],
+      "why": "The one document that settles non-profit status, and the name the IRS knows them by.",
+      "note": "The one document that settles non-profit status. It also names the organization the way the IRS does, which is the name the state will match against.",
+      "text": [
+        {
+          "key": "org.legal_name",
+          "pattern": "([A-Z][A-Za-z0-9&',.\\- ]{3,70})\\s*\\n[^\\n]{0,80}",
+          "near": "Employer Identification Number",
+          "weight": 2
+        },
+        {
+          "key": "org.nonprofit_status",
+          "pattern": "501\\s*\\(c\\)\\s*\\(?3\\)?",
+          "literal": "501c3"
+        }
+      ]
+    },
+    {
+      "id": "fiscal_agreement",
+      "label": "Fiscal sponsor agreement",
+      "short": "Fiscal sponsor",
+      "section": "Non-profit status",
+      "required": false,
+      "manual": true,
+      "fingerprints": [],
+      "reads": [
+        "org.entity",
+        "org.fiscal_sponsor"
+      ],
+      "why": "Only if a fiscal sponsor is used. It decides who signs the rest of the packet.",
+      "note": "Only if a fiscal sponsor is used. Changes which of the other forms must be signed by whom, so it matters more than it looks.",
+      "text": [
+        {
+          "key": "org.entity",
+          "pattern": "fiscal sponsor",
+          "literal": "fiscal_sponsor",
+          "weight": 1
+        }
+      ]
+    },
+    {
+      "id": "budget_1",
+      "label": "Annual budget, first fiscal year",
+      "short": "Budget FY1",
+      "section": "Finances",
+      "required": true,
+      "manual": true,
+      "fingerprints": [],
+      "reads": [
+        "points.budget_tier"
+      ],
+      "why": "Sets the budget band, worth one to three qualifying points. The figures themselves are not kept.",
+      "note": "Two years, one PDF each. We do not read the figures into the record: a member organization's budget should not sit in a public repository. The file is used on this page to work out the budget band that sets the applicant's qualifying points, and nothing else.",
+      "money": {
+        "points_tier": true
+      }
+    },
+    {
+      "id": "budget_2",
+      "label": "Annual budget, second fiscal year",
+      "short": "Budget FY2",
+      "section": "Finances",
+      "required": true,
+      "manual": true,
+      "fingerprints": [],
+      "reads": [
+        "points.budget_tier"
+      ],
+      "why": "Same treatment as the first year.",
+      "note": "Same treatment as the first year.",
+      "money": {
+        "points_tier": true
+      }
+    },
+    {
+      "id": "std204",
+      "label": "STD 204 payee data record",
+      "short": "STD 204",
+      "section": "Payee",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "STD 204 \\(Rev"
+      ],
+      "continues": "STD 204 \\(Rev|GENERAL INSTRUCTIONS",
+      "reads": [
+        "org.legal_name",
+        "org.dba",
+        "org.entity",
+        "org.email",
+        "org.address_street",
+        "org.address_city",
+        "org.address_state",
+        "org.address_zip",
+        "signatory.name",
+        "signatory.title",
+        "signatory.email",
+        "signatory.phone",
+        "signatory.signed_on"
+      ],
+      "why": "Legal name, DBA, address and signatory, typed into a fillable form, so read exactly rather than guessed.",
+      "note": "A fillable Acrobat form, so the values are readable exactly rather than guessed. Warning for whoever maintains this: on the Rev. 03/2021 file the field names sit one label above the printed caption, so the field called BUSINESS NAME holds the legal name. The mapping below encodes that, deliberately.",
+      "names": {
+        "Text8": "org.address_street",
+        "BUSINESS NAME DBA NAME or DISREGARDED SINGLE MEMBER LLC NAME If different from above": "org.legal_name",
+        "MAILING ADDRESS number street apt or suite no See instructions on Page 2": "org.dba",
+        "CITY STATE ZIP CODE": {
+          "citystatezip": true,
+          "to": [
+            "org.address_city",
+            "org.address_state",
+            "org.address_zip"
+          ]
+        },
+        "EMAIL ADDRESS": "org.email",
+        "NAME OF AUTHORIZED PAYEE REPRESENTATIVE": "signatory.name",
+        "TITLE": "signatory.title",
+        "EMAIL ADDRESS_2": "signatory.email",
+        "Text6": "signatory.phone",
+        "Text5": "signatory.signed_on",
+        "Text1.1": {
+          "readback": true
+        },
+        "Check Box3.2.1": {
+          "checked": {
+            "org.entity": "nonprofit_corp"
+          },
+          "label": "EXEMPT"
+        }
+      }
+    },
+    {
+      "id": "std205",
+      "label": "STD 205 payee data supplement",
+      "short": "STD 205",
+      "section": "Payee",
+      "required": false,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "PAYEE DATA RECORD SUPPLEMENT"
+      ],
+      "continues": "STD 205",
+      "reads": [
+        "org.legal_name",
+        "org.dba",
+        "signatory.name",
+        "signatory.title",
+        "signatory.email",
+        "signatory.phone",
+        "signatory.signed_on"
+      ],
+      "why": "A remittance address and any extra contacts. Optional.",
+      "note": "Optional. Only sent when the organization wants money sent somewhere other than its mailing address, so its absence is not a problem.",
+      "names": {
+        "NAME": "org.legal_name",
+        "BUSINESS NAME DBA NAME or DISREGARDED SINGLE MEMBER LLC NAME": "org.dba",
+        "NAME OF AUTHORIZED PAYEE REPRESENTATIVE Print or Type name": "signatory.name",
+        "TITLE": "signatory.title",
+        "EMAIL ADDRESS": "signatory.email",
+        "TELEPHONE Include area code_2": "signatory.phone",
+        "DATE": "signatory.signed_on",
+        "CONTACT NAME.0": "contacts.0.name",
+        "EMAIL.0": "contacts.0.email",
+        "TELEPHONE.0": "contacts.0.phone",
+        "CONTACT NAME.1": "contacts.1.name",
+        "EMAIL.1": "contacts.1.email",
+        "TELEPHONE.1": "contacts.1.phone"
+      }
+    },
+    {
+      "id": "vendor_payee",
+      "label": "Supplement vendor payee data record",
+      "short": "Vendor form",
+      "section": "Payee",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "SUPPLEMENT VENDOR PAYEE DATA RECORD"
+      ],
+      "continues": "BUSINESS DESIGNATION",
+      "reads": [
+        "org.legal_name",
+        "org.dba",
+        "org.website",
+        "org.address_street",
+        "org.address_city",
+        "org.address_state",
+        "org.address_zip",
+        "org.nonprofit_cert",
+        "signatory.name",
+        "signatory.title",
+        "signatory.email",
+        "signatory.phone",
+        "program.summary",
+        "program.delivery",
+        "contacts.0.name",
+        "contacts.0.title",
+        "contacts.0.phone"
+      ],
+      "why": "Physical address, website, the DGS non-profit number and a one-line description of the service.",
+      "note": "The richest of the payee forms: it carries the physical address, the website, the DGS non-profit recognition number and a one-line description of the service. That description is often the only place the delivery mode is stated outright.",
+      "names": {
+        "LEGAL NAME OF BUSINESS": "org.legal_name",
+        "DBA": "org.dba",
+        "STREET": "org.address_street",
+        "CITY": "org.address_city",
+        "STATE": "org.address_state",
+        "ZIP": "org.address_zip",
+        "WEB-SITE ADDRESS": "org.website",
+        "CERTIFICATION NUMBER6": "org.nonprofit_cert",
+        "SALES CONTACT PERSON": {
+          "to": "signatory.name",
+          "weight": 2
+        },
+        "TITLE": "signatory.title",
+        "SALES EMAIL ADDRESS": "signatory.email",
+        "PHONE": {
+          "to": "signatory.phone",
+          "weight": 2
+        },
+        "ACCOUNTING CONTACT PERSON": {
+          "to": "contacts.0.name",
+          "weight": 2
+        },
+        "TITLE_2": {
+          "to": "contacts.0.title",
+          "weight": 2
+        },
+        "PHONE_2": {
+          "to": "contacts.0.phone",
+          "weight": 2
+        },
+        "ENTER TYPE OF SERVICE PROVIDED": {
+          "to": "program.summary",
+          "weight": 2,
+          "delivery": true
+        },
+        "NON-PROFIT RECOGNITION": {
+          "checked": {
+            "org.nonprofit_status": "501c3"
+          },
+          "label": "NON-PROFIT RECOGNITION"
+        }
+      },
+      "mentions": true
+    },
+    {
+      "id": "obs1000",
+      "label": "OBS 1000 GenAI reporting and factsheet",
+      "short": "OBS 1000",
+      "section": "State contracting",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "GENAI REPORTING AND FACTSHEET"
+      ],
+      "continues": "GenAI Reporting and Factsheet Instructions|GENAI REPORTING AND FACTSHEET",
+      "reads": [
+        "org.legal_name",
+        "org.address_street",
+        "org.address_city",
+        "org.address_state",
+        "org.address_zip",
+        "signatory.phone",
+        "signatory.signed_on",
+        "program.summary",
+        "program.delivery",
+        "grant.solicitation",
+        "grant.vendor_id"
+      ],
+      "why": "Formally about generative AI. Usefully, a paragraph naming the institutions and the programming.",
+      "note": "Filed because CDCR now asks every contractor about generative AI, but the useful part for us is the contract description: it names the institutions and the kind of programming in one paragraph.",
+      "names": {
+        "Solicitation / Contract": "grant.solicitation",
+        "Number Bidder ID/ Vendor ID (opitional)": "grant.vendor_id",
+        "Business Name": "org.legal_name",
+        "Business Telephone Number": "signatory.phone",
+        "Business Address": "org.address_street",
+        "City": "org.address_city",
+        "State": "org.address_state",
+        "Zip Code": "org.address_zip",
+        "Contract  Description of Purchase": {
+          "to": "program.summary",
+          "weight": 3,
+          "sites": true,
+          "delivery": true
+        },
+        "Date": {
+          "to": "signatory.signed_on",
+          "weight": 2
+        }
+      },
+      "mentions": true
+    },
+    {
+      "id": "obs1500",
+      "label": "OBS 1500 Darfur Contracting Act",
+      "short": "OBS 1500",
+      "section": "State contracting",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "DARFUR CONTRACTING ACT"
+      ],
+      "reads": [
+        "org.legal_name",
+        "signatory.name",
+        "signatory.title",
+        "signatory.signed_on",
+        "grant.agreement_no"
+      ],
+      "why": "Certifies no operations outside the United States, and carries the bid number.",
+      "note": "A certification that the organization has no operations outside the United States, or that it has permission if it does. It carries the bid number, which is the only place the packet ties itself to a solicitation.",
+      "names": {
+        "CompanyVendor Name Printed": "org.legal_name",
+        "Printed Name and Title of Person Signing": {
+          "name_title": true,
+          "to": [
+            "signatory.name",
+            "signatory.title"
+          ]
+        },
+        "Date Executed": {
+          "to": "signatory.signed_on",
+          "weight": 2
+        },
+        "By Authorized Signature": {
+          "verify": "signature"
+        }
+      }
+    },
+    {
+      "id": "obs1510",
+      "label": "OBS 1510 civil rights certification",
+      "short": "OBS 1510",
+      "section": "State contracting",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "CALIFORNIA CIVIL RIGHTS LAWS CERTIFICATION"
+      ],
+      "reads": [
+        "org.legal_name",
+        "signatory.name",
+        "signatory.title",
+        "signatory.signed_on",
+        "grant.executed_county"
+      ],
+      "why": "Civil rights certification, executed in a county, on a date.",
+      "note": "Certifies compliance with the Unruh Civil Rights Act and the Fair Employment and Housing Act for contracts over $100,000.",
+      "names": {
+        "Proposer/Bidder Name (Printed)": "org.legal_name",
+        "Printed Name and Title of Person Signing": {
+          "name_title": true,
+          "to": [
+            "signatory.name",
+            "signatory.title"
+          ]
+        },
+        "Date Executed": {
+          "to": "signatory.signed_on",
+          "weight": 2
+        },
+        "Executed in the County and State of": "grant.executed_county"
+      }
+    },
+    {
+      "id": "ccc",
+      "label": "Contractor certification clauses",
+      "short": "CCC",
+      "section": "State contracting",
+      "required": true,
+      "head": true,
+      "form": true,
+      "fingerprints": [
+        "Contractor Certification Clause",
+        "CERTIFY UNDER PENALTY OF PERJURY"
+      ],
+      "continues": "Contractor",
+      "reads": [
+        "org.legal_name",
+        "signatory.name",
+        "signatory.title",
+        "signatory.signed_on",
+        "grant.executed_county"
+      ],
+      "why": "Nine pages of boilerplate with one signature page.",
+      "note": "Nine pages of boilerplate with one signature page. The clauses themselves are the same for every contractor, so only the certification page is read.",
+      "names": {
+        "ContractorBidder Firm Name Printed": "org.legal_name",
+        "Printed Name and Title of Person Signing": {
+          "name_title": true,
+          "to": [
+            "signatory.name",
+            "signatory.title"
+          ]
+        },
+        "Date Executed": {
+          "to": "signatory.signed_on",
+          "weight": 2
+        },
+        "Executed in the County of": "grant.executed_county"
+      }
+    },
+    {
+      "id": "coi",
+      "label": "Certificate of insurance",
+      "short": "COI",
+      "section": "Insurance",
+      "required": true,
+      "head": true,
+      "fingerprints": [
+        "CERTIFICATE OF LIABILITY INSURANCE|ACORD"
+      ],
+      "reads": [],
+      "why": "Whether the insurance they already carry meets what CDCR requires.",
+      "note": "The RFA sets the terms: $1,000,000 general liability, CDCR named as certificate holder, the State as additional insured, and workers' compensation or a sworn exemption. We read the limits and the holder to tell the organization whether the certificate it already has will pass.",
+      "checks": [
+        {
+          "id": "insurance_cgl",
+          "label": "General liability limit",
+          "pattern": "General Liability[\\s\\S]{0,400}?\\$([0-9][0-9,]{5,})",
+          "transform": "money"
+        },
+        {
+          "id": "insurance_holder",
+          "label": "CDCR named as certificate holder",
+          "pattern": "California Department of Corrections",
+          "literal": true
+        }
+      ]
+    },
+    {
+      "id": "wc_exemption",
+      "label": "Workers' compensation exemption",
+      "short": "WC exemption",
+      "section": "Insurance",
+      "required": false,
+      "head": true,
+      "fingerprints": [
+        "Exemption from Workers"
+      ],
+      "reads": [],
+      "why": "Only for organizations with no employees.",
+      "note": "Only for organizations with no employees. The form is filed blank in most packets, so its presence proves nothing on its own: what it tells us is that a workers' compensation certificate is either not needed or still owed.",
+      "checks": []
+    },
+    {
+      "id": "sos_cert",
+      "label": "California Secretary of State certification",
+      "short": "SOS",
+      "section": "Non-profit status",
+      "required": true,
+      "manual": true,
+      "head": true,
+      "fingerprints": [],
+      "reads": [
+        "org.legal_name"
+      ],
+      "why": "Confirms the organization is active with the Secretary of State. Usually a screenshot.",
+      "note": "A printout or a screenshot of the Secretary of State record, so its shape is whatever the organization's browser did that day. A screenshot has no text at all, so this one is identified by hand rather than guessed at, and the only thing read from it is whether status is Active.",
+      "checks": [
+        {
+          "id": "sos_active",
+          "label": "Secretary of State status is active",
+          "pattern": "\\bACTIVE\\b",
+          "flags": "i",
+          "literal": true
+        }
+      ]
+    },
+    {
+      "id": "program_summary",
+      "label": "Program summary",
+      "short": "Program summary",
+      "section": "Program",
+      "required": true,
+      "manual": true,
+      "fingerprints": [],
+      "reads": [
+        "program.delivery",
+        "program.capacity",
+        "program.frequency",
+        "program.languages",
+        "sites"
+      ],
+      "why": "Two pages of prose: capacity, frequency, languages, and the institutions already served.",
+      "note": "Two pages of prose that the RFA does not score. It is the only document that says how the program actually runs: capacity, frequency, languages, and which institutions it is already in. No fingerprint, so the person says which file this is.",
+      "text": [
+        {
+          "key": "program.delivery",
+          "pattern": "\\b(in[- ]person|correspondence|hybrid)\\b",
+          "flags": "i",
+          "transform": "delivery",
+          "weight": 2
+        },
+        {
+          "key": "program.capacity",
+          "pattern": "(?:capacity|serves|enrolls|seats?|beds?)\\D{0,40}?([0-9]{1,4})\\b",
+          "flags": "i",
+          "transform": "int",
+          "weight": 2
+        },
+        {
+          "key": "program.frequency",
+          "pattern": "\\b(weekly|twice a week|bi-?weekly|bi-?monthly|monthly|daily|every other week)\\b",
+          "flags": "i",
+          "transform": "lower",
+          "weight": 2
+        },
+        {
+          "key": "program.languages",
+          "pattern": "\\b(Spanish|Vietnamese|Mandarin|Cantonese|Tagalog|Korean|Hmong|Arabic|Russian|Farsi|Mixtec|Zapotec)\\b",
+          "flags": "g",
+          "transform": "languages",
+          "weight": 2
+        }
+      ]
+    },
+    {
+      "id": "attachment_a",
+      "label": "Attachment A · institution locations and populations",
+      "short": "Attachment A",
+      "section": "Program",
+      "required": true,
+      "fingerprints": [
+        "Institution Locations",
+        "Population Type"
+      ],
+      "reads": [
+        "sites"
+      ],
+      "why": "The grid: which institution, which population, which language.",
+      "note": "The most valuable page in the packet and the only one that is a grid. Ticks mark the population at each institution; the red asterisk marks an underserved institution, worth half a point. Read by position, not by text order. Two kinds of mark share this page: the state's printed lowercase x, which means the institution does not house that population, and the applicant's own tick. They are told apart by font, and confirmed against the public Attachment A grid in data/public/.",
+      "grid": {
+        "caption_columns": [
+          "GP",
+          "EOP",
+          "MHCB",
+          "RHU"
+        ],
+        "language_header": "Alt\\.",
+        "row": "^\\(([A-Z]{2,4})\\)|([A-Z]{2,4})\\)",
+        "marks": "x|✓|✗|●|•",
+        "underserved": "\\*",
+        "legend": "The state prints a lowercase x in every population column an institution does not house. That mark means the opposite of a tick, and data/public/cdcr-attachment-a-institutions.csv says which cells those are."
+      }
+    }
+  ]
+}

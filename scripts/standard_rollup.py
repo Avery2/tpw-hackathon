@@ -38,6 +38,15 @@ def quarter_of(iso: str) -> str | None:
     return f"{d.year}-Q{(d.month - 1) // 3 + 1}"
 
 
+def facility_list(record: dict) -> list[str]:
+    """A record may name one facility or several; normalize to a sorted list."""
+    many = record.get("facilities")
+    if isinstance(many, list) and many:
+        return sorted({str(x) for x in many if x})
+    one = record.get("facility")
+    return [str(one)] if one else []
+
+
 def load(kind: str) -> list[dict]:
     folder = RECORDS / kind
     if not folder.exists():
@@ -61,13 +70,15 @@ def build() -> dict:
         q = quarter_of(s.get("session_date"))
         if not q:
             continue
-        key = (s.get("org") or "", s.get("program") or "", s.get("facility") or "", q)
+        facs = tuple(facility_list(s))
+        key = (s.get("org") or "", s.get("program") or "", facs, q)
         g = groups.setdefault(
             key,
             {
                 "org": key[0] or None,
                 "program": key[1] or None,
-                "facility": key[2] or None,
+                "facilities": list(facs),
+                "facility": facs[0] if len(facs) == 1 else None,
                 "quarter": key[3],
                 "sessions": [],
             },
@@ -77,7 +88,7 @@ def build() -> dict:
     periods = []
     people = []
 
-    for (org, program, facility, quarter), g in groups.items():
+    for (org, program, facs, quarter), g in groups.items():
         # per-ID attendance
         listed: dict[str, int] = defaultdict(int)
         attended: dict[str, int] = defaultdict(int)
@@ -110,7 +121,8 @@ def build() -> dict:
                     "id": pid,
                     "org": org or None,
                     "program": program or None,
-                    "facility": facility or None,
+                    "facilities": list(facs),
+                    "facility": facs[0] if len(facs) == 1 else None,
                     "quarter": quarter,
                     "sessions_attended": attended[pid],
                     "sessions_listed": possible,
@@ -127,7 +139,8 @@ def build() -> dict:
             {
                 "org": org or None,
                 "program": program or None,
-                "facility": facility or None,
+                "facilities": list(facs),
+                "facility": facs[0] if len(facs) == 1 else None,
                 "quarter": quarter,
                 "sessions_held": sessions_held,
                 "attendance_total": attendance_total,
@@ -142,9 +155,12 @@ def build() -> dict:
         )
 
     # hand-entered quarterly totals, including quarters with no sheets at all
-    by_key = {(p["org"], p["program"], p["facility"], p["quarter"]): p for p in periods}
+    def key_of(record: dict) -> tuple:
+        return (record.get("org"), record.get("program"), tuple(facility_list(record)), record.get("quarter"))
+
+    by_key = {key_of(p): p for p in periods}
     for m in manual:
-        key = (m.get("org"), m.get("program"), m.get("facility"), m.get("quarter"))
+        key = key_of(m)
         if not key[3]:
             continue
         reported = {
@@ -162,7 +178,8 @@ def build() -> dict:
                 {
                     "org": key[0],
                     "program": key[1],
-                    "facility": key[2],
+                    "facilities": list(key[2]),
+                    "facility": key[2][0] if len(key[2]) == 1 else None,
                     "quarter": key[3],
                     "sessions_held": reported["sessions_held"],
                     "attendance_total": reported["attendance_total"],

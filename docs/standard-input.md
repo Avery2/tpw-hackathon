@@ -68,21 +68,31 @@ Type the roster once, print one page per session, tick the people who were there
 
 ## 3. Quarterly totals (`intake/simple.html#aggregate`)
 
-For an organization that will not keep per-session sheets. One entry per program per quarter:
+For an organization that will not keep per-session sheets. One entry per program per quarter,
+covering one facility or several:
 
 ```json
 {
   "kind": "aggregate",
   "org": "Defy Ventures",
   "program": "CEO of Your New Life",
-  "facility": "Kern Valley State Prison (KVSP)",
+  "facilities": [
+    "Kern Valley State Prison (KVSP)",
+    "California Correctional Institution (CCI)",
+    "Mule Creek State Prison (MCSP)"
+  ],
   "quarter": "2026-Q2",
-  "served": 58,
-  "completed": 41,
-  "sessions_held": 22,
-  "attendance": 610
+  "served": 132,
+  "completed": 88,
+  "sessions_held": 64,
+  "attendance": 1740
 }
 ```
+
+`facilities` is a list. File one entry per facility if your numbers are already split that way;
+file one entry with several facilities when the total is all you have. The rollup keeps the
+list intact and only merges a reported row into a computed one when the facility sets match
+exactly — a combined total never silently stands in for a per-facility figure.
 
 This is the "standard aggregate report" row. It is enough for totals and useless for
 per-person analytics — which is the trade the organization is making.
@@ -119,6 +129,7 @@ One participant, one outcome, whenever it is learned:
     {
       "org": "GRIP Training Institute",
       "program": "Guiding Rage Into Power",
+      "facilities": ["San Quentin Rehabilitation Center (SQ)"],
       "facility": "San Quentin Rehabilitation Center (SQ)",
       "quarter": "2026-Q4",
       "sessions_held": 3,
@@ -142,6 +153,8 @@ One participant, one outcome, whenever it is learned:
 
 Rules that matter for the report:
 
+- **`facilities`** is always a list; **`facility`** is set only when there is exactly one, so
+  a consumer that wants a single site reads `facility` and checks for null.
 - **`served`** counts every ID that appeared on any sheet for that period.
 - **`completed`** means present for at least **70%** of the sessions that participant was
   rostered for — not 70% of all sessions. Someone who joined in week 6 is judged from week 6.

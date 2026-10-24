@@ -94,64 +94,32 @@ Seven organizations' worth of rows are in there already, and the sheet has known
 ## Repo layout
 
 ```
-intake/       the forms: cycle intake, quarterly entry, printable sheets, scanner
-data/intake/  the ledger — schema, facilities, seed import, cycles, quick records, registry
-scripts/      seed importer, validator, issue ingester, reindexer, profile deriver
+intake/       the forms: weekly, quarterly, follow-up, printable sheets, scanner, packet upload
+data/intake/  the ledger — records, derived rollup, org registry, form contracts
+scripts/      validators, issue ingester, reindexer, rollup, profile deriver
 docs/         TPW + CDCR source documents
 data/         snapshots of the Collective Impact form
 site/         local mirror of thetpw.org (offline copy, for reference and extension)
 ```
 
-## The intake system
+## The intake
 
-**Live:** <https://www.averychan.site/tpw-hackathon/intake/>
+**Live:** <https://www.averychan.site/tpw-hackathon/intake/simple.html> · `/intake/` redirects here.
 
-A form-intake system that runs entirely in this stack. The browser holds the schema and
-the arithmetic; GitHub holds the data. There is no database, no API key, and no service
-that can go down between the form and the record.
+Four small pages, no build step, no server, no account. The browser holds the arithmetic;
+GitHub holds the data.
 
-The reason to rebuild the form at all is the join. The Collective Impact sheet can describe
-a program cycle but cannot name a person, so nothing in it can ever meet parole or
-recidivism data. This version adds exactly one thing: a **pseudonymous participant spine**.
+| Page | What it is |
+|---|---|
+| `intake/simple.html` | three single-screen forms — a week, a quarter, a follow-up |
+| `intake/sheet.html` | prints a session roster with participant IDs pre-printed and a QR anchor |
+| `intake/scan.html` | photograph a filled sheet; it reads which boxes are ticked |
+| `intake/upload.html` | read a partner's packet (PDF) into the same shapes |
 
-### What it captures
-
-The June 2026 glossary, enforced as code. `data/intake/schema.json` is the single source of
-truth — the browser and the CI validator both read it, so they cannot drift apart.
-
-- Conditional requirements: a `Completed` cycle needs an end date and completions; a
-  `Planned` one must not carry them.
-- Columns L and M are computed, never stored wrong. The `#VALUE!` class of bug is
-  structurally impossible.
-- The sheet's warts are preserved as flags, not repaired: `TBD`, sample rows, duplicate
-  cycles, and an 18-month "cycle" all surface in the ledger with a reason attached.
-- The proposed rename in the glossary (`Total Programming hours` → `Course hours per
-  participant`) is applied, and the label now enforces its own meaning.
-- Column K (`Funded by RIGHT 2.0`) is generalized to a funding-source field instead of
-  being deleted, as the glossary left open.
-
-### The registry — the half that repeats
-
-Nine of the form's fifteen fields are the same on an organization's second cycle as its first:
-name, program, facility, yard, course hours, funding source, and who signs for it. Asking again
-is not diligence — it is a way to collect three spellings of one organization, and
-`cycleKey()` folds facility, yard, program and date into the record's identity, so that drift
-silently splits an organization in two. The seed already shows the multiplier: 37 cycles from
-3 organizations.
-
-So the registry is derived, not entered. `scripts/intake_profiles.py` groups the seed plus every
-committed cycle by organization and program and writes `data/intake/orgs/index.json`.
-`intake_reindex.py` runs it on every push, so a profile is a function of the ledger and cannot
-disagree with it. Editing a profile by hand edits a cache; correcting a cycle fixes it.
-
-`#/orgs` reads that registry. Picking a site starts a cycle with the known values already filled,
-and the next cycle after a submission carries them forward. Nothing is guessed: hours and funding
-are the *mode* of past cycles, the contact is whoever signed most recently, and an organization
-with twenty-five sites gets no facility filled in — a wrong yard is worse than an empty one.
-
-Because the identity lives in a committed file rather than a URL, there is no prefill link to forge,
-and the join spine stays intact: a third-party form host could not derive the token in the
-submitter's browser in the first place.
+The old cycle wizard — five steps, a HMAC join spine, a ledger and an impact view — has been
+removed. It asked organizations to file a program *cycle*, which turned out to be the wrong
+unit: what a program can actually sustain is a session sheet and a quarterly total, and what
+the report needs is per-person attendance. `docs/standard-input.md` is the current contract.
 
 ### The quarterly standard
 
@@ -162,7 +130,7 @@ is the contract.
 | Path | Who it is for | Produces |
 |---|---|---|
 | **Session sheets + scan** (`intake/sheet.html`, `intake/scan.html`) | organizations that run a room | per-person attendance |
-| **Quarterly totals** (`intake/simple.html#aggregate`) | organizations that already count their own numbers | one aggregate row per program-quarter |
+| **Quarterly totals** (`intake/simple.html#aggregate`) | organizations that already count their own numbers | one aggregate row per program-quarter, across one or many facilities |
 | **Follow-up** (`intake/simple.html#followup`) | anyone who hears what happened after release | one outcome per participant ID |
 
 The join key is the part that makes analytics possible at all: **first initial + birth year**
@@ -181,57 +149,38 @@ in week six is judged from week six. It also carries a flat `participants[]` lis
 a background check iterates later. Self-submitted quarterly totals ride alongside as `reported`
 rather than replacing the computed figures.
 
-### The join spine
-For each enrollee the form derives a 128-bit token in the browser:
+### The ID
 
-```
-token = HMAC-SHA256(organization key, CDCR number)[0:32 hex]
-```
-
-The key never leaves the machine and is never committed. The identifier is hashed as you
-type and discarded. What reaches the repository is a token, a cycle id, `completed` or
-`did_not_complete`, and — once matched — a release date and days-to-conviction. No name,
-no CDCR number, no date of birth.
-
-Same key plus same number always yields the same token, so a person's participation
-accumulates across cycles and years with nothing but a hex string. Whoever holds the
-organization key can recompute the mapping; nobody else can. That asymmetry is the whole
-security model, and it is why the key is the artifact to protect.
+The join key is **first initial + birth year** (`M78`) — written on the sheet by the
+facilitator, pre-printed on every page, never a full name. It is stable across sessions and
+quarters, so attendance accumulates per person; it is not a direct identifier, so the ledger
+never holds one. That is the whole mechanism. The earlier HMAC-of-CDCR-number scheme was
+more clever and less usable: it required a number organizations do not have and a key they
+would have to keep.
 
 ### Storage: git is the database
 
-Every submission becomes one file plus one commit.
+Every entry becomes one file plus one commit.
 
 ```
-data/intake/cycles/<id>.json     one program cycle, validated
-data/intake/cycles/index.json    manifest the site reads
-data/intake/orgs/index.json      derived registry: orgs, programs, sites, contacts
-data/intake/seed.json            the 2026 sheet import (37 cycles, warts intact)
-data/intake/demo/join.json       SYNTHETIC spine, for demonstration only
+data/intake/records/session/<id>.json      one session sheet, per-person attendance
+data/intake/records/aggregate/<id>.json    one quarterly total
+data/intake/records/followup/<id>.json     one outcome
+data/intake/records/weekly/<id>.json       one weekly log
+data/intake/standard/rollup.json           derived: the quarterly report input
+data/intake/orgs/index.json                derived: orgs, programs, sites
+data/intake/simple_forms.json              the quick forms' contract
 ```
 
 Three ways in, all of them GitHub:
 
 | Route | Needs | What happens |
 |---|---|---|
-| **GitHub issue** | a GitHub account | the form opens a prefilled issue; `intake.yml` validates the payload, commits the cycle, comments and closes |
-| **Access token** | a fine-grained PAT with `contents:write`, kept in the browser | two Contents-API commits: the cycle file, then the manifest |
+| **GitHub issue** | a GitHub account | the page opens a prefilled issue; `intake.yml` validates the payload by `kind`, commits the record, comments and closes |
+| **Access token** | a fine-grained PAT with `contents:write`, kept in the browser | two Contents-API commits: the record, then the manifest |
 | **JSON file** | nothing | download the exact file that would have been committed |
 
-Plus a device-local queue for demos and offline drafting. Drafts autosave; nothing is
-transmitted until the submitter picks a route.
-
-### The impact view
-
-`#/impact` computes the outcome side from the join. It shows the funnel honestly —
-enrolled → token → released → window matured → observed — and evaluates 12, 24 and 36
-month windows separately, because a cohort that is too young should read as *not yet*,
-never as *clean*. Rows with fewer than 50 matured records are dimmed rather than
-interpreted.
-
-**The spine shipped here is synthetic.** It exists so the join can be demonstrated and
-reviewed; `data/intake/demo/join.json` says so in its own first line, and the UI labels it
-everywhere. The activity figures, by contrast, are the real 2026 sheet.
+Nothing is transmitted until the submitter picks a route.
 
 ### Run it
 
@@ -255,22 +204,20 @@ ISSUE_BODY="$(cat my-cycle.md)" ISSUE_NUMBER=1 python3 scripts/intake_issue.py
 ### Open-source alternatives, and why the form is hand-rolled
 
 The storage idea is not novel — several projects already treat git as a database. Each
-was evaluated against the constraint that matters here: *no server, no database, and a
-participant key that must never leave the browser.*
+was evaluated against the constraint that matters here: *no server, no database, and a form
+an organization will actually fill in between sessions.*
 
 | Project | Why not |
 |---|---|
 | [Formbricks](https://github.com/formbricks/formbricks) | The strongest OSS form platform available, but the v6 baseline is eight services — PostgreSQL, Redis, Cube, SpiceDB — sized for a 4 vCPU / 8 GB host. Contradicts the premise. |
 | [Staticman](https://github.com/eduardoboucas/staticman) | Exactly the right pattern: receives a POST and commits it to GitHub. Requires hosting the Node service, which reintroduces the server. |
 | [Decap](https://decapcms.org/) / [Sveltia CMS](https://sveltiacms.app/) | The correct model — content lives in git, no database — and worth adopting if TPW wants a CRUD admin over committed cycles. GitHub sign-in, however, still requires an OAuth proxy *or a pasted access token*, which is the mechanism already implemented here with less configuration. |
-| [SurveyJS](https://surveyjs.io/) / [JSON Editor](https://github.com/json-editor/json-editor) | Capable schema-driven renderers, but none do derived formula columns, status-conditional requirements, or the in-browser HMAC token tool. Using one means writing custom widgets anyway — the work below — plus a dependency and a theming layer. JSON Editor is also in maintenance mode. |
+| [SurveyJS](https://surveyjs.io/) / [JSON Editor](https://github.com/json-editor/json-editor) | Capable schema-driven renderers, but the hard parts here are not fields: a printable page whose geometry a camera can invert, a QR anchor, and a tick detector. A form library would still need all three, plus a dependency and a theming layer. JSON Editor is in maintenance mode. |
 
-The one place a library would genuinely improve on this code is the contract itself:
-`schema.json` is a bespoke format, not [JSON Schema](https://json-schema.org/). Converting
-it would let `ajv` in the browser and `jsonschema` in CI validate the identical file, and
-would let any form renderer consume it. That is the follow-up worth doing if this outlives
-the hackathon; the validator here is 130 lines and already shared, so the switch buys
-interoperability rather than correctness.
+The one place a library would genuinely improve on this code is the contract: the record
+shapes are described by `simple_forms.json`, not [JSON Schema](https://json-schema.org/).
+Converting would let `ajv` in the browser and `jsonschema` in CI validate the identical file
+and let any renderer consume it. Worth doing if this outlives the hackathon.
 
 ### Honest limits
 
@@ -278,21 +225,24 @@ interoperability rather than correctness.
   person level, and the RIGHT 4.0 RFA requires an independent third party plus Office of
   Research approval for outcomes research. This builds the join-ready side of that
   arrangement, not the arrangement.
+- **Attendance is what is measured, not presence of a person.** A participant who changes
+  their ID between quarters looks like two people, and a shared ID looks like one.
 - **The comparison is observational.** Completers differ from non-completers before they
   walk into the room. Any rate difference is a hypothesis for a funder, not a causal claim.
-- **Rotation breaks continuity.** Tokens are only stable while the organization key is.
-- Cohorts smaller than five are aggregated before release, per `schema.json`.
+- **A follow-up is self-reported.** It is filed by the organization, not matched against
+  CDCR records, and it is labelled as such in the rollup.
 
 ## Status
 
 - [x] Source materials collected and summarized
 - [x] `thetpw.org` mirrored locally → `site/`
 - [x] Read the glossary + RFA end to end
-- [x] Decide the prototype: a join-ready intake that feeds an impact view
-- [x] Build: schema-driven form, git-backed ledger, issue→commit automation
-- [x] Registry: recurring fields derived from the ledger, filled in per organization
-- [x] Demo: live at `/intake/` — form, ledger, registry, and the join with 12/24/36-month windows
-- [ ] Swap the synthetic spine for real participant tokens (needs the data-sharing path)
+- [x] Decide the prototype: a join-ready intake that feeds a report
+- [x] Build: git-backed forms, issue→commit automation, no server
+- [x] Standard: quarterly input per organization, per-person attendance, 70% completion rule
+- [x] Paper: printable roster sheet with pre-printed IDs + camera scan (no OCR)
+- [x] Demo: live at `/intake/`
+- [ ] Pilot the sheet with one organization for a quarter, then tighten the ID convention
 
 ## Local site
 

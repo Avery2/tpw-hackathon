@@ -169,7 +169,7 @@ function askScreen() {
                 <span class="mark"></span>
                 <span class="what">
                   <span class="name">${esc(d.label)}${d.required ? '' : ' <span class="opt">optional</span>'}</span>
-                  <span class="why">${esc(gives(d))}</span>
+                  <span class="why">${esc(d.why || String(d.note || '').slice(0, 140))}</span>
                 </span>
               </li>`
             )

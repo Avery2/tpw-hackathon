@@ -23,6 +23,7 @@ RECORDS_INDEX = RECORDS / "index.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intake_profiles import build as build_profiles, write as write_profiles  # noqa: E402
+from intake_documents import summary as profile_summary, validate_profile  # noqa: E402
 from intake_simple import validate_record  # noqa: E402
 from standard_rollup import build as build_rollup, write as write_rollup  # noqa: E402
 from intake_validate import validate  # noqa: E402
@@ -75,14 +76,15 @@ def main() -> int:
             print(f"[FAIL] {path.name}: not JSON ({e})")
             failures += 1
             continue
-        findings = validate_record(record)
+        findings = validate_profile(record) if path.parent.name == "profile" else validate_record(record)
         if findings:
             print(f"[FAIL] {path.parent.name}/{path.name}")
             for f in findings:
                 print(f"    error  {f['field'] or '-'}: {f['message']}")
             failures += 1
             continue
-        print(f"[ok]   {path.parent.name}/{path.name}")
+        label = f"{path.parent.name}/{path.name}"
+        print(f"[ok]   {label}" + (f"  {profile_summary(record)}" if path.parent.name == "profile" else ""))
         quick.append({"kind": path.parent.name, "id": path.stem, "file": f"{path.parent.name}/{path.name}"})
 
     RECORDS_INDEX.write_text(
