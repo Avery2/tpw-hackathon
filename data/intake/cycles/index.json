@@ -1,5 +1,10 @@
 {
   "schema": "tpw.intake.index/1",
-  "cycles": [],
+  "cycles": [
+    {
+      "file": "self-test-sq-2026-01-12-000001.json",
+      "id": "self-test-sq-2026-01-12-000001"
+    }
+  ],
   "updated_at": null
 }
