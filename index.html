@@ -40,6 +40,12 @@
   .site-header nav a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
   .site-header nav a.login { font-weight: 700; }
   .site-header nav a.login:hover { color: var(--sage); }
+  /* Form Demo is the cta: the one thing on this nav that we built. */
+  .site-header nav a.cta {
+    background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 999px;
+    font-weight: 700; font-size: 15px;
+  }
+  .site-header nav a.cta:hover { background: var(--sage); text-decoration: none; }
 
   /* hero */
   .hero { position: relative; }
@@ -166,17 +172,11 @@
 <header class="site-header">
   <a class="logo" href="./"><img src="assets/img/logo.png" alt="Transformative Programming Works"></a>
   <nav>
-    <a href="#gap">The Gap</a>
-    <a href="#framework">Framework</a>
-    <a href="#resources">Resources</a>
-    <a href="site/">Mirror</a>
-    <a href="form-demo/">Form Demo</a>
-    <a href="https://github.com/Avery2/tpw-hackathon">GitHub</a>
-    <a class="cta" href="#framework">See the model</a>
     <a href="site/our-members/">Our Members</a>
     <a href="site/ourstory/">Our Story</a>
     <a href="site/ourwork/">Our Work</a>
     <a href="site/our-team/">Our Team</a>
+    <a class="cta" href="form-demo/">Form Demo</a>
     <a class="login" href="intake/simple.html">Members Login</a>
   </nav>
 </header>
