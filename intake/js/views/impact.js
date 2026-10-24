@@ -134,13 +134,13 @@ function view(all, ctx) {
         </div>
         <div class="card">
           <h3>Where the funnel leaks</h3>
-          <p style="margin-bottom:12px"><b style="color:var(--paper)">Enrolled → token.</b> Cycles filed before
+          <p style="margin-bottom:12px"><b style="color:var(--ink)">Enrolled → token.</b> Cycles filed before
             the spine existed have no identifier and can never be joined retroactively. They stay in the
             activity total forever.</p>
-          <p style="margin-bottom:12px"><b style="color:var(--paper)">Release → window.</b> A 36-month outcome
+          <p style="margin-bottom:12px"><b style="color:var(--ink)">Release → window.</b> A 36-month outcome
             cannot be known until three years after release. Most of this ledger is too young, which is a
             fact about the cohort, not a missing-data problem.</p>
-          <p><b style="color:var(--paper)">Window reached → conviction.</b> Absence of a record is not proof of
+          <p><b style="color:var(--ink)">Window reached → conviction.</b> Absence of a record is not proof of
             no conviction. Anyone still in custody, transferred, or out of state is unobserved.</p>
         </div>
       </div>
@@ -152,7 +152,7 @@ function view(all, ctx) {
         <div class="card">
           <table>
             <thead><tr>
-              <th>Window after release</th><th class="num">Matured</th>
+              <th>Window after release</th>
               <th class="num">Completed</th><th class="num">Did not complete</th><th class="num">Gap</th>
             </tr></thead>
             <tbody>
@@ -161,10 +161,10 @@ function view(all, ctx) {
                 const gap = c.done.rate != null && c.drop.rate != null ? c.drop.rate - c.done.rate : null;
                 const thin = c.matured.length < 50;
                 return `<tr class="${thin ? 'dimrow' : ''}" style="${w.months === windowMonths ? 'background:var(--card-2);opacity:1' : ''}">
-                  <td>${w.label}${w.months === windowMonths ? ' <span class="tag info">viewing</span>' : ''}</td>
-                  <td class="num">${num(c.matured.length)}</td>
-                  <td class="num" style="color:var(--good)">${c.done.n ? `${pct(c.done.rate)} <span class="dim">n=${c.done.n}</span>` : '<span class="dim">not yet</span>'}</td>
-                  <td class="num" style="color:var(--bad)">${c.drop.n ? `${pct(c.drop.rate)} <span class="dim">n=${c.drop.n}</span>` : '<span class="dim">not yet</span>'}</td>
+                  <td><b>${w.label}</b>${w.months === windowMonths ? ' <span class="tag info">viewing</span>' : ''}
+                    <div class="dim">${num(c.matured.length)} matured</div></td>
+                  <td class="num" style="color:var(--good)">${c.done.n ? `${pct(c.done.rate)}<div class="dim">n=${c.done.n}</div>` : '<span class="dim">not yet</span>'}</td>
+                  <td class="num" style="color:var(--bad)">${c.drop.n ? `${pct(c.drop.rate)}<div class="dim">n=${c.drop.n}</div>` : '<span class="dim">not yet</span>'}</td>
                   <td class="num">${gap == null ? '—' : `${(gap * 100).toFixed(0)} pts`}</td>
                 </tr>`;
               }).join('')}
@@ -250,7 +250,7 @@ const stage = (label, value, drop) => `<div class="stage">
 
 const claim = (title, claimText, support) => `<div class="card">
     <h3>${esc(title)}</h3>
-    <p style="color:var(--paper);font-size:14.5px;margin:6px 0 8px">${esc(claimText)}</p>
+    <p style="color:var(--ink);font-size:15px;margin:6px 0 8px">${esc(claimText)}</p>
     <p>${esc(support)}</p>
   </div>`;
 

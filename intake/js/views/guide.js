@@ -150,7 +150,7 @@ python3 -m json.tool data/intake/schema.json    # the contract</pre>
 }
 
 const card = (title, body, sub) =>
-  `<div class="card"><h3>${esc(title)}</h3><p style="color:#cfcabf;margin-bottom:8px">${esc(body)}</p><p>${esc(sub)}</p></div>`;
+  `<div class="card"><h3>${esc(title)}</h3><p style="color:var(--body);margin-bottom:8px">${esc(body)}</p><p>${esc(sub)}</p></div>`;
 
 const LEGEND = {
   org: 'Organization Name',

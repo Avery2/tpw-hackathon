@@ -190,6 +190,26 @@ To submit through an issue without the browser:
 ISSUE_BODY="$(cat my-cycle.md)" ISSUE_NUMBER=1 python3 scripts/intake_issue.py
 ```
 
+### Open-source alternatives, and why the form is hand-rolled
+
+The storage idea is not novel — several projects already treat git as a database. Each
+was evaluated against the constraint that matters here: *no server, no database, and a
+participant key that must never leave the browser.*
+
+| Project | Why not |
+|---|---|
+| [Formbricks](https://github.com/formbricks/formbricks) | The strongest OSS form platform available, but the v6 baseline is eight services — PostgreSQL, Redis, Cube, SpiceDB — sized for a 4 vCPU / 8 GB host. Contradicts the premise. |
+| [Staticman](https://github.com/eduardoboucas/staticman) | Exactly the right pattern: receives a POST and commits it to GitHub. Requires hosting the Node service, which reintroduces the server. |
+| [Decap](https://decapcms.org/) / [Sveltia CMS](https://sveltiacms.app/) | The correct model — content lives in git, no database — and worth adopting if TPW wants a CRUD admin over committed cycles. GitHub sign-in, however, still requires an OAuth proxy *or a pasted access token*, which is the mechanism already implemented here with less configuration. |
+| [SurveyJS](https://surveyjs.io/) / [JSON Editor](https://github.com/json-editor/json-editor) | Capable schema-driven renderers, but none do derived formula columns, status-conditional requirements, or the in-browser HMAC token tool. Using one means writing custom widgets anyway — the work below — plus a dependency and a theming layer. JSON Editor is also in maintenance mode. |
+
+The one place a library would genuinely improve on this code is the contract itself:
+`schema.json` is a bespoke format, not [JSON Schema](https://json-schema.org/). Converting
+it would let `ajv` in the browser and `jsonschema` in CI validate the identical file, and
+would let any form renderer consume it. That is the follow-up worth doing if this outlives
+the hackathon; the validator here is 130 lines and already shared, so the switch buys
+interoperability rather than correctness.
+
 ### Honest limits
 
 - **No outcome data exists here.** CDCR parole and recidivism records are not public at the

@@ -87,7 +87,7 @@ function pendingBanner(ctx) {
   const repoIds = new Set(ctx.state.cycles.map((c) => c.id));
   const pending = store.queue.filter((c) => !repoIds.has(c.id));
   if (!pending.length) return '';
-  return `<div class="card tight" style="border-color:#3f3622;background:#1a1710;margin-bottom:18px">
+  return `<div class="card tight" style="border-color:#ecdfb8;background:var(--warn-soft);margin-bottom:18px">
     <h3 style="color:var(--warn)">${pending.length} cycle${pending.length > 1 ? 's' : ''} on this device only</h3>
     <p>They are included below and in the impact figures, but they are not in git. Publish them, or
       export the JSON.</p>
@@ -252,7 +252,7 @@ function openDetail(c, ctx) {
         <dt>Join spine</dt><dd>${tokens.length ? `${num(tokens.length)} tokens (${pct(tokens.length / (c.participants_started || 1))} of enrollees)` : '<span class="tag">none</span>'}</dd>
         ${c.submitted_by ? `<dt>Submitted by</dt><dd>${esc(c.submitted_by.name)} &lt;${esc(c.submitted_by.email)}&gt;</dd>` : ''}
       </dl>
-      ${c.notes ? `<p style="border-left:2px solid var(--rule);padding-left:14px;color:#cfcabf;font-size:13.5px">${esc(c.notes)}</p>` : ''}
+      ${c.notes ? `<p style="border-left:2px solid var(--rule);padding-left:14px;color:var(--body);font-size:14px">${esc(c.notes)}</p>` : ''}
       ${
         errors.length || warnings.length
           ? `<div style="margin-top:18px">
