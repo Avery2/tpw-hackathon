@@ -15,9 +15,14 @@ export const state = {
   errors: [],
 };
 
-async function getJSON(path, fallback) {
+async function getJSON(path, fallback, bust = false) {
   try {
-    const res = await fetch(new URL(path, DATA), { cache: 'no-store' });
+    const url = new URL(path, DATA);
+    // GitHub Pages serves with a 10-minute edge cache. The ledger has to reflect
+    // a commit immediately after it lands, so mutable files are cache-busted;
+    // the immutable ones (schema, seed) are not.
+    if (bust) url.searchParams.set('t', Date.now().toString(36));
+    const res = await fetch(url, { cache: 'no-store' });
     if (!res.ok) throw new Error(`${path}: HTTP ${res.status}`);
     return await res.json();
   } catch (e) {
@@ -43,10 +48,10 @@ export async function loadAll() {
     join,
   });
 
-  const index = await getJSON('cycles/index.json', { cycles: [] });
+  const index = await getJSON('cycles/index.json', { cycles: [] }, true);
   const names = (index.cycles || []).map((c) => (typeof c === 'string' ? c : c.file));
   const loaded = await Promise.all(
-    names.map((file) => getJSON(`cycles/${file}`, null).catch(() => null))
+    names.map((file) => getJSON(`cycles/${file}`, null, true).catch(() => null))
   );
   state.cycles = loaded.filter(Boolean);
   state.loadedAt = new Date();
