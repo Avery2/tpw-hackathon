@@ -23,9 +23,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CYCLES = ROOT / "data" / "intake" / "cycles"
 INDEX = CYCLES / "index.json"
+RECORDS = ROOT / "data" / "intake" / "records"
+RECORDS_INDEX = RECORDS / "index.json"
 MARKER = "<!-- tpw-intake-payload -->"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from intake_simple import KINDS as SIMPLE_KINDS, summary as simple_summary, validate_record  # noqa: E402
 from intake_validate import validate  # noqa: E402
 
 
@@ -43,12 +46,56 @@ def output(**kw) -> None:
 
 
 def extract(body: str) -> dict | None:
+    """Accept a fenced JSON block, or a bare object pasted by hand."""
     if MARKER in body:
         body = body.split(MARKER, 1)[1]
-    match = re.search(r"```json\s*(\{.*?\})\s*```", body, re.S)
-    if not match:
-        return None
-    return json.loads(match.group(1))
+    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", body, re.S)
+    candidate = match.group(1) if match else body.strip()
+    if not candidate.startswith("{"):
+        # Trim prose around a pasted object.
+        start, end = candidate.find("{"), candidate.rfind("}")
+        if start == -1 or end <= start:
+            return None
+        candidate = candidate[start : end + 1]
+    return json.loads(candidate)
+
+
+def rebuild_records_index() -> list[dict]:
+    entries = []
+    for path in sorted(RECORDS.glob("*/*.json")):
+        entries.append({"kind": path.parent.name, "id": path.stem, "file": f"{path.parent.name}/{path.name}"})
+    RECORDS_INDEX.write_text(
+        json.dumps(
+            {
+                "schema": "tpw.records.index/1",
+                "records": entries,
+                "updated_at": None,
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return entries
+
+
+def handle_record(record: dict, number: str) -> int:
+    """A quick-form entry: weekly log, aggregate totals, or a follow-up."""
+    findings = validate_record(record)
+    if findings:
+        detail = "; ".join(f"{f['field'] or '-'}: {f['message']}" for f in findings[:6])
+        output(ok="false", reason="invalid", id=record.get("id", ""), detail=detail)
+        return 0
+
+    target = RECORDS / record["kind"] / f"{record['id']}.json"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    record.setdefault("source", "quick-form")
+    record["issue"] = number
+    target.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+    entries = rebuild_records_index()
+    output(ok="true", reason="committed", id=record["id"], detail=simple_summary(record), count=len(entries))
+    print(f"wrote {target.relative_to(ROOT)} ({len(entries)} quick entries indexed)")
+    return 0
 
 
 def rebuild_index() -> list[dict]:
@@ -79,6 +126,9 @@ def main() -> int:
     if not cycle:
         output(ok="false", reason="bad-json", id="", detail="No fenced JSON block found.")
         return 0
+
+    if cycle.get("kind") in SIMPLE_KINDS:
+        return handle_record(cycle, number)
 
     # Provenance: the issue author is the record of who filed it.
     cycle.setdefault("source", "intake")

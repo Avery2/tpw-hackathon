@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transformative Programming Works — Impact Framework (Demo)</title>
-<meta name="description" content="TPW × Hack for Social Impact 2026: joining in-prison program data to parole and recidivism records so community organizations can prove impact, not just activity.">
+<title>Transformative Programming Works</title>
+<meta name="description" content="A unified voice for community organizations offering programs in California state prisons.">
 <style>
   @font-face { font-family:'Rubik One'; src:url('assets/fonts/rubik-one.woff2') format('woff2'); font-weight:400; font-display:swap; }
   @font-face { font-family:'Degular'; src:url('assets/fonts/degular-text-500.woff2') format('woff2'); font-weight:400 500; font-display:swap; }
@@ -20,195 +20,151 @@
     --display: 'Rubik One', 'Arial Black', sans-serif;
     --text: 'Degular', ui-sans-serif, -apple-system, sans-serif;
   }
-
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
-  body {
-    margin: 0; background: var(--paper); color: var(--ink);
-    font-family: var(--text); font-size: 18px; line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
-  }
+  body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--text); font-size: 18px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
   img { max-width: 100%; display: block; }
   a { color: inherit; }
   .shell { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
 
-  /* ---------- demo banner ---------- */
-  .demo-banner {
-    background: var(--ink); color: #fff;
-    font-size: 13px; letter-spacing: .04em;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    padding: 9px 16px; text-align: center; flex-wrap: wrap;
-  }
-  .demo-banner b {
-    background: var(--yellow); color: #000; font-weight: 700;
-    text-transform: uppercase; letter-spacing: .1em; font-size: 10px;
-    padding: 3px 8px; border-radius: 999px;
-  }
+  /* prototype notice, kept to one thin line */
+  .demo-banner { background: var(--ink); color: #fff; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 8px 16px; flex-wrap: wrap; text-align: center; }
+  .demo-banner b { background: var(--yellow); color: #000; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; }
   .demo-banner span { opacity: .8; }
 
-  /* ---------- header ---------- */
-  .site-header {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 32px; padding: 26px 40px; max-width: 1440px; margin: 0 auto;
-  }
+  /* header — their nav */
+  .site-header { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 26px 40px; max-width: 1440px; margin: 0 auto; }
   .site-header .logo img { width: 190px; }
-  @media (max-width: 900px) { .site-header .logo img { width: 128px; } }
   .site-header nav { display: flex; align-items: center; gap: 38px; font-size: 17px; }
   .site-header nav a { text-decoration: none; }
   .site-header nav a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
-  .site-header nav a.cta {
-    background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 999px;
-    font-weight: 700; font-size: 15px;
-  }
-  .site-header nav a.cta:hover { background: var(--sage); text-decoration: none; }
+  .site-header nav a.login { font-weight: 700; }
+  .site-header nav a.login:hover { color: var(--sage); }
 
-  /* ---------- hero ---------- */
+  /* hero */
   .hero { position: relative; }
   .hero img { width: 100%; height: clamp(420px, 62vh, 720px); object-fit: cover; object-position: center 42%; }
-  .hero .overlay {
-    position: absolute; inset: 0;
-    display: flex; align-items: flex-end;
-    padding: clamp(24px, 4vw, 64px);
-    background: linear-gradient(to top, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 55%);
-  }
-  .hero h1 {
-    font-family: var(--display); font-weight: 400; color: #fff;
-    font-size: clamp(1.9rem, 4.3vw, 3.9rem); line-height: 1.02;
-    margin: 0; max-width: 22ch; letter-spacing: -.01em;
-  }
+  .hero .overlay { position: absolute; inset: 0; display: flex; align-items: flex-end; padding: clamp(24px, 4vw, 64px);
+    background: linear-gradient(to top, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 55%); }
+  .hero h1 { font-family: var(--display); font-weight: 400; color: #fff; font-size: clamp(1.9rem, 4.3vw, 3.9rem);
+    line-height: 1.02; margin: 0; max-width: 22ch; letter-spacing: -.01em; }
 
-  /* ---------- green band ---------- */
   .band { background: var(--green); padding: clamp(20px, 3vw, 34px) 24px; text-align: center; }
-  .band h2 {
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(1.5rem, 3.5vw, 3.3rem); line-height: 1; margin: 0;
-    text-transform: uppercase; letter-spacing: .005em;
-  }
+  .band h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.5rem, 3.5vw, 3.3rem); line-height: 1; margin: 0; text-transform: uppercase; }
   .band p { margin: 14px auto 0; max-width: 52ch; font-size: clamp(1rem, 1.5vw, 1.2rem); text-wrap: balance; }
 
-  /* ---------- cards ---------- */
+  /* three cards */
   .cards-wrap { padding: clamp(32px, 5vw, 72px) 0 0; }
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .card { padding: clamp(28px, 3vw, 44px); }
-  .card h3 {
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(1.25rem, 1.9vw, 1.6rem); margin: 0 0 22px;
-  }
+  .card h3 { font-family: var(--display); font-weight: 400; font-size: clamp(1.25rem, 1.9vw, 1.6rem); margin: 0 0 22px; }
   .card ul { margin: 0; padding-left: 20px; display: grid; gap: 14px; font-size: 17px; }
   .card.sage { background: var(--sage); color: #fff; border-radius: 14px 14px 0 0; }
   .card.yellow { background: var(--yellow); color: #000; border-radius: 14px 14px 0 0; }
   .card.black { background: var(--ink); color: #fff; }
   .card.black ul { list-style: none; padding-left: 0; }
 
-  /* ---------- torn green panel ---------- */
-  .torn {
-    background: var(--green); color: #000;
-    margin-top: -14px; padding: clamp(64px, 8vw, 110px) 0 clamp(56px, 7vw, 96px);
-    clip-path: polygon(0 16px, 6% 9px, 13% 15px, 21% 6px, 29% 13px, 37% 7px, 45% 14px,
-                       53% 7px, 61% 13px, 69% 6px, 77% 14px, 85% 8px, 92% 15px, 100% 9px,
-                       100% 100%, 0 100%);
-  }
+  /* torn green panel */
+  .torn { background: var(--green); color: #000; margin-top: -14px; padding: clamp(64px, 8vw, 110px) 0 clamp(56px, 7vw, 96px);
+    clip-path: polygon(0 16px, 6% 9px, 13% 15px, 21% 6px, 29% 13px, 37% 7px, 45% 14px, 53% 7px, 61% 13px, 69% 6px, 77% 14px, 85% 8px, 92% 15px, 100% 9px, 100% 100%, 0 100%); }
   .torn-inner { display: grid; grid-template-columns: 1fr 1px 1.15fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
   .torn-inner .divider { background: #000; width: 1px; height: 100%; min-height: 260px; opacity: .85; }
-  .pill {
-    display: inline-block; background: var(--yellow); color: #000;
-    font-family: var(--display); font-weight: 400;
-    font-size: clamp(1.05rem, 1.7vw, 1.45rem);
-    padding: 12px 24px; border-radius: 8px; margin-bottom: 26px;
-  }
+  .pill { display: inline-block; background: var(--yellow); color: #000; font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.05rem, 1.7vw, 1.45rem); padding: 12px 24px; border-radius: 8px; margin-bottom: 26px; }
   .torn .sub { font-weight: 700; font-size: clamp(1.1rem, 1.7vw, 1.5rem); margin: 0 0 20px; line-height: 1.25; }
   .stat-inline { display: flex; align-items: flex-start; gap: 18px; }
   .stat-inline .n { font-family: var(--display); font-weight: 400; font-size: clamp(3rem, 6vw, 5rem); line-height: .8; color: #fff; }
   .stat-inline .d { font-size: clamp(1rem, 1.4vw, 1.25rem); max-width: 26ch; line-height: 1.35; }
-  blockquote {
-    margin: 0; font-family: var(--display); font-weight: 400;
-    font-size: clamp(1.4rem, 3vw, 2.6rem); line-height: 1.12; letter-spacing: -.01em;
-  }
+  blockquote { margin: 0; font-family: var(--display); font-weight: 400; font-size: clamp(1.4rem, 3vw, 2.6rem); line-height: 1.12; letter-spacing: -.01em; }
 
-  /* ---------- generic content sections ---------- */
-  section { scroll-margin-top: 20px; }
-  .section { padding: clamp(56px, 7vw, 96px) 0; }
-  .section.alt { background: #f6f6f6; }
-  .eyebrow {
-    font-family: var(--display); font-weight: 400; text-transform: uppercase;
-    font-size: clamp(1.5rem, 3.2vw, 2.6rem); line-height: 1.04; margin: 0 0 18px;
-  }
-  .lede { font-size: clamp(1.05rem, 1.6vw, 1.3rem); max-width: 60ch; color: var(--body); margin: 0 0 40px; }
+  /* triple impact */
+  .impact { padding: clamp(56px, 7vw, 96px) 0; }
+  .impact .eyebrow { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.4rem, 2.8vw, 2.2rem); margin: 0 0 34px; }
+  .impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .impact-cell { border-top: 3px solid var(--ink); padding-top: 18px; }
+  .impact-cell .label { font-size: 12px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; color: #797979; margin-bottom: 12px; }
+  .impact-cell .num { font-family: var(--display); font-size: clamp(2.2rem, 4.2vw, 3.4rem); line-height: .95; margin-bottom: 12px; }
+  .impact-cell .num.hl { color: var(--sage); }
+  .impact-cell p { margin: 0; font-size: 16px; color: var(--body); }
 
-  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
-  .tile { background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 2.6vw, 36px); }
-  .tile .kicker {
-    font-size: 12px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700;
-    color: #797979; margin-bottom: 14px;
-  }
-  .tile .big { font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3.2rem); line-height: .95; margin-bottom: 12px; }
-  .tile .big.green { color: var(--sage); }
-  .tile p { margin: 0; color: var(--body); font-size: 16px; }
-  .tile.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
-  .tile.dark p { color: #cfcfcf; }
-  .tile.dark .kicker { color: #8f8f8f; }
-  .tile.dark .big { color: var(--yellow); }
+  /* 1% campaign */
+  .campaign { background: #f6f6f6; padding: clamp(56px, 7vw, 88px) 0 clamp(40px, 5vw, 60px); }
+  .campaign h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.5rem, 3.2vw, 2.6rem); margin: 0 0 30px; }
+  .campaign ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px; }
+  .campaign li { display: flex; gap: 14px; font-size: 17px; }
+  .campaign li::before { content: ""; flex: 0 0 auto; width: 10px; height: 10px; margin-top: 9px; border-radius: 50%; background: var(--sage); }
+  .campaign .after { margin: 34px 0 0; font-size: clamp(1.05rem, 1.7vw, 1.4rem); font-weight: 700; }
 
-  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--ink); margin-top: 8px; }
-  .step { padding: 28px 26px 0 0; border-right: 1px solid #e4e4e4; }
-  .step:last-child { border-right: 0; }
-  .step .num { font-family: var(--display); font-size: 15px; color: var(--sage); margin-bottom: 10px; }
-  .step h4 { font-family: var(--display); font-weight: 400; font-size: 1.2rem; margin: 0 0 10px; }
-  .step p { margin: 0; font-size: 16px; color: var(--body); }
+  /* member gallery */
+  .gallery { padding: clamp(44px, 5vw, 64px) 0; }
+  .gallery h2 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(1.2rem, 2.2vw, 1.8rem); margin: 0 0 24px; }
+  .thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .thumbs a { display: block; overflow: hidden; border-radius: 6px; }
+  .thumbs img { aspect-ratio: 1; object-fit: cover; transition: transform .3s ease; }
+  .thumbs a:hover img { transform: scale(1.04); }
 
-  /* ---------- resources ---------- */
-  .links { list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--ink); }
-  .links li { border-bottom: 1px solid #e4e4e4; }
-  .links a { display: flex; align-items: center; gap: 18px; padding: 20px 4px; text-decoration: none; }
-  .links a:hover .name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
-  .links .tag {
-    flex: 0 0 auto; min-width: 96px; text-align: center;
-    background: var(--yellow); color: #000; border-radius: 999px;
-    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
-    padding: 5px 12px;
-  }
-  .links .tag.g { background: var(--green); }
-  .links .tag.k { background: var(--ink); color: #fff; }
-  .links .name { flex: 1 1 auto; font-weight: 700; }
-  .links .meta { color: #797979; font-size: 14px; }
+  .closing { background: var(--ink); color: #fff; padding: clamp(56px, 7vw, 104px) 0; }
+  .closing h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.4rem, 3vw, 2.5rem); line-height: 1.1; margin: 0 0 22px; max-width: 24ch; }
+  .closing p { margin: 0; max-width: 68ch; color: #cfcfcf; font-size: 16.5px; }
 
-  /* ---------- footer ---------- */
-  footer { background: var(--ink); color: #fff; padding: clamp(40px, 5vw, 64px) 0 48px; }
-  footer .logo img { width: 120px; filter: brightness(0) invert(1); margin-bottom: 22px; }
-  footer .cols { display: flex; flex-wrap: wrap; gap: 48px; justify-content: space-between; font-size: 15px; }
-  footer a { color: #cfcfcf; text-decoration: none; }
-  footer a:hover { color: var(--yellow); }
-  footer .note { color: #8f8f8f; font-size: 13px; max-width: 46ch; line-height: 1.5; }
+  /* ---- additive: member intake ---- */
+  .member { background: var(--green); padding: clamp(44px, 5vw, 72px) 0; }
+  .member .row { display: flex; align-items: center; justify-content: space-between; gap: 28px; flex-wrap: wrap; }
+  .member .tag { display: inline-block; background: #000; color: #fff; font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .12em; padding: 4px 10px; border-radius: 999px; margin-bottom: 14px; }
+  .member h2 { font-family: var(--display); font-weight: 400; font-size: clamp(1.2rem, 2.4vw, 1.8rem); margin: 0 0 8px; }
+  .member p { margin: 0; font-size: 16px; max-width: 60ch; }
+  .member .btn { flex: 0 0 auto; background: #000; color: #fff; text-decoration: none; font-weight: 700; font-size: 15px;
+    padding: 14px 26px; border-radius: 999px; }
+  .member .btn:hover { background: #191919; }
+
+  footer { padding: 34px 0 96px; font-size: 13px; color: #797979; }
+  footer a { color: #797979; }
+
+  /* ---- dev bar (bottom, hideable, no JS) ---- */
+  .devbar { position: fixed; left: 14px; bottom: 14px; z-index: 90; font-family: var(--text); font-size: 13px; }
+  .devbar summary { cursor: pointer; list-style: none; display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(16,16,16,.92); color: #fff; padding: 7px 13px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; }
+  .devbar summary::-webkit-details-marker { display: none; }
+  .devbar summary::before { content: "▴"; font-size: 9px; }
+  .devbar[open] summary::before { content: "▾"; }
+  .devbar .panel { margin-top: 8px; background: #fff; border: 1px solid #e6e3dd; border-radius: 10px;
+    padding: 12px 14px; box-shadow: 0 10px 30px rgba(0,0,0,.14); max-width: 320px; }
+  .devbar .panel .h { font-size: 10px; text-transform: uppercase; letter-spacing: .12em; color: #9a958e; font-weight: 700; margin-bottom: 8px; }
+  .devbar .panel a { display: block; padding: 4px 0; color: #3e3e3e; text-decoration: none; }
+  .devbar .panel a:hover { color: var(--sage); text-decoration: underline; text-underline-offset: 3px; }
+  .devbar .panel .sep { border-top: 1px solid #eeece7; margin: 8px 0; }
 
   @media (max-width: 900px) {
     .shell, .site-header { padding-left: 22px; padding-right: 22px; }
     .site-header { flex-wrap: wrap; gap: 16px; padding-top: 18px; padding-bottom: 18px; }
     .site-header nav { width: 100%; flex-wrap: wrap; gap: 12px 20px; font-size: 15px; }
-    .site-header nav a.cta { display: none; }
+    .site-header .logo img { width: 128px; }
     .hero h1 { font-size: clamp(1.5rem, 7.2vw, 2.3rem); max-width: none; }
     .hero img { height: 62vh; min-height: 360px; }
     .band h2 { font-size: clamp(1.3rem, 6.4vw, 2rem); }
     .band p { font-size: 15px; }
     .demo-banner { font-size: 12px; padding: 8px 14px; }
-    .cards, .grid3, .steps { grid-template-columns: 1fr; }
+    .cards, .impact-grid, .campaign ul { grid-template-columns: 1fr; }
     .card.yellow, .card.sage { border-radius: 14px; }
     .card.black { border-radius: 0; }
     .torn-inner { grid-template-columns: 1fr; }
     .torn-inner .divider { display: none; }
-    .step { border-right: 0; border-bottom: 1px solid #e4e4e4; padding: 24px 0 20px; }
-    .links a { flex-wrap: wrap; gap: 8px 14px; }
+    .thumbs { grid-template-columns: repeat(3, 1fr); }
+    footer { padding-bottom: 120px; }
   }
 </style>
 </head>
 <body>
 
 <div class="demo-banner">
-  <b>Demo</b>
-  <span>Unofficial prototype for Hack for Social Impact 2026 · not affiliated with TPW</span>
+  <b>Prototype</b>
+  <span>Built at Hack for Social Impact 2026 · not affiliated with TPW</span>
 </div>
 
 <header class="site-header">
-  <a class="logo" href="#top"><img src="assets/img/logo.png" alt="TPW"></a>
+  <a class="logo" href="./"><img src="assets/img/logo.png" alt="Transformative Programming Works"></a>
   <nav>
     <a href="#gap">The Gap</a>
     <a href="#framework">Framework</a>
@@ -217,10 +173,15 @@
     <a href="form-demo/">Form Demo</a>
     <a href="https://github.com/Avery2/tpw-hackathon">GitHub</a>
     <a class="cta" href="#framework">See the model</a>
+    <a href="site/our-members/">Our Members</a>
+    <a href="site/ourstory/">Our Story</a>
+    <a href="site/ourwork/">Our Work</a>
+    <a href="site/our-team/">Our Team</a>
+    <a class="login" href="intake/simple.html">Login</a>
   </nav>
 </header>
 
-<section class="hero" id="top">
+<section class="hero">
   <img src="assets/img/hero.jpg" alt="TPW members gathered outdoors">
   <div class="overlay">
     <h1>We believe everyone is capable of being better than their worst moments.</h1>
@@ -229,7 +190,7 @@
 
 <div class="band">
   <h2>Transformative Programming Works</h2>
-  <p>A unified voice for the community organizations offering programs in California state prisons.</p>
+  <p>A unified voice for community organizations offering programs in California state prisons.</p>
 </div>
 
 <div class="shell cards-wrap">
@@ -251,11 +212,11 @@
       </ul>
     </div>
     <div class="card black">
-      <h3>What We Can't Prove Yet</h3>
+      <h3>TPW's Impact</h3>
       <ul>
-        <li>Every field TPW collects describes activity: who enrolled, how long a class ran</li>
-        <li>None of it is joined to parole or recidivism records</li>
-        <li>So the 21% figure comes from research, not from TPW's own programs</li>
+        <li>Community-based organizations (CBOs) reduce reincarceration to 21%</li>
+        <li>Led by people from the communities most affected by incarceration</li>
+        <li>Only 1 of 31 California prisons is fully served today</li>
       </ul>
     </div>
   </div>
@@ -278,80 +239,98 @@
   </div>
 </section>
 
-<section class="section" id="gap">
+<section class="impact">
   <div class="shell">
-    <h2 class="eyebrow">The gap between activity and impact</h2>
-    <p class="lede">CDCR spends under one percent of its budget on rehabilitation. TPW advocates across 120 organizations — but its reporting stops at process data. The outcome records exist. They have never been joined.</p>
-    <div class="grid3">
-      <div class="tile">
-        <div class="kicker">Rehabilitation budget</div>
-        <div class="big green">&lt;1%</div>
-        <p>of CDCR's budget goes to rehabilitative programming.</p>
+    <h2 class="eyebrow">Triple Impact Model</h2>
+    <div class="impact-grid">
+      <div class="impact-cell">
+        <div class="label">Financial leverage</div>
+        <div class="num hl">26:1</div>
+        <p>Every $1 invested in TPW unlocks $26 in annual state funding to CBOs</p>
       </div>
-      <div class="tile">
-        <div class="kicker">Organizations</div>
-        <div class="big green">120</div>
-        <p>community-based organizations relying on TPW for a unified voice.</p>
+      <div class="impact-cell">
+        <div class="label">Reach &amp; scale</div>
+        <div class="num hl">19,043</div>
+        <p>Every $1 invested in TPW unlocks $26 in annual state funding to CBOs</p>
       </div>
-      <div class="tile dark">
-        <div class="kicker">Outcome fields in the form</div>
-        <div class="big">0</div>
-        <p>Enrollment, hours, completions — nothing that ties a program cycle to a person's future.</p>
+      <div class="impact-cell">
+        <div class="label">Effectiveness</div>
+        <div class="num hl">44%→21%</div>
+        <p>$1 invested in rehabilitation saves $5 in incarceration costs. 500 years of incarceration avoided.</p>
       </div>
     </div>
   </div>
 </section>
 
-<section class="section alt" id="framework">
+<section class="campaign">
   <div class="shell">
-    <h2 class="eyebrow">What we're building</h2>
-    <p class="lede">A framework that keeps CBO data entry simple, then makes the outcomes joinable — so TPW can report impact from its own programs, not just cite research about someone else's.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="num">01</div>
-        <h4>Collect</h4>
-        <p>Keep the form CBOs already use. One row per program cycle, one row per yard — add the identifiers needed to link a cohort to a release.</p>
-      </div>
-      <div class="step">
-        <div class="num">02</div>
-        <h4>Join</h4>
-        <p>Match cohorts to parole and recidivism records at the facility-period level, without moving individual identifiers out of CDCR custody.</p>
-      </div>
-      <div class="step">
-        <div class="num">03</div>
-        <h4>Prove</h4>
-        <p>Return outcome rates per program, facility, and year — the evidence behind the 44% → 21% claim, sourced to TPW's own members.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section" id="resources">
-  <div class="shell">
-    <h2 class="eyebrow">Source material</h2>
-    <p class="lede">Everything the team needs, collected in one place.</p>
-    <ul class="links">
-      <li><a href="https://www.thetpw.org/"><span class="tag g">Site</span><span class="name">thetpw.org</span><span class="meta">the organization</span></a></li>
-      <li><a href="https://hackforsocialimpact.notion.site/HSI-Hack-Pack-2026-3eb2cb772f1e802890d1d4b7769c311a"><span class="tag k">Pack</span><span class="name">HSI 2026 Hack Pack</span><span class="meta">schedule · judging · submission</span></a></li>
-      <li><a href="https://www.loom.com/share/32d61ecd9c764a16803ea4701650396d"><span class="tag k">Video</span><span class="name">Kickoff briefing</span><span class="meta">Loom</span></a></li>
-      <li><a href="https://docs.google.com/spreadsheets/d/1icSY90fNL_tF94yN9XKP4W-fGxRFbIp9R11__YHHiuM/edit?gid=0#gid=0"><span class="tag">Data</span><span class="name">TPW Collective Impact form</span><span class="meta">live Google Sheet · 100+ program cycles</span></a></li>
-      <li><a href="docs/TPW%20Data%20Glossary%20Instructions.docx"><span class="tag">Doc</span><span class="name">Field glossary &amp; submission instructions</span><span class="meta">defines every column, June 2026</span></a></li>
-      <li><a href="docs/RIGHT%204.0%20RFA.pdf"><span class="tag">PDF</span><span class="name">CDCR RIGHT 4.0 — Request for Applications</span><span class="meta">$19.4M · process-only reporting</span></a></li>
-      <li><a href="https://www.cdcr.ca.gov/rehabilitation/grants/"><span class="tag g">CDCR</span><span class="name">Rehabilitation grants</span><span class="meta">cdcr.ca.gov</span></a></li>
-      <li><a href="site/"><span class="tag k">Mirror</span><span class="name">Local copy of thetpw.org</span><span class="meta">offline, for extension</span></a></li>
+    <h2>The 1% Campaign</h2>
+    <ul>
+      <li>Raise California's annual rehabilitation budget from 0.2% to 1%</li>
+      <li>$140M/yr to CBOs</li>
+      <li>Fully serve all 31 with our rehabilitation model</li>
+      <li>95,215 is about how many can be reached with $140M — almost the entire incarcerated population</li>
     </ul>
+    <p class="after">While we are driven by a sense of humanity, we are grounded in data.</p>
   </div>
 </section>
 
-<footer>
+<section class="gallery">
   <div class="shell">
-    <div class="logo"><img src="assets/img/logo.png" alt="TPW"></div>
-    <div class="cols">
-      <p class="note">Unofficial hackathon demo built for Hack for Social Impact 2026. Not affiliated with Transformative Programming Works; their logo, photography, and copy belong to them and are used here to prototype in their design language.</p>
-      <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="site/">Site mirror</a><br><a href="#top">Back to top</a></p>
+    <h2>Our members at work</h2>
+    <div class="thumbs">
+      <a href="https://instagram.com/jailguitardoorsusa"><img src="assets/img/members/m1.jpg" alt="Jail Guitar Doors"></a>
+      <a href="https://instagram.com/pawsforlifek9"><img src="assets/img/members/m2.jpg" alt="Paws for Life K9"></a>
+      <a href="https://instagram.com/prisonyogaandmeditation"><img src="assets/img/members/m6.jpg" alt="Prison Yoga and Meditation"></a>
+      <a href="https://instagram.com/defy_ventures"><img src="assets/img/members/m3.jpg" alt="Defy Ventures"></a>
+      <a href="https://instagram.com/insightgarden"><img src="assets/img/members/m4.jpg" alt="Insight Garden Program"></a>
+      <a href="https://instagram.com/defy_ventures"><img src="assets/img/members/m5.jpg" alt="Defy Ventures"></a>
     </div>
   </div>
+</section>
+
+<section class="closing">
+  <div class="shell">
+    <h2>All incarcerated people should have access to quality programs.</h2>
+    <p>We advocate at the state level for increasing access to transformative and rehabilitative CBO programming for all people living in California prisons, and to accelerate the impact of sentencing reforms towards our North Star goal of decarceration.</p>
+  </div>
+</section>
+
+<!-- additive: the one thing we built -->
+<section class="member" id="members">
+  <div class="shell row">
+    <div>
+      <span class="tag">Internal · member organizations</span>
+      <h2>Reporting is now one form, once a quarter.</h2>
+      <p>Member organizations submit program cycles through the intake — same fields as the Collective Impact sheet, no re-typing, no spreadsheet round trip. Not a public form.</p>
+    </div>
+    <a class="btn" href="intake/simple.html">Member intake →</a>
+  </div>
+</section>
+
+<footer class="shell">
+  Prototype for Hack for Social Impact 2026. TPW's logo, photography, and copy belong to them.
 </footer>
+
+<!-- dev bar: orphan and prototype pages, collapsed by default -->
+<details class="devbar">
+  <summary>dev</summary>
+  <div class="panel">
+    <div class="h">Orphan / prototype</div>
+    <a href="intake/">Intake — full form</a>
+    <a href="intake/simple.html">Intake — quick entry</a>
+    <a href="intake/sheet.html">Intake — printable sheet</a>
+    <a href="intake/scan.html">Intake — sheet scanner</a>
+    <a href="site/">Site mirror</a>
+    <div class="sep"></div>
+    <div class="h">Reference</div>
+    <a href="NOTES-data-recon.md">Data recon notes</a>
+    <a href="docs/RIGHT%204.0%20RFA.pdf">CDCR RIGHT 4.0 RFA</a>
+    <a href="docs/TPW%20Data%20Glossary%20Instructions.docx">Field glossary</a>
+    <a href="data/tpw-collective-impact.csv">Collective impact CSV</a>
+    <a href="https://github.com/Avery2/tpw-hackathon">GitHub repository</a>
+  </div>
+</details>
 
 </body>
 </html>

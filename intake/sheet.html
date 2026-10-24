@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Session roster sheet — print it</title>
+<style>
+  @font-face { font-family:'Rubik One'; src:url('../assets/fonts/rubik-one.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-500.woff2') format('woff2'); font-weight:400 500; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-700.woff2') format('woff2'); font-weight:700 800; font-display:swap; }
+
+  :root {
+    --ink:#101010; --body:#3e3e3e; --muted:#6f6b66; --faint:#9a958e;
+    --rule:#e6e3dd; --rule-2:#d5d1c9; --card:#f8f7f4;
+    --accent:#5d8d67; --accent-dark:#42674b; --accent-soft:#eef4ef;
+    --sans:'Degular', ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --display:'Rubik One', 'Arial Black', ui-sans-serif, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#eceae4; color:var(--body); font-family:var(--sans); font-size:16px; line-height:1.5; }
+
+  .controls { max-width:700px; margin:0 auto; padding:26px 22px 8px; }
+  .controls h1 { font-family:var(--display); font-weight:400; color:var(--ink); font-size:1.55rem; margin:0 0 6px; }
+  .controls p { color:var(--muted); margin:0 0 20px; font-size:14.5px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .row > * { flex:1 1 180px; }
+  .row .narrow { flex:0 0 110px; }
+  label { display:block; font-size:12px; font-weight:700; color:var(--ink); margin-bottom:5px; }
+  input, textarea { width:100%; font:inherit; font-size:15px; padding:10px 12px; background:#fff;
+          border:1px solid var(--rule-2); border-radius:9px; color:var(--ink); }
+  textarea { min-height:104px; font-family:var(--mono); font-size:13px; line-height:1.65; resize:vertical; }
+  input:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  .actions { display:flex; gap:14px; align-items:center; margin:16px 0 26px; flex-wrap:wrap; }
+  button { font:inherit; font-size:15px; font-weight:700; padding:11px 22px; border-radius:999px;
+           border:0; background:var(--accent); color:#fff; cursor:pointer; }
+  button:hover { background:var(--accent-dark); }
+  a.link { color:var(--muted); font-size:13.5px; }
+  .tiny { font-size:12.5px; color:var(--muted); margin-top:6px; }
+
+  .page {
+    position:relative; width:612pt; height:792pt; margin:0 auto 40px;
+    background:#fff; color:#111; overflow:hidden;
+    box-shadow:0 12px 40px rgba(0,0,0,.16);
+    font-family:var(--sans); -webkit-print-color-adjust:exact; print-color-adjust:exact;
+  }
+  .abs { position:absolute; }
+  .ttl { font-family:var(--display); font-size:17pt; line-height:1; }
+  .sub { font-size:8.5pt; color:#666; }
+  .qr { position:absolute; left:0; top:0; }
+  .meta { font-size:9pt; color:#222; }
+  .fill { display:inline-block; border-bottom:.75pt solid #999; min-width:120pt; height:11pt; }
+  .code { font-family:var(--mono); font-size:10.5pt; letter-spacing:.05em; }
+
+  .cols { position:absolute; font-size:6.5pt; font-weight:700; text-transform:uppercase; letter-spacing:.08em; color:#444; }
+  .cols.opt { color:#a0a0a0; font-weight:500; }
+  .rule { position:absolute; background:#d9d6d0; }
+  .rowline { position:absolute; background:#e7e5e0; }
+  .rnum { position:absolute; font-family:var(--mono); font-size:7.5pt; color:#b3aea6; }
+  .rid { position:absolute; font-family:var(--mono); font-size:8.5pt; color:#222; letter-spacing:.02em; }
+  .rname { position:absolute; font-size:9.5pt; color:#333; }
+  .box { position:absolute; border:.9pt solid #555; border-radius:1.5pt; }
+  .foot { position:absolute; font-size:7.5pt; color:#777; }
+  .foot strong { color:#333; }
+
+  @media (max-width: 780px) {
+    .page { transform: scale(calc((100vw - 28px) / 612)); transform-origin: top center;
+            margin-bottom: calc(-792px * (1 - (100vw - 28px) / 612) + 24px); }
+  }
+  @media print {
+    body { background:#fff; }
+    .controls, .noprint { display:none !important; }
+    .page { box-shadow:none; margin:0; transform:none; }
+    @page { size: letter; margin: 0; }
+  }
+.internal-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  background: #101010; color: #fff; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.internal-bar b { background: #edca72; color: #000; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.internal-bar span { opacity: .82; max-width: 74ch; }
+</style>
+</head>
+<body>
+<div class="internal-bar">
+  <b>Internal</b>
+  <span>For TPW member organizations only &mdash; this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.</span>
+</div>
+
+<div class="controls noprint">
+  <h1>Session roster</h1>
+  <p>Type the roster once, print a page per session. The IDs are printed on the sheet, so a photo
+     of the ticks is enough to know who was in the room.</p>
+
+  <div class="row">
+    <div><label for="org">Organization</label><input id="org" placeholder="GRIP Training Institute" autocomplete="off" list="orglist"><datalist id="orglist"></datalist></div>
+    <div><label for="program">Program</label><input id="program" placeholder="Guiding Rage Into Power" autocomplete="off" list="programlist"><datalist id="programlist"></datalist></div>
+  </div>
+  <div class="row">
+    <div><label for="facility">Facility</label><input id="facility" placeholder="San Quentin Rehabilitation Center (SQ)" autocomplete="off" list="facilities"><datalist id="facilities"></datalist></div>
+    <div class="narrow"><label for="session">Session #</label><input id="session" type="number" min="1" max="99" value="1"></div>
+    <div><label for="date">Date</label><input id="date" type="date"></div>
+  </div>
+
+  <div class="row">
+    <div style="flex:1 1 100%">
+      <label for="roster">Roster — one per line: <code>M78 Marcus</code></label>
+      <textarea id="roster" placeholder="M78 Marcus&#10;D81 Dee&#10;T79&#10;..."></textarea>
+      <div class="tiny">First initial + birth year is enough. The name is optional and never leaves the sheet.</div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="print">Print this sheet</button>
+    <a class="link" href="scan.html">Scan a filled sheet →</a>
+    <a class="link" href="simple.html">Quarterly totals →</a>
+  </div>
+</div>
+
+<div class="page" id="page">
+  <div class="abs ttl" id="ttl">Session roster</div>
+  <div class="abs sub" id="sub">Transformative Programming Works · Collective Impact</div>
+  <div class="qr" id="qr"></div>
+
+  <div class="abs meta" id="meta">
+    <div style="margin-bottom:7pt">Organization&nbsp; <span class="fill" id="m-org"></span></div>
+    <div style="margin-bottom:7pt">Program&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="fill" id="m-program"></span></div>
+    <div style="margin-bottom:7pt">Facility&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="fill" id="m-facility"></span></div>
+    <div>Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="fill" id="m-date" style="min-width:84pt"></span>
+      &nbsp; Session&nbsp;<span class="code" id="m-session">1</span>
+      &nbsp; Sheet&nbsp;<span class="code" id="m-sheet">SS-····</span></div>
+  </div>
+
+  <div class="abs cols" data-col="num" style="top:172pt">#</div>
+  <div class="abs cols" data-col="id" style="top:172pt">ID</div>
+  <div class="abs cols" data-col="name" style="top:172pt">Name in the room</div>
+  <div class="abs cols" data-col="present" style="top:172pt">In</div>
+  <div class="abs cols opt" data-col="age" style="top:172pt">Age</div>
+  <div class="abs cols opt" data-col="gender" style="top:172pt">Gender</div>
+  <div class="abs cols opt" data-col="race" style="top:172pt">Race / ethnicity</div>
+  <div class="abs cols opt" data-col="school" style="top:172pt">School</div>
+  <div class="abs cols" data-col="notes" style="top:172pt">Note</div>
+  <div class="abs rule" style="left:36pt;top:182pt;width:540pt;height:.8pt"></div>
+
+  <div id="grid"></div>
+
+  <div class="abs foot" style="left:36pt;top:684pt;width:340pt">
+    <strong>Names stay on this sheet.</strong> The scan reads the ID column and which boxes are ticked — nothing else.
+  </div>
+  <div class="abs foot" style="left:36pt;top:702pt;width:340pt">
+    Grey columns are optional. Fill them only if you already track them.
+  </div>
+  <div class="abs foot" style="left:400pt;top:684pt;width:176pt;text-align:right">
+    Photograph flat, whole sheet in frame.
+  </div>
+</div>
+
+<script src="vendor/qrcode.js"></script>
+<script type="module" src="js/sheet.js"></script>
+</body>
+</html>

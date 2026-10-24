@@ -43,7 +43,7 @@ jobs:
         run: |
           git config user.name 'tpw-intake-bot'
           git config user.email 'tpw-intake-bot@users.noreply.github.com'
-          git add data/intake/cycles
+          git add data/intake
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
@@ -107,13 +107,13 @@ jobs:
       - name: Validate every cycle and rebuild the manifest
         run: python3 scripts/intake_reindex.py
 
-      - name: Commit the manifest if it moved
+      - name: Commit the manifest and registry if they moved
         run: |
           git config user.name 'tpw-intake-bot'
           git config user.email 'tpw-intake-bot@users.noreply.github.com'
-          git add data/intake/cycles/index.json
+          git add data/intake
           if git diff --cached --quiet; then
-            echo "manifest unchanged"
+            echo "manifest and registry unchanged"
           else
             git commit -m "intake: reindex ledger"
             git push

@@ -151,6 +151,9 @@ the form wants per-cycle `Number of Participants` and `Participants Completed` â
   is a search UI, not a bulk download.
 - **RIGHT 1.0 recipients page**: zero `$` amounts in the HTML.
 - **Grants.gov / grants.ca.gov**: opportunity metadata only (deadlines, purpose), no awards.
+- **California Rehabilitation Oversight Board 2024 report, Appendix D** (every credit-earning
+  group by prison): exists, but it's from June 2024, the board has since been abolished, and
+  no newer version will come. Too old to use. See `crob-2024-credit-groups.md`.
 - **Org websites generally**: the four TPW members checked in depth (GRIP, Land Together,
   Ten Toes In, Enneagram Prison Project) publish mission + a headline number. None publish
   schedule, capacity, or per-facility hours. Prison Yoga + Meditation publishes neither

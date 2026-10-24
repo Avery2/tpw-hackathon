@@ -1,0 +1,164 @@
+{
+  "id": "profile-bridges-to-restoration-2026-11-30-example",
+  "kind": "profile",
+  "schema": "tpw.profile/1",
+  "source": "packet-upload",
+  "submitted_at": "2026-10-24T21:57:23.922Z",
+  "org": {
+    "legal_name": "Bridges to Restoration",
+    "dba": "Bridges Restorative Justice Project",
+    "entity": "nonprofit_corp",
+    "nonprofit_cert": "NP-48217",
+    "website": "https://www.example.org/bridges",
+    "email": "jrivera@example.org"
+  },
+  "signatory": {
+    "name": "Jordan A. Rivera",
+    "title": "Executive Director",
+    "email": "jrivera@example.org",
+    "signed_on": "2026-11-12"
+  },
+  "contacts": [
+    {
+      "name": "Dana M. Whitfield",
+      "email": "dwhitfield@example.org",
+      "phone": "(916) 555-0177"
+    }
+  ],
+  "program": {
+    "summary": "Trauma-informed restorative justice programming delivered in person at California Correctional Institution (CCI) and California State Prison, Sacramento (SAC): circle-based healing workshops, victim-impact dialogue, and reentry planning.",
+    "delivery": "in_person",
+    "name": "Healing Circles"
+  },
+  "sites": [
+    {
+      "facility": "California Correctional Institution (CCI)",
+      "facility_code": "CCI",
+      "populations": [
+        "GP"
+      ],
+      "source": "attachment-a"
+    },
+    {
+      "facility": "California Institution for Women (CIW)",
+      "facility_code": "CIW",
+      "populations": [
+        "RHU"
+      ],
+      "underserved": true,
+      "source": "attachment-a"
+    },
+    {
+      "facility": "California State Prison, Sacramento (SAC)",
+      "facility_code": "SAC",
+      "populations": [
+        "GP"
+      ],
+      "underserved": true,
+      "source": "attachment-a"
+    }
+  ],
+  "grant": {
+    "round": "RIGHT 4.0",
+    "solicitation": "RIGHT 4.0 RFA (CDCR Institution Grants)",
+    "vendor_id": "VND-0048217",
+    "funding_start": "2027-07-01",
+    "funding_end": "2029-12-01",
+    "application_due": "2026-11-30",
+    "executed_county": "Sacramento County, California"
+  },
+  "checks": {
+    "documents": 10,
+    "pages": 30,
+    "fein_documents": 2,
+    "fein_consistent": true,
+    "signed": true,
+    "grid_read": true,
+    "grid_disputed": []
+  },
+  "points": {
+    "budget_tier": null,
+    "extra": [
+      {
+        "why": "underserved institution",
+        "points": 0.5
+      },
+      {
+        "why": "special population",
+        "points": 0.5
+      },
+      {
+        "why": "a language other than English",
+        "points": 0.5
+      }
+    ],
+    "total": 1
+  },
+  "documents": [
+    {
+      "id": "rfa",
+      "label": "RFA",
+      "pages": 12
+    },
+    {
+      "id": "std204",
+      "label": "STD 204",
+      "pages": 2
+    },
+    {
+      "id": "std205",
+      "label": "STD 205",
+      "pages": 2
+    },
+    {
+      "id": "vendor_payee",
+      "label": "Vendor form",
+      "pages": 2
+    },
+    {
+      "id": "obs1000",
+      "label": "OBS 1000",
+      "pages": 3
+    },
+    {
+      "id": "obs1500",
+      "label": "OBS 1500",
+      "pages": 1
+    },
+    {
+      "id": "obs1510",
+      "label": "OBS 1510",
+      "pages": 2
+    },
+    {
+      "id": "ccc",
+      "label": "CCC",
+      "pages": 4
+    },
+    {
+      "id": "wc_exemption",
+      "label": "WC exemption",
+      "pages": 1
+    },
+    {
+      "id": "attachment_a",
+      "label": "Attachment A",
+      "pages": 1
+    }
+  ],
+  "missing": [
+    "irs_letter",
+    "budget_1",
+    "budget_2",
+    "coi",
+    "sos_cert",
+    "program_summary"
+  ],
+  "withheld": [
+    "org.address_street",
+    "org.address_city",
+    "org.address_state",
+    "org.address_zip",
+    "signatory.phone"
+  ]
+}

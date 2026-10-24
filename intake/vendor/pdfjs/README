@@ -1,0 +1,9 @@
+pdf.js 6.4.299 (legacy build, ES modules). Vendored unmodified from
+https://www.npmjs.com/package/pdfjs-dist
+
+Used by intake/js/pdftext.js to read text and AcroForm field values out of an
+uploaded PDF in the browser. Nothing is uploaded anywhere: the bytes never
+leave the page.
+
+Apache License 2.0 (see LICENSE). To update, replace both .mjs files from the
+same pdfjs-dist version.
