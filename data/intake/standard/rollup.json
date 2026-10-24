@@ -1,6 +1,6 @@
 {
   "schema": "tpw.standard.rollup/1",
-  "generated_at": "2026-10-24T14:59:00-07:00",
+  "generated_at": "2026-10-24T21:59:30+00:00",
   "completion_rate_threshold": 0.7,
   "note": "'completed' means present for at least 70% of the sessions the participant was rostered for. Participants are identified by the simple ID printed on the sheet (first initial + birth year), never by name.",
   "counts": {
