@@ -7,8 +7,9 @@ import * as form from './views/form.js';
 import * as ledger from './views/ledger.js';
 import * as impact from './views/impact.js';
 import * as guide from './views/guide.js';
+import * as orgs from './views/orgs.js';
 
-const VIEWS = { submit: form, ledger, impact, guide };
+const VIEWS = { submit: form, ledger, impact, orgs, guide };
 const root = document.getElementById('view');
 const NARROW = new Set(['submit', 'guide']);
 
@@ -16,15 +17,21 @@ let current = 'submit';
 
 const ctx = {
   state: S.state,
+  params: new URLSearchParams(),
   refresh() {
     paint(current);
   },
 };
 
+/** `#/submit?org=grip-training-institute&program=…` — the registry's handoff. */
 function currentRoute() {
   const raw = location.hash.replace(/^#\/?/, '');
-  const name = raw.split('/')[0] || 'submit';
-  return VIEWS[name] ? name : 'submit';
+  const [path, query = ''] = raw.split('?');
+  const name = path.split('/')[0] || 'submit';
+  return {
+    name: VIEWS[name] ? name : 'submit',
+    params: new URLSearchParams(query),
+  };
 }
 
 function paint(name) {
@@ -81,9 +88,15 @@ async function boot() {
     return;
   }
 
-  window.addEventListener('hashchange', () => paint(currentRoute()));
+  window.addEventListener('hashchange', () => {
+    const { name, params } = currentRoute();
+    ctx.params = params;
+    paint(name);
+  });
   if (!location.hash) history.replaceState(null, '', '#/submit');
-  paint(currentRoute());
+  const first = currentRoute();
+  ctx.params = first.params;
+  paint(first.name);
 
   // A quiet escape hatch for demos where somebody left a queue behind.
   window.addEventListener('keydown', (e) => {

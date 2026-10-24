@@ -43,6 +43,7 @@ export function render(root, ctx) {
         ${card('Glossary as code', 'The June 2026 field definitions live in schema.json. The form and the CI validator read the same file, so they cannot drift apart.', 'Required fields become conditional: a Completed cycle must have an end date and completions; a Planned one must not.')}
         ${card('The formula columns, computed', 'L and M were spreadsheet formulas that broke — #VALUE! wherever completions were TBD. They are now derived at validation time and never stored wrong.', 'One source of truth for every calculated field, in both the browser and CI.')}
         ${card('Quality flags instead of silent repair', 'TBD stays missing. Sample rows stay flagged. Duplicate cycles and 18-month "cycles" are surfaced, not scrubbed.', 'The team can see its own reporting hygiene, which is the first step to fixing it.')}
+        ${card('The registry: what repeats, asked once', 'Nine of the fifteen fields are the same on an organization\'s second cycle as its first. They are derived from the ledger into <a href="#/orgs">organization profiles</a> and filled in when a cycle starts, instead of retyped.', 'Derived, not entered: rebuilt from the ledger on every push, so a profile can never disagree with what was actually reported.')}
       </div>
     </div>
 

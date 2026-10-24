@@ -43,12 +43,18 @@ def output(**kw) -> None:
 
 
 def extract(body: str) -> dict | None:
+    """Accept a fenced JSON block, or a bare object pasted by hand."""
     if MARKER in body:
         body = body.split(MARKER, 1)[1]
-    match = re.search(r"```json\s*(\{.*?\})\s*```", body, re.S)
-    if not match:
-        return None
-    return json.loads(match.group(1))
+    match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", body, re.S)
+    candidate = match.group(1) if match else body.strip()
+    if not candidate.startswith("{"):
+        # Trim prose around a pasted object.
+        start, end = candidate.find("{"), candidate.rfind("}")
+        if start == -1 or end <= start:
+            return None
+        candidate = candidate[start : end + 1]
+    return json.loads(candidate)
 
 
 def rebuild_index() -> list[dict]:

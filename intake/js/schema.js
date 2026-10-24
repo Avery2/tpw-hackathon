@@ -10,6 +10,7 @@ export const state = {
   config: null,
   seed: [], // historical rows imported from the Collective Impact sheet
   cycles: [], // cycles committed under data/intake/cycles/
+  orgs: [], // derived registry: what each organization keeps telling us
   join: { participants: [] }, // synthetic demo spine
   loadedAt: null,
   errors: [],
@@ -32,12 +33,13 @@ async function getJSON(path, fallback, bust = false) {
 }
 
 export async function loadAll() {
-  const [config, schema, facilities, seed, join] = await Promise.all([
+  const [config, schema, facilities, seed, join, orgs] = await Promise.all([
     getJSON('config.json', {}),
     getJSON('schema.json'),
     getJSON('facilities.json', { facilities: [] }),
     getJSON('seed.json', { cycles: [] }),
     getJSON('demo/join.json', { participants: [] }),
+    getJSON('orgs/index.json', { orgs: [] }),
   ]);
 
   Object.assign(state, {
@@ -45,6 +47,7 @@ export async function loadAll() {
     schema,
     facilities: facilities.facilities,
     seed: seed.cycles || [],
+    orgs: orgs.orgs || [],
     join,
   });
 
@@ -62,6 +65,52 @@ export const fields = () => state.schema.fields;
 export const fieldByKey = (key) => state.schema.fields.find((f) => f.key === key);
 export const facilityNames = () => state.facilities.map((f) => f.name);
 export const facilityCode = (name) => state.facilities.find((f) => f.name === name)?.code || null;
+
+/* ------------------------------------------------------------ the registry */
+
+export const orgs = () => state.orgs;
+export const orgById = (id) => state.orgs.find((o) => o.id === id) || null;
+
+export function programOf(org, programId) {
+  if (!org) return null;
+  return programId ? org.programs.find((p) => p.id === programId) || null : org.programs[0] || null;
+}
+
+export function siteOf(program, siteId) {
+  if (!program) return null;
+  return siteId ? program.sites.find((s) => s.id === siteId) || null : program.sites[0] || null;
+}
+
+/**
+ * What this organization already told us, expressed as form values.
+ *
+ * Anything ambiguous is left blank on purpose: guessing which of GRIP's 25 sites
+ * a new cycle belongs to would be worse than asking. Ambiguity is resolved only
+ * when there is exactly one candidate.
+ */
+export function prefillFrom(orgId, programId = null, siteId = null) {
+  const org = orgById(orgId);
+  if (!org) return {};
+
+  const program = org.programs.length === 1 || programId ? programOf(org, programId) : null;
+  const site = program && (program.sites.length === 1 || siteId) ? siteOf(program, siteId) : null;
+  const contact = org.contact || {};
+
+  return dropEmpty({
+    org: org.org,
+    program: program?.name,
+    facility: site?.facility,
+    yard: site?.yard,
+    course_hours: program?.course_hours,
+    funded_by: program?.funded_by,
+    submitter_name: contact.name,
+    submitter_email: contact.email,
+    submitter_role: contact.role,
+  });
+}
+
+const dropEmpty = (obj) =>
+  Object.fromEntries(Object.entries(obj).filter(([, v]) => v != null && v !== ''));
 
 /** Fields required for this particular cycle, honouring conditional rules. */
 export function isRequired(field, cycle) {
@@ -208,7 +257,29 @@ export async function makeId(cycle) {
   return `${slug}-${hash}`;
 }
 
-export const blankCycle = () => ({
+/** Fields an organization repeats on every cycle it files. */
+export const RECURRING = [
+  'org',
+  'program',
+  'facility',
+  'yard',
+  'course_hours',
+  'funded_by',
+  'submitter_name',
+  'submitter_email',
+  'submitter_role',
+];
+
+/** The recurring half of a cycle, for carrying forward into the next one. */
+export function carryOver(cycle, keys = RECURRING) {
+  return dropEmpty(Object.fromEntries(keys.map((k) => [k, cycle?.[k]])));
+}
+
+/**
+ * @param {object} [prefill] values already known — from the registry, or from the
+ *   cycle just submitted. Everything else starts blank.
+ */
+export const blankCycle = (prefill = {}) => ({
   org: '',
   program: '',
   facility: '',
@@ -224,5 +295,6 @@ export const blankCycle = () => ({
   submitter_name: '',
   submitter_email: '',
   submitter_role: '',
+  ...carryOver(prefill, [...RECURRING, 'status']),
   join: { spine_version: 'tpw.join/1', tokens: [] },
 });

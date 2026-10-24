@@ -1,0 +1,263 @@
+{
+  "schema": "tpw.intake.orgs/1",
+  "generated_at": "2026-10-24T21:10:26Z",
+  "note": "Derived from data/intake/seed.json plus every committed cycle by scripts/intake_profiles.py. Regenerated on every push \u2014 do not edit by hand. It exists so a returning submitter does not retype what the ledger already knows.",
+  "source_cycles": 37,
+  "orgs": [
+    {
+      "id": "defy-ventures",
+      "org": "Defy Ventures",
+      "cycles": 20,
+      "sample_cycles": 0,
+      "real_cycles": 20,
+      "sample_only": false,
+      "contact": null,
+      "last_activity": "2026-01-26",
+      "programs": [
+        {
+          "id": "ceo-of-your-new-life",
+          "name": "CEO of Your New Life",
+          "cycles": 20,
+          "sample_cycles": 0,
+          "course_hours": 176.0,
+          "funded_by": null,
+          "last_cycle": "2026-01-26",
+          "sites": [
+            {
+              "id": "kern-valley-state-prison-kvsp-a-yard",
+              "facility": "Kern Valley State Prison (KVSP)",
+              "facility_code": "KVSP",
+              "yard": "A Yard",
+              "cycles": 3
+            },
+            {
+              "id": "california-correctional-institution-cci-c-yard",
+              "facility": "California Correctional Institution (CCI)",
+              "facility_code": "CCI",
+              "yard": "C Yard",
+              "cycles": 2
+            },
+            {
+              "id": "california-institution-for-women-ciw",
+              "facility": "California Institution for Women (CIW)",
+              "facility_code": "CIW",
+              "yard": null,
+              "cycles": 2
+            },
+            {
+              "id": "correctional-training-facility-ctf-c-yard",
+              "facility": "Correctional Training Facility (CTF)",
+              "facility_code": "CTF",
+              "yard": "C Yard",
+              "cycles": 2
+            },
+            {
+              "id": "salinas-valley-state-prison-svsp",
+              "facility": "Salinas Valley State Prison (SVSP)",
+              "facility_code": "SVSP",
+              "yard": null,
+              "cycles": 2
+            },
+            {
+              "id": "valley-state-prison-vsp",
+              "facility": "Valley State Prison (VSP)",
+              "facility_code": "VSP",
+              "yard": null,
+              "cycles": 2
+            },
+            {
+              "id": "avenal-state-prison-asp",
+              "facility": "Avenal State Prison (ASP)",
+              "facility_code": "ASP",
+              "yard": null,
+              "cycles": 1
+            },
+            {
+              "id": "california-correctional-institution-cci-a-yard",
+              "facility": "California Correctional Institution (CCI)",
+              "facility_code": "CCI",
+              "yard": "A Yard",
+              "cycles": 1
+            },
+            {
+              "id": "california-correctional-institution-cci-b-yard",
+              "facility": "California Correctional Institution (CCI)",
+              "facility_code": "CCI",
+              "yard": "B Yard",
+              "cycles": 1
+            },
+            {
+              "id": "california-state-prison-los-angeles-county-lac-a",
+              "facility": "California State Prison, Los Angeles County (LAC)",
+              "facility_code": "LAC",
+              "yard": "A Yard",
+              "cycles": 1
+            },
+            {
+              "id": "california-state-prison-los-angeles-county-lac-b",
+              "facility": "California State Prison, Los Angeles County (LAC)",
+              "facility_code": "LAC",
+              "yard": "B Yard",
+              "cycles": 1
+            },
+            {
+              "id": "california-state-prison-los-angeles-county-lac-c",
+              "facility": "California State Prison, Los Angeles County (LAC)",
+              "facility_code": "LAC",
+              "yard": "C Yard",
+              "cycles": 1
+            },
+            {
+              "id": "richard-j-donovan-correctional-facility-rjd-e-ya",
+              "facility": "Richard J. Donovan Correctional Facility (RJD)",
+              "facility_code": "RJD",
+              "yard": "E Yard",
+              "cycles": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "grip-training-institute",
+      "org": "GRIP Training Institute",
+      "cycles": 16,
+      "sample_cycles": 0,
+      "real_cycles": 16,
+      "sample_only": false,
+      "contact": null,
+      "last_activity": "2025-06-01",
+      "programs": [
+        {
+          "id": "guiding-rage-into-power",
+          "name": "Guiding Rage Into Power",
+          "cycles": 15,
+          "sample_cycles": 0,
+          "course_hours": 104.0,
+          "funded_by": null,
+          "last_cycle": "2025-06-01",
+          "sites": [
+            {
+              "id": "san-quentin-rehabilitation-center-sq",
+              "facility": "San Quentin Rehabilitation Center (SQ)",
+              "facility_code": "SQ",
+              "yard": null,
+              "cycles": 3
+            },
+            {
+              "id": "avenal-state-prison-asp-b",
+              "facility": "Avenal State Prison (ASP)",
+              "facility_code": "ASP",
+              "yard": "B",
+              "cycles": 2
+            },
+            {
+              "id": "california-medical-facility-cmf",
+              "facility": "California Medical Facility (CMF)",
+              "facility_code": "CMF",
+              "yard": null,
+              "cycles": 2
+            },
+            {
+              "id": "correctional-training-facility-ctf-north",
+              "facility": "Correctional Training Facility (CTF)",
+              "facility_code": "CTF",
+              "yard": "North",
+              "cycles": 2
+            },
+            {
+              "id": "avenal-state-prison-asp-d",
+              "facility": "Avenal State Prison (ASP)",
+              "facility_code": "ASP",
+              "yard": "D",
+              "cycles": 1
+            },
+            {
+              "id": "avenal-state-prison-asp-f",
+              "facility": "Avenal State Prison (ASP)",
+              "facility_code": "ASP",
+              "yard": "F",
+              "cycles": 1
+            },
+            {
+              "id": "central-california-women-s-facility-ccwf",
+              "facility": "Central California Women's Facility (CCWF)",
+              "facility_code": "CCWF",
+              "yard": null,
+              "cycles": 1
+            },
+            {
+              "id": "mule-creek-state-prison-mcsp-d",
+              "facility": "Mule Creek State Prison (MCSP)",
+              "facility_code": "MCSP",
+              "yard": "D",
+              "cycles": 1
+            },
+            {
+              "id": "mule-creek-state-prison-mcsp-e",
+              "facility": "Mule Creek State Prison (MCSP)",
+              "facility_code": "MCSP",
+              "yard": "E",
+              "cycles": 1
+            },
+            {
+              "id": "substance-abuse-treatment-facility-and-state-pri",
+              "facility": "Substance Abuse Treatment Facility and State Prison, Corcoran (SATF-CSP, Corcoran)",
+              "facility_code": "SATF",
+              "yard": "B",
+              "cycles": 1
+            }
+          ]
+        },
+        {
+          "id": "a-breath-of-freedom",
+          "name": "A Breath of Freedom",
+          "cycles": 1,
+          "sample_cycles": 0,
+          "course_hours": null,
+          "funded_by": null,
+          "last_cycle": null,
+          "sites": [
+            {
+              "id": "california-medical-facility-cmf",
+              "facility": "California Medical Facility (CMF)",
+              "facility_code": "CMF",
+              "yard": null,
+              "cycles": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "enneagram-prison-project",
+      "org": "Enneagram Prison Project",
+      "cycles": 1,
+      "sample_cycles": 1,
+      "real_cycles": 0,
+      "sample_only": true,
+      "contact": null,
+      "last_activity": "2025-01-29",
+      "programs": [
+        {
+          "id": "standard-course",
+          "name": "Standard Course",
+          "cycles": 1,
+          "sample_cycles": 1,
+          "course_hours": 39.0,
+          "funded_by": null,
+          "last_cycle": "2025-01-29",
+          "sites": [
+            {
+              "id": "san-quentin-rehabilitation-center-sq",
+              "facility": "San Quentin Rehabilitation Center (SQ)",
+              "facility_code": "SQ",
+              "yard": null,
+              "cycles": 1
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

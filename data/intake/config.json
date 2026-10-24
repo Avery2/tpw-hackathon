@@ -8,7 +8,8 @@
     "seed": "data/intake/seed.json",
     "join": "data/intake/demo/join.json",
     "schema": "data/intake/schema.json",
-    "facilities": "data/intake/facilities.json"
+    "facilities": "data/intake/facilities.json",
+    "orgs": "data/intake/orgs/index.json"
   },
   "labels": {
     "intake": "intake",

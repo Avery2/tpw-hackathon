@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
-"""Validate every committed cycle and rebuild data/intake/cycles/index.json.
+"""Validate every committed cycle, rebuild the manifest, rebuild the registry.
 
 Runs on any push that touches data/intake/. A malformed cycle fails the build
 rather than silently disappearing from the ledger, because the manifest is the
 only thing the static site reads.
+
+The organization registry in data/intake/orgs/ is rebuilt on the same pass, so
+it is never a hand-maintained fact that can go stale against the ledger.
 """
 
 from __future__ import annotations
@@ -17,6 +20,7 @@ CYCLES = ROOT / "data" / "intake" / "cycles"
 INDEX = CYCLES / "index.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from intake_profiles import build as build_profiles, write as write_profiles  # noqa: E402
 from intake_validate import validate  # noqa: E402
 
 
@@ -57,6 +61,17 @@ def main() -> int:
     }
     INDEX.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
     print(f"\n{len(entries)} indexed, {failures} failing")
+
+    # The registry is derived from the ledger, so it is rebuilt whether or not a
+    # cycle failed: a profile is a convenience, and a bad cycle must not leave
+    # returning submitters without last quarter's answers.
+    profiles = build_profiles()
+    path = write_profiles(profiles)
+    orgs = profiles["orgs"]
+    print(
+        f"{len(orgs)} organization profiles rebuilt "
+        f"({sum(len(o['programs']) for o in orgs)} programs) -> {path.relative_to(ROOT)}"
+    )
     return 1 if failures else 0
 
 

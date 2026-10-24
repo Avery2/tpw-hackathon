@@ -14,6 +14,12 @@ let ctx = null;
 let errorsBy = {};
 const touched = new Set();
 
+// The registry's handoff, when the submitter arrived from an organization
+// profile. `values` is what the ledger already knows; `orgId` is who they asked
+// to file for, which may differ from the draft already open here.
+let handoff = null;
+let prefilled = null; // organization name the open draft was seeded from
+
 const STEPS = [
   { id: 'program', title: 'Program', hint: 'Which run of which program, and where.', fields: ['org', 'program', 'facility', 'yard', 'status'] },
   { id: 'dates', title: 'Dates', hint: 'When it started and finished.', fields: ['start_date', 'end_date'] },
@@ -24,10 +30,31 @@ const STEPS = [
 
 export function render(root, context) {
   ctx = context;
-  if (!draft) draft = store.draft || S.blankCycle();
+
+  const want = handoffValues(context.params);
+  handoff = want;
+
+  if (!draft) {
+    const saved = store.draft;
+    if (saved) {
+      draft = saved;
+    } else {
+      draft = S.blankCycle(want?.values || {});
+      prefilled = want?.values.org || null;
+    }
+  }
+
   done = null;
   step = 0;
   paint(root);
+}
+
+/** `#/submit?org=…&program=…&site=…` -> the values that page already holds. */
+function handoffValues(params) {
+  const orgId = params?.get('org');
+  if (!orgId) return null;
+  const values = S.prefillFrom(orgId, params.get('program'), params.get('site'));
+  return Object.keys(values).length ? { values, orgId } : null;
 }
 
 /* ------------------------------------------------------------------ paint */
@@ -55,6 +82,8 @@ function paint(root) {
       </div>
     </div>
 
+    ${handoffBanner()}
+
     <div class="wizard">
       <div class="steps" role="tablist">
         ${STEPS.map(
@@ -76,6 +105,45 @@ function paint(root) {
 
   bind(root);
   refreshDerived();
+}
+
+/**
+ * Shown only when there is a conflict: an unfinished draft is open, and the
+ * registry just handed us a different organization. The draft is never thrown
+ * away to satisfy a URL — somebody decided to make that choice explicitly.
+ */
+function handoffBanner() {
+  if (!handoff) return '';
+  const target = handoff.values.org;
+  if (!target || target === draft.org) return '';
+
+  const open = draft.org
+    ? `an unfinished draft for <strong>${esc(draft.org)}</strong>`
+    : 'an unfinished draft';
+
+  return `
+    <div class="handoff">
+      <div>
+        <strong>You have ${open}.</strong>
+        <p class="hint">Start a new cycle for ${esc(target)} instead, with the details already on file?</p>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn small" data-act="discard-handoff">Keep the draft</button>
+        <button class="btn small primary" data-act="apply-handoff">Start for ${esc(target)}</button>
+      </div>
+    </div>`;
+}
+
+/** Where the visible values came from, said plainly, on the step that shows them. */
+function prefillNote() {
+  if (!prefilled) return '';
+  return `
+    <div class="prefilled">
+      <span class="tag good">on file</span>
+      <span>Filled from <a href="#/orgs">${esc(prefilled)}</a>'s profile — organization, program,
+        facility and contact come from cycles already reported. Change anything that differs; this
+        is still a new record.</span>
+    </div>`;
 }
 
 function wizardFoot(errors) {
@@ -157,6 +225,7 @@ function stepProgram() {
   const code = S.facilityCode(draft.facility);
   const f = (k) => S.fieldByKey(k);
   return `
+    ${prefillNote()}
     <div class="row2">
       ${field(f('org'))}
       ${field(f('program'))}
@@ -403,9 +472,29 @@ function bind(root) {
     finish(cycle, { channel: 'local' });
   }, signal);
 
+  delegate(view, 'click', '[data-act="apply-handoff"]', () => {
+    draft = S.blankCycle(handoff.values);
+    store.draft = draft;
+    prefilled = draft.org || null;
+    handoff = null;
+    done = null;
+    step = 0;
+    paint(root);
+    toast(`New cycle for ${draft.org} — details on file filled in`, 'good');
+  }, signal);
+
+  delegate(view, 'click', '[data-act="discard-handoff"]', () => {
+    handoff = null;
+    paint(root);
+  }, signal);
+
   delegate(view, 'click', '[data-act="another"]', () => {
-    draft = S.blankCycle();
-    store.draft = null;
+    // The next cycle from this organization repeats most of this one. Keeping
+    // the identity is the whole point; the dates and numbers are what is new.
+    draft = S.blankCycle(S.carryOver(draft));
+    store.draft = draft;
+    prefilled = draft.org || null;
+    handoff = null;
     done = null;
     step = 0;
     paint(root);
