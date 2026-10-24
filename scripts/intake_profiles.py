@@ -214,12 +214,23 @@ def _finish(org: dict) -> dict:
     }
 
 
+def _now() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
+
+def _read_previous() -> dict | None:
+    try:
+        return json.loads(INDEX.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 def build() -> dict:
     cycles = load_ledger()
     orgs = derive(cycles)
-    return {
+    payload = {
         "schema": SCHEMA,
-        "generated_at": datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z"),
+        "generated_at": _now(),
         "note": (
             "Derived from data/intake/seed.json plus every committed cycle by "
             "scripts/intake_profiles.py. Regenerated on every push — do not edit by hand. "
@@ -228,6 +239,17 @@ def build() -> dict:
         "source_cycles": len(cycles),
         "orgs": orgs,
     }
+
+    # This file is rebuilt on every push. A timestamp that moves when nothing
+    # else does would turn each of those into a commit, and CI would commit a
+    # one-line diff forever. Keep the old stamp unless the content it describes
+    # actually changed — the same reason cycles/index.json carries a null
+    # updated_at instead of a fresh date.
+    previous = _read_previous()
+    if previous and previous.get("orgs") == orgs and previous.get("source_cycles") == len(cycles):
+        payload["generated_at"] = previous.get("generated_at", payload["generated_at"])
+
+    return payload
 
 
 def write(payload: dict) -> Path:
