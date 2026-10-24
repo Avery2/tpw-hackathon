@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPW × Hack for Social Impact 2026</title>
+<meta name="description" content="Working repo for Transformative Programming Works at Hack for Social Impact 2026: joining parole and recidivism records to in-prison program data.">
+<style>
+  :root {
+    --ink: #0b0b0b;
+    --paper: #f5f2ed;
+    --muted: #9b968e;
+    --rule: #262523;
+    --accent: #e0a458;
+    --card: #141413;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px 96px; }
+  a { color: var(--paper); text-decoration-color: var(--accent); text-underline-offset: 3px; }
+  a:hover { color: var(--accent); }
+
+  header {
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline;
+    justify-content: space-between;
+    padding: 28px 0 0; font-size: 13px;
+    text-transform: uppercase; letter-spacing: .12em; color: var(--muted);
+  }
+  header nav { display: flex; gap: 20px; }
+  header a { color: var(--muted); text-decoration: none; }
+  header a:hover { color: var(--accent); }
+
+  h1 {
+    font-size: clamp(2.2rem, 6.5vw, 3.9rem);
+    line-height: 1.02; letter-spacing: -.03em;
+    font-weight: 800; margin: 64px 0 24px;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+
+  .lede { font-size: clamp(1.05rem, 2.2vw, 1.3rem); color: #cfcabf; max-width: 42ch; margin: 0 0 40px; }
+
+  .problem {
+    border-left: 2px solid var(--accent);
+    padding: 4px 0 4px 22px;
+    margin: 0 0 72px;
+    max-width: 62ch;
+    color: #ded9cf;
+  }
+  .problem p { margin: 0 0 14px; }
+  .problem strong { color: var(--paper); }
+
+  h2 {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .18em;
+    color: var(--muted); font-weight: 600;
+    margin: 72px 0 20px; padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 14px; }
+  .card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; }
+  .card .big { display: block; font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em; line-height: 1.1; }
+  .card p { margin: 8px 0 0; font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+  .links { list-style: none; padding: 0; margin: 0; }
+  .links li { border-bottom: 1px solid var(--rule); }
+  .links a {
+    display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline;
+    padding: 15px 0; text-decoration: none;
+  }
+  .links .name { flex: 1 1 auto; min-width: 200px; }
+  .links .kind {
+    font-size: 11px; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--muted); border: 1px solid var(--rule); border-radius: 999px;
+    padding: 2px 9px; white-space: nowrap;
+  }
+  .links a:hover .kind { color: var(--accent); border-color: var(--accent); }
+
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .88em; background: var(--card); padding: 2px 6px; border-radius: 4px; }
+  footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
+  .status { font-size: 14px; color: #cfcabf; }
+  .status li { margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <span>TPW × Hack for Social Impact 2026</span>
+    <nav>
+      <a href="#problem">Problem</a>
+      <a href="#resources">Resources</a>
+      <a href="https://github.com/Avery2/tpw-hackathon">GitHub</a>
+    </nav>
+  </header>
+
+  <h1>Turning program activity into <em>proven impact.</em></h1>
+  <p class="lede">A framework for joining in‑prison program data to parole and recidivism records — built with Transformative Programming Works.</p>
+
+  <div class="problem" id="problem">
+    <p><strong>⚖️ Justice Reform.</strong> California's corrections department spends under one percent of its budget on rehabilitation. Transformative Programming Works advocates for them across 120 organizations, but so far can only track <strong>process data</strong> — such as who enrolled and how long a class ran.</p>
+    <p>Join disjoint records such as parole and recidivism data into a framework TPW, and nonprofits generally, can use to track <strong>impact</strong>.</p>
+  </div>
+
+  <h2>The gap in three numbers</h2>
+  <div class="cards">
+    <div class="card"><span class="big">&lt;1%</span><p>of CDCR's budget goes to rehabilitation programming.</p></div>
+    <div class="card"><span class="big">120</span><p>community‑based organizations TPW advocates for statewide.</p></div>
+    <div class="card"><span class="big">0</span><p>outcome fields in the current collective‑impact reporting form — every field describes activity.</p></div>
+  </div>
+
+  <h2 id="resources">Resources</h2>
+  <ul class="links">
+    <li><a href="https://www.thetpw.org/"><span class="name">TPW website</span><span class="kind">context</span></a></li>
+    <li><a href="https://hackforsocialimpact.notion.site/HSI-Hack-Pack-2026-3eb2cb772f1e802890d1d4b7769c311a"><span class="name">HSI 2026 Hack Pack</span><span class="kind">schedule</span></a></li>
+    <li><a href="https://www.loom.com/share/32d61ecd9c764a16803ea4701650396d"><span class="name">Kickoff briefing video</span><span class="kind">video</span></a></li>
+    <li><a href="https://docs.google.com/spreadsheets/d/1icSY90fNL_tF94yN9XKP4W-fGxRFbIp9R11__YHHiuM/edit?gid=0#gid=0"><span class="name">TPW Collective Impact data form</span><span class="kind">dataset</span></a></li>
+    <li><a href="docs/TPW%20Data%20Glossary%20Instructions.docx"><span class="name">Field glossary &amp; submission instructions</span><span class="kind">docx</span></a></li>
+    <li><a href="docs/RIGHT%204.0%20RFA.pdf"><span class="name">CDCR RIGHT 4.0 — Request for Applications</span><span class="kind">pdf</span></a></li>
+    <li><a href="https://www.cdcr.ca.gov/rehabilitation/grants/"><span class="name">CDCR Rehabilitation grants</span><span class="kind">state</span></a></li>
+    <li><a href="site/"><span class="name">Local mirror of thetpw.org</span><span class="kind">demo</span></a></li>
+  </ul>
+
+  <h2>Status</h2>
+  <ul class="status">
+    <li>✅ Source materials collected — glossaries, grant RFA, live dataset</li>
+    <li>✅ thetpw.org mirrored locally (offline, all assets bundled)</li>
+    <li>◻️ Read the glossary + RFA end to end</li>
+    <li>◻️ Decide the prototype: data model for the join, or an impact dashboard for TPW</li>
+    <li>◻️ Build + demo</li>
+  </ul>
+
+  <footer>
+    Source material in the <a href="https://github.com/Avery2/tpw-hackathon">repo</a>. The site mirror is a reference copy for extension, not affiliated with TPW.
+  </footer>
+
+</div>
+</body>
+</html>
