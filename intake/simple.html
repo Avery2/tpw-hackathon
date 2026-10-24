@@ -56,6 +56,19 @@
   .footnote a { color:var(--accent-dark); font-weight:700; text-decoration:none; }
   .footnote a:hover { text-decoration:underline; }
 
+  /* the guided form: one door out, not a second form inside this page */
+  .open-demo {
+    display:flex; align-items:center; justify-content:space-between; gap:16px;
+    margin:0 0 14px; padding:20px 22px; border-radius:14px;
+    background:var(--accent); color:#fff; text-decoration:none;
+    font-size:17px; font-weight:700;
+  }
+  .open-demo:hover { background:var(--accent-dark); }
+  .open-demo .arrow { font-size:20px; }
+  .hint { font-size:13.5px; line-height:1.5; color:var(--muted); margin:0; max-width:52ch; }
+  .hint a { color:var(--accent-dark); font-weight:700; text-decoration:none; }
+  .hint a:hover { text-decoration:underline; }
+
   h1 {
     font-family:var(--display); font-weight:400; color:var(--ink);
     font-size:clamp(1.7rem, 6vw, 2.3rem); line-height:1.08; margin:0 0 8px;

@@ -76,12 +76,13 @@ async function boot() {
   ).filter(Boolean);
 
   const visible = state.forms.filter((f) => !f.hidden);
-  kind = (location.hash.replace(/^#\/?/, '') || 'session').split('/')[0];
-  if (!visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'session';
+  kind = (location.hash.replace(/^#\/?/, '') || DEMO_KIND).split('/')[0];
+  if (kind !== DEMO_KIND && !visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'session';
 
   window.addEventListener('hashchange', () => {
-    kind = location.hash.replace(/^#\/?/, '').split('/')[0];
-    if (!state.forms.some((f) => f.kind === kind && !f.hidden)) kind = state.forms.filter((f) => !f.hidden)[0]?.kind;
+    kind = location.hash.replace(/^#\/?/, '').split('/')[0] || DEMO_KIND;
+    if (kind !== DEMO_KIND && !state.forms.some((f) => f.kind === kind && !f.hidden))
+      kind = state.forms.filter((f) => !f.hidden)[0]?.kind;
     done = null;
     errors = {};
     multi = [];
@@ -94,15 +95,36 @@ async function boot() {
 
 const current = () => state.forms.find((f) => f.kind === kind);
 
+/* ----------------------------------------------------------------- tabs */
+/**
+ * The row of ways in. Session and Quarter come from the contract; the guided
+ * form does not, because it files nothing — it asks the same questions in order
+ * and saves to the browser. So it is a way in, not a form, and it is the one
+ * a new member meets first.
+ */
+const DEMO_KIND = 'demo';
+
+function tabs() {
+  const out = state.forms
+    .filter((f) => !f.hidden && f.tab !== false)
+    .map((f) => ({ kind: f.kind, label: f.label }));
+  out.push({ kind: DEMO_KIND, label: 'Form Demo' });
+  return out;
+}
+
 /* ----------------------------------------------------------------- render */
 function render() {
   const form = current();
-  document.getElementById('tabs').innerHTML = state.forms
-    .filter((f) => !f.hidden && f.tab !== false)
-    .map((f) => `<a href="#${f.kind}" ${f.kind === kind ? 'aria-current="page"' : ''}>${esc(f.label)}</a>`)
+  document.getElementById('tabs').innerHTML = tabs()
+    .map((t) => `<a href="#${t.kind}" ${t.kind === kind ? 'aria-current="page"' : ''}>${esc(t.label)}</a>`)
     .join('');
 
   const app = document.getElementById('app');
+  if (kind === DEMO_KIND) {
+    app.innerHTML = demoPanel();
+    window.scrollTo({ top: 0 });
+    return;
+  }
   app.innerHTML = done ? doneScreen() : formScreen(form);
 
   if (done) {
@@ -183,6 +205,20 @@ function render() {
   });
 
   syncConditional(form);
+}
+
+/** The guided form is a page, not a panel: it is wide, and it is a demo. */
+function demoPanel() {
+  return `
+    <h1>The guided form</h1>
+    <p class="lede">Organization, then the prisons and yards you work in, then each
+      program you run: hours, participants, completions. One question per screen.</p>
+    <a class="open-demo" href="../form-demo/">
+      <span>Open the guided form</span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </a>
+    <p class="hint">A submission on that page stays in this browser — it is a demonstration.
+      To file a record that counts, use <a href="#session">Session</a> or <a href="#aggregate">Quarter</a>.</p>`;
 }
 
 function formScreen(form) {
