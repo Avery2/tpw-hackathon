@@ -2,13 +2,24 @@
 
 This is the input side of the Collective Impact standard. It produces one file per
 organization-quarter, plus per-person attendance that survives long enough to be matched to a
-background check later. Three ways in, all optional, all landing in the same ledger:
+background check later. Three ways in, all optional, all landing in the same ledger.
+
+**Each entry is filed by one organization and belongs to it.** Every form asks for the
+organization first, because that is the unit the ledger attributes numbers to and the unit the
+quarterly packet folds across.
+
+**A quarter is counted once.** For a given organization, program and quarter, file *either*
+sessions *or* the quarter's totals — not both. Both sides say so. If both arrive anyway the
+rollup keeps the second set for reconciliation and never adds it in (see §5).
 
 | Path | Who it's for | What it produces |
 |---|---|---|
-| **Session sheets + scan** | orgs that run a room | per-session roster, per-person attendance |
+| **Sessions** | orgs that run a room | per-session roster and attendance: printed and scanned, or typed in |
 | **Quarterly totals** | orgs that already count their own numbers | one aggregate row per program-quarter |
 | **Follow-up** | anyone who hears what happened after release | one outcome per participant ID |
+
+The first two are the choice: an organization files its quarter as sessions *or* as totals.
+Follow-up is not a filing; it is an outcome attached to a participant ID whenever it arrives.
 
 Nothing here requires an account, a server, or a database. Every entry is a small JSON file
 committed to this repository.
@@ -91,8 +102,8 @@ covering one facility or several:
 
 `facilities` is a list. File one entry per facility if your numbers are already split that way;
 file one entry with several facilities when the total is all you have. The rollup keeps the
-list intact and only merges a reported row into a computed one when the facility sets match
-exactly — a combined total never silently stands in for a per-facility figure.
+list intact, and only attaches a reported row to a computed one when the org, the program and
+the quarter match — a combined total never silently stands in for a per-facility figure.
 
 This is the "standard aggregate report" row. It is enough for totals and useless for
 per-person analytics — which is the trade the organization is making.
@@ -118,6 +129,12 @@ One participant, one outcome, whenever it is learned:
 
 ## 5. The rollup
 
+**A quarter is counted once.** An organization files either sessions (sheets, scanned or typed)
+or the quarter's totals — not both, and the forms say so. When both arrive anyway, the rollup
+keeps the second set beside the first for reconciliation instead of adding it in. Precedence:
+**session sheets win.** A double-counted quarter is a wrong number
+that looks right, which is worse than a missing one.
+
 `scripts/standard_rollup.py` runs on every push (and in the intake workflow) and writes
 `data/intake/standard/rollup.json`. **This is the file the report reads.**
 
@@ -142,7 +159,24 @@ One participant, one outcome, whenever it is learned:
       "participants": [
         { "id": "C76", "sessions_listed": 3, "sessions_attended": 3, "rate": 1.0, "completed": true }
       ],
-      "reported": null
+      "reported": null,
+      "demographics": {}
+    }
+  ],
+  "packets": [
+    {
+      "quarter": "2026-Q4",
+      "organizations": 3,
+      "programs": 4,
+      "rows": 4,
+      "sources": { "reported": 1, "session-sheets": 3 },
+      "served": 61,
+      "completed": 44,
+      "sessions_held": 96,
+      "attendance_total": 2480,
+      "rows_without_participant_counts": 0,
+      "reconciled": 1,
+      "demographics": { "age_25_34": 19, "race_black": 7 }
     }
   ],
   "participants": [
@@ -160,6 +194,11 @@ Rules that matter for the report:
   rostered for — not 70% of all sessions. Someone who joined in week 6 is judged from week 6.
 - **`reported`** carries the self-submitted quarterly totals when an organization filed both.
   When `computed` and `reported` disagree, the report shows both rather than picking one.
+- **`demographics`** is counts only, never names, summed per bucket. A sheet carries none, so
+  a computed row takes the demographics from whichever alternative source reported them.
+- **`packets[]`** is the fold: one quarter with every organization added together. Each row
+  contributes once, from its winning `source`. `rows_without_participant_counts` says how many
+  rows could not contribute to `served`, so a partial sum is never read as a total.
 - **`participants[]`** is flat on purpose: it is the list a background check iterates.
 
 Regenerate locally:

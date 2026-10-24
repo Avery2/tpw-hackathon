@@ -3,12 +3,21 @@
   "note": "The quick forms. Deliberately small: one screen each. Read by intake/js/simple.js and scripts/intake_simple.py.",
   "forms": [
     {
-      "kind": "weekly",
-      "label": "Weekly",
-      "title": "How did this week go?",
-      "blurb": "About twenty seconds. One entry per program per week.",
-      "submit": "Log the week",
+      "kind": "session",
+      "label": "Session",
+      "title": "Log one session",
+      "blurb": "One organization per entry, one session in one room. The same record whether the count came from a scanned sheet or from typing it in.",
+      "submit": "File the session",
       "fields": [
+        {
+          "key": "org",
+          "label": "Organization",
+          "type": "text",
+          "required": true,
+          "datalist": "orgs",
+          "placeholder": "Defy Ventures",
+          "help": "You are filing as this organization. Everything on this entry is attributed to it."
+        },
         {
           "key": "program",
           "label": "Program",
@@ -24,44 +33,89 @@
           "required": true
         },
         {
-          "key": "week_ending",
-          "label": "Week ending",
+          "key": "session_date",
+          "label": "Session date",
           "type": "date",
-          "required": true
-        },
-        {
-          "key": "sessions",
-          "label": "Sessions held",
-          "type": "integer",
           "required": true,
-          "min": 0,
-          "max": 40,
           "half": true
         },
         {
-          "key": "attendance",
-          "label": "People at sessions",
+          "key": "session_no",
+          "label": "Session number",
+          "type": "integer",
+          "min": 1,
+          "max": 99,
+          "half": true
+        },
+        {
+          "key": "present_count",
+          "label": "People present",
           "type": "integer",
           "required": true,
           "min": 0,
-          "max": 2000,
-          "half": true,
-          "help": "Total attendances, not unique people."
+          "max": 60,
+          "half": true
+        },
+        {
+          "key": "walkins",
+          "label": "Walk-ins",
+          "type": "integer",
+          "min": 0,
+          "max": 60,
+          "half": true
         },
         {
           "key": "notes",
           "label": "Anything to flag?",
           "type": "textarea",
-          "max": 400,
-          "placeholder": "Yard locked down Wednesday; made up the session Friday."
+          "max": 400
+        },
+        {
+          "key": "sheet",
+          "label": "Sheet code",
+          "type": "text",
+          "hidden": true,
+          "max": 16
+        },
+        {
+          "key": "roster",
+          "label": "Roster IDs",
+          "type": "list",
+          "hidden": true,
+          "max_items": 60,
+          "max_length": 12
+        },
+        {
+          "key": "present",
+          "label": "Present IDs",
+          "type": "list",
+          "hidden": true,
+          "max_items": 60,
+          "max_length": 12
+        },
+        {
+          "key": "roster_size",
+          "label": "Roster size",
+          "type": "integer",
+          "hidden": true,
+          "min": 0,
+          "max": 60
+        },
+        {
+          "key": "checked_count",
+          "label": "Rows ticked",
+          "type": "integer",
+          "hidden": true,
+          "min": 0,
+          "max": 60
         }
       ]
     },
     {
       "kind": "aggregate",
       "label": "Quarter",
-      "title": "Quarterly totals",
-      "blurb": "For an organization that counts its own numbers. One row per program per quarter.",
+      "title": "Report the quarter",
+      "blurb": "One organization per entry. One row per program per quarter, for an org that counts its own numbers. If you file sessions, don't also file the quarter.",
       "submit": "Add the quarter",
       "fields": [
         {
@@ -144,6 +198,71 @@
           "help": "Everyone at every session, counted each time."
         },
         {
+          "key": "demographics",
+          "label": "Who the totals cover",
+          "type": "counts",
+          "max": 20000,
+          "help": "Counts only, never names. Leave blank whatever you don't track.",
+          "items": [
+            {
+              "key": "age_under_25",
+              "label": "Under 25"
+            },
+            {
+              "key": "age_25_34",
+              "label": "25–34"
+            },
+            {
+              "key": "age_35_44",
+              "label": "35–44"
+            },
+            {
+              "key": "age_45_54",
+              "label": "45–54"
+            },
+            {
+              "key": "age_55_plus",
+              "label": "55+"
+            },
+            {
+              "key": "gender_men",
+              "label": "Men"
+            },
+            {
+              "key": "gender_women",
+              "label": "Women"
+            },
+            {
+              "key": "gender_other",
+              "label": "Another identity"
+            },
+            {
+              "key": "race_asian_pacific",
+              "label": "Asian / Pacific Islander"
+            },
+            {
+              "key": "race_black",
+              "label": "Black"
+            },
+            {
+              "key": "race_hispanic",
+              "label": "Hispanic / Latino"
+            },
+            {
+              "key": "race_native",
+              "label": "Native American"
+            },
+            {
+              "key": "race_white",
+              "label": "White"
+            },
+            {
+              "key": "race_other_unknown",
+              "label": "Other / unknown"
+            }
+          ]
+        },
+        {
           "key": "notes",
           "label": "Anything to flag?",
           "type": "textarea",
@@ -159,11 +278,19 @@
       "submit": "Record it",
       "fields": [
         {
+          "key": "org",
+          "label": "Organization",
+          "type": "text",
+          "required": true,
+          "datalist": "orgs",
+          "placeholder": "Defy Ventures"
+        },
+        {
           "key": "token",
           "label": "Participant ID",
           "type": "text",
           "required": true,
-          "placeholder": "M78 \u2014 first initial + birth year",
+          "placeholder": "M78 — first initial + birth year",
           "max": 12,
           "help": "The same ID that is on their session sheets."
         },
@@ -209,104 +336,8 @@
           "type": "textarea",
           "max": 400
         }
-      ]
-    },
-    {
-      "kind": "session",
-      "label": "Session",
-      "hidden": true,
-      "title": "One session",
-      "blurb": "Created by the sheet scanner: one page, one session, a count of ticked rows.",
-      "submit": "File session",
-      "fields": [
-        {
-          "key": "org",
-          "label": "Organization",
-          "type": "text",
-          "max": 120
-        },
-        {
-          "key": "program",
-          "label": "Program",
-          "type": "text",
-          "required": true,
-          "max": 120
-        },
-        {
-          "key": "facility",
-          "label": "Facility",
-          "type": "facility",
-          "required": true
-        },
-        {
-          "key": "session_date",
-          "label": "Session date",
-          "type": "date",
-          "required": true
-        },
-        {
-          "key": "session_no",
-          "label": "Session number",
-          "type": "integer",
-          "min": 1,
-          "max": 99
-        },
-        {
-          "key": "present_count",
-          "label": "Present",
-          "type": "integer",
-          "required": true,
-          "min": 0,
-          "max": 60
-        },
-        {
-          "key": "walkins",
-          "label": "Walk-ins",
-          "type": "integer",
-          "min": 0,
-          "max": 60
-        },
-        {
-          "key": "sheet",
-          "label": "Sheet code",
-          "type": "text",
-          "max": 16
-        },
-        {
-          "key": "roster",
-          "label": "Roster IDs",
-          "type": "list",
-          "max_items": 60,
-          "max_length": 12
-        },
-        {
-          "key": "present",
-          "label": "Present IDs",
-          "type": "list",
-          "max_items": 60,
-          "max_length": 12
-        },
-        {
-          "key": "roster_size",
-          "label": "Roster size",
-          "type": "integer",
-          "min": 0,
-          "max": 60
-        },
-        {
-          "key": "checked_count",
-          "label": "Rows ticked",
-          "type": "integer",
-          "min": 0,
-          "max": 60
-        },
-        {
-          "key": "notes",
-          "label": "Notes",
-          "type": "textarea",
-          "max": 400
-        }
-      ]
+      ],
+      "tab": false
     }
   ]
 }

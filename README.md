@@ -94,7 +94,7 @@ Seven organizations' worth of rows are in there already, and the sheet has known
 ## Repo layout
 
 ```
-intake/       the forms: weekly, quarterly, follow-up, printable sheets, scanner, packet upload
+intake/       the forms: session, quarterly, follow-up, printable sheets, scanner, packet upload
 data/intake/  the ledger — records, derived rollup, org registry, form contracts
 scripts/      validators, issue ingester, reindexer, rollup, profile deriver
 docs/         TPW + CDCR source documents
@@ -147,7 +147,9 @@ held, attendance, participants served, and **completions defined as 70% attendan
 sessions that person was rostered for** — not 70% of the whole program, so somebody who joined
 in week six is judged from week six. It also carries a flat `participants[]` list, which is what
 a background check iterates later. Self-submitted quarterly totals ride alongside as `reported`
-rather than replacing the computed figures.
+rather than replacing the computed figures, and are never added to them: a quarter is counted
+once. The `packets[]` block is the fold — one quarter with every organization added together,
+which is the number TPW hands on.
 
 ### The ID
 
@@ -166,7 +168,6 @@ Every entry becomes one file plus one commit.
 data/intake/records/session/<id>.json      one session sheet, per-person attendance
 data/intake/records/aggregate/<id>.json    one quarterly total
 data/intake/records/followup/<id>.json     one outcome
-data/intake/records/weekly/<id>.json       one weekly log
 data/intake/standard/rollup.json           derived: the quarterly report input
 data/intake/orgs/index.json                derived: orgs, programs, sites
 data/intake/simple_forms.json              the quick forms' contract

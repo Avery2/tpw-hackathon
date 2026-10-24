@@ -8,7 +8,7 @@ const DATA = new URL('../../data/intake/', import.meta.url);
 const QUEUE = 'tpw.simple.queue.v1';
 
 const state = { forms: [], config: {}, facilities: [], orgs: [], committed: [], local: [] };
-let kind = 'weekly';
+let kind = 'session';
 let errors = {};
 let done = null;
 let multi = []; // facilities chosen in the current form
@@ -76,8 +76,8 @@ async function boot() {
   ).filter(Boolean);
 
   const visible = state.forms.filter((f) => !f.hidden);
-  kind = (location.hash.replace(/^#\/?/, '') || 'weekly').split('/')[0];
-  if (!visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'weekly';
+  kind = (location.hash.replace(/^#\/?/, '') || 'session').split('/')[0];
+  if (!visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'session';
 
   window.addEventListener('hashchange', () => {
     kind = location.hash.replace(/^#\/?/, '').split('/')[0];
@@ -98,7 +98,7 @@ const current = () => state.forms.find((f) => f.kind === kind);
 function render() {
   const form = current();
   document.getElementById('tabs').innerHTML = state.forms
-    .filter((f) => !f.hidden)
+    .filter((f) => !f.hidden && f.tab !== false)
     .map((f) => `<a href="#${f.kind}" ${f.kind === kind ? 'aria-current="page"' : ''}>${esc(f.label)}</a>`)
     .join('');
 
@@ -189,8 +189,12 @@ function formScreen(form) {
   return `
     <h1>${esc(form.title)}</h1>
     <p class="lede">${esc(form.blurb)}</p>
+    ${waysIn(form)}
     <form novalidate>
-      ${form.fields.map((f) => field(f)).join('')}
+      ${form.fields
+        .filter((f) => !f.hidden)
+        .map((f) => field(f))
+        .join('')}
       <button class="primary" type="submit">${esc(form.submit)}</button>
       <div class="alts">
         <span>No GitHub account?</span>
@@ -198,8 +202,28 @@ function formScreen(form) {
         <button type="button" data-act="token">Use an access token</button>
       </div>
     </form>
+    ${footnote(form)}
     ${recent(form)}
   `;
+}
+
+/** The paper routes into the same record. Quiet, and under the heading it belongs to. */
+function waysIn(form) {
+  if (form.kind !== 'session') return '';
+  return `
+    <div class="ways">
+      <span>Paper instead</span>
+      <a href="sheet.html">Print a blank sheet</a>
+      <a href="scan.html">Scan a filled one</a>
+      <a href="upload.html">Read your packet</a>
+    </div>`;
+}
+
+/** The one thing that is not a quarterly filing, kept out of the tabs. */
+function footnote(form) {
+  if (form.kind === 'followup') return '';
+  return `<p class="footnote">Heard what happened after someone was released?
+    <a href="#followup">Record an outcome →</a></p>`;
 }
 
 function field(f) {
@@ -238,6 +262,25 @@ function field(f) {
       <div class="picked" id="picked"></div>
       ${help}${err}
     </div>`;
+  }
+  if (f.type === 'counts') {
+    // Folded away so the twenty-second path stays twenty seconds. Opened when it
+    // holds an error, or the error would be invisible.
+    return `<details class="group"${errors[f.key] ? ' open' : ''}>
+      <summary>${esc(f.label)}<span class="opt">optional</span></summary>
+      ${help}
+      <div class="groupgrid">
+        ${f.items
+          .map(
+            (it) => `<div class="field half">
+              <label for="f-${it.key}">${esc(it.label)}</label>
+              <input id="f-${it.key}" name="${it.key}" type="number" inputmode="numeric" min="0" step="1" placeholder="—">
+            </div>`
+          )
+          .join('')}
+      </div>
+      ${err}
+    </details>`;
   }
   if (f.type === 'choice') {
     return `<div class="field" data-key="${f.key}">
@@ -305,6 +348,21 @@ function collect(form, el) {
   const values = {};
 
   for (const f of form.fields) {
+    if (f.hidden) continue;
+    if (f.type === 'counts') {
+      // Flattened: one integer per bucket, so the record stays a flat row.
+      for (const item of f.items || []) {
+        const raw = (el.querySelector(`[name="${item.key}"]`)?.value || '').trim();
+        if (raw === '') continue;
+        const n = Number(raw);
+        if (!Number.isInteger(n) || n < 0 || (f.max != null && n > f.max)) {
+          errors[f.key] = `${item.label} must be a whole number between 0 and ${f.max}.`;
+          break;
+        }
+        values[item.key] = n;
+      }
+      continue;
+    }
     if (f.type === 'facilities') {
       values[f.key] = [...multi];
       continue;
@@ -321,6 +379,7 @@ function collect(form, el) {
   }
 
   for (const f of form.fields) {
+    if (f.hidden) continue;
     const v = values[f.key];
     const box = el.querySelector(`[data-key="${f.key}"]`);
     const input = el.querySelector(`[name="${f.key}"]`);
@@ -328,6 +387,16 @@ function collect(form, el) {
     input?.classList.remove('invalid');
 
     if (f.show_if && !Object.entries(f.show_if).every(([k, want]) => values[k] === want)) continue;
+
+    if (f.type === 'counts') {
+      if (errors[f.key]) {
+        const p = document.createElement('p');
+        p.className = 'err';
+        p.textContent = errors[f.key];
+        box?.appendChild(p);
+      }
+      continue;
+    }
 
     let msg = null;
     if (f.required && (!v || (Array.isArray(v) && v.length === 0))) msg = `${f.label} is required.`;
@@ -365,7 +434,7 @@ function collect(form, el) {
     if (f.type === 'integer' && values[f.key] !== '') values[f.key] = Number(values[f.key]);
   }
 
-  const stamp = values.week_ending || values.period_end || values.release_date || values.quarter || new Date().toISOString().slice(0, 10);
+  const stamp = values.session_date || values.quarter || values.release_date || new Date().toISOString().slice(0, 10);
   const slug = String(values.program || values.org || values.token || 'entry')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -390,7 +459,8 @@ function submit(form, el) {
   if (!record) return;
 
   const label = record.program || record.org || record.token || '';
-  const url = issueUrl(record, state.config, `[intake:${form.kind}] ${label} · ${record.week_ending || record.period_end || record.release_date || ''}`);
+  const when = record.session_date || record.quarter || record.release_date || '';
+  const url = issueUrl(record, state.config, `[intake:${form.kind}] ${label}${when ? ` · ${when}` : ''}`);
   if (url.length > 7000) {
     toast('That payload is too large for an issue link — download the file instead.', 'bad');
     return;
@@ -447,8 +517,8 @@ function recent(form) {
           .map((r) => {
             const when = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
             const bits =
-              form.kind === 'weekly'
-                ? `${esc(r.program || '—')} · ${r.sessions ?? '—'} sessions · ${r.attendance ?? '—'} people`
+              form.kind === 'session'
+                ? `${esc(r.program || '—')} · ${esc(r.facility || '—')} · ${r.present_count ?? '—'} present`
                 : form.kind === 'aggregate'
                 ? `${esc(r.program || '—')} · ${esc(r.quarter || '—')} · ${r.served ?? '—'} served`
                 : `${esc((r.token || '').slice(0, 8))}… · ${esc(String(r.status || '').replace(/_/g, ' '))}`;
