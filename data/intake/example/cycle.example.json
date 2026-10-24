@@ -1,0 +1,40 @@
+{
+  "id": "example-grip-sq-2026-01-12",
+  "schema": "tpw.intake/1",
+  "source": "example",
+  "facility": "San Quentin Rehabilitation Center (SQ)",
+  "facility_code": "SQ",
+  "yard": "North",
+  "org": "GRIP Training Institute",
+  "program": "Guiding Rage Into Power",
+  "status": "Completed",
+  "start_date": "2026-01-12",
+  "end_date": "2026-06-30",
+  "course_hours": 104,
+  "participants_started": 32,
+  "participants_completed": 27,
+  "funded_by": "RIGHT 4.0",
+  "notes": "EXAMPLE ONLY \u2014 not a real cohort. Shows the shape of a committed cycle, including the participant spine.",
+  "submitter_name": "Test Coordinator",
+  "submitter_email": "coordinator@example.org",
+  "submitter_role": "Programs",
+  "submitted_at": "2026-10-24T20:00:00.000Z",
+  "submitted_by": {
+    "name": "Test Coordinator",
+    "email": "coordinator@example.org",
+    "role": "Programs",
+    "github": "avery2"
+  },
+  "flags": [],
+  "join": {
+    "spine_version": "tpw.join/1",
+    "attested": true,
+    "tokens": [
+      {
+        "token": "881bc545706792a455edb0dbd79d9eb4",
+        "event": "completed"
+      }
+    ]
+  },
+  "issue": "42"
+}

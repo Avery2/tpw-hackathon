@@ -1,9 +1,9 @@
 /* self-hosted Adobe Fonts kit (originally use.typekit.net) */
-@font-face{font-family:'degular-text';src:url('degular-text-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular-text';src:url('degular-text-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular-text';src:url('degular-text-500-italic.woff2') format('woff2');font-weight:500;font-style:italic;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular-text';src:url('degular-text-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular';src:url('degular-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular';src:url('degular-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular';src:url('degular-400-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-stretch:normal;font-display:swap;}
-@font-face{font-family:'degular';src:url('degular-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular-text';src:url('typekit/degular-text-500-normal.woff2') format('woff2');font-weight:500;font-style:normal;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular-text';src:url('typekit/degular-text-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular-text';src:url('typekit/degular-text-500-italic.woff2') format('woff2');font-weight:500;font-style:italic;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular-text';src:url('typekit/degular-text-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular';src:url('typekit/degular-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular';src:url('typekit/degular-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular';src:url('typekit/degular-400-italic.woff2') format('woff2');font-weight:400;font-style:italic;font-stretch:normal;font-display:swap;}
+@font-face{font-family:'degular';src:url('typekit/degular-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-stretch:normal;font-display:swap;}

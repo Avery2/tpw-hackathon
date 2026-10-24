@@ -1,0 +1,306 @@
+{
+  "id": "tpw.intake/1",
+  "title": "Collective Impact — Program Cycle Intake",
+  "version": "2026.10",
+  "glossary": "docs/TPW Data Glossary Instructions.docx",
+  "note": "Single source of truth for the intake form. Consumed by intake/js/schema.js (browser) and scripts/intake_validate.py (CI). Field definitions are taken verbatim from the June 2026 glossary; `column` preserves the original sheet letter so imported rows stay traceable.",
+  "statuses": [
+    "Planned",
+    "In Progress",
+    "Completed"
+  ],
+  "funding_sources": [
+    "RIGHT 2.0",
+    "RIGHT 4.0",
+    "Other grant",
+    "Organization funds",
+    "Unfunded",
+    "Unknown"
+  ],
+  "fields": [
+    {
+      "key": "org",
+      "label": "Organization name",
+      "column": "C",
+      "type": "text",
+      "required": true,
+      "max": 120,
+      "placeholder": "GRIP Training Institute",
+      "help": "Your organization's full legal name. Keep it identical across every row you submit so cycles can be grouped.",
+      "group": "who"
+    },
+    {
+      "key": "program",
+      "label": "Program name",
+      "column": "D",
+      "type": "text",
+      "required": true,
+      "max": 120,
+      "placeholder": "Guiding Rage Into Power",
+      "help": "The specific curriculum delivered. If you run multiple program types, use a distinct name for each.",
+      "group": "who"
+    },
+    {
+      "key": "facility",
+      "label": "CDCR facility",
+      "column": "A",
+      "type": "select",
+      "source": "facilities",
+      "required": true,
+      "help": "Full official name from the standardized reference list. Type to filter.",
+      "group": "where"
+    },
+    {
+      "key": "yard",
+      "label": "Yard",
+      "column": "B",
+      "type": "text",
+      "required": false,
+      "max": 60,
+      "placeholder": "North / South / Reception / Ad Seg",
+      "help": "The specific yard. Leave blank if the facility has one general-population yard. One program run per yard = one row.",
+      "group": "where"
+    },
+    {
+      "key": "status",
+      "label": "Schedule status",
+      "column": "E",
+      "type": "select",
+      "options": [
+        "Planned",
+        "In Progress",
+        "Completed"
+      ],
+      "required": true,
+      "default": "Completed",
+      "help": "Completed means the cycle has concluded and final participant data is available.",
+      "group": "when"
+    },
+    {
+      "key": "start_date",
+      "label": "Start date",
+      "column": "F",
+      "type": "date",
+      "required": true,
+      "help": "Date of the first session of this cycle. Approximate month only? Use the first of that month.",
+      "group": "when"
+    },
+    {
+      "key": "end_date",
+      "label": "End date",
+      "column": "G",
+      "type": "date",
+      "required_when": {
+        "status": [
+          "Completed"
+        ]
+      },
+      "help": "Date of the final session. Approximate month only? Use the last day of that month.",
+      "group": "when"
+    },
+    {
+      "key": "course_hours",
+      "label": "Course hours (per participant)",
+      "column": "H",
+      "type": "number",
+      "required_when": {
+        "status": [
+          "In Progress",
+          "Completed"
+        ]
+      },
+      "min": 0.5,
+      "max": 2000,
+      "step": 0.5,
+      "placeholder": "39",
+      "help": "Hours one person accumulates by attending every session — a fixed property of the course, not a sum across participants. 13 sessions × 3 hours = 39.",
+      "group": "size"
+    },
+    {
+      "key": "participants_started",
+      "label": "Participants who began",
+      "column": "I",
+      "type": "integer",
+      "required_when": {
+        "status": [
+          "In Progress",
+          "Completed"
+        ]
+      },
+      "min": 0,
+      "max": 5000,
+      "placeholder": "28",
+      "help": "Everyone who started the cycle, including people who did not finish.",
+      "group": "size"
+    },
+    {
+      "key": "participants_completed",
+      "label": "Participants who completed",
+      "column": "J",
+      "type": "integer",
+      "required_when": {
+        "status": [
+          "Completed"
+        ]
+      },
+      "min": 0,
+      "max": 5000,
+      "placeholder": "25",
+      "help": "People who finished the cycle. Cannot exceed the number who began.",
+      "group": "size"
+    },
+    {
+      "key": "funded_by",
+      "label": "Funding source",
+      "column": "K",
+      "type": "select",
+      "options": [
+        "RIGHT 2.0",
+        "RIGHT 4.0",
+        "Other grant",
+        "Organization funds",
+        "Unfunded",
+        "Unknown"
+      ],
+      "required": false,
+      "default": "Unknown",
+      "help": "Optional. The sheet's 'Funded by RIGHT 2.0' column was flagged for removal; this generalizes it without changing reporting burden.",
+      "group": "size"
+    },
+    {
+      "key": "notes",
+      "label": "Notes",
+      "column": "N",
+      "type": "textarea",
+      "required": false,
+      "max": 1000,
+      "placeholder": "Program spanned two calendar years; majority of hours delivered in 2026.",
+      "help": "Anything that does not fit the other fields. Edge cases get resolved here rather than in a private email thread.",
+      "group": "notes"
+    },
+    {
+      "key": "submitter_name",
+      "label": "Your name",
+      "column": null,
+      "type": "text",
+      "required": true,
+      "max": 120,
+      "placeholder": "Rick Olesek",
+      "help": "Who prepared this submission — so TPW can follow up on a single cycle without hunting.",
+      "group": "submitter",
+      "required_for": "submission"
+    },
+    {
+      "key": "submitter_email",
+      "label": "Your email",
+      "column": null,
+      "type": "email",
+      "required": true,
+      "max": 160,
+      "placeholder": "name@organization.org",
+      "help": "Used only to resolve questions about this cycle.",
+      "group": "submitter",
+      "required_for": "submission"
+    },
+    {
+      "key": "submitter_role",
+      "label": "Your role",
+      "column": null,
+      "type": "text",
+      "required": false,
+      "max": 80,
+      "placeholder": "Director of Programs",
+      "help": "Optional context.",
+      "group": "submitter"
+    }
+  ],
+  "derived": [
+    {
+      "key": "total_participant_hours",
+      "label": "Total participant hours delivered",
+      "column": "L",
+      "formula": "participants_completed * course_hours",
+      "help": "Rehabilitative hours delivered to completing participants in this cycle."
+    },
+    {
+      "key": "program_year",
+      "label": "Program year",
+      "column": "M",
+      "formula": "year(start_date)",
+      "help": "Assigned from the start date so annual reporting periods stay consistent across organizations."
+    },
+    {
+      "key": "duration_days",
+      "label": "Cycle length",
+      "formula": "end_date - start_date",
+      "unit": "days"
+    },
+    {
+      "key": "completion_rate",
+      "label": "Completion rate",
+      "formula": "participants_completed / participants_started",
+      "unit": "%"
+    }
+  ],
+  "join": {
+    "spine_version": "tpw.join/1",
+    "label": "Participant join spine",
+    "why": "The intake form has no identifier that survives contact with parole and recidivism records. Without one, no amount of program data can be joined to outcomes. This step captures a pseudonymous, per-participant token derived on your machine — never a name, never a CDCR number.",
+    "method": "HMAC-SHA256(org_secret, cdcr_number) truncated to 128 bits, hex. The org secret stays in the browser or your own records. The same CDCR number always yields the same token for the same organization, so records join across cycles and years.",
+    "token_pattern": "^[0-9a-f]{32}$",
+    "events": [
+      "completed",
+      "did_not_complete",
+      "enrolled_only"
+    ],
+    "min_cohort_for_release": 5,
+    "note": "Cohorts smaller than min_cohort_for_release are aggregated before release to protect individuals."
+  },
+  "quality_rules": [
+    {
+      "id": "sample-data",
+      "level": "error",
+      "message": "Row is marked SAMPLE DATA and must not be counted in impact reporting."
+    },
+    {
+      "id": "unknown-completions",
+      "level": "warning",
+      "message": "Completions are unknown (TBD / #VALUE!). The cycle cannot contribute to hours or outcomes until resolved."
+    },
+    {
+      "id": "end-before-start",
+      "level": "error",
+      "message": "End date precedes start date."
+    },
+    {
+      "id": "completions-exceed-starts",
+      "level": "error",
+      "message": "More participants completed than began."
+    },
+    {
+      "id": "implausible-duration",
+      "level": "warning",
+      "message": "Cycle length exceeds 18 months. Confirm the dates are not a typo."
+    },
+    {
+      "id": "future-date",
+      "level": "warning",
+      "message": "Date is in the future for a cycle marked Completed."
+    },
+    {
+      "id": "duplicate-cycle",
+      "level": "warning",
+      "message": "Another cycle shares this facility, yard, program and start date. If these are separate cohorts, distinguish them by yard or note."
+    },
+    {
+      "id": "missing-join",
+      "level": "info",
+      "message": "No participant join spine. This cycle contributes activity data but cannot be matched to parole or recidivism records."
+    },
+    {
+      "id": "empty-completions-zero",
+      "level": "info",
+      "message": "Zero completions — recorded as a delivery failure, not omitted."
+    }
+  ]
+}

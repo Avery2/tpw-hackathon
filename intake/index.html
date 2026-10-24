@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPW Intake — Collective Impact program cycles</title>
+<meta name="description" content="Form intake for Transformative Programming Works: program-cycle reporting with a pseudonymous participant spine, stored as versioned data in the repository itself.">
+<link rel="stylesheet" href="app.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='18' fill='%230b0b0b'/><text y='72' x='50' text-anchor='middle' font-size='54' font-family='monospace' fill='%23e0a458'>T</text></svg>">
+</head>
+<body>
+<div class="shell">
+  <aside class="rail">
+    <a class="brand" href="#/submit">
+      <b>TPW Intake</b>
+      <span>collective impact</span>
+    </a>
+    <nav id="nav">
+      <a href="#/submit" data-route="submit"><span class="dot"></span>Submit a cycle</a>
+      <a href="#/ledger" data-route="ledger"><span class="dot"></span>Ledger</a>
+      <a href="#/impact" data-route="impact"><span class="dot"></span>Impact</a>
+      <a href="#/guide" data-route="guide"><span class="dot"></span>How it works</a>
+    </nav>
+    <div class="rail-foot">
+      <span class="pill" id="repo-pill">git-backed</span>
+      <div id="rail-status">Loading ledger…</div>
+    </div>
+  </aside>
+  <main id="view" class="narrow">
+    <p class="hint">Loading schema and ledger…</p>
+  </main>
+</div>
+<div id="modal" role="dialog" aria-modal="true"></div>
+<div id="toasts" aria-live="polite"></div>
+<script type="module" src="js/main.js"></script>
+<noscript>
+  <div style="padding:40px;max-width:700px;margin:0 auto">
+    <h1>TPW Intake</h1>
+    <p>This intake runs in the browser and stores submissions as versioned data in the
+    repository. JavaScript is required. The underlying schema lives at
+    <code>data/intake/schema.json</code> and the ledger at <code>data/intake/</code>.</p>
+  </div>
+</noscript>
+</body>
+</html>

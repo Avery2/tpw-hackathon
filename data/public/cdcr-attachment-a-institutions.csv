@@ -1,0 +1,31 @@
+facility_code,institution,underserved,houses_EOP,houses_MHCB,houses_RHU
+ASP,Avenal State Prison (ASP),yes,no,no,no
+CAL,Calipatria State Prison (CAL),no,no,no,no
+CCI,California Correctional Institution (CCI),no,yes,no,no
+CCWF,Central California Women’s Facility (CCWF),yes,yes,yes,yes
+CEN,Centinela State Prison (CEN),no,no,no,no
+CHCF,California Health Care Facility (CHCF),no,yes,yes,yes
+CIM,California Institution for Men (CIM),no,yes,yes,no
+CIW,California Institution for Women (CIW),yes,yes,yes,yes
+CMC,California Mens Colony (CMC),no,yes,yes,yes
+CMF,California Medical Facility (CMF),no,yes,yes,yes
+COR,"California State Prison, Corcoran (COR)",no,yes,yes,yes
+CTF,Correctional Training Facility (CTF),yes,no,no,no
+FSP,Folsom State Prison (FSP),no,no,no,no
+HDSP,High Desert State Prison (HDSP),no,yes,yes,yes
+ISP,Ironwood State Prison (ISP),no,no,no,no
+KVSP,Kern Valley State Prison (KVSP),yes,yes,yes,yes
+LAC,"California State Prison, Los Angeles (LAC)",no,yes,yes,yes
+MCSP,Mule Creek State Prison (MCSP),no,yes,yes,yes
+NKSP,North Kern State Prison (NKSP),yes,no,yes,no
+PBSP,Pelican Bay State Prison (PBSP),no,yes,yes,yes
+PVSP,Pleasant Valley State Prison (PVSP),no,yes,yes,yes
+RJD,Richard J. Donovan Correctional Facility (RJD),no,yes,yes,yes
+SAC,"California State Prison, Sacramento (SAC)",yes,yes,yes,yes
+SATF,California Substance Abuse Treatment Facility (SATF),no,yes,yes,yes
+SCC,Sierra Conservation Center (SCC),no,no,no,no
+SOL,"California State Prison, Solano (SOL)",no,no,yes,no
+SQ,San Quentin Rehabilitation Center (SQ),no,yes,yes,no
+SVSP,Salinas Valley State Prison (SVSP),no,yes,yes,yes
+VSP,Valley State Prison (VSP),no,yes,no,no
+WSP,Wasco State Prison (WSP),no,no,yes,no

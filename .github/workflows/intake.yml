@@ -1,0 +1,120 @@
+name: Intake
+
+# The static site has no server. This workflow is the server: an issue carrying
+# an intake payload becomes a validated commit, and every push that touches the
+# ledger gets validated and re-indexed.
+
+on:
+  issues:
+    types: [opened, edited]
+  push:
+    branches: [main]
+    paths:
+      - 'data/intake/**'
+      - 'scripts/intake_*.py'
+      - '.github/workflows/intake.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: intake-${{ github.event.issue.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  ingest-issue:
+    if: github.event_name == 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate and stage the cycle
+        id: ingest
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_AUTHOR: ${{ github.event.issue.user.login }}
+        run: python3 scripts/intake_issue.py
+
+      - name: Commit
+        if: steps.ingest.outputs.ok == 'true'
+        run: |
+          git config user.name 'tpw-intake-bot'
+          git config user.email 'tpw-intake-bot@users.noreply.github.com'
+          git add data/intake/cycles
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+          else
+            git commit -m "intake: ${{ steps.ingest.outputs.id }} (issue #${{ github.event.issue.number }})"
+            git push
+          fi
+
+      - name: Reply on the issue
+        uses: actions/github-script@v7
+        env:
+          OK: ${{ steps.ingest.outputs.ok }}
+          REASON: ${{ steps.ingest.outputs.reason }}
+          CYCLE_ID: ${{ steps.ingest.outputs.id }}
+          DETAIL: ${{ steps.ingest.outputs.detail }}
+        with:
+          script: |
+            const { OK, REASON, CYCLE_ID, DETAIL } = process.env;
+            if (REASON === 'not-a-submission') {
+              console.log('Issue does not carry an intake payload; leaving it alone.');
+              return;
+            }
+            const ok = OK === 'true';
+            const body = ok
+              ? [
+                  `Recorded as \`${CYCLE_ID}\`.`,
+                  '',
+                  'The cycle file is committed under `data/intake/cycles/` and will appear on the',
+                  'ledger once GitHub Pages rebuilds.',
+                  '',
+                  DETAIL ? `> ${DETAIL}` : '',
+                ].join('\n')
+              : [
+                  `**Not recorded.** ${DETAIL || 'Validation failed.'}`,
+                  '',
+                  'Fix the field(s) above in the intake form and open a new issue — the form will',
+                  're-run the same checks the server just ran.',
+                ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body,
+            });
+
+            if (ok) {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                state: 'closed',
+              });
+            }
+
+  reindex:
+    if: github.event_name != 'issues'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate every cycle and rebuild the manifest
+        run: python3 scripts/intake_reindex.py
+
+      - name: Commit the manifest if it moved
+        run: |
+          git config user.name 'tpw-intake-bot'
+          git config user.email 'tpw-intake-bot@users.noreply.github.com'
+          git add data/intake/cycles/index.json
+          if git diff --cached --quiet; then
+            echo "manifest unchanged"
+          else
+            git commit -m "intake: reindex ledger"
+            git push
+          fi

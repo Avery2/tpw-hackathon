@@ -1,0 +1,18 @@
+{
+  "schema": "tpw.intake.config/1",
+  "repo": "Avery2/tpw-hackathon",
+  "branch": "main",
+  "paths": {
+    "cycles": "data/intake/cycles",
+    "index": "data/intake/cycles/index.json",
+    "seed": "data/intake/seed.json",
+    "join": "data/intake/demo/join.json",
+    "schema": "data/intake/schema.json",
+    "facilities": "data/intake/facilities.json"
+  },
+  "labels": {
+    "intake": "intake",
+    "synthetic": "synthetic-data"
+  },
+  "site": "https://www.averychan.site/tpw-hackathon/"
+}
