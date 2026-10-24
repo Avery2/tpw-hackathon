@@ -54,7 +54,11 @@ Bundled so collaborators don't need Downloads access:
 
 - `docs/TPW Data Glossary Instructions.docx` — field-by-field definitions and submission rules for the Collective Impact form (June 2026, Rick Olesek & Kim Moore). **Read this first.**
 - `docs/RIGHT 4.0 RFA.pdf` — the state grant that funds these programs, incl. reporting obligations.
+- `docs/right-4.0-rfa-dummy-filled.pdf` + `docs/right-4.0-application-example.md` — a filled application packet (fictional org), page by page, incl. how Attachment A gets ticked.
+- `docs/kickoff-briefing.md` — kickoff video transcript + what it implies about the design target.
+- `docs/hsi-hack-pack-2026.html` — saved hack pack (mostly JS-only; open in a browser).
 - `data/tpw-collective-impact-form.xlsx` — snapshot of the live Google Sheet (3 tabs: Data Entry Sheet, Form Responses, Constants).
+- `data/snapshots/2026-10-24-tpw-collective-impact.xlsx` — pull of the live sheet on 2026-10-24; identical in content to the bundled snapshot (37 cycles, 3 orgs, 14 facilities).
 - `data/tpw-collective-impact.csv` — the Data Entry Sheet tab as CSV, for quick loading in pandas/Sheets.
 
 ### What the form actually captures
@@ -85,8 +89,8 @@ Seven organizations' worth of rows are in there already, and the sheet has known
 
 ```
 intake/       the form: static app, no build step, no server
-data/intake/  the ledger — schema, facilities, seed import, committed cycles
-scripts/      seed importer, validator, issue ingester, reindexer
+data/intake/  the ledger — schema, facilities, seed import, committed cycles, registry
+scripts/      seed importer, validator, issue ingester, reindexer, profile deriver
 docs/         TPW + CDCR source documents
 data/         snapshots of the Collective Impact form
 site/         local mirror of thetpw.org (offline copy, for reference and extension)
@@ -120,8 +124,30 @@ truth — the browser and the CI validator both read it, so they cannot drift ap
 - Column K (`Funded by RIGHT 2.0`) is generalized to a funding-source field instead of
   being deleted, as the glossary left open.
 
-### The join spine
+### The registry — the half that repeats
 
+Nine of the form's fifteen fields are the same on an organization's second cycle as its first:
+name, program, facility, yard, course hours, funding source, and who signs for it. Asking again
+is not diligence — it is a way to collect three spellings of one organization, and
+`cycleKey()` folds facility, yard, program and date into the record's identity, so that drift
+silently splits an organization in two. The seed already shows the multiplier: 37 cycles from
+3 organizations.
+
+So the registry is derived, not entered. `scripts/intake_profiles.py` groups the seed plus every
+committed cycle by organization and program and writes `data/intake/orgs/index.json`.
+`intake_reindex.py` runs it on every push, so a profile is a function of the ledger and cannot
+disagree with it. Editing a profile by hand edits a cache; correcting a cycle fixes it.
+
+`#/orgs` reads that registry. Picking a site starts a cycle with the known values already filled,
+and the next cycle after a submission carries them forward. Nothing is guessed: hours and funding
+are the *mode* of past cycles, the contact is whoever signed most recently, and an organization
+with twenty-five sites gets no facility filled in — a wrong yard is worse than an empty one.
+
+Because the identity lives in a committed file rather than a URL, there is no prefill link to forge,
+and the join spine stays intact: a third-party form host could not derive the token in the
+submitter's browser in the first place.
+
+### The join spine
 For each enrollee the form derives a 128-bit token in the browser:
 
 ```
@@ -145,6 +171,7 @@ Every submission becomes one file plus one commit.
 ```
 data/intake/cycles/<id>.json     one program cycle, validated
 data/intake/cycles/index.json    manifest the site reads
+data/intake/orgs/index.json      derived registry: orgs, programs, sites, contacts
 data/intake/seed.json            the 2026 sheet import (37 cycles, warts intact)
 data/intake/demo/join.json       SYNTHETIC spine, for demonstration only
 ```
@@ -181,7 +208,8 @@ cd intake && python3 -m http.server 8080     # → http://localhost:8080/intake/
 ```bash
 python3 scripts/intake_build_seed.py   # rebuild seed.json + the synthetic spine
 python3 scripts/intake_validate.py     # validate every committed cycle
-python3 scripts/intake_reindex.py      # validate + rebuild the manifest (what CI runs)
+python3 scripts/intake_profiles.py     # rebuild the organization registry
+python3 scripts/intake_reindex.py      # validate + rebuild manifest and registry (what CI runs)
 ```
 
 To submit through an issue without the browser:
@@ -228,7 +256,8 @@ interoperability rather than correctness.
 - [x] Read the glossary + RFA end to end
 - [x] Decide the prototype: a join-ready intake that feeds an impact view
 - [x] Build: schema-driven form, git-backed ledger, issue→commit automation
-- [x] Demo: live at `/intake/` — form, ledger, and the join with 12/24/36-month windows
+- [x] Registry: recurring fields derived from the ledger, filled in per organization
+- [x] Demo: live at `/intake/` — form, ledger, registry, and the join with 12/24/36-month windows
 - [ ] Swap the synthetic spine for real participant tokens (needs the data-sharing path)
 
 ## Local site
