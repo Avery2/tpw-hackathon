@@ -75,16 +75,34 @@ function cohort(people, days) {
 }
 
 function view(all, ctx) {
+  const records = ctx.state.records || [];
+  const aggregates = records.filter((r) => r.kind === 'aggregate');
+  const weekly = records.filter((r) => r.kind === 'weekly');
+  const followups = records.filter((r) => r.kind === 'followup' && r.status !== 'unknown');
+
   const completed = all.filter((c) => c.status === 'Completed');
   const analysable = completed.filter((c) => c.participants_completed != null && c.course_hours != null);
-  const enrollees = sum(analysable, (c) => c.participants_started);
-  const completions = sum(analysable, (c) => c.participants_completed);
+  const enrollees = sum(analysable, (c) => c.participants_started) + sum(aggregates, (r) => r.served);
+  const completions = sum(analysable, (c) => c.participants_completed) + sum(aggregates, (r) => r.completed);
   const hours = sum(analysable, (c) => c.participants_completed * c.course_hours);
-  const orgs = new Set(all.map((c) => c.org).filter(Boolean)).size;
-  const facilities = new Set(all.map((c) => c.facility).filter(Boolean)).size;
+  const orgs = new Set([...all.map((c) => c.org), ...aggregates.map((r) => r.org)].filter(Boolean)).size;
+  const facilities = new Set([...all.map((c) => c.facility), ...aggregates.map((r) => r.facility)].filter(Boolean)).size;
 
   const byId = new Map(all.map((c) => [c.id, c]));
-  const people = (ctx.state.join.participants || []).filter((p) => byId.has(p.cycle_id));
+  // Self-reported follow-ups outrank the synthetic spine for the same token.
+  const reported = followups.map((r) => ({
+    token: r.token,
+    cycle_id: null,
+    event: 'completed',
+    release_date: r.release_date,
+    new_conviction_after_days: r.status === 'new_conviction' ? (r.days ?? 0) : null,
+    self_reported: true,
+  }));
+  const seen = new Set(reported.map((r) => r.token));
+  const people = [
+    ...(ctx.state.join.participants || []).filter((p) => byId.has(p.cycle_id) && !seen.has(p.token)),
+    ...reported,
+  ];
   const released = people.filter((p) => p.release_date);
 
   const win = WINDOWS.find((w) => w.months === windowMonths) || WINDOWS[0];
@@ -111,6 +129,12 @@ function view(all, ctx) {
       <div class="kpi"><span class="v">${num(orgs)}</span><span class="l">organizations · ${num(facilities)} facilities</span></div>
       <div class="kpi accent"><span class="v">${pct(coverage)}</span><span class="l">of enrollees carry a join token</span></div>
     </div>
+
+    <p class="hint" style="margin:-18px 0 30px">
+      Activity totals combine ${num(analysable.length)} cycle records with
+      ${aggregates.length ? `${num(aggregates.length)} self-reported totals ${aggregates.length === 1 ? 'entry' : 'entries'}` : 'no self-reported totals yet'}${weekly.length ? `; ${num(weekly.length)} weekly ${weekly.length === 1 ? 'log' : 'logs'} feed the cadence line below` : ''}.
+      ${reported.length ? `${num(reported.length)} of the ${num(people.length)} joined participants came from self-reported follow-ups.` : ''}
+    </p>
 
     <div class="section">
       <h2>The join, step by step</h2>
@@ -179,8 +203,9 @@ function view(all, ctx) {
           <p style="margin:0 0 10px"><b>Read this before quoting a number.</b></p>
           <p style="margin:0 0 8px">The participant spine here is
             <code>data/intake/demo/join.json</code> and is <b>synthetic</b> — generated to exercise the
-            join, not to describe any real program or person. The comparison is observational: people
-            who finish a program differ from people who do not, in ways this view does not adjust for.</p>
+            join, not to describe any real program or person. Any follow-ups submitted through the quick
+            form are real entries and take precedence for their token, but they are self-reported by the
+            organization, not matched against CDPS records.</p>
           <p style="margin:0">What it does show is structural. A stable, non-identifying key travels from
             intake to outcome, and a static repository computes the comparison without ever holding a name.</p>
         </div>
@@ -193,6 +218,7 @@ function view(all, ctx) {
         ${barBlock('Participant hours by program year', byYear(analysable))}
         ${barBlock('Completions by program', byKey(analysable, 'program'))}
       </div>
+      ${weekly.length ? `<div style="margin-top:18px">${cadence(weekly)}</div>` : ''}
       <div style="margin-top:18px">
         ${barBlock('Participant hours by facility', byKey(analysable, 'facility', (c) => c.participants_completed * c.course_hours), 10)}
       </div>
@@ -241,6 +267,40 @@ function view(all, ctx) {
       </div>
       <p class="hint" style="margin-top:16px">${esc(S.state.schema.join.note)}</p>
     </div>`;
+}
+
+const weekLabel = (iso) => {
+  const d = new Date(`${iso}T00:00:00`);
+  return Number.isNaN(d.getTime()) ? String(iso) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
+/** Weekly logs are a leading indicator, not a count of people. Keep the unit clear. */
+function cadence(weekly) {
+  const recent = [...weekly]
+    .filter((r) => r.week_ending)
+    .sort((a, b) => b.week_ending.localeCompare(a.week_ending))
+    .slice(0, 8)
+    .reverse();
+  const sessions = sum(recent, (r) => r.sessions);
+  const attendance = sum(recent, (r) => r.attendance);
+  const max = Math.max(...recent.map((r) => r.attendance || 0), 1);
+  return `<div class="card">
+    <h3 style="margin-bottom:6px">Weekly delivery, last ${recent.length} logged ${recent.length === 1 ? 'week' : 'weeks'}</h3>
+    <p style="margin-bottom:14px">${num(sessions)} sessions · ${num(attendance)} attendances. Self-reported, one line per week.</p>
+    <div class="bars">
+      ${recent
+        .map(
+          (r) => `<div class="bar">
+            <span class="lab" title="${esc(r.program || '')}">${esc(weekLabel(r.week_ending))}</span>
+            <span class="track"><span class="fill" style="width:${Math.max(2, ((r.attendance || 0) / max) * 100)}%"></span></span>
+            <span class="val">${num(r.attendance)}</span>
+          </div>`
+        )
+        .join('')}
+    </div>
+    <p class="hint" style="margin-top:12px">Attendance counts a person once per session attended, so it is a
+      volume measure, not a headcount.</p>
+  </div>`;
 }
 
 const stage = (label, value, drop) => `<div class="stage">

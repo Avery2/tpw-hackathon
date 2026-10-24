@@ -50,8 +50,9 @@ async function gh(path, { token, method = 'GET', body } = {}) {
   return data;
 }
 
-export function issueUrl(cycle, config) {
-  const title = `[intake] ${cycle.org} — ${cycle.program} @ ${cycle.facility}`.slice(0, 240);
+export function issueUrl(cycle, config, titleOverride) {
+  const parts = [cycle.org, cycle.program, cycle.facility].filter(Boolean);
+  const title = (titleOverride || `[intake] ${parts.join(' · ') || cycle.kind || 'submission'}`).slice(0, 240);
   const payload = JSON.stringify(cycle, null, 2);
   const params = new URLSearchParams({
     title,
@@ -202,4 +203,75 @@ export function toSheetRows(cycles) {
     );
   }
   return lines.join('\n') + '\n';
+}
+
+/* ------------------------------------------------------------------ records */
+/* The quick forms write one small file each, under records/<kind>/. Same
+   transport, no cycle ceremony. */
+
+export function recordIssueUrl(record, config, title) {
+  return issueUrl(record, config, title);
+}
+
+const RECORDS_INDEX = 'data/intake/records/index.json';
+
+async function readIndex(repo, branch, token, path) {
+  try {
+    const cur = await gh(`${repo}/contents/${path}?ref=${branch}`, { token });
+    return { sha: cur.sha, json: JSON.parse(decode(cur.content)) };
+  } catch (e) {
+    if (e.status !== 404) throw e;
+    return { sha: null, json: null };
+  }
+}
+
+function decode(b64Content) {
+  return new TextDecoder().decode(Uint8Array.from(atob(b64Content.replace(/\n/g, '')), (c) => c.charCodeAt(0)));
+}
+
+/** Commit a weekly / aggregate / follow-up entry and refresh its manifest. */
+export async function commitRecord(record, config, token) {
+  const repo = config.repo;
+  const branch = config.branch || 'main';
+  const dir = `data/intake/records/${record.kind}`;
+  const file = `${dir}/${record.id}.json`;
+
+  let existingSha = null;
+  try {
+    existingSha = (await gh(`${repo}/contents/${file}?ref=${branch}`, { token })).sha;
+  } catch (e) {
+    if (e.status !== 404) throw e;
+  }
+
+  const write = await gh(`${repo}/contents/${file}`, {
+    token,
+    method: 'PUT',
+    body: {
+      message: `intake: ${record.kind} entry for ${record.org || record.program || record.token || record.id}`,
+      content: b64(JSON.stringify(record, null, 2) + '\n'),
+      branch,
+      ...(existingSha ? { sha: existingSha } : {}),
+    },
+  });
+
+  const { sha: indexSha, json } = await readIndex(repo, branch, token, RECORDS_INDEX);
+  const index = json || { schema: 'tpw.records.index/1', records: [] };
+  const entries = (index.records || []).filter((r) => !(r.kind === record.kind && r.id === record.id));
+  entries.push({ kind: record.kind, id: record.id, file: `${record.kind}/${record.id}.json` });
+  entries.sort((a, b) => `${a.kind}/${a.id}`.localeCompare(`${b.kind}/${b.id}`));
+  index.records = entries;
+  index.updated_at = new Date().toISOString();
+
+  await gh(`${repo}/contents/${RECORDS_INDEX}`, {
+    token,
+    method: 'PUT',
+    body: {
+      message: `intake: index +${record.kind}/${record.id}`,
+      content: b64(JSON.stringify(index, null, 2) + '\n'),
+      branch,
+      ...(indexSha ? { sha: indexSha } : {}),
+    },
+  });
+
+  return { kind: 'commit', url: write.content?.html_url || `${PAGES(repo, branch)}/${file}` };
 }

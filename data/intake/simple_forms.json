@@ -1,0 +1,56 @@
+{
+  "schema": "tpw.simple/1",
+  "note": "The three quick forms. Deliberately small: one screen, no steps, no derived fields. Read by intake/js/simple.js and scripts/intake_simple.py.",
+  "forms": [
+    {
+      "kind": "weekly",
+      "label": "Weekly",
+      "title": "How did this week go?",
+      "blurb": "About twenty seconds. One entry per program per week.",
+      "submit": "Log the week",
+      "fields": [
+        { "key": "program", "label": "Program", "type": "text", "required": true, "datalist": "programs", "placeholder": "Guiding Rage Into Power" },
+        { "key": "facility", "label": "Facility", "type": "facility", "required": true },
+        { "key": "week_ending", "label": "Week ending", "type": "date", "required": true },
+        { "key": "sessions", "label": "Sessions held", "type": "integer", "required": true, "min": 0, "max": 40, "half": true },
+        { "key": "attendance", "label": "People at sessions", "type": "integer", "required": true, "min": 0, "max": 2000, "half": true, "help": "Total attendances, not unique people." },
+        { "key": "notes", "label": "Anything to flag?", "type": "textarea", "max": 400, "placeholder": "Yard locked down Wednesday; made up the session Friday." }
+      ]
+    },
+    {
+      "kind": "aggregate",
+      "label": "Totals",
+      "title": "Add the numbers you already have",
+      "blurb": "For a period you have already counted. No per-cycle detail needed.",
+      "submit": "Add to the ledger",
+      "fields": [
+        { "key": "org", "label": "Organization", "type": "text", "required": true, "datalist": "orgs", "placeholder": "Defy Ventures" },
+        { "key": "program", "label": "Program", "type": "text", "required": true, "datalist": "programs", "placeholder": "CEO of Your New Life" },
+        { "key": "facility", "label": "Facility", "type": "facility", "required": true },
+        { "key": "period_start", "label": "From", "type": "date", "required": true, "half": true },
+        { "key": "period_end", "label": "To", "type": "date", "required": true, "half": true },
+        { "key": "served", "label": "People served", "type": "integer", "required": true, "min": 0, "max": 20000, "half": true },
+        { "key": "completed", "label": "People who completed", "type": "integer", "required": true, "min": 0, "max": 20000, "half": true },
+        { "key": "notes", "label": "Anything to flag?", "type": "textarea", "max": 400, "placeholder": "Counted from sign-in sheets; two sessions were cancelled." }
+      ]
+    },
+    {
+      "kind": "followup",
+      "label": "Follow-up",
+      "title": "What happened after release?",
+      "blurb": "Closes the loop for one participant, using the token from their cycle.",
+      "submit": "Record it",
+      "fields": [
+        { "key": "token", "label": "Participant token", "type": "token", "required": true, "placeholder": "32 characters, from the cycle you submitted" },
+        { "key": "release_date", "label": "Released on", "type": "date", "required": true },
+        { "key": "status", "label": "Since release", "type": "choice", "required": true, "options": [
+          { "value": "no_new_conviction", "label": "No new conviction" },
+          { "value": "new_conviction", "label": "New conviction" },
+          { "value": "unknown", "label": "Don't know" }
+        ] },
+        { "key": "days", "label": "Days after release until conviction", "type": "integer", "min": 0, "max": 3650, "show_if": { "status": "new_conviction" } },
+        { "key": "notes", "label": "Anything to flag?", "type": "textarea", "max": 400 }
+      ]
+    }
+  ]
+}

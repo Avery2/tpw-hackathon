@@ -73,9 +73,8 @@ function paint(root) {
       <div>
         <p class="eyebrow">Collective Impact intake</p>
         <h1>Report a program cycle</h1>
-        <p>One run of one program, at one facility, one yard. The form enforces the June 2026
-           glossary, computes the sheet's formula columns, and records what the sheet never
-           asked for: a participant key that can be joined to outcome records.</p>
+        <p>One report covers one program, at one prison, on one yard. Fill in what you know —
+           the totals are worked out for you.</p>
       </div>
       <div style="text-align:right">
         <span class="savebit" id="savebit">${draft.org ? 'Draft saved on this device' : 'Nothing saved yet'}</span>
@@ -118,31 +117,29 @@ function handoffBanner() {
   if (!target || target === draft.org) return '';
 
   const open = draft.org
-    ? `an unfinished draft for <strong>${esc(draft.org)}</strong>`
-    : 'an unfinished draft';
+    ? `an unfinished report for <strong>${esc(draft.org)}</strong>`
+    : 'an unfinished report';
 
   return `
     <div class="handoff">
       <div>
         <strong>You have ${open}.</strong>
-        <p class="hint">Start a new cycle for ${esc(target)} instead, with the details already on file?</p>
+        <p class="hint">Finish that one first, or start a new report for ${esc(target)}?</p>
       </div>
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn small" data-act="discard-handoff">Keep the draft</button>
-        <button class="btn small primary" data-act="apply-handoff">Start for ${esc(target)}</button>
+        <button class="btn small" data-act="discard-handoff">Finish that one</button>
+        <button class="btn small primary" data-act="apply-handoff">New report for ${esc(target)}</button>
       </div>
     </div>`;
 }
 
-/** Where the visible values came from, said plainly, on the step that shows them. */
+/** Where the values came from, in one sentence, on the step that shows them. */
 function prefillNote() {
   if (!prefilled) return '';
   return `
     <div class="prefilled">
-      <span class="tag good">on file</span>
-      <span>Filled from <a href="#/orgs">${esc(prefilled)}</a>'s profile — organization, program,
-        facility and contact come from cycles already reported. Change anything that differs; this
-        is still a new record.</span>
+      <span>We filled in what <strong>${esc(prefilled)}</strong> reported before.
+        Change anything that is different this time.</span>
     </div>`;
 }
 
@@ -480,7 +477,7 @@ function bind(root) {
     done = null;
     step = 0;
     paint(root);
-    toast(`New cycle for ${draft.org} — details on file filled in`, 'good');
+    toast(`Started a report for ${draft.org}`, 'good');
   }, signal);
 
   delegate(view, 'click', '[data-act="discard-handoff"]', () => {

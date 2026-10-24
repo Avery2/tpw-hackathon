@@ -18,9 +18,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 CYCLES = ROOT / "data" / "intake" / "cycles"
 INDEX = CYCLES / "index.json"
+RECORDS = ROOT / "data" / "intake" / "records"
+RECORDS_INDEX = RECORDS / "index.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intake_profiles import build as build_profiles, write as write_profiles  # noqa: E402
+from intake_simple import validate_record  # noqa: E402
 from intake_validate import validate  # noqa: E402
 
 
@@ -61,6 +64,31 @@ def main() -> int:
     }
     INDEX.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8")
     print(f"\n{len(entries)} indexed, {failures} failing")
+
+    # Quick-form entries live beside the cycles, one folder per kind.
+    quick: list[dict] = []
+    for path in sorted(RECORDS.glob("*/*.json")):
+        try:
+            record = json.loads(path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as e:
+            print(f"[FAIL] {path.name}: not JSON ({e})")
+            failures += 1
+            continue
+        findings = validate_record(record)
+        if findings:
+            print(f"[FAIL] {path.parent.name}/{path.name}")
+            for f in findings:
+                print(f"    error  {f['field'] or '-'}: {f['message']}")
+            failures += 1
+            continue
+        print(f"[ok]   {path.parent.name}/{path.name}")
+        quick.append({"kind": path.parent.name, "id": path.stem, "file": f"{path.parent.name}/{path.name}"})
+
+    RECORDS_INDEX.write_text(
+        json.dumps({"schema": "tpw.records.index/1", "records": quick, "updated_at": None}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"{len(quick)} quick entries indexed")
 
     # The registry is derived from the ledger, so it is rebuilt whether or not a
     # cycle failed: a profile is a convenience, and a bad cycle must not leave

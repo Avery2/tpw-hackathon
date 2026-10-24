@@ -88,8 +88,8 @@ Seven organizations' worth of rows are in there already, and the sheet has known
 ## Repo layout
 
 ```
-intake/       the form: static app, no build step, no server
-data/intake/  the ledger — schema, facilities, seed import, committed cycles, registry
+intake/       the forms: full cycle intake + three quick forms, no build step, no server
+data/intake/  the ledger — schema, facilities, seed import, cycles, quick records, registry
 scripts/      seed importer, validator, issue ingester, reindexer, profile deriver
 docs/         TPW + CDCR source documents
 data/         snapshots of the Collective Impact form
@@ -146,6 +146,30 @@ with twenty-five sites gets no facility filled in — a wrong yard is worse than
 Because the identity lives in a committed file rather than a URL, there is no prefill link to forge,
 and the join spine stays intact: a third-party form host could not derive the token in the
 submitter's browser in the first place.
+
+### Three smaller forms
+
+The full cycle intake is the right thing for a quarterly filing and the wrong thing for a
+Tuesday. `intake/simple.html` is the twenty-second version — one screen, no steps, no
+derived fields, no account:
+
+| Form | Fields | Writes |
+|---|---|---|
+| **Weekly** | program, facility, week ending, sessions held, people at sessions, a note | `records/weekly/` |
+| **Totals** | organization, program, facility, period, people served, people completed | `records/aggregate/` |
+| **Follow-up** | participant token, release date, and what happened since | `records/followup/` |
+
+The weekly log is the leading indicator: sessions and attendance, submitted while the week
+is still fresh, which is the only cadence most program staff will actually sustain. The
+totals form is for organizations that already keep their own spreadsheets and only want to
+hand over a period's numbers — it feeds the same activity totals without asking for
+per-cycle detail. The follow-up form closes the loop the whole project exists for: one
+token, one release date, one outcome, recorded by the organization when they hear it,
+months before CDCR could ever match it.
+
+Entries are validated against `data/intake/simple_forms.json`, land as one small JSON file
+each, and are indexed alongside the cycles. The issue route, download, and token commit all
+work unchanged — the workflow routes by `kind`.
 
 ### The join spine
 For each enrollee the form derives a 128-bit token in the browser:

@@ -43,7 +43,7 @@ jobs:
         run: |
           git config user.name 'tpw-intake-bot'
           git config user.email 'tpw-intake-bot@users.noreply.github.com'
-          git add data/intake/cycles
+          git add data/intake
           if git diff --cached --quiet; then
             echo "nothing to commit"
           else
@@ -111,7 +111,7 @@ jobs:
         run: |
           git config user.name 'tpw-intake-bot'
           git config user.email 'tpw-intake-bot@users.noreply.github.com'
-          git add data/intake/cycles/index.json data/intake/orgs
+          git add data/intake
           if git diff --cached --quiet; then
             echo "manifest and registry unchanged"
           else

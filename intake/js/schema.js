@@ -9,6 +9,7 @@ export const state = {
   facilities: [],
   config: null,
   seed: [], // historical rows imported from the Collective Impact sheet
+  records: [], // quick-form entries: weekly logs, aggregate totals, follow-ups
   cycles: [], // cycles committed under data/intake/cycles/
   orgs: [], // derived registry: what each organization keeps telling us
   join: { participants: [] }, // synthetic demo spine
@@ -57,6 +58,13 @@ export async function loadAll() {
     names.map((file) => getJSON(`cycles/${file}`, null, true).catch(() => null))
   );
   state.cycles = loaded.filter(Boolean);
+
+  // Quick-form entries are a separate, much shallower ledger.
+  const quickIndex = await getJSON('records/index.json', { records: [] }, true);
+  const quickFiles = (quickIndex.records || []).map((r) => r.file).filter(Boolean);
+  state.records = (
+    await Promise.all(quickFiles.map((f) => getJSON(`records/${f}`, null, true).catch(() => null)))
+  ).filter(Boolean);
   state.loadedAt = new Date();
   return state;
 }

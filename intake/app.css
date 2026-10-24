@@ -312,39 +312,46 @@ details.why summary:hover { color: var(--ink); }
 details.why p { font-size: 14.5px; color: var(--body); margin: 12px 0 0; max-width: 70ch; }
 
 /* ------------------------------------------------------------- registry */
-/* An organization is a folded list item until it is opened; at 120 of them the
-   page has to read as an index, not a dashboard. */
+/* One question, then big things to click. An organization is folded away until
+   it is chosen; at 120 of them the page has to stay a simple list. */
+
+.search {
+  width: 100%; max-width: 420px; font-size: 15px; padding: 11px 14px; margin-bottom: 18px;
+}
+
 .org { border: 1px solid var(--rule); border-radius: var(--radius); background: var(--card); margin-bottom: 9px; overflow: hidden; }
 .org[hidden] { display: none; }
-.org[open] { border-color: var(--rule-strong); box-shadow: 0 1px 2px rgba(0,0,0,.03); }
+.org[open] { border-color: var(--rule-strong); }
 .org > summary {
-  display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap;
-  padding: 15px 18px; cursor: pointer; list-style: none;
+  display: flex; align-items: baseline; gap: 8px 14px; flex-wrap: wrap;
+  padding: 16px 18px; cursor: pointer; list-style: none;
 }
 .org > summary::-webkit-details-marker { display: none; }
-.org > summary::after { content: '+'; margin-left: auto; font-family: var(--mono); font-size: 15px; color: var(--muted); }
-.org[open] > summary::after { content: '\2212'; }
+.org > summary::after { content: '\25b8'; margin-left: auto; font-size: 15px; color: var(--muted); }
+.org[open] > summary::after { content: '\25be'; }
 .org > summary:hover .org-name { color: var(--accent-dark); }
-.org-name { font-size: 15.5px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
-.org-meta { font-size: 12.5px; color: var(--muted); }
-.org-tags { display: flex; gap: 6px; flex-wrap: wrap; }
-.org-body { padding: 4px 18px 18px; border-top: 1px solid var(--rule); }
+.org-name { font-size: 16px; font-weight: 700; letter-spacing: -.01em; color: var(--ink); }
+.org-meta { font-size: 13px; color: var(--muted); }
+.org-body { padding: 2px 18px 18px; border-top: 1px solid var(--rule); }
 
-.prog { padding: 15px 0; border-bottom: 1px solid var(--rule); }
-.prog:last-child { border-bottom: 0; padding-bottom: 0; }
-.prog-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
-.prog-head strong { font-size: 14.5px; color: var(--ink); margin-right: 4px; }
-.prog-head .spacer { flex: 1; }
+.prog { padding-top: 16px; }
+.prog-name { margin: 0 0 4px; font-size: 14.5px; font-weight: 700; color: var(--ink); }
+.prog-name span { font-weight: 400; color: var(--muted); }
+.prog .hint { margin: 0 0 10px; }
 
-.sites { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px; }
+.sites { display: flex; flex-direction: column; gap: 7px; margin-top: 10px; }
 .site {
-  display: flex; align-items: center; justify-content: space-between; gap: 10px;
-  padding: 7px 11px; border: 1px solid var(--rule); border-radius: 8px;
-  font-size: 13px; color: var(--body); text-decoration: none; background: var(--paper);
+  display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 12px;
+  padding: 12px 15px; border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--paper); text-decoration: none; color: var(--body);
 }
-.site:hover { border-color: var(--accent); color: var(--accent-dark); background: var(--accent-soft); }
-.site em { font-style: normal; font-family: var(--mono); font-size: 11px; color: var(--muted); }
-.site span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.site:hover, .site:focus-visible { border-color: var(--accent); background: var(--accent-soft); }
+.site .fac { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.site .yard { font-size: 12.5px; color: var(--muted); }
+.site em {
+  font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--accent-dark);
+  border: 1px solid var(--accent); border-radius: 999px; padding: 2px 12px; background: var(--card);
+}
 
 /* Prefill told, not assumed: the values are visible, so is where they came from. */
 .prefilled {
