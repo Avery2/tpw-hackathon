@@ -382,25 +382,29 @@ And when the windows do mature, 739 completers buys you this (two-proportion tes
 80% power, baseline 40.6% from the no-CBP comparison group). Two designs, because the comparison
 arm matters more than anything TPW controls:
 
-| Effect to detect | 1:1 matched comparison (n=739 would need) | Against CDCR's full comparison group (27,328) | Available today |
+| Effect to detect | 1:1 matched comparison (completers needed) | Against CDCR's full comparison group (27,328) | Available today |
 |---|---|---|---|
-| 5 pp | 1,477 | **777** | 739 — just short |
-| 7.5 pp | 645 | 345 | 739 ✔ |
-| **10 pp** | **356** | **194** | 739 ✔ |
-| 15 pp | 151 | 86 | 739 ✔ |
-| 20 pp | 79 | 48 | 739 ✔ |
+| 5 pp | 1,480 | **766** | 739 — 27 short |
+| 7.5 pp | 648 | 332 | 739 ✔ |
+| **10 pp** | **359** | **184** | 739 ✔ |
+| 15 pp | 153 | 79 | 739 ✔ |
+| 20 pp | 82 | 43 | 739 ✔ |
+
+*Method: two-proportion test, unpooled variance, unequal allocation, α = .05 two-sided, 80% power,
+baseline 40.6%. These are the numbers the simulator computes live; an earlier draft of this table used
+a slightly different variance term and came out ~1–3% higher (777 / 1,477). Use these.*
 
 The honest claim: **against CDCR's full no-achievement comparison group, 739 completers lands just
-under the 777 needed for a 5-point claim; against a 1:1 matched comparison it is about half of the
-1,477 needed.** So "one more program year, tokenised, gets TPW to a defensible 5-point claim" is
+under the 766 needed for a 5-point claim; against a 1:1 matched comparison it is about half of the
+1,480 needed.** So "one more program year, tokenised, gets TPW to a defensible 5-point claim" is
 supportable; "TPW can prove a 5-point effect today" is not. Both statements assume every one of
 those 739 people is tokenised, released, matched, and poolable — across 31 cycles, 14 facilities,
 2 organisations with analysis-ready rows and different definitions of "completed", and 0 rows with
 a mature 3-year window.
 
 That arithmetic is the single most useful thing in this document. It converts "we need better data"
-into a specific, fundable ask: **~777 completers with real release dates, measured against CDCR's
-comparison group, buys a 5-point claim; 1,477 buy it against a 1:1 matched group.**
+into a specific, fundable ask: **~766 completers with real release dates, measured against CDCR's
+comparison group, buys a 5-point claim; 1,480 buy it against a 1:1 matched group.**
 
 ---
 
@@ -612,12 +616,12 @@ Build **A** as the prototype and present it *as the reason C exists*:
 1. **0:00–2:00 — B's map.** 3 organisations, 14 facilities, 103,064 participant-hours, 739
    completions, 56% of CDCR's funded providers are TPW members. Real, and it earns the room.
 2. **2:00–7:00 — the wall.** Put the numbers from §3.6 on screen: 0 of 31 cycles has a mature
-   3-year window; 739 completers lands *just under* the 777 needed to claim a 5-point difference;
+   3-year window; 739 completers lands *just under* the 766 needed to claim a 5-point difference;
    facility-level aggregate matching would need a 200-point individual effect. That is the problem
    statement, quantified for the first time.
 3. **7:00–12:00 — A.** The simulator. Slider moves, the answer changes, and one setting produces a
-   printable ask: *14 institutions, CDCR-provided cohort lists, ~777 tokenised completers with real
-   release dates (1,477 if the comparison group is 1:1), ROC submission by December 17.*
+   printable ask: *14 institutions, CDCR-provided cohort lists, ~766 tokenised completers with real
+   release dates (1,480 if the comparison group is 1:1), ROC submission by December 17.*
 4. **12:00–14:00 — C.** Show the intake that would generate those cohorts with tokens, so the ask
    is answerable if CDCR says yes.
 
