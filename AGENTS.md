@@ -25,6 +25,7 @@ What we've built is a static site with no server. It has a form-intake system th
 | `assets/` | Fonts and images for `index.html`. | Rarely |
 | `intake/` | The forms. `index.html` is the full cycle intake (hash routes like `#/submit`, `#/orgs`, `#/impact`, `#/guide`). `simple.html` holds the three quick forms (weekly, totals, follow-up). Plain JS modules in `intake/js/`, no build step. | Yes |
 | `intake/js/views/` | One file per screen: form, guide, impact, ledger, orgs. | Yes |
+| `simulator/` | Outcome feasibility simulator: a power analysis over the real data that shows how many completers each way of matching to CDCR outcomes would need before it could detect an effect. It also generates a printable request to CDCR's Office of Research. Plain HTML, CSS and JS, no build step. | Yes |
 | `data/intake/schema.json` | **Single source of truth** for the cycle form. The browser (`intake/js/schema.js`) and CI (`scripts/intake_validate.py`) both read it. Change the contract here, not in either reader. | Yes, carefully |
 | `data/intake/simple_forms.json` | Same idea for the three quick forms. | Yes, carefully |
 | `data/intake/facilities.json`, `config.json` | Facility list and site config the forms read. | Yes |

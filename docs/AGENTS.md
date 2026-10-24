@@ -9,6 +9,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | If you need to know… | Read |
 |---|---|
 | What each field on TPW's current form means, and the submission rules | `TPW Data Glossary Instructions.docx` |
+| What TPW's current Google Form actually asks, question by question | `tpw-google-form.md` |
 | What the state grant requires grantees to report | `RIGHT 4.0 RFA.pdf`, sections 15 (research) and 16 (reporting) |
 | What public data exists, and what doesn't | `public-data-sources.md` |
 | What TPW says about itself publicly | `tpw-website-text/` |
@@ -31,6 +32,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 
 | File | What it is |
 |---|---|
+| `tpw-google-form.md` | TPW's current Google Form ("TPW - Collective Impact Data"), rebuilt question by question from screenshots of a screen recording, because we don't have the form's own link. One submission covers one program at one yard at one prison. |
 | `public-data-sources.md` | Every public source we checked, verified 24 October 2026. Short version: *who runs what, where* is public; *how many people, how many hours* is not public for anyone. Includes dead ends, so nobody re-checks them, and how the public data joins to TPW's form. |
 | `kickoff-briefing.md` | What the hackathon pack and the kickoff video actually contain, including the video transcript, and what that implies for what we build. |
 | `right-4.0-application-example.md` | Page-by-page guide to the dummy filled application, and what's still missing from it. |
