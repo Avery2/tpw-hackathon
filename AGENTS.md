@@ -51,6 +51,7 @@ What we've built is a static site with no server. It has a form-intake system th
 - **Keep synthetic and real apart.** The participant spine and outcomes in `data/intake/demo/join.json` are made up. The activity figures from the Collective Impact sheet are real. Label synthetic numbers wherever they appear, and never present them as evidence of impact.
 - **Protect member organizations.** Members may fear retaliation from CDCR. Anything aimed at TPW or the public that shows numbers should show combined figures, not one organization's, unless TPW says otherwise. Cohorts under five are aggregated before release, per `schema.json`.
 - **Don't hand-edit derived files.** Manifests, the registry, the seed and the public CSVs are all rebuilt by scripts. Fix the input or the script, then rebuild.
+- **No code reviews, but ask before changing someone else's code.** The team pushes straight to `main`. If you're about to modify code a teammate wrote (`git log -- <path>` shows who), stop and tell the human you're working for, so they can go and talk to that person first.
 - **Pull before you push.** The CI workflow commits to `main` as `tpw-intake-bot` after pushes that touch `data/intake/`, and teammates are pushing during the hackathon.
 - **Keep it buildless and dependency-free.** No npm, no bundler, no third-party Python packages. TPW staff have to be able to keep this running after the hackathon.
 - **Check numbers before they reach TPW or the judges.** Some headline figures disagree between sources. `NOTES-data-recon.md` lists the known problems in the data.

@@ -12,6 +12,12 @@ TPW is a unified voice for the community-based organizations (CBOs) delivering r
 
 The crux: TPW can prove *activity* (enrollment, hours, completions). It cannot yet prove *outcomes* (did people stay out of prison?). The outcome data exists — in CDCR, parole, and recidivism datasets — but it lives in separate systems that have never been joined to program participation.
 
+## Working on this repo
+
+- **No code reviews needed.** Push straight to `main`.
+- **Changing someone else's code? Go and find them first.** A quick word saves you both from undoing each other's work. `git log -- <path>` shows who wrote what.
+- AI agents: start with `AGENTS.md`.
+
 ## Resources
 
 | What | Link |
