@@ -73,9 +73,19 @@ def validate_record(record: dict) -> list[dict]:
         elif ftype == "date":
             if not DATE.fullmatch(str(value)):
                 err(key, f"{field['label']} must be YYYY-MM-DD")
+        elif ftype == "list":
+            if not isinstance(value, list) or not all(isinstance(x, str) for x in value):
+                err(key, f"{field['label']} must be a list of IDs")
+            elif len(value) > field.get("max_items", 60):
+                err(key, f"{field['label']} has too many entries")
+            elif any(len(x) > field.get("max_length", 12) for x in value):
+                err(key, f"{field['label']} has an entry that is too long")
         elif ftype == "token":
             if not TOKEN.fullmatch(str(value)):
                 err(key, "Token must be 32 lowercase hex characters")
+        elif ftype == "select":
+            if value not in field.get("options", []):
+                err(key, f"{field['label']} must be one of the listed quarters")
         elif ftype == "choice":
             allowed = {o["value"] for o in field.get("options", [])}
             if value not in allowed:
@@ -102,5 +112,7 @@ def summary(record: dict) -> str:
     if kind == "weekly":
         return f"{record.get('program', '?')} · week of {record.get('week_ending', '?')}"
     if kind == "aggregate":
-        return f"{record.get('org', '?')} — {record.get('program', '?')} · {record.get('period_start', '?')}→{record.get('period_end', '?')}"
+        return f"{record.get('org', '?')} — {record.get('program', '?')} · {record.get('quarter', '?')}"
+    if kind == "session":
+        return f"{record.get('program', '?')} · {record.get('session_date', '?')} · {record.get('present_count', record.get('present', '?'))} present"
     return f"follow-up · {str(record.get('token', ''))[:8]}… · {record.get('status', '?')}"

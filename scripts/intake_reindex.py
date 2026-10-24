@@ -24,6 +24,7 @@ RECORDS_INDEX = RECORDS / "index.json"
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from intake_profiles import build as build_profiles, write as write_profiles  # noqa: E402
 from intake_simple import validate_record  # noqa: E402
+from standard_rollup import build as build_rollup, write as write_rollup  # noqa: E402
 from intake_validate import validate  # noqa: E402
 
 
@@ -89,6 +90,14 @@ def main() -> int:
         encoding="utf-8",
     )
     print(f"{len(quick)} quick entries indexed")
+
+    rollup = build_rollup()
+    path = write_rollup(rollup)
+    c = rollup["counts"]
+    print(
+        f"{c['sessions']} sessions rolled up into {c['periods']} periods "
+        f"({c['participants']} participants) -> {path.relative_to(ROOT)}"
+    )
 
     # The registry is derived from the ledger, so it is rebuilt whether or not a
     # cycle failed: a profile is a convenience, and a bad cycle must not leave

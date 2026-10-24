@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scan a roster sheet</title>
+<style>
+  @font-face { font-family:'Rubik One'; src:url('../assets/fonts/rubik-one.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-500.woff2') format('woff2'); font-weight:400 500; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-700.woff2') format('woff2'); font-weight:700 800; font-display:swap; }
+
+  :root {
+    --ink:#101010; --body:#3e3e3e; --muted:#6f6b66; --faint:#9a958e;
+    --rule:#e6e3dd; --rule-2:#d5d1c9; --card:#f8f7f4;
+    --accent:#5d8d67; --accent-dark:#42674b; --accent-soft:#eef4ef;
+    --bad:#a8432f; --bad-soft:#fbeeea;
+    --sans:'Degular', ui-sans-serif, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    --display:'Rubik One', 'Arial Black', ui-sans-serif, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:#fff; color:var(--body); font-family:var(--sans); font-size:17px; line-height:1.5; }
+  .wrap { max-width:720px; margin:0 auto; padding:26px 22px 90px; }
+  header { display:flex; align-items:center; justify-content:space-between; margin-bottom:36px; }
+  header img { width:96px; display:block; }
+  header a { font-size:13.5px; color:var(--muted); text-decoration:none; }
+  header a:hover { color:var(--ink); }
+  h1 { font-family:var(--display); font-weight:400; color:var(--ink); font-size:clamp(1.6rem,5vw,2.1rem); line-height:1.1; margin:0 0 8px; }
+  .lede { color:var(--muted); margin:0 0 26px; font-size:15.5px; }
+
+  .drop {
+    border:1.5px dashed var(--rule-2); border-radius:14px; padding:38px 22px; text-align:center;
+    background:var(--card); cursor:pointer; transition:border-color .15s, background .15s;
+  }
+  .drop:hover, .drop.over { border-color:var(--accent); background:var(--accent-soft); }
+  .drop b { display:block; color:var(--ink); font-size:16.5px; margin-bottom:4px; }
+  .drop span { color:var(--muted); font-size:13.5px; }
+  input[type=file] { display:none; }
+
+  .stage { margin-top:22px; display:none; }
+  .stage.on { display:block; }
+  .shot { position:relative; border-radius:12px; overflow:hidden; background:#111; }
+  .shot canvas { display:block; width:100%; height:auto; }
+
+  .result { margin-top:20px; }
+  .banner { display:flex; align-items:center; gap:10px; font-size:14px; padding:11px 14px; border-radius:10px; margin-bottom:18px; }
+  .banner.ok { background:var(--accent-soft); color:var(--accent-dark); }
+  .banner.bad { background:var(--bad-soft); color:var(--bad); }
+
+  .count { display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+  .count b { font-family:var(--mono); font-size:2.4rem; font-weight:500; color:var(--ink); letter-spacing:-.03em; }
+  .count span { color:var(--muted); font-size:14px; }
+
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:20px; }
+  .chip {
+    font-family:var(--mono); font-size:13px; padding:6px 10px; border-radius:7px; cursor:pointer;
+    border:1px solid var(--rule-2); background:#fff; color:var(--muted); user-select:none;
+  }
+  .chip.in { border-color:var(--accent); background:var(--accent-soft); color:var(--accent-dark); font-weight:700; }
+
+  .row { display:flex; gap:12px; flex-wrap:wrap; margin-bottom:14px; }
+  .row > * { flex:1 1 200px; }
+  label { display:block; font-size:12.5px; font-weight:700; color:var(--ink); margin-bottom:5px; }
+  input[type=text], input[type=date] {
+    width:100%; font:inherit; font-size:15.5px; padding:11px 13px; background:#fff;
+    border:1px solid var(--rule-2); border-radius:9px; color:var(--ink);
+  }
+  input:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  button.primary {
+    width:100%; margin-top:6px; font:inherit; font-size:16.5px; font-weight:700; color:#fff;
+    background:var(--accent); border:0; border-radius:999px; padding:14px 24px; cursor:pointer;
+  }
+  button.primary:hover { background:var(--accent-dark); }
+  button.primary:disabled { opacity:.45; cursor:not-allowed; }
+  .alts { margin-top:14px; display:flex; gap:16px; font-size:13.5px; color:var(--muted); }
+  .alts button { background:none; border:0; padding:0; color:var(--muted); text-decoration:underline; cursor:pointer; font:inherit; font-size:13.5px; }
+  .hint { font-size:13px; color:var(--muted); margin:8px 0 0; }
+  .done { text-align:center; padding:40px 0; }
+  .done .mark { width:56px;height:56px;border-radius:50%;background:var(--accent-soft);color:var(--accent-dark);
+                display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-size:24px; }
+  .done h2 { font-family:var(--display); font-weight:400; font-size:1.4rem; margin:0 0 8px; color:var(--ink); }
+  .done p { color:var(--muted); margin:0 0 20px; }
+  .done button { width:auto; padding:11px 24px; }
+  .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff;
+           padding:11px 18px; border-radius:9px; font-size:14px; z-index:40; }
+  .toast.bad { background:var(--bad); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a href="simple.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+    <a href="sheet.html">Print a sheet →</a>
+  </header>
+  <div id="app"></div>
+</div>
+<script src="vendor/jsqr.min.js"></script>
+<script type="module" src="js/scan.js"></script>
+</body>
+</html>

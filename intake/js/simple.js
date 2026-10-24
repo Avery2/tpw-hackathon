@@ -74,12 +74,13 @@ async function boot() {
     await Promise.all(names.map((f) => getJSON(`records/${f}`, null)))
   ).filter(Boolean);
 
+  const visible = state.forms.filter((f) => !f.hidden);
   kind = (location.hash.replace(/^#\/?/, '') || 'weekly').split('/')[0];
-  if (!state.forms.some((f) => f.kind === kind)) kind = state.forms[0]?.kind || 'weekly';
+  if (!visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'weekly';
 
   window.addEventListener('hashchange', () => {
     kind = location.hash.replace(/^#\/?/, '').split('/')[0];
-    if (!state.forms.some((f) => f.kind === kind)) kind = state.forms[0]?.kind;
+    if (!state.forms.some((f) => f.kind === kind && !f.hidden)) kind = state.forms.filter((f) => !f.hidden)[0]?.kind;
     done = null;
     errors = {};
     render();
@@ -95,6 +96,7 @@ const current = () => state.forms.find((f) => f.kind === kind);
 function render() {
   const form = current();
   document.getElementById('tabs').innerHTML = state.forms
+    .filter((f) => !f.hidden)
     .map((f) => `<a href="#${f.kind}" ${f.kind === kind ? 'aria-current="page"' : ''}>${esc(f.label)}</a>`)
     .join('');
 
@@ -190,6 +192,12 @@ function field(f) {
         placeholder="Start typing a facility" value="${esc(errors[`_v_${f.key}`] || '')}">
       <datalist id="facilities">${state.facilities.map((n) => `<option value="${esc(n)}">`).join('')}</datalist>`);
   }
+  if (f.type === 'select') {
+    return wrap(`<select id="f-${f.key}" name="${f.key}">
+      <option value="">Choose…</option>
+      ${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+    </select>`);
+  }
   if (f.type === 'choice') {
     return `<div class="field" data-key="${f.key}">
       ${label}
@@ -240,7 +248,13 @@ function collect(form, el) {
   const values = {};
 
   for (const f of form.fields) {
-    if (f.type === 'choice') {
+    if (f.type === 'select') {
+    return wrap(`<select id="f-${f.key}" name="${f.key}">
+      <option value="">Choose…</option>
+      ${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+    </select>`);
+  }
+  if (f.type === 'choice') {
       const picked = el.querySelector(`input[name="${f.key}"]:checked`);
       values[f.key] = picked ? picked.value : '';
     } else {
@@ -271,6 +285,8 @@ function collect(form, el) {
       msg = 'A token is 32 characters, 0-9 and a-f.';
     } else if (v && f.type === 'date' && !/^\d{4}-\d{2}-\d{2}$/.test(v)) {
       msg = `${f.label} needs a date.`;
+    } else if (v && f.type === 'select' && !f.options.includes(v)) {
+      msg = `Choose a ${f.label.toLowerCase()}.`;
     }
 
     if (msg) {
@@ -377,7 +393,7 @@ function recent(form) {
               form.kind === 'weekly'
                 ? `${esc(r.program || '—')} · ${r.sessions ?? '—'} sessions · ${r.attendance ?? '—'} people`
                 : form.kind === 'aggregate'
-                ? `${esc(r.program || '—')} · ${r.served ?? '—'} served · ${r.completed ?? '—'} completed`
+                ? `${esc(r.program || '—')} · ${esc(r.quarter || '—')} · ${r.served ?? '—'} served`
                 : `${esc((r.token || '').slice(0, 8))}… · ${esc(String(r.status || '').replace(/_/g, ' '))}`;
             return `<li><span>${bits}</span><span class="when">${esc(when)}</span></li>`;
           })

@@ -77,7 +77,7 @@ function cohort(people, days) {
 function view(all, ctx) {
   const records = ctx.state.records || [];
   const aggregates = records.filter((r) => r.kind === 'aggregate');
-  const weekly = records.filter((r) => r.kind === 'weekly');
+  const weekly = records.filter((r) => r.kind === 'weekly' || r.kind === 'session');
   const followups = records.filter((r) => r.kind === 'followup' && r.status !== 'unknown');
 
   const completed = all.filter((c) => c.status === 'Completed');
@@ -276,22 +276,22 @@ const weekLabel = (iso) => {
 
 /** Weekly logs are a leading indicator, not a count of people. Keep the unit clear. */
 function cadence(weekly) {
-  const recent = [...weekly]
-    .filter((r) => r.week_ending)
-    .sort((a, b) => b.week_ending.localeCompare(a.week_ending))
-    .slice(0, 8)
-    .reverse();
+  const norm = (r) =>
+    r.kind === 'session'
+      ? { date: r.session_date, sessions: 1, attendance: r.present_count ?? 0, program: r.program }
+      : { date: r.week_ending, sessions: r.sessions, attendance: r.attendance, program: r.program };
+  const recent = weekly.map(norm).filter((r) => r.date).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 8).reverse();
   const sessions = sum(recent, (r) => r.sessions);
   const attendance = sum(recent, (r) => r.attendance);
   const max = Math.max(...recent.map((r) => r.attendance || 0), 1);
   return `<div class="card">
-    <h3 style="margin-bottom:6px">Weekly delivery, last ${recent.length} logged ${recent.length === 1 ? 'week' : 'weeks'}</h3>
+    <h3 style="margin-bottom:6px">Weekly delivery, last ${recent.length} ${recent.length === 1 ? 'entry' : 'entries'}</h3>
     <p style="margin-bottom:14px">${num(sessions)} sessions · ${num(attendance)} attendances. Self-reported, one line per week.</p>
     <div class="bars">
       ${recent
         .map(
           (r) => `<div class="bar">
-            <span class="lab" title="${esc(r.program || '')}">${esc(weekLabel(r.week_ending))}</span>
+            <span class="lab" title="${esc(r.program || '')}">${esc(weekLabel(r.date))}</span>
             <span class="track"><span class="fill" style="width:${Math.max(2, ((r.attendance || 0) / max) * 100)}%"></span></span>
             <span class="val">${num(r.attendance)}</span>
           </div>`

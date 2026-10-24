@@ -94,7 +94,7 @@ Seven organizations' worth of rows are in there already, and the sheet has known
 ## Repo layout
 
 ```
-intake/       the forms: full cycle intake + three quick forms, no build step, no server
+intake/       the forms: cycle intake, quarterly entry, printable sheets, scanner
 data/intake/  the ledger — schema, facilities, seed import, cycles, quick records, registry
 scripts/      seed importer, validator, issue ingester, reindexer, profile deriver
 docs/         TPW + CDCR source documents
@@ -153,29 +153,33 @@ Because the identity lives in a committed file rather than a URL, there is no pr
 and the join spine stays intact: a third-party form host could not derive the token in the
 submitter's browser in the first place.
 
-### Three smaller forms
+### The quarterly standard
 
-The full cycle intake is the right thing for a quarterly filing and the wrong thing for a
-Tuesday. `intake/simple.html` is the twenty-second version — one screen, no steps, no
-derived fields, no account:
+The standard is one submission per organization per quarter, built from whichever of these the
+organization can actually sustain. All three land in the same ledger; `docs/standard-input.md`
+is the contract.
 
-| Form | Fields | Writes |
+| Path | Who it is for | Produces |
 |---|---|---|
-| **Weekly** | program, facility, week ending, sessions held, people at sessions, a note | `records/weekly/` |
-| **Totals** | organization, program, facility, period, people served, people completed | `records/aggregate/` |
-| **Follow-up** | participant token, release date, and what happened since | `records/followup/` |
+| **Session sheets + scan** (`intake/sheet.html`, `intake/scan.html`) | organizations that run a room | per-person attendance |
+| **Quarterly totals** (`intake/simple.html#aggregate`) | organizations that already count their own numbers | one aggregate row per program-quarter |
+| **Follow-up** (`intake/simple.html#followup`) | anyone who hears what happened after release | one outcome per participant ID |
 
-The weekly log is the leading indicator: sessions and attendance, submitted while the week
-is still fresh, which is the only cadence most program staff will actually sustain. The
-totals form is for organizations that already keep their own spreadsheets and only want to
-hand over a period's numbers — it feeds the same activity totals without asking for
-per-cycle detail. The follow-up form closes the loop the whole project exists for: one
-token, one release date, one outcome, recorded by the organization when they hear it,
-months before CDCR could ever match it.
+The join key is the part that makes analytics possible at all: **first initial + birth year**
+(`M78`), written on the sheet by the facilitator, pre-printed on every page. It is stable across
+sessions and quarters, so attendance accumulates per person — and it is not a name, so the
+ledger never holds one.
 
-Entries are validated against `data/intake/simple_forms.json`, land as one small JSON file
-each, and are indexed alongside the cycles. The issue route, download, and token commit all
-work unchanged — the workflow routes by `kind`.
+The sheet is generated, not hand-made: type a roster, print a page per session, tick the people
+in the room. A QR code anchors the page; the scanner projects the sheet geometry into the
+photograph and reads which boxes have ink. No OCR, no typing, no names digitised.
+
+`scripts/standard_rollup.py` turns sessions into `data/intake/standard/rollup.json`: sessions
+held, attendance, participants served, and **completions defined as 70% attendance of the
+sessions that person was rostered for** — not 70% of the whole program, so somebody who joined
+in week six is judged from week six. It also carries a flat `participants[]` list, which is what
+a background check iterates later. Self-submitted quarterly totals ride alongside as `reported`
+rather than replacing the computed figures.
 
 ### The join spine
 For each enrollee the form derives a 128-bit token in the browser:

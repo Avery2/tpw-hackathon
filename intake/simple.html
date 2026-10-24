@@ -30,7 +30,7 @@
 
   header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:40px; }
   header img { width: 96px; display:block; }
-  header a.back { font-size:13.5px; color:var(--muted); text-decoration:none; }
+  header a.back { font-size:13.5px; color:var(--muted); text-decoration:none; margin-left:16px; }
   header a.back:hover { color:var(--ink); }
 
   .tabs { display:flex; gap:6px; margin-bottom:34px; flex-wrap:wrap; }
@@ -54,13 +54,15 @@
   label { display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:6px; }
   label .opt { font-weight:400; color:var(--faint); margin-left:5px; }
 
-  input[type=text], input[type=date], input[type=number], textarea {
+  input[type=text], input[type=date], input[type=number], select, textarea {
     width:100%; font-family:var(--sans); font-size:17px; color:var(--ink);
     background:#fff; border:1px solid var(--rule-2); border-radius:10px;
     padding:13px 14px; -webkit-appearance:none;
   }
   textarea { min-height:72px; resize:vertical; line-height:1.45; }
-  input:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  select { appearance:none; background-image:linear-gradient(45deg,transparent 50%,#8a867f 50%),linear-gradient(135deg,#8a867f 50%,transparent 50%);
+           background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%; background-size:5px 5px,5px 5px; background-repeat:no-repeat; }
+  input:focus, select:focus, textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
   input::placeholder, textarea::placeholder { color:var(--faint); }
   input.invalid, textarea.invalid { border-color:var(--bad); }
   .err { color:var(--bad); font-size:13px; margin:6px 0 0; }
@@ -120,6 +122,8 @@
 <div class="wrap">
   <header>
     <a href="index.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+    <a class="back" href="sheet.html">Print a sheet</a>
+    <a class="back" href="scan.html">Scan</a>
     <a class="back" href="index.html">Full intake →</a>
   </header>
 
