@@ -47,10 +47,10 @@
   }
   .lede { color:var(--muted); margin:0 0 30px; font-size:16px; }
 
-  form { display:block; }
+  form { display:grid; grid-template-columns: 1fr 1fr; column-gap: 12px; align-items:start; }
+  form > * { grid-column: 1 / -1; }
   .field { margin-bottom:20px; }
-  .field.half { display:inline-block; width:calc(50% - 8px); vertical-align:top; }
-  .field.half + .field.half { margin-left:12px; }
+  .field.half { grid-column: span 1; }
   label { display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:6px; }
   label .opt { font-weight:400; color:var(--faint); margin-left:5px; }
 
@@ -67,6 +67,21 @@
   input.invalid, textarea.invalid { border-color:var(--bad); }
   .err { color:var(--bad); font-size:13px; margin:6px 0 0; }
   .help { color:var(--muted); font-size:13px; margin:6px 0 0; }
+
+  .multi { display:flex; gap:8px; }
+  .multi input { flex:1; }
+  .multi .addbtn {
+    font:inherit; font-size:14.5px; font-weight:700; padding:0 18px; border-radius:10px;
+    border:1px solid var(--accent); background:var(--accent-soft); color:var(--accent-dark); cursor:pointer;
+  }
+  .multi .addbtn:hover { background:var(--accent); color:#fff; }
+  .picked { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .pickedchip {
+    display:inline-flex; align-items:center; gap:6px; font-size:14px;
+    background:var(--accent-soft); color:var(--accent-dark); border:1px solid #d9e6dc;
+    border-radius:999px; padding:5px 8px 5px 12px;
+  }
+  .pickedchip button { background:none; border:0; color:var(--accent-dark); font-size:16px; line-height:1; cursor:pointer; padding:0 2px; }
 
   .choices { display:flex; gap:8px; flex-wrap:wrap; }
   .choices label {
@@ -113,12 +128,21 @@
   .toast.bad { background:var(--bad); }
   .toast.good { background:var(--accent-dark); }
   @media (max-width: 520px) {
-    .field.half { width:100%; }
-    .field.half + .field.half { margin-left:0; }
+    form { grid-template-columns: 1fr; }
+    .field.half { grid-column: 1 / -1; }
   }
+.internal-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  background: #101010; color: #fff; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.internal-bar b { background: #edca72; color: #000; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.internal-bar span { opacity: .82; max-width: 74ch; }
 </style>
 </head>
 <body>
+<div class="internal-bar">
+  <b>Internal</b>
+  <span>For TPW member organizations only &mdash; this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.</span>
+</div>
 <div class="wrap">
   <header>
     <a href="index.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>

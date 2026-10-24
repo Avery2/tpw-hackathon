@@ -84,9 +84,18 @@
   .toast { position:fixed; left:50%; bottom:24px; transform:translateX(-50%); background:var(--ink); color:#fff;
            padding:11px 18px; border-radius:9px; font-size:14px; z-index:40; }
   .toast.bad { background:var(--bad); }
+.internal-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  background: #101010; color: #fff; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.internal-bar b { background: #edca72; color: #000; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.internal-bar span { opacity: .82; max-width: 74ch; }
 </style>
 </head>
 <body>
+<div class="internal-bar">
+  <b>Internal</b>
+  <span>For TPW member organizations only &mdash; this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.</span>
+</div>
 <div class="wrap">
   <header>
     <a href="simple.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>

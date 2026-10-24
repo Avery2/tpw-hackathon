@@ -11,6 +11,7 @@ const state = { forms: [], config: {}, facilities: [], orgs: [], committed: [], 
 let kind = 'weekly';
 let errors = {};
 let done = null;
+let multi = []; // facilities chosen in the current form
 
 /* ------------------------------------------------------------------ utils */
 const esc = (s) =>
@@ -83,6 +84,7 @@ async function boot() {
     if (!state.forms.some((f) => f.kind === kind && !f.hidden)) kind = state.forms.filter((f) => !f.hidden)[0]?.kind;
     done = null;
     errors = {};
+    multi = [];
     render();
     window.scrollTo({ top: 0 });
   });
@@ -128,6 +130,32 @@ function render() {
     e.preventDefault();
     submit(form, el);
   });
+
+  const facInput = app.querySelector('[data-act="add-facility"]');
+  if (facInput) {
+    const add = () => {
+      const input = app.querySelector('[data-key="facilities"] input');
+      const value = (input?.value || '').trim();
+      if (!value) return;
+      const match = state.facilities.find((n) => n.toLowerCase() === value.toLowerCase());
+      if (!match) {
+        toast('Pick a facility from the list.', 'bad');
+        return;
+      }
+      if (!multi.includes(match)) multi.push(match);
+      input.value = '';
+      input.focus();
+      paintPicked();
+    };
+    app.querySelector('[data-act="add-facility"]').addEventListener('click', add);
+    app.querySelector('[data-key="facilities"] input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        add();
+      }
+    });
+    paintPicked();
+  }
 
   app.querySelector('[data-act="download"]')?.addEventListener('click', () => {
     const record = collect(form, el);
@@ -198,6 +226,19 @@ function field(f) {
       ${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
     </select>`);
   }
+  if (f.type === 'facilities') {
+    return `<div class="field" data-key="${f.key}">
+      ${label}
+      <div class="multi">
+        <input id="f-${f.key}" name="${f.key}" type="text" list="facilities" autocomplete="off"
+          placeholder="Start typing a facility, then press Enter">
+        <button type="button" class="addbtn" data-act="add-facility">Add</button>
+      </div>
+      <datalist id="facilities">${state.facilities.map((n) => `<option value="${esc(n)}">`).join('')}</datalist>
+      <div class="picked" id="picked"></div>
+      ${help}${err}
+    </div>`;
+  }
   if (f.type === 'choice') {
     return `<div class="field" data-key="${f.key}">
       ${label}
@@ -232,6 +273,22 @@ function datalist(name) {
   return `<datalist id="programs">${programs.map((p) => `<option value="${esc(p)}">`).join('')}</datalist>`;
 }
 
+function paintPicked() {
+  const host = document.getElementById('picked');
+  if (!host) return;
+  host.innerHTML = multi
+    .map(
+      (f, i) => `<span class="pickedchip">${esc(f)}<button type="button" data-drop="${i}" aria-label="Remove">×</button></span>`
+    )
+    .join('');
+  host.querySelectorAll('[data-drop]').forEach((b) => {
+    b.addEventListener('click', () => {
+      multi.splice(Number(b.dataset.drop), 1);
+      paintPicked();
+    });
+  });
+}
+
 function syncConditional(form) {
   const status = document.querySelector('input[name="status"]:checked')?.value;
   for (const f of form.fields) {
@@ -248,13 +305,11 @@ function collect(form, el) {
   const values = {};
 
   for (const f of form.fields) {
-    if (f.type === 'select') {
-    return wrap(`<select id="f-${f.key}" name="${f.key}">
-      <option value="">Choose…</option>
-      ${f.options.map((o) => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
-    </select>`);
-  }
-  if (f.type === 'choice') {
+    if (f.type === 'facilities') {
+      values[f.key] = [...multi];
+      continue;
+    }
+    if (f.type === 'choice') {
       const picked = el.querySelector(`input[name="${f.key}"]:checked`);
       values[f.key] = picked ? picked.value : '';
     } else {
@@ -275,7 +330,8 @@ function collect(form, el) {
     if (f.show_if && !Object.entries(f.show_if).every(([k, want]) => values[k] === want)) continue;
 
     let msg = null;
-    if (f.required && !v) msg = `${f.label} is required.`;
+    if (f.required && (!v || (Array.isArray(v) && v.length === 0))) msg = `${f.label} is required.`;
+    else if (Array.isArray(v)) { /* list fields validated above */ }
     else if (v && f.type === 'integer') {
       const n = Number(v);
       if (!Number.isInteger(n)) msg = `${f.label} must be a whole number.`;
@@ -309,16 +365,17 @@ function collect(form, el) {
     if (f.type === 'integer' && values[f.key] !== '') values[f.key] = Number(values[f.key]);
   }
 
-  const stamp = values.week_ending || values.period_end || values.release_date || new Date().toISOString().slice(0, 10);
+  const stamp = values.week_ending || values.period_end || values.release_date || values.quarter || new Date().toISOString().slice(0, 10);
   const slug = String(values.program || values.org || values.token || 'entry')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '')
     .slice(0, 40);
   const hash = Math.random().toString(36).slice(2, 8);
+  const stampSlug = String(stamp).toLowerCase().replace(/[^a-z0-9-]+/g, '');
 
   return {
-    id: `${form.kind}-${slug}-${stamp}-${hash}`,
+    id: `${form.kind}-${slug}-${stampSlug}-${hash}`,
     kind: form.kind,
     schema: 'tpw.simple/1',
     source: 'quick-form',

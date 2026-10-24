@@ -73,9 +73,18 @@
     .page { box-shadow:none; margin:0; transform:none; }
     @page { size: letter; margin: 0; }
   }
+.internal-bar { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+  background: #101010; color: #fff; font-size: 13px; padding: 9px 16px; text-align: center; line-height: 1.35; }
+.internal-bar b { background: #edca72; color: #000; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; font-size: 10px; padding: 3px 8px; border-radius: 999px; white-space: nowrap; }
+.internal-bar span { opacity: .82; max-width: 74ch; }
 </style>
 </head>
 <body>
+<div class="internal-bar">
+  <b>Internal</b>
+  <span>For TPW member organizations only &mdash; this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.</span>
+</div>
 
 <div class="controls noprint">
   <h1>Session roster</h1>

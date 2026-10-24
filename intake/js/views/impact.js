@@ -86,7 +86,10 @@ function view(all, ctx) {
   const completions = sum(analysable, (c) => c.participants_completed) + sum(aggregates, (r) => r.completed);
   const hours = sum(analysable, (c) => c.participants_completed * c.course_hours);
   const orgs = new Set([...all.map((c) => c.org), ...aggregates.map((r) => r.org)].filter(Boolean)).size;
-  const facilities = new Set([...all.map((c) => c.facility), ...aggregates.map((r) => r.facility)].filter(Boolean)).size;
+  const facilities = new Set([
+    ...all.map((c) => c.facility),
+    ...aggregates.flatMap((r) => r.facilities || (r.facility ? [r.facility] : [])),
+  ].filter(Boolean)).size;
 
   const byId = new Map(all.map((c) => [c.id, c]));
   // Self-reported follow-ups outrank the synthetic spine for the same token.
