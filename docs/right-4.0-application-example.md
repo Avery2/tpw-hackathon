@@ -47,10 +47,18 @@ population + non-English = 3 base points + 1 additional, capped at 4):
 
 \* = underserved institution (red font in the template)
 
-Mechanics worth knowing for any intake tool: the template's own marks are **lowercase `x`**
-meaning "this location does not house this population type," and the applicant's selections
-are **uppercase `X`**. Both end up in the same grid, so a naive text parse of a filled
-Attachment A reads the wrong thing.
+Rendered: `docs/img/right-4.0-attachment-a-filled.png`.
+
+Mechanics worth knowing for any intake tool — the grid mixes two kinds of mark:
+
+| Looks like | Means | Set by |
+|---|---|---|
+| black cell, white lowercase `x` | "this location does not house this population type" | the template, on every copy |
+| white cell, black uppercase `X`, light-blue form highlight | the applicant's selection | the applicant |
+
+So a naive text parse of a filled Attachment A reads the black cells as answers and the
+real answers as noise — the black cells are already in the blank RFA, and there are 18 of
+them on the page.
 
 ## What is still missing
 
