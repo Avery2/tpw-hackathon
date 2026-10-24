@@ -52,6 +52,19 @@ def validate_record(record: dict) -> list[dict]:
     for field in form["fields"]:
         if not _shown(field, record):
             continue
+        # A counts block (demographics) is flattened into the record, one integer
+        # per bucket, so the row stays a row in a spreadsheet. The block's own key
+        # never appears.
+        if field["type"] == "counts":
+            for item in field.get("items", []):
+                v = record.get(item["key"])
+                if v is None:
+                    continue
+                if isinstance(v, bool) or not isinstance(v, int):
+                    err(item["key"], f"{item['label']} must be a whole number")
+                elif v < 0 or (field.get("max") is not None and v > field["max"]):
+                    err(item["key"], f"{item['label']} must be between 0 and {field['max']}")
+            continue
         key = field["key"]
         value = record.get(key)
         blank = value is None or (isinstance(value, str) and not value.strip())

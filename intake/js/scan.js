@@ -32,6 +32,23 @@ function toast(msg, tone = '') {
   setTimeout(() => el.remove(), 5000);
 }
 
+/* ------------------------------------------------------------------ org */
+// One person, one organization: whoever is holding the phone. Typed once, kept
+// on the device, used as the default on every sheet after that.
+const ORG_KEY = 'tpw.scan.org.v1';
+function lastOrg() {
+  try {
+    return localStorage.getItem(ORG_KEY) || '';
+  } catch {
+    return '';
+  }
+}
+function rememberOrg(org) {
+  try {
+    if (org) localStorage.setItem(ORG_KEY, org);
+  } catch {}
+}
+
 /* ------------------------------------------------------------------ boot */
 async function boot() {
   const [config, facilities] = await Promise.all([
@@ -248,7 +265,10 @@ function renderResult() {
       <div class="row"><div><label>Present</label>
         <input id="f-present" type="number" min="0" max="60" placeholder="How many in the room"></div></div>
       <div class="row">
+        <div><label>Organization</label>
+          <input id="f-org" type="text" value="${esc(lastOrg())}"></div>
         <div><label>Program</label><input id="f-program" type="text" value=""></div>
+      </div>
         <div><label>Facility</label><input id="f-facility" type="text" value="" list="flist">
           <datalist id="flist">${state.facilities.map((f) => `<option value="${esc(f.name)}">`).join('')}</datalist></div>
       </div>
@@ -279,7 +299,7 @@ function renderResult() {
     <form id="session-form">
       <div class="row">
         <div><label for="f-org">Organization</label>
-          <input id="f-org" type="text" value="${esc(d.o || '')}"></div>
+          <input id="f-org" type="text" value="${esc(d.o || lastOrg())}"></div>
         <div><label for="f-program">Program</label>
           <input id="f-program" type="text" value="${esc(d.p || '')}"></div>
       </div>
@@ -333,10 +353,13 @@ function buildRecord() {
   const facility = ($('#f-facility')?.value || '').trim();
   const date = $('#f-date')?.value || '';
   const present = state.manual != null ? state.manual : state.marks.filter(Boolean).length;
+  const org = ($('#f-org')?.value || '').trim();
 
-  if (!program) return toast('Which program is this?', 'bad'), null;
-  if (!facility) return toast('Which facility?', 'bad'), null;
+  if (!org) return toast('Which organization is filing this?', 'bad'), null;
+  if (!program) return toast('Which program is this?', 'bad'), null;  if (!facility) return toast('Which facility?', 'bad'), null;
   if (!date) return toast('Session date is missing.', 'bad'), null;
+
+  rememberOrg(org);
 
   const slug = program.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40);
   const roster = rosterIds();
@@ -350,7 +373,7 @@ function buildRecord() {
     schema: 'tpw.simple/1',
     source: state.decoded ? 'scan' : 'scan-manual',
     submitted_at: new Date().toISOString(),
-    org: ($('#f-org')?.value || '').trim() || null,
+    org: org,
     program,
     facility,
     session_date: date,
