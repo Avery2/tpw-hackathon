@@ -16,6 +16,7 @@ What we've built is a static site with no server, hosted on GitHub Pages at <htt
 2. `docs/AGENTS.md`: what every source document is and when to read it.
 3. `NOTES-data-recon.md`: deep profile of the real Collective Impact data, its quality problems, three ways to do the join, a schema proposal and open questions for TPW.
 4. `docs/TPW Data Glossary Instructions.docx`: TPW's own field definitions for its current form. The intake schema is built from it.
+5. `docs/tpw-language.md`: how TPW talks about incarcerated people, participants, members and programs, and its mission. Read it before you write any text a member or TPW will see.
 
 ## Map
 
@@ -54,6 +55,7 @@ What we've built is a static site with no server, hosted on GitHub Pages at <htt
 ## Rules
 
 - **No personal data, ever.** This repo is public. Never commit participant names, CDCR numbers, full dates of birth or anything else that identifies a person. Participants are tracked by a short ID: first initial plus birth year, like `M78`, or an organization's own stable IDs. The facilitator writes it next to each name on the paper sheet, and the scanner never reads the name column, so only the ID reaches the Google Sheet. `docs/standard-input.md` has the full rules. The older HMAC tokens in `data/intake/schema.json`, `data/intake/demo/join.json` and `report/build.py` belong to the retired cycle form and the synthetic demo; don't build new work on them.
+- **Use TPW's words.** In the app, forms, dashboard, docs and commit messages, write the way TPW writes: "incarcerated people" (never "inmates", "prisoners" or "offenders"), "participants", "members" or "CBOs", "programs" with American spelling, and "submit". `docs/tpw-language.md` has the full list, with the evidence and the few places the avoided words are fine (names and quotations).
 - **Keep synthetic and real apart.** The participant spine and outcomes in `data/intake/demo/join.json` are made up. The activity figures from the Collective Impact sheet are real. Label synthetic numbers wherever they appear, and never present them as evidence of impact.
 - **Protect member organizations.** Members may fear retaliation from CDCR. Anything aimed at TPW or the public that shows numbers should show combined figures, not one organization's, unless TPW says otherwise. Cohorts under five are aggregated before release, per `schema.json`.
 - **Don't hand-edit derived files.** Manifests, the registry, the seed and the public CSVs are all rebuilt by scripts. Fix the input or the script, then rebuild.

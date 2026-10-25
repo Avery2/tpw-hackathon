@@ -14,6 +14,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | What the state grant requires grantees to report | `RIGHT 4.0 RFA.pdf`, sections 15 (research) and 16 (reporting) |
 | What public data exists, and what doesn't | `public-data-sources.md` |
 | What TPW says about itself publicly | `tpw-website-text/` |
+| **How TPW talks** about people in prison, programs and its mission, and which words to use or avoid (read before writing any text members or TPW will see) | `tpw-language.md` |
 | What the hackathon organisers told teams | `kickoff-briefing.md` |
 | What a filled grant application looks like | `right-4.0-application-example.md` |
 
@@ -34,6 +35,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 
 | File | What it is |
 |---|---|
+| `tpw-language.md` | How TPW talks: its mission in its own terms, the words it uses (and doesn't) for people in prison, participants, members and programs, its tone, American spelling, and a checklist for new text. Read from TPW's website, one-pager and Data Glossary on 25 October 2026. There is no official TPW style guide, so it ends with what to confirm with TPW. |
 | `faq.md` | Questions and answers about TPW, the challenge, the data and the numbers to handle with care, each with its source. Includes what TPW staff told us in person on 24 October 2026, and the questions still to ask TPW. |
 | `tpw-google-form.md` | TPW's current Google Form ("TPW - Collective Impact Data"), rebuilt question by question from screenshots of a screen recording, because we don't have the form's own link. One submission covers one program at one yard at one prison. |
 | `public-data-sources.md` | Every public source we checked, verified 24 October 2026. Short version: *who runs what, where* is public; *how many people, how many hours* is not public for anyone. Includes dead ends, so nobody re-checks them, and how the public data joins to TPW's form. |
