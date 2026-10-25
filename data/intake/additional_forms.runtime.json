@@ -1,0 +1,377 @@
+{
+  "facilities": [
+    "Avenal State Prison (ASP)",
+    "California Correctional Institution (CCI)",
+    "California Health Care Facility (CHCF), Stockton",
+    "California Institution for Men (CIM)",
+    "California Institution for Women (CIW)",
+    "California Men's Colony (CMC)",
+    "California Medical Facility (CMF)",
+    "California Rehabilitation Center (CRC)",
+    "California State Prison, Corcoran (COR)",
+    "California State Prison, Los Angeles County (LAC)",
+    "California State Prison, Sacramento (SAC)",
+    "California State Prison, Solano (SOL)",
+    "Calipatria State Prison (CAL)",
+    "California State Prison, Centinela (CEN)",
+    "Central California Women's Facility (CCWF)",
+    "Correctional Training Facility (CTF)",
+    "Folsom State Prison (FSP)",
+    "High Desert State Prison (HDSP)",
+    "Ironwood State Prison (ISP)",
+    "Kern Valley State Prison (KVSP)",
+    "Mule Creek State Prison (MCSP)",
+    "North Kern State Prison (NKSP)",
+    "Pelican Bay State Prison (PBSP)",
+    "Pleasant Valley State Prison (PVSP)",
+    "Richard J. Donovan Correctional Facility (RJD)",
+    "Salinas Valley State Prison (SVSP)",
+    "San Quentin Rehabilitation Center (SQ)",
+    "Sierra Conservation Center (SCC)",
+    "Substance Abuse Treatment Facility and State Prison, Corcoran (SATF-CSP, Corcoran)",
+    "Valley State Prison (VSP)",
+    "Wasco State Prison (WSP)"
+  ],
+  "formats": {
+    "participantId": "^(?:[A-Za-z]\\d{2}|[0-9a-f]{32})$",
+    "sheetCode": "^[A-Za-z0-9_-]{1,16}$"
+  },
+  "forms": {
+    "aggregate": {
+      "fields": {
+        "age_25_34": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "age_35_44": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "age_45_54": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "age_55_plus": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "age_under_25": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "attendance": {
+          "max": 100000,
+          "min": 0,
+          "type": "integer"
+        },
+        "completed": {
+          "max": 20000,
+          "min": 0,
+          "required": true,
+          "type": "integer"
+        },
+        "facilities": {
+          "required": true,
+          "type": "facilities"
+        },
+        "gender_men": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "gender_other": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "gender_women": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "notes": {
+          "max": 400,
+          "type": "textarea"
+        },
+        "org": {
+          "required": true,
+          "type": "text"
+        },
+        "program": {
+          "required": true,
+          "type": "text"
+        },
+        "quarter": {
+          "options": [
+            "2025-Q1",
+            "2025-Q2",
+            "2025-Q3",
+            "2025-Q4",
+            "2026-Q1",
+            "2026-Q2",
+            "2026-Q3",
+            "2026-Q4",
+            "2027-Q1",
+            "2027-Q2",
+            "2027-Q3",
+            "2027-Q4"
+          ],
+          "required": true,
+          "type": "select"
+        },
+        "race_asian_pacific": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_black": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_hispanic": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_native": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_other_unknown": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_white": {
+          "max": 20000,
+          "min": 0,
+          "type": "integer"
+        },
+        "served": {
+          "max": 20000,
+          "min": 0,
+          "required": true,
+          "type": "integer"
+        },
+        "sessions_held": {
+          "max": 500,
+          "min": 0,
+          "type": "integer"
+        }
+      },
+      "rules": [
+        {
+          "field": "completed",
+          "of": "served",
+          "type": "lte"
+        }
+      ],
+      "schema": "tpw.simple/1",
+      "sources": [
+        "quick-form"
+      ],
+      "tab": "Quarter records"
+    },
+    "followup": {
+      "fields": {
+        "days": {
+          "max": 3650,
+          "min": 0,
+          "show_if": {
+            "status": "new_conviction"
+          },
+          "type": "integer"
+        },
+        "notes": {
+          "max": 400,
+          "type": "textarea"
+        },
+        "org": {
+          "required": true,
+          "type": "text"
+        },
+        "release_date": {
+          "required": true,
+          "type": "date"
+        },
+        "status": {
+          "options": [
+            "no_new_conviction",
+            "new_conviction",
+            "unknown"
+          ],
+          "required": true,
+          "type": "choice"
+        },
+        "token": {
+          "format": "participantId",
+          "max": 12,
+          "required": true,
+          "type": "text"
+        }
+      },
+      "rules": [],
+      "schema": "tpw.simple/1",
+      "sources": [
+        "quick-form"
+      ],
+      "tab": "Follow-ups"
+    },
+    "session": {
+      "fields": {
+        "checked_count": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "facility": {
+          "required": true,
+          "type": "facility"
+        },
+        "gender_men": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "gender_other": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "gender_women": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "notes": {
+          "max": 400,
+          "type": "textarea"
+        },
+        "org": {
+          "required": true,
+          "type": "text"
+        },
+        "present": {
+          "format": "participantId",
+          "max_items": 60,
+          "max_length": 12,
+          "type": "list"
+        },
+        "present_count": {
+          "max": 60,
+          "min": 0,
+          "required": true,
+          "type": "integer"
+        },
+        "program": {
+          "required": true,
+          "type": "text"
+        },
+        "race_asian_pacific": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_black": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_hispanic": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_native": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_other_unknown": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "race_white": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "roster": {
+          "format": "participantId",
+          "max_items": 60,
+          "max_length": 12,
+          "type": "list"
+        },
+        "roster_size": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        },
+        "session_date": {
+          "required": true,
+          "type": "date"
+        },
+        "session_no": {
+          "max": 99,
+          "min": 1,
+          "type": "integer"
+        },
+        "sheet": {
+          "format": "sheetCode",
+          "max": 16,
+          "type": "text"
+        },
+        "sheet_template": {
+          "format": "sheetTemplate",
+          "max": 80,
+          "type": "text"
+        },
+        "walkins": {
+          "max": 60,
+          "min": 0,
+          "type": "integer"
+        }
+      },
+      "rules": [
+        {
+          "field": "present",
+          "of": "roster",
+          "type": "subset"
+        },
+        {
+          "field": "present_count",
+          "of": "present",
+          "type": "count"
+        },
+        {
+          "field": "roster_size",
+          "of": "roster",
+          "type": "count"
+        }
+      ],
+      "schema": "tpw.simple/1",
+      "sources": [
+        "quick-form",
+        "scan",
+        "scan-manual",
+        "paper-sheet"
+      ],
+      "tab": "Session records"
+    }
+  },
+  "revision": "97118c10b677f36b9dff9b8b10bcbb58f9dc63d7ada6e95318e3670b36caf0ba",
+  "schema": "tpw.additional-forms/1",
+  "service": "tpw.additional-forms",
+  "templates": [
+    "cdcr-signin"
+  ],
+  "version": 1
+}

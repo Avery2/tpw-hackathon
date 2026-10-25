@@ -58,6 +58,16 @@ def build(output: Path) -> int:
             shutil.copyfile(source, target)
     if not (output / 'assets/mirror-nav.js').is_file():
         raise ValueError('assets/mirror-nav.js must be tracked before building.')
+    # Publish fresh inert JSON from the same contracts the browser reads. Never
+    # deploy an old snapshot merely because someone forgot to regenerate it.
+    from build_additional_forms_runtime import render, render_receiver
+    for relative, content in [
+        ('data/intake/additional_forms.runtime.json', render()),
+        ('admin/additional-forms/LiveReceiver.gs', render_receiver()),
+    ]:
+        target = output / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding='utf-8')
     (output / '.nojekyll').touch()
     return mirrors
 
