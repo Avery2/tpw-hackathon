@@ -122,6 +122,63 @@ latter includes subsequent fixes/tests. In particular, its internal writer/helpe
 names are private (`handleSubmission_`, `appendRows_`). Carry those fixes forward
 when combining the code; don't replace tested helpers with an older auth copy.
 
+## Local end-to-end test
+
+```bash
+node admin/master-sheet/local.mjs
+# Open http://localhost:8814/
+```
+
+This serves an immutable snapshot of `origin/email-code-signin`, without checking
+out, merging, or editing that branch or your current working tree. Its setup page
+links the form, simulated code inbox, and simulated workbook. Use:
+
+- `tpwhackathondemodemo@gmail.com` → **TPW Demo (local)**.
+- `member-two@example.invalid` → **Second Demo Organization**.
+
+These memberships exist only in the simulator. Nothing is emailed, and nothing is
+written into the real Google document. Each simulated Sheets operation is checked
+against the intended master workbook ID. Reloading starts a new sign-in; requests
+for a new code have the actual backend's one-minute cooldown. The simulated rows
+survive repeated submissions but disappear when this local server stops.
+
+Automated browser test, while that server is running:
+
+```bash
+node admin/master-sheet/test/browser.mjs
+```
+
+Requires Node 22+ and Chrome (the macOS Chrome path is the default; set `CHROME_BIN`
+on other systems). The test really uses the form UI to request/verify codes and
+submit: email A, email B, then email A again. It waits through the real cooldown,
+checks distinct submission references, per-yard counts, organization attribution,
+row preservation and the common workbook ID. It also tests wrong/replayed codes,
+unsigned submissions, unlisted/disabled emails and a spoofed organization field.
+No auth bypass or shortened cooldown is used. It takes about a minute on a fresh
+simulator, longer if a previous run requested codes recently.
+
+### Same local frontend, real email and master-sheet writes
+
+Once the demo owner has deployed the auth Apps Script and added **both real test
+email addresses** to its Members tab, stop the simulator and run:
+
+```bash
+node admin/master-sheet/local.mjs --backend=https://script.google.com/macros/s/DEPLOYMENT_ID/exec
+```
+
+The browser now sends directly to that real endpoint. The fake inbox/workbook
+endpoints are disabled. Codes must arrive in the testers' actual inboxes, and rows
+must be checked in the actual master workbook after every submission. Verify that
+the deployment targets this workbook and executes as the demo owner first. A
+valid-looking URL or a success receipt alone does not verify the destination.
+
+The launcher never deploys Apps Script, accesses a Google account, or changes the
+remote Members tab. The simulated browser suite deliberately refuses real mode;
+real email + cross-origin Apps Script replies + real sheet appends require a
+separate live acceptance test. This is a test of the auth branch's snapshot, not a
+claim that its code is integrated with main's Firebase form/dashboard or that all
+other intake forms are connected.
+
 ## Checks
 
 ```bash
