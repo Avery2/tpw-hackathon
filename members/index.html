@@ -3,45 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="Enter the TPW member demo workspace.">
-<title>Members Login — TPW</title>
-<link rel="stylesheet" href="../assets/site-shell.css">
-<style>
-  * { box-sizing: border-box; }
-  body { margin: 0; min-height: 100vh; display: flex; flex-direction: column; color: #111; font: 18px/1.5 'Degular', sans-serif; }
-</style>
-<script type="module" src="../assets/site-shell.js"></script>
-</head>
-<body>
-<header class="site-header">
-  <a class="logo" href="../"><img src="../assets/img/logo.png" width="220" alt="Transformative Programming Works"></a>
-  <nav aria-label="Main navigation">
-    <a href="../site/our-members/">Our Members</a>
-    <a href="../site/ourstory/">Our Story</a>
-    <a href="../site/ourwork/">Our Work</a>
-    <a href="../site/our-team/">Our Team</a>
-    <a href="./" aria-current="page">Members Login</a>
-  </nav>
-</header>
-<main class="member-login">
-  <section class="login-card" aria-labelledby="login-heading">
-    <h1 id="login-heading">Members Login</h1>
-    <p class="login-intro">Your programs, reporting and collective impact, in one place.</p>
-    <form id="member-login" aria-describedby="login-note">
-      <button type="submit">Log in →</button>
-    </form>
-    <p id="login-note" class="login-note">Demo login — no password needed. Real authentication will replace this; use synthetic data only.</p>
-    <noscript><p>This demo workspace needs JavaScript enabled.</p></noscript>
-  </section>
-</main>
+<meta name="robots" content="noindex">
+<title>Opening log — TPW</title>
 <script type="module">
-import { getDemoAccount, setDemoAccount } from '../assets/member-session.js';
-document.querySelector('#member-login').addEventListener('submit', event => {
-  event.preventDefault();
+import { getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from '../assets/member-session.js';
+if (new URLSearchParams(location.search).has('signout')) {
+  clearDemoAccount();
+  location.replace('../?signout=1');
+} else {
   const account = getDemoAccount() || 'org-1';
   setDemoAccount(account);
-  location.assign(`../dashboard/#${account}`);
-});
+  location.replace(new URL(demoEntryPath(account), new URL('../', location.href)));
+}
 </script>
+</head>
+<body>
+<p>Opening your log… <a href="../intake/simple.html?account=org-1">Continue</a></p>
+<noscript><p>This demo needs JavaScript. No password is required.</p></noscript>
 </body>
 </html>

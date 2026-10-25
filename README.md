@@ -107,16 +107,16 @@ admin/        optional Google-side tools (Apps Script receiver, steward console)
 
 **Live:** <https://www.averychan.site/tpw-hackathon/intake/simple.html> · `/intake/` redirects here.
 
-The default **Form Demo** tab appends guided quarterly submissions to the master
+The default **Quarterly totals** tab appends guided quarterly submissions to the master
 Google Sheet through the existing Apps Script receiver. **Session** continues to
 use the separate git ledger. There is no client-side Firebase second write;
 `dashboard/` still reads Firebase and needs the receiver's server-side copy enabled
-to show new filings. **Members Login** (`/members/`) is a separate demo entry
-screen; it opens a workspace with Overview, Programs and Intake in the sidebar.
-The shared TPW header/footer remain visible throughout. Real sign-in is deferred:
-the demo account selection is **not authentication** and does not protect private
-data. Use synthetic demo data only. See `form-demo/README.md` and
-`dashboard/README.md`.
+to show new filings. **Members Login** opens **Log data** immediately, with
+**Overview** as a secondary link. There is no login screen or workspace sidebar;
+old `/members/` links enter the log automatically. The shared TPW header/footer
+remain visible throughout. Real sign-in is deferred: demo access is **not
+authentication** and does not protect private data. Use synthetic demo data only.
+See `form-demo/README.md` and `dashboard/README.md`.
 
 Four small pages, no build step, no server, no account. The browser holds the arithmetic;
 GitHub holds the data.

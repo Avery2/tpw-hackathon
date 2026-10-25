@@ -26,6 +26,7 @@ jobs:
       - name: Check published mirror wiring
         run: |
           python3 scripts/test_build_site.py
+          node members/test/session.mjs
           node members/test/mirror-nav.mjs
       - name: Build static site with mirrored-page login wiring
         run: python3 scripts/build_site.py --output "$RUNNER_TEMP/tpw-pages"

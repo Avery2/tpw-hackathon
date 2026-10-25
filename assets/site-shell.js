@@ -1,4 +1,4 @@
-import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount } from './member-session.js';
+import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js';
 
 const ROOT = new URL('../', import.meta.url);
 const url = path => new URL(path, ROOT).href;
@@ -35,7 +35,7 @@ function mountHeader() {
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
   const account = activeAccount();
-  const member = link(account ? 'Account' : 'Members Login', account ? `dashboard/#${account}` : 'members/', 'login');
+  const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   if (dashboard || intake || guided || route.startsWith('members/')) member.setAttribute('aria-current', 'page');
   nav.append(member); header.append(logo, nav);
 }
@@ -64,67 +64,44 @@ function mountFooter() {
     document.body.append(footer);
   }
 }
-function sidebarMarkup(sidebar) {
-  sidebar.replaceChildren(); sidebar.classList.add('tpw-sidebar');
-  const account = element('div', 'sidebar-account');
-  const avatar = element('span', 'sidebar-avatar'); avatar.dataset.accountInitials = '';
-  const details = element('div'); const name = element('strong'); name.dataset.accountName = '';
-  const type = element('small'); type.dataset.accountType = ''; details.append(name, type); account.append(avatar, details);
-  const menu = element('div', 'sidebar-menu'); menu.id = 'tpw-member-menu';
-  menu.append(element('div', 'sidebar-label', 'Member workspace'));
-  const nav = element('nav'); nav.setAttribute('aria-label', 'Member navigation'); menu.append(nav);
-  const toggle = element('button', 'tpw-menu-toggle', 'Menu'); toggle.type = 'button';
-  toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-controls', 'tpw-member-menu tpw-member-actions');
-  toggle.addEventListener('click', () => {
-    const open = sidebar.dataset.menuOpen !== 'true';
-    sidebar.dataset.menuOpen = String(open); toggle.setAttribute('aria-expanded', String(open));
-  });
-  const bottom = element('div', 'sidebar-bottom'); bottom.id = 'tpw-member-actions';
-  bottom.append(element('small', '', 'Demo workspace · synthetic data'));
-  const exit = link('Leave demo', 'members/?signout=1');
-  exit.addEventListener('click', () => clearDemoAccount());
-  bottom.append(exit, link('Back to website', ''));
-  sidebar.append(account, toggle, menu, bottom);
-}
+// A small horizontal navigation, not a separate application shell.
 export function updateMemberWorkspace(account, page = workspacePage) {
   if (embedded) return;
   workspacePage = page;
   if (Object.hasOwn(demoAccounts, account)) setDemoAccount(account);
-  const sidebar = document.querySelector('#dashboard-sidebar, #member-sidebar');
-  if (!sidebar) return;
-  const name = demoAccounts[account]; sidebar.hidden = !name;
-  const layout = sidebar.parentElement;
-  layout.classList.toggle('choosing-account', !name);
-  if (!name) return;
-  if (!sidebar.classList.contains('tpw-sidebar')) sidebarMarkup(sidebar);
-  sidebar.querySelector('[data-account-name]').textContent = name;
-  sidebar.querySelector('[data-account-initials]').textContent = account === 'tpw' ? 'TPW' : account.slice(-1).padStart(2, '0');
-  sidebar.querySelector('[data-account-type]').textContent = account === 'tpw' ? 'Network overview' : 'Organization workspace';
-  const links = [
-    ['overview', 'Overview', `dashboard/#${account}`],
-    ['programs', 'Programs', `dashboard/programs.html#${account}`],
-    ['intake', 'Intake', `intake/simple.html?account=${account}`]
-  ];
-  if (account !== 'tpw') links.push(['checkin', 'Quarterly check-in', `dashboard/checkin.html#${account}`]);
-  const nav = sidebar.querySelector('nav'); nav.replaceChildren();
-  for (const [key, label, path] of links) {
+  const key = getDemoAccount() || 'org-1';
+  document.querySelector('#dashboard-sidebar, #member-sidebar')?.remove();
+  document.querySelector('.dashboard-layout, .tpw-workspace')?.classList.remove('choosing-account');
+  let nav = document.querySelector('.tpw-member-nav');
+  if (!nav) {
+    nav = element('nav', 'tpw-member-nav noprint');
+    nav.setAttribute('aria-label', 'Member navigation');
+    document.querySelector('.tpw-header').after(nav);
+  }
+  nav.replaceChildren();
+  for (const [id, label, path] of [
+    ['intake', 'Log data', demoEntryPath(key)],
+    ['overview', 'Overview', `dashboard/#${key}`]
+  ]) {
     const anchor = link(label, path);
-    if (page === key) anchor.setAttribute('aria-current', 'page');
+    if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
   }
   const member = document.querySelector('.tpw-header .login');
-  if (member) { member.textContent = 'Account'; member.href = url(`dashboard/#${account}`); }
+  if (member) {
+    member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
+    member.href = url(demoEntryPath(key));
+  }
 }
 function mountIntakeWorkspace() {
   const content = document.querySelector('body > .wrap, body > main, body > .controls');
   if (!content) return;
-  const layout = element('main', 'tpw-workspace choosing-account');
-  const sidebar = element('aside', 'dashboard-sidebar'); sidebar.id = 'member-sidebar'; sidebar.hidden = true;
-  sidebar.setAttribute('aria-label', 'Member workspace');
-  const panel = element('div', 'tpw-workspace-content'); content.before(layout); layout.append(sidebar, panel);
+  const layout = element('main', 'tpw-workspace');
+  const panel = element('div', 'tpw-workspace-content'); content.before(layout); layout.append(panel);
   if (content.tagName === 'MAIN') {
     panel.append(...content.childNodes); content.remove(); // Keep one main landmark.
   } else panel.append(content);
+  if (route === 'intake/simple.html') content.prepend(element('h1', 'tpw-page-title', 'Log data'));
   const sheet = document.querySelector('body > .page');
   if (sheet) { const preview = element('div', 'tpw-sheet-preview'); preview.append(sheet); panel.append(preview); }
   updateMemberWorkspace(activeAccount(), 'intake');

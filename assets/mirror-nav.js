@@ -11,7 +11,7 @@
   }
   function destination() {
     const key = account();
-    return new URL(key ? `dashboard/#${key}` : 'members/', root).href;
+    return new URL(`intake/simple.html?account=${key || 'org-1'}`, root).href;
   }
   function wire() {
     const href = destination();

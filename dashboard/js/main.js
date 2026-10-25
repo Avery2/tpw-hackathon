@@ -15,11 +15,7 @@ function renderPrograms(data, admin) {
   const container = $('#view-sections'); container.replaceChildren();
   const summary = element('div', 'program-stats');
   for (const [label, value] of [['Programs', programs.length], ['Prisons', new Set(programs.flatMap(program => (program.assignments || []).map(item => item.code))).size], ['Submissions', data.submissions.length]]) {
-    const tile = element(label === 'Programs' ? 'a' : 'div', 'program-stat');
-    if (label === 'Programs') {
-      tile.href = `./programs.html${location.hash}`;
-      tile.setAttribute('aria-label', `View ${value} programs`);
-    }
+    const tile = element('div', 'program-stat');
     tile.append(element('strong', '', number(value)), element('span', '', label)); summary.append(tile);
   }
   const overview = element('div', 'dashboard-overview');
@@ -32,10 +28,8 @@ async function renderView(focus = false) {
   const key = location.hash.slice(1); const view = views[key];
   updateWorkspace(key, 'overview');
   $('#profile-view').hidden = !view;
-  if (!view) return; // updateWorkspace sends visitors to the member entry screen.
+  if (!view) return; // Old entry points return directly to logging.
   $('#profile-heading').textContent = view.name;
-  $('#view-type').textContent = view.admin ? 'TPW overview' : 'Organization';
-  $('#view-description').textContent = view.admin ? 'Programs across the TPW network.' : 'Your programs and the places they serve.';
   $('#dashboard-status').hidden = false;
   $('#dashboard-status').textContent = 'Loading programs…';
   $('#view-sections').replaceChildren(); $('#profile-view').setAttribute('aria-busy', 'true');

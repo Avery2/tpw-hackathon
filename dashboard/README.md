@@ -1,20 +1,25 @@
 # Organization program dashboard
 
-Open `/members/` (**Members Login**) and click **Log in**. There are no fields
-or account picker: it opens Org 1, or the last demo workspace in this tab.
-This is demo access, **not authentication**; no credentials are collected and
-it does not protect private data. `/dashboard/` opens the last demo workspace
-in this tab, or returns to the member entry screen. Org 2 and TPW View remain
-available through `/dashboard/#org-2` and `/dashboard/#tpw` for demonstrations.
+Click **Members Login** in any website header to open **Log data** immediately:
+no separate login screen or confirmation button. It uses Org 1, or the last
+demo account in this tab. This is demo access, **not authentication**; no
+credentials are collected and it does not protect private data.
 
-The website header and black TPW footer stay consistent across the home page,
-login, dashboard, programs, check-in, guided form and intake tools. Inside a
-workspace, the shared sidebar includes **Overview**, **Programs**, **Intake**,
-and organization-specific **Quarterly check-in**. On mobile, **Menu** expands
-these links. **Leave demo** clears the selected demo view, not form drafts.
+The member pages use the same white background and TPW header/footer as the
+public website. Navigation is just two horizontal links: **Log data**, then
+**Overview**. There is no outer card, sidebar, avatar, account picker or workspace
+boilerplate. The logging choices are **Quarterly totals** (first/default) and
+**Session**. Old Programs/check-in links return to logging; old `/members/`
+bookmarks also enter directly.
+
+Overview is a **demo preview**, still reading Firebase rather than Google
+Sheets. It is not a verified summary of the new Sheet filings. Its existing
+charts are retained, but the disconnected Programs register is not advertised.
+TPW and Org 2 demo previews remain at `/dashboard/#tpw` and `/dashboard/#org-2`.
 
 `assets/site-shell.js` and `assets/site-shell.css` own this shared layout;
-`assets/member-session.js` stores only the demo account key in sessionStorage.
+`assets/member-session.js` stores only the demo account key in sessionStorage
+and defines the instant-login destination.
 Direct intake links still work without a demo session. Embedded guided forms
 omit their own website chrome and resize inside the parent; printable rosters
 omit website chrome without changing the letter-sized sheet geometry.

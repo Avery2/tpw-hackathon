@@ -8,12 +8,15 @@ globalThis.sessionStorage = {
 };
 const session = await import('../../assets/member-session.js');
 assert.equal(session.getDemoAccount(), null);
+assert.equal(session.demoEntryPath(), 'intake/simple.html?account=org-1');
 for (const invalid of ['', null, undefined, '__proto__', 'constructor', 'someone@example.invalid']) {
   assert.equal(session.setDemoAccount(invalid), false);
+  assert.equal(session.demoEntryPath(invalid), 'intake/simple.html?account=org-1');
 }
 for (const account of Object.keys(session.demoAccounts)) {
   assert.equal(session.setDemoAccount(account), true);
   assert.equal(session.getDemoAccount(), account);
+  assert.equal(session.demoEntryPath(), `intake/simple.html?account=${account}`);
 }
 assert.deepEqual([...values.keys()].sort(), ['tpw.member.demo.v1', 'unrelated-draft']);
 session.clearDemoAccount();

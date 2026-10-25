@@ -107,8 +107,7 @@ function tabs() {
   const out = state.forms
     .filter((f) => !f.hidden && f.tab !== false)
     .map((f) => ({ kind: f.kind, label: f.label }));
-  out.push({ kind: DEMO_KIND, label: 'Form Demo' });
-  return out;
+  return [{ kind: DEMO_KIND, label: 'Quarterly totals' }, ...out];
 }
 
 /* ----------------------------------------------------------------- render */
@@ -218,19 +217,13 @@ function render() {
   syncConditional(form);
 }
 
-/**
- * The guided form in the tab row, not behind a door. It runs as its own document
- * because that is how it was built and because it is the wide one; the panel
- * breaks out of this page's single column to give it the width it asks for.
- * `?embed` there hides its banner, header and footer, so this tab row is the
- * only nav on the screen.
+/** The quarterly form stays embedded and resizes with each step.
+ * Its own header/footer are hidden; the parent page provides navigation.
  */
 function demoPanel() {
   return `
-    <p class="hint demo-note">Submitting this form appends to TPW’s Google Sheet.
-      <a href="#session">Session</a> entries use the separate GitHub ledger.</p>
     <div class="demo-panel">
-      <iframe src="../form-demo/?embed=1" title="Guided program form" loading="lazy"></iframe>
+      <iframe src="../form-demo/?embed=1" title="Quarterly totals form" loading="lazy"></iframe>
     </div>`;
 }
 
