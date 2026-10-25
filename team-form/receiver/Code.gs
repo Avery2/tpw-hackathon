@@ -5,11 +5,15 @@
 function getFormCapabilities() {
   return {
     ok: true, service: 'TPW guided form submissions', formVersion: 2,
-    features: { programNotes: true, currentQuarter: true, additionalData: true, headerRecovery: true }
+    features: { programNotes: true, currentQuarter: true, additionalData: true, headerRecovery: true, dashboard: true }
   };
 }
 
-function doGet() { return json(getFormCapabilities()); }
+function doGet(e) {
+  // ?view=dashboard: the dashboards read submissions back out of the sheet (Dashboard.gs).
+  if (e && e.parameter && e.parameter.view === 'dashboard') return json(dashboardView_(e.parameter));
+  return json(getFormCapabilities());
+}
 
 function doPost(e) {
   var body;

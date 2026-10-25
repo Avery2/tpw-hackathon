@@ -1,35 +1,6 @@
 import { estimateRac, estimatedSavings } from './rac.js';
-import { firestoreClient } from '../../form-demo/js/submissions.js';
-
-export async function loadDashboard(orgId) {
-  const { db, doc, getDoc, collection, query, where, getDocs } = await firestoreClient();
-  if (!orgId) {
-    const [orgs, submissions] = await Promise.all([
-      getDocs(collection(db, 'orgs')), getDocs(collection(db, 'submissions'))
-    ]);
-    const profiles = orgs.docs.map(item => ({ ...item.data(), id: item.id }));
-    const records = submissions.docs.map(item => {
-      const data = item.data();
-      const matching = profiles.filter(org => org.name === data.organization);
-      return { ...data, id: item.id, orgId: data.orgId || (matching.length === 1 ? matching[0].id : null) };
-    });
-    return { org: null, orgs: profiles, submissions: records };
-  }
-  const profile = await getDoc(doc(db, 'orgs', orgId));
-  if (!profile.exists()) throw new Error('Organization profile was not found.');
-  const org = { ...profile.data(), id: profile.id };
-  // Also find earlier form entries that predate organization IDs.
-  const [linked, legacy] = await Promise.all([
-    getDocs(query(collection(db, 'submissions'), where('orgId', '==', orgId))),
-    getDocs(query(collection(db, 'submissions'), where('organization', '==', org.name)))
-  ]);
-  const records = new Map();
-  for (const item of [...linked.docs, ...legacy.docs]) {
-    const data = item.data();
-    if (!data.orgId || data.orgId === orgId) records.set(item.id, { ...data, id: item.id, orgId });
-  }
-  return { org, orgs: [org], submissions: [...records.values()] };
-}
+// Submissions come from TPW's Google Sheet (see assets/dashboard-source.js); Firebase is retired.
+export { loadDashboard } from '../../assets/dashboard-source.js';
 
 // Latest submission for each program wins; historical updates are not added twice.
 export function existingPrograms(submissions) {
