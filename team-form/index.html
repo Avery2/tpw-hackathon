@@ -459,6 +459,8 @@
 .prefill-mode #facilities-step .yard-choices,
 .prefill-mode #facilities-step #facility-help,
 .prefill-mode #facilities-step h2:not(#facilities-question) { display: none; }
+/* Starting blank, the "Your facilities" heading says it; the question stays for screen readers and focus. */
+#demo-form:not(.prefill-mode) #facilities-question { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .prefill-mode #facility-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media(max-width: 850px) { .prefill-mode #facility-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media(max-width: 500px) { .prefill-mode #facility-cards { grid-template-columns: 1fr; } }
@@ -678,7 +680,8 @@ if (staffView) {
   for (const [selector, text] of [
     ['#organization-question', 'Which organization are you logging data for?'],
     ['#organization-help', 'Pick the organization from the list so their numbers are submitted under one name. If it isn’t listed, type it in full.'],
-    ['#prisons-heading', 'Their facilities']
+    ['#prisons-heading', 'Their facilities'],
+    ['#facility-help', 'Select each facility where they operate, then check all the yards they work in at that facility.']
   ]) for (const node of document.querySelectorAll(selector)) node.textContent = text;
   // The label beside Edit facilities, not the organization line on each program card.
   const sideLabel = document.querySelector('#edit-prisons')?.previousElementSibling;
@@ -895,7 +898,7 @@ picker.addEventListener('change', () => {
   remove.setAttribute('aria-label', `Remove ${name}`);
   const header = document.createElement('div'); header.className = 'prison-card-header'; header.append(title, remove);
   const yardGroup = document.createElement('fieldset'); yardGroup.className = 'yard-choices';
-  const legend = document.createElement('legend'); legend.textContent = 'Yards you operate in';
+  const legend = document.createElement('legend'); legend.textContent = staffView ? 'Yards they operate in' : 'Yards you operate in';
   const hint = document.createElement('p'); hint.className = 'yard-hint'; hint.textContent = 'Select all that apply.';
   yardGroup.append(legend, hint);
   const selectedYards = new Set();
