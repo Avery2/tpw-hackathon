@@ -13,6 +13,13 @@ The first two are the ones Richie set on 25 October 2026. The rest came up while
 in and shared on it. It lives in Richie's Google account and is shared with the hackathon team.
 The app's **Data** page shows it through Google's preview, so Google decides who can see it.
 
+**But the dashboards' data feed is open (checked 25 October 2026):** the quarterly script answers
+`?view=dashboard` for anyone who asks, with no sign-in. That returns every organization's name,
+programs and numbers. The script's web address sits in the public site's page source
+(`team-form/backend.js`), so anyone can read the numbers without being shared on the Sheet.
+Today everything in the Sheet is test data (marked Yes in its Test data column), so nothing real
+is exposed yet.
+
 **After the demo:**
 
 - Move the Sheet into a Google account TPW owns.
@@ -20,6 +27,7 @@ The app's **Data** page shows it through Google's preview, so Google decides who
 - Never use "Anyone with the link". The Sheet holds each organization's own numbers, and
   members may fear retaliation from CDCR if one organization's figures get out.
 - Check the **Data** page still only shows the Sheet to people it's shared with.
+- Close the open feed before any real member submits: require real sign-in for `?view=dashboard`, or switch the dashboards off until it does.
 
 ## 2. Sign-in moves over to TPW's own
 
