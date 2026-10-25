@@ -132,7 +132,7 @@ try{
  await clickFinish();await success();
  assert.deepEqual(posts.at(-1).payload.programs[0].sites,[{facilityCode:'SQ',yard:'A Yard',participants:5,completed:4},{facilityCode:'SQ',yard:'Yard 3',participants:7,completed:6}]);
  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#report-prisons .report-chips span')].map(chip=>chip.textContent)`),['A Yard','Yard 3']);
- assert(await evaluate(`document.querySelector('.report-program-yards').textContent.includes('Yard 3 (7 started, 6 completed)')`));
+ assert(await evaluate(`document.querySelector('.report-program-yards').textContent.includes('Yard 3 (7 enrolled, 6 completed)')`));
  console.log('PASS letter yards listed first; a typed-in yard (Enter or Add, no blanks, repeats or over-long names) reaches the numbers, sidebar, receipt and payload');
  // Last quarter's typed-in yard comes back listed and ticked; "a yard" matches the listed "A Yard".
  const lastReport={org:{id:'synthetic-org',name:'SYNTHETIC TEST'},submissions:[{id:'old',submittedAt:'2026-07-01T00:00:00Z',prisons:[{code:'SQ',name:'San Quentin Rehabilitation Center (SQ)',yards:['a yard','Yard 3']}],

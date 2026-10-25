@@ -994,7 +994,7 @@ function countStepper(label, kind) {
   stepper.append(down, input, up); field.append(caption, stepper);
   return field;
 }
-// One row of Participants / Completed for every prison and yard the program is ticked for.
+// One row of Participants enrolled / Completed for every prison and yard the program is ticked for.
 // Rows that stay ticked keep what was typed in them.
 function syncYardNumbers(program) {
   const holder = program.querySelector('.yard-number-rows');
@@ -1014,9 +1014,9 @@ function syncYardNumbers(program) {
       row.dataset.code = code; row.dataset.yard = yard;
       const place = document.createElement('span'); place.className = 'yard-number-place';
       place.textContent = `${code} · ${yard}`;
-      const participants = countStepper('Participants', 'participants');
+      const participants = countStepper('Participants enrolled', 'participants');
       const completed = countStepper('Completed', 'completed');
-      for (const [field, what] of [[participants, 'participants'], [completed, 'participants completed']]) {
+      for (const [field, what] of [[participants, 'participants enrolled'], [completed, 'participants completed']]) {
         const [down, up] = field.querySelectorAll('button');
         down.setAttribute('aria-label', `Decrease ${what} at ${code} ${yard}`);
         up.setAttribute('aria-label', `Increase ${what} at ${code} ${yard}`);
@@ -1186,7 +1186,7 @@ function completeProgram(program) {
       if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
     }
     if (Number(completed.value) > Number(participants.value)) {
-      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants who started.`);
+      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants enrolled.`);
       return;
     }
     counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
@@ -1485,7 +1485,7 @@ function renderSubmission(submission) {
       heading.append(name, status); block.append(heading);
       const here = programSites(program).filter(site => site.code === prison.code);
       const yards = document.createElement('p'); yards.className = 'report-program-yards';
-      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} started, ${site.completed} completed)`).join(', ')}`;
+      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} enrolled, ${site.completed} completed)`).join(', ')}`;
       block.append(yards);
       const dates = document.createElement('dl'); dates.className = 'report-dates';
       for (const [label, key] of [['Start date', 'start_date'], ['End date', 'end_date']]) {
@@ -1498,7 +1498,7 @@ function renderSubmission(submission) {
       block.append(dates);
       const metrics = document.createElement('dl'); metrics.className = 'report-program-metrics';
       const sum = kind => here.reduce((total, site) => total + site[kind], 0);
-      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants', sum('participants')], ['Completed', sum('completed')]]) {
+      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants enrolled', sum('participants')], ['Completed', sum('completed')]]) {
         const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
         const amount = document.createElement('dd'); amount.textContent = format(value);
         group.append(amount, term); metrics.append(group);
