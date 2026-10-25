@@ -146,7 +146,7 @@ try {
     await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".tpw-member-nav a[href*=\\"raw-data.html\\"]")');
     assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Data']);
     const beforeRaw = requests.length;
-    await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet")');
+    await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet") && !!document.querySelector(".tpw-member-nav [aria-current]")');
     assert.equal(await ev('document.querySelector("h1").textContent'), 'Data');
     assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Data');
     assert(await ev('document.querySelector("#sheet-access").textContent.includes("Google Sheet data, embedded")'));

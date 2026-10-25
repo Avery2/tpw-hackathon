@@ -8,7 +8,7 @@ const files = {
 };
 function render() {
   const area = document.getElementById('dashboard-report');
-  const key = location.hash.slice(1) || (location.pathname.includes('/team-dashboard/') ? getDemoAccount() || 'org-1' : '');
+  const key = location.hash.slice(1) || (location.pathname.includes('/team-dashboard/') ? getDemoAccount() || '' : '');
   const file = files[key];
   area.hidden = !file;
   if (!file) return;
