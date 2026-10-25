@@ -1,7 +1,7 @@
-import { renderSubmissionTracker } from './submission-tracker.js?v=nav-20261025';
-import { updateWorkspace } from './layout.js?v=nav-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=nav-20261025';
-import { loadingSkeleton } from './loading.js?v=nav-20261025';
+import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
+import { updateWorkspace } from './layout.js?v=tip-20261025';
+import { loadDashboard, existingPrograms } from './data.js?v=tip-20261025';
+import { loadingSkeleton } from './loading.js?v=tip-20261025';
 const $ = selector => document.querySelector(selector);
 let records = [], mode = 'cards', revision = 0, loaded = false;
 const n = value => Math.max(0, Number(value) || 0);

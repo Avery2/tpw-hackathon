@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js?v=nav-20261025';
+import { participantHistory } from './data.js?v=tip-20261025';
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {
@@ -6,6 +6,15 @@ function svgNode(tag, attrs = {}, text) {
   for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, value);
   if (text !== undefined) node.textContent = text;
   return node;
+}
+// The tooltip's look, added once to whichever dashboard page draws a chart.
+function tooltipStyle() {
+  if (document.querySelector('#chart-tooltip-style')) return;
+  const style = document.createElement('style'); style.id = 'chart-tooltip-style';
+  style.textContent = `.participants-chart { position: relative; }
+.chart-tooltip { position: absolute; transform: translate(-50%, calc(-100% - 12px)); background: #1f2a1f; color: #fff; font-size: 13px; font-weight: 700; padding: 6px 10px; border-radius: 6px; white-space: nowrap; pointer-events: none; z-index: 2; }
+.chart-tooltip[hidden] { display: none; }`;
+  document.head.append(style);
 }
 export function participantsChart(submissions) {
   const points = participantHistory(submissions);
@@ -37,10 +46,33 @@ export function participantsChart(submissions) {
     svg.append(svgNode('path', { d: line, fill: 'none', stroke: '#5d8d67', 'stroke-width': 3, 'stroke-linejoin': 'round' }));
   }
   const formatDate = day => new Date(day + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  points.forEach(point => {
+  // Hovering, tapping or tabbing to a dot shows its date and total in a small box above it.
+  // The dots are small, so a bigger invisible circle round each one also opens it; those go
+  // underneath all the dots, so a dot always wins over its neighbour's bigger circle.
+  tooltipStyle();
+  const tip = document.createElement('div'); tip.className = 'chart-tooltip'; tip.hidden = true; tip.setAttribute('aria-hidden', 'true');
+  const show = (dot, point) => {
+    tip.textContent = `${formatDate(point.day)} · ${point.participants.toLocaleString()} participants`;
+    tip.hidden = false;
+    const box = section.getBoundingClientRect(), at = dot.getBoundingClientRect(), half = tip.offsetWidth / 2;
+    // Keep the box inside the chart near either end.
+    tip.style.left = `${Math.min(Math.max(at.left + at.width / 2 - box.left, half), box.width - half)}px`;
+    tip.style.top = `${at.top - box.top}px`;
+  };
+  const hide = () => { tip.hidden = true; };
+  const dots = points.map(point => {
     const dot = svgNode('circle', { cx: x(point), cy: y(point.participants), r: 6, fill: '#5d8d67', stroke: '#fff', 'stroke-width': 2, tabindex: 0, 'aria-label': `${formatDate(point.day)}: ${point.participants} participant enrollments` });
-    dot.append(svgNode('title', {}, `${formatDate(point.day)} · ${point.participants.toLocaleString()} participants`)); svg.append(dot);
+    const target = svgNode('circle', { cx: x(point), cy: y(point.participants), r: 16, fill: 'transparent' });
+    for (const node of [dot, target]) {
+      node.addEventListener('mouseenter', () => show(dot, point));
+      node.addEventListener('click', () => show(dot, point));
+      node.addEventListener('mouseleave', hide);
+    }
+    dot.addEventListener('focus', () => show(dot, point)); dot.addEventListener('blur', hide);
+    svg.append(target);
+    return dot;
   });
+  svg.append(...dots);
   // Date labels by distance, not by count: dates bunched together (several filings in one
   // week) would otherwise print on top of each other. The last date is always shown.
   const gap = 170;
@@ -53,7 +85,7 @@ export function participantsChart(submissions) {
   for (const point of labels) {
     svg.append(svgNode('text', { x: x(point), y: height - 16, 'text-anchor': points.length === 1 ? 'middle' : point === lastPoint ? 'end' : point === points[0] ? 'start' : 'middle', class: 'chart-axis' }, formatDate(point.day)));
   }
-  section.append(svg);
+  section.append(svg, tip);
   if (points.length === 1) { const note = document.createElement('p'); note.className = 'chart-caption'; note.textContent = 'One reporting date so far. More submissions on later dates will build the trend.'; section.append(note); }
   const details = document.createElement('details'); details.className = 'chart-data';
   const summary = document.createElement('summary'); summary.textContent = 'View chart data'; details.append(summary);

@@ -1,8 +1,8 @@
-import { loadDashboard } from './data.js?v=nav-20261025';
-import { loadingSkeleton } from './loading.js?v=nav-20261025';
-import { renderSubmissionTracker } from './submission-tracker.js?v=nav-20261025';
+import { loadDashboard } from './data.js?v=tip-20261025';
+import { loadingSkeleton } from './loading.js?v=tip-20261025';
+import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
 let revision = 0;
-import { updateWorkspace } from './layout.js?v=nav-20261025';
+import { updateWorkspace } from './layout.js?v=tip-20261025';
 async function render() {
   const token = ++revision;
   const account = location.hash.slice(1);
