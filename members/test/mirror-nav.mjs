@@ -13,7 +13,8 @@ const context = {
   URL, sessionStorage: storage,
   document: {
     currentScript: { src: 'https://example.invalid/tpw-hackathon/assets/mirror-nav.js' },
-    body: {}, querySelectorAll: () => anchors,
+    // Only the account links are present: no captured logo or menu lists in this stand-in page.
+    body: {}, querySelectorAll: selector => (selector.includes('user-accounts-text-link') ? anchors : []),
     addEventListener: (type, fn) => documentHandlers.set(type, fn)
   },
   window: { addEventListener: (type, fn, capture) => { windowHandlers.set(type, fn); if (type === 'click') assert.equal(capture, true); } },
@@ -25,7 +26,7 @@ const source = await readFile(new URL('../../assets/mirror-nav.js', import.meta.
 assert.equal(source.split('import(drawerUrl)').length, 2);
 vm.runInNewContext(source.replace('import(drawerUrl)', 'loadDrawer(drawerUrl)'), context);
 documentHandlers.get('DOMContentLoaded')();
-assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html?account=org-1' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
+assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
 async function click(modifiers = {}, accountLink = true) {
   opened = imported = undefined;
   const result = { stopped: false, prevented: false };

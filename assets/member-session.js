@@ -18,6 +18,21 @@ export function setDemoAccount(account) {
 export function demoEntryPath(account = getDemoAccount()) {
   return Object.hasOwn(demoAccounts, account) ? `intake/simple.html?account=${account}` : 'intake/simple.html';
 }
+// Header links for a signed-in member; signed out there are none, so the header matches TPW's
+// own site. Used by assets/site-shell.js and, on the copied TPW pages, assets/mirror-nav.js.
+const REPORTS = Object.freeze({
+  'org-1': 'report/organizations/org-1-annual-report-2026.pdf',
+  'org-2': 'report/organizations/org-2-annual-report-2026.pdf',
+  tpw: 'report/TPW-Collective-Impact-Report-2026.pdf'
+});
+export function memberMenu(account = getDemoAccount()) {
+  if (!Object.hasOwn(demoAccounts, account)) return [];
+  return [
+    { label: 'Log data', path: demoEntryPath(account) },
+    { label: 'Dashboard', path: `team-dashboard/#${account}` },
+    { label: 'Annual report', path: REPORTS[account], newTab: true }
+  ];
+}
 export function clearDemoAccount() {
   current = null;
   try { sessionStorage.removeItem(KEY); } catch { /* No credentials are stored. */ }

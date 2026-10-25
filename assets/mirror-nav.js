@@ -12,7 +12,41 @@
   }
   function destination() {
     const key = account();
-    return new URL(`intake/simple.html?account=${key || 'org-1'}`, root).href;
+    // Signed out, no account: a link must never sign anyone in as Org 1.
+    return new URL(key ? `intake/simple.html?account=${key}` : 'intake/simple.html', root).href;
+  }
+  // Signed in, these pages get the same Log data, Dashboard and Annual report links as the rest of
+  // the site (memberMenu in assets/member-session.js); signed out, only TPW's own menu.
+  let session = null;
+  import(new URL('assets/member-session.js', root).href).then(module => { session = module; wire(); }).catch(() => {});
+  function memberItem(item, mobile) {
+    const box = document.createElement('div');
+    box.className = mobile ? 'container header-menu-nav-item header-menu-nav-item--collection' : 'header-nav-item header-nav-item--collection';
+    box.dataset.tpwMember = '';
+    const anchor = document.createElement('a');
+    anchor.href = new URL(item.path, root).href;
+    if (item.newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; }
+    if (mobile) {
+      const text = document.createElement('div'); text.className = 'header-menu-nav-item-content'; text.textContent = item.label;
+      anchor.append(text);
+    } else anchor.textContent = item.label;
+    box.append(anchor);
+    return box;
+  }
+  function placeMemberLinks() {
+    if (!session) return;
+    const menu = session.memberMenu(account());
+    const wanted = menu.map(item => item.label).join('|');
+    const lists = [
+      ...[...document.querySelectorAll('.header-nav-list')].map(list => [list, false]),
+      ...[...document.querySelectorAll('.header-menu-nav-folder[data-folder="root"] .header-menu-nav-wrapper')].map(list => [list, true])
+    ];
+    for (const [list, mobile] of lists) {
+      const current = [...list.querySelectorAll(':scope > [data-tpw-member]')];
+      if (current.map(node => node.textContent.trim()).join('|') === wanted) continue; // already right
+      current.forEach(node => node.remove());
+      list.append(...menu.map(item => memberItem(item, mobile)));
+    }
   }
   function wire() {
     const href = destination();
@@ -22,6 +56,10 @@
       if (link.textContent !== label) link.textContent = label;
       link.setAttribute('aria-haspopup', 'dialog');
     });
+    // The logo goes to the site's home page, as it does on every other page.
+    const home = new URL('index.html', root).href;
+    document.querySelectorAll('.header-title-logo a, .header-title-text a').forEach(logo => { if (logo.href !== home) logo.href = home; });
+    placeMemberLinks();
   }
   // Capture on window before the saved Squarespace scripts register handlers.
   // Rewriting href alone is insufficient: their controller intercepts the click.

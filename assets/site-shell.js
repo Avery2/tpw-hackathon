@@ -1,4 +1,4 @@
-import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js';
+import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath, memberMenu } from './member-session.js';
 import { openAccountDrawer } from './account-drawer.js';
 
 const ROOT = new URL('../', import.meta.url);
@@ -35,14 +35,15 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  // The pages members use: Log data and the team dashboard, both on TPW's Google Sheet.
+  // Log data, Dashboard and Annual report appear only once a member is signed in (memberMenu).
   // Yuki's originals at form-demo/ and dashboard/ only forward here (Firebase retired 25 Oct 2026).
-  nav.append(link('Log data', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
-  const report = link('Annual report (PDF)', 'report/TPW-Collective-Impact-Report-2026.pdf');
-  report.target = '_blank'; report.rel = 'noopener';
-  report.title = 'Combined TPW prototype report · June 2026 data · opens in a new tab';
-  nav.append(report);
+  const memberLinks = () => memberMenu().map(item => {
+    const anchor = link(item.label, item.path, 'tpw-member-link');
+    if (item.newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.title = 'PDF · opens in a new tab'; }
+    return anchor;
+  });
   const account = activeAccount();
+  nav.append(...memberLinks());
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
   member.addEventListener('click', event => {
@@ -52,6 +53,8 @@ function mountHeader() {
   window.addEventListener('tpw:member-change', () => {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
     member.href = url(demoEntryPath());
+    nav.querySelectorAll('.tpw-member-link').forEach(node => node.remove());
+    member.before(...memberLinks());
   });
   nav.append(member); header.append(logo, nav);
 }
