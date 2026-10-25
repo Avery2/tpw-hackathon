@@ -60,7 +60,7 @@ try {
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     // Signed out, Members Login opens the copy of TPW's own sign-in box (25 Oct 2026), not the
-    // account drawer. No password is ever asked for; a demo account goes straight to Log data.
+    // account drawer. No password is ever asked for; from the front page a demo account goes to Log data.
     await go('/'); await ev('sessionStorage.clear()');
     // Signed out on a copied page, Members Login must carry no account, or a new tab would sign in as Org 1.
     const mirrorLogin = 'a.user-accounts-text-link, .customerAccountLoginDesktop a, .customerAccountLoginMobile a';
@@ -132,7 +132,9 @@ try {
     assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    await click('.tpw-member-nav a[href*="team-dashboard/#"]');
+    // Sign out sticks: ?account=org-1 leaves the address and the tabs, or the page signs Org 1 back in.
+    assert(await ev('!location.search.includes("account=") && ![...document.querySelectorAll(".tpw-member-nav a")].some(a => /org-1/.test(a.href))'));
+    await go('/team-dashboard/#org-1');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
     assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
@@ -181,6 +183,13 @@ try {
   await go('/members/'); await wait('!!document.querySelector(".tpw-signin:modal")');
   assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
   console.log('PASS signed out: Dashboard and members/ ask to sign in, never Org 1');
+  // Signing in on the Dashboard stays on the Dashboard (25 Oct 2026); from TPW's pages it goes to Log data (above).
+  await go('/team-dashboard/'); await wait('document.querySelector("#dashboard-status")?.textContent.includes("Sign in to see")');
+  await click('#view-sections button'); await wait('!!document.querySelector(".tpw-signin:modal")');
+  await click('.tpw-signin-demo button[data-account="tpw"]');
+  await wait('location.pathname.endsWith("/team-dashboard/") && location.hash === "#tpw" && !!document.querySelector(".participants-chart svg") && !document.querySelector(".tpw-signin:modal")');
+  assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), 'tpw');
+  console.log('PASS signing in on the Dashboard stays on the Dashboard');
   await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('!!document.querySelector(".rac-panel")'));
   // The printable roster, scanner and packet reader were removed (25 Oct 2026); old links land on Log data.

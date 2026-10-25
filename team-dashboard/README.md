@@ -26,8 +26,9 @@ Dashboard. This only hides the tab; Google's sharing is still what decides who c
 "Welcome to TPW" panel from thetpw.org/account/login, measured on 25 Oct 2026 (480px
 white box, Email, Password, dark **Sign in** button, Forgot Password? and Create account).
 The password box is switched off and nothing is checked. Typing one of the demo emails, or
-pressing **Org 1**, **Org 2** or **TPW staff**, picks that demo account and goes straight to
-**Log data**; any other email gets "This demo only has three accounts". Forgot Password? and
+pressing **Org 1**, **Org 2** or **TPW staff**, picks that demo account. On **Log data**, the
+**Dashboard** or **Data** you stay on that page, now signed in; from the front page or the copy
+of TPW's site you go to **Log data**. Any other email gets "This demo only has three accounts". Forgot Password? and
 Create account just say they aren't part of the demo.
 
 Signed in, **Account** opens a visual mock of TPW's existing plain white
