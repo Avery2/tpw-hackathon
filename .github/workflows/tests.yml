@@ -9,9 +9,9 @@ name: Tests
 # if an earlier one fails, so you see all the failures at once.
 #
 # Left out on purpose: members/test/browser.mjs. It has failed since at least
-# commit 7a9ae50 (25 Oct 2026, 00:46): it times out waiting for the account
-# menu on the second page it opens. Add it as a step here once it passes
-# locally.
+# commit 7a9ae50 (25 Oct 2026, 00:46), and still did after a35a1e6: it times
+# out waiting for the account menu to open. Add it as a step here once it
+# passes locally.
 
 on:
   push:
@@ -30,9 +30,10 @@ jobs:
     timeout-minutes: 15
     steps:
       # Full history, not just the latest commit: team-form/test/receiver.cjs
-      # reads apps-script/Rows.gs from two older commits on the
-      # email-code-signin and sheet-firebase branches, because Rows.gs isn't
-      # on main yet. If those branches are deleted, that step fails.
+      # reads two versions of apps-script/Rows.gs from older commits on the
+      # email-code-signin and sheet-firebase branches. (The newer one is the
+      # same as team-form/receiver/Rows.gs.) If those branches are deleted,
+      # that step fails.
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -57,6 +58,18 @@ jobs:
       - name: Quarter dates and last quarter's prefill
         if: ${{ !cancelled() }}
         run: node team-form/test/reporting.mjs
+
+      - name: Dashboard read from the Sheet, Google faked
+        if: ${{ !cancelled() }}
+        run: node team-form/test/dashboard.cjs
+
+      - name: Dashboard and prefill loader in the page
+        if: ${{ !cancelled() }}
+        run: node --test team-form/test/dashboard-source.mjs
+
+      - name: Dashboard tests catch planted bugs
+        if: ${{ !cancelled() }}
+        run: node team-form/test/dashboard-mutants.mjs
 
       - name: Second Apps Script, Google faked
         if: ${{ !cancelled() }}
