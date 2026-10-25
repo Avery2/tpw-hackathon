@@ -2,7 +2,7 @@
 
 Screenshots of the TPW data collection tool, used in the staff guide for Ken and Quan (a Google Slides deck). They show what a member and a staff person see, step by step.
 
-**Everything on screen is made up.** The form was filled in with "Sample Organization (made-up data)" and "Sample Reading Circle (made-up)". The submit button was intercepted, so nothing was sent to the real Google Sheet. The reference code (56F98641) is an example copied from a demo row in the sheet.
+**Everything on screen is made up.** The form was filled in with "Sample Organization (made-up data)" and "Sample Reading Circle (made-up)". The submit button was intercepted, so nothing was sent to the real Google Sheet. The reference code (56F98641) is an example copied from the demo rows in the sheet.
 
 Taken on 25 October 2026 from `main`, with headless Chrome at twice the normal pixel density. The date boxes are shown in US order (mm/dd/yyyy), the way a Californian member's browser draws them.
 
