@@ -27,7 +27,7 @@ receiver to support it; the older deployed receiver has not been verified to do 
 Filling the form in again every quarter is the burden TPW's members complain about, so the
 form starts from the organization's last report when it knows who is filing. Log data passes
 the member's demo account to the embedded form as `?account=org-1`; the form then loads that
-organization's earlier submissions (`js/last-quarter.js`, reading the Firebase demo data),
+organization's earlier submissions (`js/last-quarter.js`, reading TPW's Google Sheet through the receiver, plus the sample organizations),
 fills in its prisons, yards and program names, and asks only this quarter's dates and numbers.
 Participants and completions are never carried forward: they start at 0. It opens straight on
 the first program ("1 of 5: …"), because the numbers change every quarter and the prisons
@@ -68,7 +68,7 @@ The comments remain available for retry after the receiver is upgraded.
   remains a legacy git-backed path; historical records are not deleted/migrated.
 - New quick records do not automatically feed the historical git-derived report
   rollup. The receipt confirms a Sheet append, not report/dashboard inclusion.
-- No browser-side Firebase second write is made. The dashboard still reads Firebase;
+- Firebase is retired (25 Oct 2026). The dashboards read the Google Sheet through the receiver;
   it needs the receiver's optional server-side copy to display new submissions.
   The live receiver confirmed a Sheet append but did not report a dashboard-copy
   status, so new dashboard data is **not** claimed as verified.

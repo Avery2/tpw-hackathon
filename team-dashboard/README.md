@@ -1,3 +1,5 @@
+**Update 25 Oct 2026: Firebase is retired.** This dashboard now reads TPW's Google Sheet through the receiver (`team-form/receiver/Dashboard.gs`, `?view=dashboard`) via `assets/dashboard-source.js`, so new filings do reach it. The made-up Org 1 and Org 2 come from `data/demo/dashboard-sample.json`. The notes below about Firebase describe the earlier version.
+
 # Dashboard, data and demo account entry
 
 **Dashboard** (`team-dashboard/index.html`) preserves the original participant chart,

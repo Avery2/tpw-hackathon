@@ -1,5 +1,5 @@
 {
- "_about": "Made-up sample organizations and submissions, shown with a Sample data badge so the dashboards have something to display. Exported once from the retired Firebase project on 25 Oct 2026. Real submissions come from TPW's Google Sheet. Delete this file (or empty its lists) when real data is enough.",
+ "_about": "Made-up sample organizations and submissions, always shown with a Sample data badge (assets/dashboard-source.js adds it) so the dashboards have something to display. Exported once from the retired Firebase project on 25 Oct 2026. Real submissions come from TPW's Google Sheet. Delete this file (or empty its lists) when real data is enough.",
  "orgs": [
   {
    "id": "org-1",
@@ -159,8 +159,7 @@
     "quarter": 1,
     "year": 2024
    },
-   "submittedAt": "2024-03-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-03-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2024-q1",
@@ -279,8 +278,7 @@
     "year": 2024,
     "quarter": 1
    },
-   "submittedAt": "2024-03-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-03-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2024-q2",
@@ -400,8 +398,7 @@
     "year": 2024,
     "quarter": 2
    },
-   "submittedAt": "2024-06-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-06-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2024-q2",
@@ -520,8 +517,7 @@
     "year": 2024,
     "quarter": 2
    },
-   "submittedAt": "2024-06-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-06-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2024-q3",
@@ -641,8 +637,7 @@
     "quarter": 3,
     "year": 2024
    },
-   "submittedAt": "2024-09-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-09-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2024-q3",
@@ -761,8 +756,7 @@
     "quarter": 3,
     "year": 2024
    },
-   "submittedAt": "2024-09-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-09-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2024-q4",
@@ -882,8 +876,7 @@
     "quarter": 4,
     "year": 2024
    },
-   "submittedAt": "2024-12-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-12-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2024-q4",
@@ -1002,8 +995,7 @@
     "year": 2024,
     "quarter": 4
    },
-   "submittedAt": "2024-12-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2024-12-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2025-q1",
@@ -1123,8 +1115,7 @@
     "year": 2025,
     "quarter": 1
    },
-   "submittedAt": "2025-03-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-03-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2025-q1",
@@ -1243,8 +1234,7 @@
     "quarter": 1,
     "year": 2025
    },
-   "submittedAt": "2025-03-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-03-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2025-q2",
@@ -1364,8 +1354,7 @@
     "year": 2025,
     "quarter": 2
    },
-   "submittedAt": "2025-06-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-06-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2025-q2",
@@ -1484,8 +1473,7 @@
     "year": 2025,
     "quarter": 2
    },
-   "submittedAt": "2025-06-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-06-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2025-q3",
@@ -1605,8 +1593,7 @@
     "quarter": 3,
     "year": 2025
    },
-   "submittedAt": "2025-09-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-09-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2025-q3",
@@ -1725,8 +1712,7 @@
     "quarter": 3,
     "year": 2025
    },
-   "submittedAt": "2025-09-30T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-09-30T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-1-2025-q4",
@@ -1846,8 +1832,7 @@
     "year": 2025,
     "quarter": 4
    },
-   "submittedAt": "2025-12-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-12-31T18:00:00Z"
   },
   {
    "id": "sample-quarter-org-2-2025-q4",
@@ -1966,8 +1951,7 @@
     "year": 2025,
     "quarter": 4
    },
-   "submittedAt": "2025-12-31T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2025-12-31T18:00:00Z"
   },
   {
    "id": "history-org-1-2026-05-01",
@@ -2047,8 +2031,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-05-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-05-01",
@@ -2127,8 +2110,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-05-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-05-01",
@@ -2163,8 +2145,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-05-01",
@@ -2199,8 +2180,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-05-01",
@@ -2235,8 +2215,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-05-01",
@@ -2271,8 +2250,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-05-15",
@@ -2352,8 +2330,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-05-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-05-15",
@@ -2432,8 +2409,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-05-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-05-15",
@@ -2468,8 +2444,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-05-15",
@@ -2504,8 +2479,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-05-15",
@@ -2540,8 +2514,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-05-15",
@@ -2576,8 +2549,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-05-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-05-15T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-06-01",
@@ -2657,8 +2629,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-06-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-06-01",
@@ -2737,8 +2708,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-06-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-06-01",
@@ -2773,8 +2743,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-06-01",
@@ -2809,8 +2778,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-06-01",
@@ -2845,8 +2813,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-06-01",
@@ -2881,8 +2848,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-06-15",
@@ -2962,8 +2928,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-06-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-06-15",
@@ -3042,8 +3007,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-06-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-06-15",
@@ -3078,8 +3042,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-06-15",
@@ -3114,8 +3077,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-06-15",
@@ -3150,8 +3112,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-06-15",
@@ -3186,8 +3147,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-06-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-06-15T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-07-01",
@@ -3267,8 +3227,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-07-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-07-01",
@@ -3347,8 +3306,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-07-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-07-01",
@@ -3383,8 +3341,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-07-01",
@@ -3419,8 +3376,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-07-01",
@@ -3455,8 +3411,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-07-01",
@@ -3491,8 +3446,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-07-15",
@@ -3572,8 +3526,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-07-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-07-15",
@@ -3652,8 +3605,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-07-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-07-15",
@@ -3688,8 +3640,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-07-15",
@@ -3724,8 +3675,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-07-15",
@@ -3760,8 +3710,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-07-15",
@@ -3796,8 +3745,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-07-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-07-15T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-08-01",
@@ -3877,8 +3825,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-08-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-08-01",
@@ -3957,8 +3904,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-08-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-08-01",
@@ -3993,8 +3939,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-08-01",
@@ -4029,8 +3974,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-08-01",
@@ -4065,8 +4009,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-08-01",
@@ -4101,8 +4044,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-08-15",
@@ -4182,8 +4124,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-08-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-08-15",
@@ -4262,8 +4203,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-08-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-08-15",
@@ -4298,8 +4238,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-08-15",
@@ -4334,8 +4273,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-08-15",
@@ -4370,8 +4308,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-08-15",
@@ -4406,8 +4343,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-08-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-08-15T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-09-01",
@@ -4487,8 +4423,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-09-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-09-01",
@@ -4567,8 +4502,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-09-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-09-01",
@@ -4603,8 +4537,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-09-01",
@@ -4639,8 +4572,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-09-01",
@@ -4675,8 +4607,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-09-01",
@@ -4711,8 +4642,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-09-15",
@@ -4792,8 +4722,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-09-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-09-15",
@@ -4872,8 +4801,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-09-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-09-15",
@@ -4908,8 +4836,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-09-15",
@@ -4944,8 +4871,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-09-15",
@@ -4980,8 +4906,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-09-15",
@@ -5016,8 +4941,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-09-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-09-15T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-10-01",
@@ -5097,8 +5021,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-10-01",
@@ -5177,8 +5100,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-01T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-10-01",
@@ -5213,8 +5135,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-10-01",
@@ -5249,8 +5170,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-10-01",
@@ -5285,8 +5205,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-10-01",
@@ -5321,8 +5240,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-01T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-01T20:00:00Z"
   },
   {
    "id": "history-org-1-2026-10-15",
@@ -5402,8 +5320,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T18:00:00Z"
   },
   {
    "id": "history-org-2-2026-10-15",
@@ -5482,8 +5399,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-15T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T18:00:00Z"
   },
   {
    "id": "history-rac-community-leadership-2026-10-15",
@@ -5518,8 +5434,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T20:00:00Z"
   },
   {
    "id": "history-rac-peer-mentoring-2026-10-15",
@@ -5554,8 +5469,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T20:00:00Z"
   },
   {
    "id": "history-rac-reentry-skills-2026-10-15",
@@ -5590,8 +5504,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T20:00:00Z"
   },
   {
    "id": "history-rac-restorative-intensive-2026-10-15",
@@ -5626,8 +5539,7 @@
      ]
     }
    ],
-   "submittedAt": "2026-10-15T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-15T20:00:00Z"
   },
   {
    "id": "sample-org-1-1",
@@ -5689,8 +5601,7 @@
      "participantsCompleted": 21
     }
    ],
-   "submittedAt": "2026-10-24T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T18:00:00Z"
   },
   {
    "id": "sample-org-1-2",
@@ -5725,8 +5636,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-24T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T18:00:00Z"
   },
   {
    "id": "sample-org-2-1",
@@ -5786,8 +5696,7 @@
      "participantsCompleted": 19
     }
    ],
-   "submittedAt": "2026-10-24T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T18:00:00Z"
   },
   {
    "id": "sample-org-2-2",
@@ -5822,8 +5731,7 @@
      "participantsCompleted": 0
     }
    ],
-   "submittedAt": "2026-10-24T18:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T18:00:00Z"
   },
   {
    "id": "sample-rac-community-leadership",
@@ -5862,8 +5770,7 @@
     "quarter": 4,
     "year": 2026
    },
-   "submittedAt": "2026-10-24T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T20:00:00Z"
   },
   {
    "id": "sample-rac-peer-mentoring",
@@ -5902,8 +5809,7 @@
     "quarter": 4,
     "year": 2026
    },
-   "submittedAt": "2026-10-24T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T20:00:00Z"
   },
   {
    "id": "sample-rac-reentry-skills",
@@ -5942,8 +5848,7 @@
     "quarter": 4,
     "year": 2026
    },
-   "submittedAt": "2026-10-24T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T20:00:00Z"
   },
   {
    "id": "sample-rac-restorative-intensive",
@@ -5982,8 +5887,7 @@
     "quarter": 4,
     "year": 2026
    },
-   "submittedAt": "2026-10-24T20:00:00Z",
-   "synthetic": true
+   "submittedAt": "2026-10-24T20:00:00Z"
   }
  ]
 }

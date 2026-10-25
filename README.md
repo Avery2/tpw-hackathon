@@ -115,9 +115,10 @@ both scanner paths and the older quick Quarter/follow-up forms instead target a
 and separate approved tabs in the same workbook. Its new endpoint is configured
 in `intake/backend.js`; a live synthetic Session and same-ID retry returned the
 same confirmed receipt. The Session frontend uses this separate endpoint.
-There is no client-side Firebase second write. **Dashboard** retains the original
-charts and estimates, with a visible notice that its Firebase preview is not
-connected to new Sheet filings. **Data** separately embeds the
+Firebase is retired (25 Oct 2026): **Dashboard** keeps the original charts and
+estimates but now reads the same Google Sheet through the receiver (`?view=dashboard`,
+`team-form/receiver/Dashboard.gs`), so new filings appear; made-up sample
+organizations are badged. **Data** separately embeds the
 [reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0),
 with an **Open in Google Sheets** fallback link. Google's existing sharing
 permissions apply; nothing is published publicly.
