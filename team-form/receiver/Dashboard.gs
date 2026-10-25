@@ -36,7 +36,7 @@ function dashboardData_(rows, filter) {
     status: col(HEADER[4]), start: col(HEADER[5]), end: col(HEADER[6]), hours: col(HEADER[7]),
     participants: col(HEADER[8]), completed: col(HEADER[9]), notes: col('Notes'),
     reference: col('Submission ID'), submittedAt: col('Submitted At'),
-    quarter: col('Reporting Quarter'), extra: col('Additional data (JSON)')
+    quarter: col('Reporting Quarter'), extra: col('Additional data (JSON)'), test: col('Test data')
   };
   var missing = ['facility', 'yard', 'organization', 'program', 'participants', 'completed', 'reference']
     .filter(function (key) { return at[key] < 0; });
@@ -63,6 +63,7 @@ function dashboardData_(rows, filter) {
         submittedAt: dashboardMoment_(cell(at.submittedAt)),
         reportingPeriod: dashboardPeriod_(saved.submission.reportingPeriod, cell(at.quarter)),
         previousSubmissionId: dashboardText_(saved.submission.previousSubmissionId),
+        testData: false,
         prisons: [],
         programs: [],
         byProgram: {},
@@ -70,6 +71,8 @@ function dashboardData_(rows, filter) {
       };
       order.push(reference);
     }
+    // A submission is test data if any of its rows says so in the Test data column.
+    if (/^yes$/i.test(dashboardText_(cell(at.test)))) submission.testData = true;
     var facility = dashboardText_(cell(at.facility));
     var code = dashboardText_(saved.site.facilityCode) || codeFor[facility] || facility;
     var yard = dashboardText_(cell(at.yard));

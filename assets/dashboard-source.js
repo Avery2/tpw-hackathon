@@ -3,8 +3,8 @@
 // Firebase was retired on 25 Oct 2026.
 //
 // Made-up sample organizations (Org 1, Org 2) come from data/demo/dashboard-sample.json and
-// carry synthetic: true, so pages show a Sample data badge. Real submissions only ever come
-// from the sheet.
+// carry synthetic: true, so pages show a Sample data badge; so do sheet rows marked Yes in its
+// Test data column. Real submissions only ever come from the sheet.
 
 const SAMPLE = new URL('../data/demo/dashboard-sample.json', import.meta.url);
 const BACKEND = new URL('../team-form/backend.js', import.meta.url);
@@ -42,7 +42,8 @@ async function readSheet(org) {
   }
   return {
     orgs: Array.isArray(data.orgs) ? data.orgs : [],
-    submissions: (Array.isArray(data.submissions) ? data.submissions : []).map(record => ({ ...record, synthetic: false }))
+    // Rows marked Yes in the sheet's Test data column get the same badge as the sample data.
+    submissions: (Array.isArray(data.submissions) ? data.submissions : []).map(record => ({ ...record, synthetic: record.testData === true }))
   };
 }
 

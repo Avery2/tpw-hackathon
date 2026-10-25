@@ -62,6 +62,15 @@ test('the TPW view asks the sheet for everyone, and adds the sample organization
   assert.deepEqual(data.orgs.map((o) => o.id), ['org-1', 'org-2'], 'Org 1 from the sheet is the same organization as the sample Org 1');
 });
 
+test('sheet rows marked as test data get the Sample data badge; real ones never do', async () => {
+  sheetReply = { ok: true, orgs: [], submissions: [sheetSubmission({ testData: true }), sheetSubmission({ id: 'REF00002', testData: false }), sheetSubmission({ id: 'REF00003' })] };
+  const data = await loadDashboard(null);
+  const badge = (id) => data.submissions.find((s) => s.id === id).synthetic;
+  assert.equal(badge('REF00001'), true);
+  assert.equal(badge('REF00002'), false);
+  assert.equal(badge('REF00003'), false, 'missing means real, not test');
+});
+
 test('one organization\'s view asks the sheet for that organization only, by ID and name', async () => {
   const data = await loadDashboard('org-2');
   assert.equal(requests[0].searchParams.get('org'), 'org-2');

@@ -25,10 +25,15 @@ const MUTANTS = [
   ['team-form/receiver/Dashboard.gs', "valueRenderOption: 'UNFORMATTED_VALUE',", "valueRenderOption: 'FORMATTED_VALUE',", 'reads numbers as display text'],
   ['team-form/receiver/Code.gs', "if (e && e.parameter && e.parameter.view === 'dashboard')", "if (false)", 'never answers the dashboard'],
   ['assets/dashboard-source.js', "(record => ({ ...record, synthetic: true }))", "(record => ({ ...record }))", 'stops badging sample data'],
-  ['assets/dashboard-source.js', "(record => ({ ...record, synthetic: false }))", "(record => ({ ...record, synthetic: true }))", 'badges real submissions as sample data'],
+  ['assets/dashboard-source.js', "synthetic: record.testData === true", "synthetic: true", 'badges real submissions as sample data'],
   ['assets/dashboard-source.js', "const own = record => (record.orgId ? record.orgId === orgId : record.organization === org.name);", "const own = () => true;", 'trusts the sheet to filter organizations'],
   ['assets/dashboard-source.js', "  if (!data || data.ok !== true) {", "  if (false) {", 'shows sample data when the sheet can\'t be read'],
   ['assets/dashboard-source.js', "    address.searchParams.set('org', org.id);\n", "", 'asks the sheet for everyone in an organization\'s view'],
+  ['team-form/receiver/Code.gs', "? 'Yes' : 'No';", "? 'Yes' : 'Yes';", 'marks every filing as test data'],
+  ['team-form/receiver/Code.gs', "/^(yes|true)$/i.test(", "/^(yes|true|no)$/i.test(", 'treats TEST_DATA = No as Yes'],
+  ['team-form/receiver/Code.gs', "  if (at >= 0) return at;\n", "", 'makes a new Test data column on every filing'],
+  ['team-form/receiver/Dashboard.gs', "if (/^yes$/i.test(dashboardText_(cell(at.test)))) submission.testData = true;", "", 'ignores the Test data column'],
+  ['assets/dashboard-source.js', "synthetic: record.testData === true", "synthetic: false", 'never badges test rows'],
   ['dashboard/js/data.js', "export { loadDashboard } from '../../assets/dashboard-source.js';", "export async function loadDashboard() { return { org: null, orgs: [], submissions: [] }; }", 'the original dashboard stops using the sheet']
 ];
 

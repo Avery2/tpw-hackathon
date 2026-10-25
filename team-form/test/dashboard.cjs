@@ -256,3 +256,71 @@ test('numbers and dates edited by hand in the sheet are read sensibly', () => {
   assert.equal(p.endDate, '2026-10-01', 'a sheet day count is turned into a date');
   assert.equal(p.courseHours, 12);
 });
+
+// ---- the Test data column -----------------------------------------------------------------
+const testColumn = (r) => r.grid[0].indexOf('Test data');
+const flags = (r) => r.grid.slice(1).map((row) => readBack(row[testColumn(r)]));
+
+test('with no TEST_DATA setting, rows are marked No (a fresh copy for real use never says Yes)', () => {
+  const r = makeReceiver();
+  r.post(payload());
+  assert.ok(testColumn(r) >= 0, 'the Test data column is made on the first filing');
+  assert.deepEqual(flags(r), ['No', 'No', 'No']);
+  assert.equal(r.get({ view: 'dashboard' }).submissions[0].testData, false);
+});
+
+test('with TEST_DATA set to Yes, every row of a filing is marked Yes and the dashboard knows', () => {
+  for (const value of ['Yes', 'yes', 'TRUE', ' true ']) {
+    const r = makeReceiver({ props: { TEST_DATA: value } });
+    r.post(payload());
+    assert.deepEqual(flags(r), ['Yes', 'Yes', 'Yes'], JSON.stringify(value));
+    assert.equal(r.get({ view: 'dashboard' }).submissions[0].testData, true);
+  }
+  for (const value of ['No', 'no', '', 'maybe', '0']) {
+    const r = makeReceiver({ props: { TEST_DATA: value } });
+    r.post(payload());
+    assert.deepEqual(flags(r), ['No', 'No', 'No'], JSON.stringify(value));
+  }
+});
+
+test('the Test data column is made once, after Additional data, however many filings follow', () => {
+  const r = makeReceiver({ props: { TEST_DATA: 'Yes' } });
+  r.post(payload());
+  r.post(payload());
+  const head = r.grid[0];
+  assert.equal(head.filter((h) => h === 'Test data').length, 1);
+  assert.equal(head.indexOf('Test data'), head.indexOf('Additional data (JSON)') + 1);
+  assert.equal(flags(r).length, 6);
+});
+
+test('a Test data column staff already added, anywhere, is used where it is', () => {
+  const r = makeReceiver();
+  r.post(payload());
+  // Staff move it to the front, as column A.
+  const from = testColumn(r);
+  for (const row of r.grid) { const [v] = row.splice(from, 1); row.unshift(v); }
+  const before = r.grid[0].length;
+  const r2rows = r.grid.length;
+  r.context.PropertiesService.getScriptProperties = () => ({ getProperty: (k) => ({ SPREADSHEET_ID: 'sheet-1', ALLOW_UNSIGNED: 'true', TEST_DATA: 'Yes' })[k] ?? null });
+  r.post(payload());
+  assert.equal(r.grid[0].length, before, 'no second Test data column');
+  assert.deepEqual(r.grid.slice(r2rows).map((row) => readBack(row[0])), ['Yes', 'Yes', 'Yes']);
+});
+
+test('two Test data headings stop the filing with a plain message, and nothing is written', () => {
+  const r = makeReceiver();
+  r.post(payload());
+  r.grid[0].push('Test data');
+  const rows = r.grid.length;
+  const reply = r.post(payload());
+  assert.equal(reply.ok, false);
+  assert.match(reply.errors.join(' '), /duplicate Test data/);
+  assert.equal(r.grid.length, rows);
+});
+
+test('a submission counts as test data if any of its rows says Yes, even if typed by staff', () => {
+  const r = makeReceiver();
+  r.post(payload());
+  r.grid[2][testColumn(r)] = 'yes';
+  assert.equal(r.get({ view: 'dashboard' }).submissions[0].testData, true);
+});
