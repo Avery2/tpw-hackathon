@@ -24,9 +24,21 @@ function renderPrograms(data, admin) {
   container.append(overview, racPanel(programs));
 }
 
+// Signed out: no organization's numbers, just a way to sign in.
+function showSignedOut() {
+  $('#profile-view').hidden = false;
+  $('#profile-heading').textContent = 'Dashboard';
+  $('#dashboard-status').hidden = false;
+  $('#dashboard-status').textContent = 'Sign in to see your organization’s dashboard.';
+  const signIn = element('button', 'action switch', 'Members Login'); signIn.type = 'button';
+  signIn.addEventListener('click', () => document.querySelector('.tpw-header .login')?.click());
+  $('#view-sections').replaceChildren(signIn);
+}
+
 async function renderView(focus = false) {
   const token = ++revision;
-  const key = location.hash.slice(1) || getDemoAccount() || 'org-1'; const view = views[key];
+  const key = location.hash.slice(1) || getDemoAccount(); const view = views[key];
+  if (!key) { showSignedOut(); return; } // never fall back to Org 1
   updateWorkspace(key, 'overview');
   $('#profile-view').hidden = !view;
   if (!view) return; // Old entry points return directly to logging.

@@ -14,9 +14,9 @@ export function setDemoAccount(account) {
   return true;
 }
 // Direct destination used by the account drawer's Intake link and legacy entries.
+// Signed out, it carries no account: following a link must never sign anyone in as Org 1.
 export function demoEntryPath(account = getDemoAccount()) {
-  const key = Object.hasOwn(demoAccounts, account) ? account : 'org-1';
-  return `intake/simple.html?account=${key}`;
+  return Object.hasOwn(demoAccounts, account) ? `intake/simple.html?account=${account}` : 'intake/simple.html';
 }
 export function clearDemoAccount() {
   current = null;

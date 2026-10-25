@@ -1,8 +1,9 @@
 # Guided form → master Google Sheet
 
 Serve the repository with `python3 -m http.server 8787` and open
-`http://localhost:8787/team-form/`. The same form is embedded in the intake's
-**Form Demo** tab. No build or package install is needed.
+`http://localhost:8787/team-form/`. The same form is embedded in **Log data**
+(`intake/simple.html`), under **Quarterly totals**; that is how members reach it. The page's
+own title is "Quarterly report". No build or package install is needed.
 
 **Finish and submit** posts to the existing Apps Script web app configured in
 `backend.js`. Its `SPREADSHEET_ID` points at the chosen master workbook:

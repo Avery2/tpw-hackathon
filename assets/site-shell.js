@@ -35,7 +35,7 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  nav.append(link('Form Demo', 'form-demo/'), link('Dashboard', 'dashboard/'));
+  nav.append(link('Dashboard', 'dashboard/'));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
@@ -89,7 +89,7 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   if (embedded) return;
   workspacePage = page;
   if (Object.hasOwn(demoAccounts, account)) setDemoAccount(account);
-  const key = getDemoAccount() || 'org-1';
+  const key = getDemoAccount(); // null when signed out: the tabs then carry no account
   document.querySelector('#dashboard-sidebar, #member-sidebar')?.remove();
   document.querySelector('.dashboard-layout, .tpw-workspace')?.classList.remove('choosing-account');
   let nav = document.querySelector('.tpw-member-nav');
@@ -99,7 +99,7 @@ export function updateMemberWorkspace(account, page = workspacePage) {
     document.querySelector('.tpw-header').after(nav);
   }
   nav.replaceChildren();
-  const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', `team-dashboard/#${key}`]];
+  const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', key ? `team-dashboard/#${key}` : 'team-dashboard/']];
   if (seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
   for (const [id, label, path] of tabs) {
     const anchor = link(label, path);
@@ -151,6 +151,7 @@ function mount() {
   if (leaveDataForMembers()) return;
   document.body.classList.add('tpw-site');
   mountHeader(); mountFooter();
+  if (new URLSearchParams(location.search).has('signin') && !getDemoAccount()) openAccountDrawer(document.querySelector('.tpw-header .login'));
   if (intake || guided) mountIntakeWorkspace();
   if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
   sizeForms();

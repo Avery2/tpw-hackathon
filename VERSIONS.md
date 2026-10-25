@@ -10,7 +10,7 @@ This branch retains both implementations for comparison.
 | `/team-form/` | Team guided form from main | Google Apps Script / Google Sheet |
 | `/intake/simple.html` | Team intake and embedded quarterly form | Google Apps Script / Google Sheet |
 
-The shared website header links to Form Demo and Dashboard. Members Login retains the team intake entry. Team member navigation points to its alternate dashboard. No database records or rules were changed during this integration.
+The shared website header links to Dashboard (`/dashboard/`). Its Form Demo link was removed on 25 Oct 2026, because `/form-demo/` only forwards to `/team-form/`. Members Login opens the sign-in box; signed out, nothing opens as Org 1. Team member navigation points to its alternate dashboard. No database records or rules were changed during this integration.
 
 The original local `form-demo` branch is preserved at `a8ec343`. This integration is on `combined-versions`; no push is automatic.
 

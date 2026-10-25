@@ -6,19 +6,20 @@
 <meta name="robots" content="noindex">
 <title>Opening log — TPW</title>
 <script type="module">
-import { getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from '../assets/member-session.js';
+import { getDemoAccount, clearDemoAccount, demoEntryPath } from '../assets/member-session.js';
 if (new URLSearchParams(location.search).has('signout')) {
   clearDemoAccount();
   location.replace('../?signout=1');
 } else {
-  const account = getDemoAccount() || 'org-1';
-  setDemoAccount(account);
-  location.replace(new URL(demoEntryPath(account), new URL('../', location.href)));
+  const account = getDemoAccount();
+  // Signed out: open the sign-in box on the home page rather than signing in as Org 1.
+  if (!account) location.replace('../?signin');
+  else location.replace(new URL(demoEntryPath(account), new URL('../', location.href)));
 }
 </script>
 </head>
 <body>
-<p>Opening your log… <a href="../intake/simple.html?account=org-1">Continue</a></p>
+<p>Opening your log… <a href="../intake/simple.html">Continue</a></p>
 <noscript><p>This demo needs JavaScript. No password is required.</p></noscript>
 </body>
 </html>
