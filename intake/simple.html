@@ -29,12 +29,12 @@
   }
   .wrap { max-width: 640px; margin: 0 auto; padding: 26px 22px 90px; }
 
-  header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:40px; }
+  header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:24px; }
   header img { width: 96px; display:block; }
   header a.back { font-size:13.5px; color:var(--muted); text-decoration:none; margin-left:16px; }
   header a.back:hover { color:var(--ink); }
 
-  .tabs { display:flex; gap:6px; margin-bottom:34px; flex-wrap:wrap; }
+  .tabs { display:flex; gap:6px; margin-bottom:24px; flex-wrap:wrap; }
   .tabs a {
     text-decoration:none; font-size:14.5px; color:var(--muted);
     padding:7px 15px; border-radius:999px; border:1px solid transparent;
@@ -63,9 +63,8 @@
     display:block; width:100%; border:0; background:#fff;
     height: calc(100vh - 208px); min-height: 620px;
   }
-  .demo-panel .hint { max-width:640px; margin:14px auto 0; padding:0 22px; }
-  .demo-note { margin: 0 0 16px; }
   .hint { font-size:13.5px; line-height:1.5; color:var(--muted); margin:0; max-width:52ch; }
+  .hint.demo-note { margin:0 0 16px; }
   .hint a { color:var(--accent-dark); font-weight:700; text-decoration:none; }
   .hint a:hover { text-decoration:underline; }
 
@@ -77,9 +76,9 @@
 
   form { display:grid; grid-template-columns: 1fr 1fr; column-gap: 12px; align-items:start; }
   form > * { grid-column: 1 / -1; }
-  .field { margin-bottom:20px; }
+  .field { margin-bottom:24px; }
   .field.half { grid-column: span 1; }
-  label { display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+  label { display:block; font-size:13.5px; font-weight:700; color:var(--ink); margin-bottom:8px; }
   label .opt { font-weight:400; color:var(--faint); margin-left:5px; }
 
   input[type=text], input[type=date], input[type=number], select, textarea {
