@@ -281,7 +281,14 @@
   .yard-choices legend { font-weight: 700; padding: 0 0 8px; width: 100%; border-bottom: 2px solid var(--prison, #b8d2be); }
   .yard-hint { margin: 0; font-size: 15px; color: var(--body); }
   .yard-choices label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-  .yard-choices input { width: 18px; height: 18px; accent-color: var(--prison, var(--sage)); }
+  .yard-choices input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--prison, var(--sage)); }
+  /* A yard that isn't listed, typed in for this prison. */
+  .yard-add { display: grid; gap: 6px; margin-top: 4px; }
+  .yard-add label { display: block; font-size: 15px; font-weight: 700; cursor: default; }
+  .yard-add-row { display: flex; gap: 8px; min-width: 0; }
+  .yard-add input { flex: 1 1 auto; min-width: 0; min-height: 40px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 6px 10px; }
+  .yard-add input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .yard-add button { flex: none; border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; font-weight: 700; padding: 6px 16px; cursor: pointer; }
 
   .demo-form.program-mode { max-width: 1200px; }
   #programs-step { grid-template-columns: minmax(240px, .8fr) minmax(0, 1.4fr); align-items: start; gap: 36px; }
@@ -721,7 +728,14 @@ const cards = document.querySelector('#facility-cards');
 const empty = document.querySelector('#facility-empty');
 const announcement = document.querySelector('#facility-announcement');
 const prisons = new Map();
-const YARDS = ['North', 'South', 'Reception', 'Ad Seg'];
+// Letter yards first: most of TPW's own sheet uses them ("A Yard", "C Yard"…).
+const YARDS = ['A Yard', 'B Yard', 'C Yard', 'D Yard', 'E Yard', 'F Yard', 'North', 'South', 'Reception', 'Ad Seg'];
+// A member can also type a yard that isn't listed. The receiver (Rows.gs) squeezes spaces,
+// trims, and refuses a yard over 40 characters or one listed twice at a prison (ignoring
+// case), so the page applies the same rules and a typed yard is never refused on submit.
+const YARD_MAX = 40;
+const cleanYard = value => String(value ?? '').replace(/\s+/g, ' ').trim();
+const findYard = (prison, yard) => prison.options.find(option => option.toLowerCase() === yard.toLowerCase());
 const PRISON_COLORS = [
   ['#157a45', '#e3f6ea'],
   ['#1d4ed8', '#e7efff'],
@@ -792,7 +806,7 @@ function syncAssignmentYards(program, row, code, prison) {
   for (const node of [...yards.querySelectorAll('label, .yard-empty')]) node.remove();
   // Carrying forward from last quarter, a program can move to any yard at its prisons right here;
   // completing it adds new yards to the prison (see completeProgram).
-  const available = lastQuarter ? YARDS : YARDS.filter(name => prison.yards.has(name));
+  const available = lastQuarter ? prison.options : prison.options.filter(name => prison.yards.has(name));
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
@@ -865,18 +879,57 @@ picker.addEventListener('change', () => {
   const hint = document.createElement('p'); hint.className = 'yard-hint'; hint.textContent = 'Select all that apply.';
   yardGroup.append(legend, hint);
   const selectedYards = new Set();
-  for (const yardName of YARDS) {
+  const [color, colorBg] = claimColor();
+  // options: every yard offered at this prison, the standard list plus any typed in.
+  const prison = { name, card, yards: selectedYards, options: [], color, colorBg };
+  // A typed-in yard sits below the list, for this prison only, and then works like any other.
+  const yardAdd = document.createElement('div'); yardAdd.className = 'yard-add';
+  const yardInput = document.createElement('input'); yardInput.type = 'text'; yardInput.id = `new-yard-${code}`;
+  yardInput.maxLength = YARD_MAX; yardInput.autocomplete = 'off';
+  const yardLabel = document.createElement('label'); yardLabel.htmlFor = yardInput.id; yardLabel.textContent = 'Yard not listed?';
+  const yardButton = document.createElement('button'); yardButton.type = 'button'; yardButton.textContent = 'Add';
+  yardButton.setAttribute('aria-label', `Add this yard at ${name}`);
+  const yardHelp = `Type its name, up to ${YARD_MAX} characters, then choose Add.`;
+  const yardMessage = document.createElement('p'); yardMessage.className = 'yard-hint'; yardMessage.id = `new-yard-${code}-help`;
+  yardMessage.setAttribute('aria-live', 'polite'); yardMessage.textContent = yardHelp;
+  yardInput.setAttribute('aria-describedby', yardMessage.id);
+  const yardRow = document.createElement('div'); yardRow.className = 'yard-add-row'; yardRow.append(yardInput, yardButton);
+  yardAdd.append(yardLabel, yardRow, yardMessage); yardGroup.append(yardAdd);
+  prison.addYard = (yardName, checked = false) => {
+    prison.options.push(yardName);
     const label = document.createElement('label');
     const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
-    checkbox.name = `prisons[${code}][yards][]`; checkbox.value = yardName;
+    checkbox.name = `prisons[${code}][yards][]`; checkbox.value = yardName; checkbox.checked = checked;
+    if (checked) selectedYards.add(yardName);
     checkbox.addEventListener('change', () => {
       if (checkbox.checked) selectedYards.add(yardName); else selectedYards.delete(yardName);
       refreshPrisons();
     });
-    label.append(checkbox, document.createTextNode(yardName)); yardGroup.append(label);
-  }
-  const [color, colorBg] = claimColor();
-  const prison = { name, card, yards: selectedYards, color, colorBg };
+    label.append(checkbox, document.createTextNode(yardName)); yardAdd.before(label);
+    return checkbox;
+  };
+  for (const yardName of YARDS) prison.addYard(yardName);
+  const addTypedYard = () => {
+    const yardName = cleanYard(yardInput.value);
+    if (!yardName) { yardInput.value = ''; return; }
+    if (yardName.length > YARD_MAX) { yardMessage.textContent = `Use no more than ${YARD_MAX} characters for a yard.`; return; }
+    const existing = findYard(prison, yardName);
+    if (existing) {
+      // Already offered (perhaps typed in a different case): tick that one rather than list it twice.
+      const box = [...yardGroup.querySelectorAll('input[type="checkbox"]')].find(item => item.value === existing);
+      if (!box.checked) { box.checked = true; box.dispatchEvent(new Event('change')); }
+      yardMessage.textContent = `${existing} is already listed, and it’s selected.`;
+    } else {
+      prison.addYard(yardName, true);
+      refreshPrisons();
+      yardMessage.textContent = `${yardName} added and selected.`;
+    }
+    yardInput.value = ''; yardInput.focus();
+  };
+  yardButton.addEventListener('click', addTypedYard);
+  // Enter adds the yard; it must not submit the whole form.
+  yardInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); addTypedYard(); } });
+  yardInput.addEventListener('input', () => { yardMessage.textContent = yardHelp; });
   paintPrison(card, prison);
   card.append(header, yardGroup);
   if (lastQuarter) {
@@ -1115,7 +1168,7 @@ function completeProgram(program) {
     if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
-      for (const box of prison.card.querySelectorAll('.yard-choices input')) box.checked = prison.yards.has(box.value);
+      for (const box of prison.card.querySelectorAll('.yard-choices input[type="checkbox"]')) box.checked = prison.yards.has(box.value);
     }
     assignments.push({ code: row.dataset.code, yards });
   }
@@ -1475,10 +1528,26 @@ async function prefillFromLastQuarter() {
     picker.value = prison.code; picker.dispatchEvent(new Event('change'));
     const record = prisons.get(prison.code);
     if (!record) continue;
-    for (const box of record.card.querySelectorAll('.yard-choices input')) {
-      box.checked = prison.yards.includes(box.value);
+    // A yard from last time that isn't in the standard list (say "B" or "Yard 3") comes back
+    // as this prison's own typed-in yard, ticked, so it carries forward like any other.
+    const yards = new Set();
+    for (const yard of prison.yards.map(cleanYard).filter(Boolean)) {
+      if (!findYard(record, yard)) record.addYard(yard);
+      yards.add(findYard(record, yard));
+    }
+    for (const box of record.card.querySelectorAll('.yard-choices input[type="checkbox"]')) {
+      box.checked = yards.has(box.value);
       if (box.checked) box.dispatchEvent(new Event('change'));
     }
+  }
+  // Spell each program's yards the way its prison lists them, so "a yard" ticks "A Yard".
+  for (const program of draft.programs) {
+    program.assignments = (program.assignments || []).map(assignment => {
+      const record = prisons.get(assignment.code);
+      if (!record) return assignment;
+      const yards = assignment.yards.map(cleanYard).filter(Boolean).map(yard => findYard(record, yard) || yard);
+      return { ...assignment, yards: [...new Set(yards)] };
+    });
   }
   completedPrograms.push(...draft.programs);
   refreshPrisons();
