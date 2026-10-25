@@ -1,5 +1,5 @@
 import { loadingSkeleton } from './loading.js';
-import { updateWorkspace } from './layout.js?v=submissions-1';
+import { updateWorkspace } from './layout.js?v=shared-nav-2';
 import { programCards } from './cards.js';
 import { loadDashboard, existingPrograms } from './data.js';
 const $ = selector => document.querySelector(selector);

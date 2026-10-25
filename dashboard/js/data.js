@@ -7,7 +7,8 @@ export async function loadDashboard(orgId) {
     const [orgs, submissions] = await Promise.all([
       getDocs(collection(db, 'orgs')), getDocs(collection(db, 'submissions'))
     ]);
-    const profiles = orgs.docs.map(item => ({ ...item.data(), id: item.id }));
+    const profiles = orgs.docs.map(item => ({ ...item.data(), id: item.id }))
+      .filter(org => typeof org.name === 'string' && org.name.trim());
     const records = submissions.docs.map(item => {
       const data = item.data();
       const matching = profiles.filter(org => org.name === data.organization);
@@ -18,6 +19,7 @@ export async function loadDashboard(orgId) {
   const profile = await getDoc(doc(db, 'orgs', orgId));
   if (!profile.exists()) throw new Error('Organization profile was not found.');
   const org = { ...profile.data(), id: profile.id };
+  if (typeof org.name !== 'string' || !org.name.trim()) throw new Error('Organization profile is missing its name.');
   // Also find earlier form entries that predate organization IDs.
   const [linked, legacy] = await Promise.all([
     getDocs(query(collection(db, 'submissions'), where('orgId', '==', orgId))),

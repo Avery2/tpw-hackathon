@@ -1,4 +1,5 @@
-import { updateWorkspace } from './layout.js?v=submissions-1';
+import { renderSubmissionTracker } from './submission-tracker.js?v=paginated-1';
+import { updateWorkspace } from './layout.js?v=shared-nav-2';
 import { loadDashboard, existingPrograms } from './data.js?v=impact-1';
 import { loadingSkeleton } from './loading.js';
 const $ = selector => document.querySelector(selector);
@@ -79,11 +80,13 @@ function renderTable(container, records) {
 async function load() {
   const token=++revision,account=location.hash.slice(1);
   if(!['org-1','org-2','tpw'].includes(account)){location.replace('./');return;}
+  const tracker = $('#submission-tracker'); tracker.hidden = account !== 'tpw'; tracker.replaceChildren();
   updateWorkspace(account,'submissions');$('#submission-back').href=`./submissions.html#${account}`;
   loaded=false;$('#submission-summary').replaceChildren();$('#submission-status').textContent='Loading submissions…';
   $('#submission-results').setAttribute('aria-busy','true');$('#submission-results').replaceChildren(loadingSkeleton(mode==='table'?'table':'cards'));
   try {
     const data=await loadDashboard(account==='tpw'?null:account);if(token!==revision)return;
+    if (account === 'tpw') renderSubmissionTracker(tracker, data);
     records=quarterlyRecords(data.submissions);
     $('#filter-year').replaceChildren(new Option('All years',''));
     for(const year of [...new Set(records.map(r=>period(r).year).filter(Boolean))].sort((a,b)=>b-a))$('#filter-year').add(new Option(String(year),String(year)));

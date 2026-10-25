@@ -452,6 +452,106 @@
 .checkin-mode #facility-cards .facility-card.editing .prison-card-program-count { grid-row: 2; }
 .checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
 .checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
+
+.currency-reels { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.currency-reel { display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: baseline; }
+.currency-strip { display: flex; flex-direction: column; will-change: transform; }
+.currency-strip > span { display: block; height: 1em; min-height: 1em; line-height: 1; }
+.rolling-currency { line-height: 1.2; }
+
+#mock-totals .success-metric strong { font-size: clamp(2.8rem, 6vw, 5rem); line-height: 1.15; }
+#mock-totals .success-metric > span { font-size: 18px; font-weight: 700; }
+.currency-strip > span { font-size: inherit; font-weight: inherit; }
+@media(max-width: 550px) { #mock-totals { grid-template-columns: 1fr; } }
+
+#mock-totals .success-metric strong { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.15; }
+#mock-totals .rolling-currency .currency-reels,
+#mock-totals .rolling-currency .currency-reel,
+#mock-totals .rolling-currency .currency-strip,
+#mock-totals .rolling-currency .currency-strip > span,
+#mock-totals .rolling-currency .currency-reels > span { font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit; }
+@media(max-width: 850px) { #mock-totals { grid-template-columns: 1fr; } }
+
+#mock-totals .success-metric { min-width: 0; padding: 20px 12px; }
+#mock-totals .success-metric strong { max-width: 100%; }
+
+/* Check-in facilities are full-width rows with actions at the right. */
+.checkin-mode #facility-cards { grid-template-columns: 1fr; gap: 12px; }
+.checkin-mode #facility-cards .facility-card,
+.checkin-mode #facility-cards .facility-card.editing { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto; grid-row: auto; align-items: center; padding: 18px 20px; gap: 12px 24px; }
+.checkin-mode #facility-cards .prison-card-header { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; text-align: left; padding: 0; gap: 6px; }
+.checkin-mode #facility-cards .prison-card-header .choose { display: block; padding: 0; text-align: left; }
+.checkin-mode #facility-cards .prison-card-program-count,
+.checkin-mode #facility-cards .facility-card.editing .prison-card-program-count { grid-row: auto; text-align: left; padding: 0; }
+.checkin-mode #facility-cards .prison-card-actions,
+.checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-column: 2; grid-row: 1; display: flex; align-self: center; gap: 8px; margin: 0; padding: 0; }
+.checkin-mode #facility-cards .prison-card-actions button { width: auto; min-width: 72px; }
+.checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-column: 1 / -1; grid-row: 2; width: 100%; margin: 8px 0 0; }
+@media(max-width: 500px) {
+ .checkin-mode #facility-cards .facility-card { padding: 16px; gap: 12px; }
+ .checkin-mode #facility-cards .prison-card-actions { flex-direction: column; }
+}
+
+.facility-program-guide { display: none; }
+.checkin-mode #facility-cards .facility-card.editing .facility-program-guide { display: block; grid-column: 1 / -1; grid-row: 3; border-top: 1px solid #ddd; padding-top: 18px; }
+.facility-program-guide h3 { margin: 0 0 8px; font-size: 20px; }
+.facility-program-guide > p { font-size: 14px; color: #666; }
+.facility-program-row { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 16px; padding: 16px 0; border-top: 1px solid #e4e4e4; }
+.facility-program-row > div:first-child { display: grid; gap: 5px; }
+.facility-program-row span { font-size: 14px; color: #666; }
+.facility-program-row button { font: inherit; font-size: 14px; background: #fff; border: 1px solid #ccc; border-radius: 7px; padding: 8px 12px; cursor: pointer; align-self: start; }
+.facility-program-editor { grid-column: 1 / -1; padding: 18px; background: #fff; border: 1px solid #ddd; border-radius: 10px; }
+.facility-program-editor > label { display: grid; gap: 8px; }
+.facility-program-editor input[type="text"] { font: inherit; padding: 10px; width: 100%; border: 1px solid #ccc; border-radius: 7px; }
+.facility-program-editor fieldset { border: 1px solid #ddd; border-radius: 8px; margin: 16px 0; display: grid; gap: 8px; }
+.facility-program-editor button + button { margin-left: 10px; }
+
+/* Separate program editing from the facility's yard settings. */
+.checkin-mode #facility-cards .facility-card.editing .facility-program-guide { margin-top: 14px; padding: 24px; background: #f5f6f3; border: 1px solid #d9ddd5; border-radius: 12px; }
+.facility-program-guide > h3 { font-size: 22px; margin-bottom: 10px; }
+.facility-program-guide > p { margin: 0 0 22px; max-width: 65ch; }
+.facility-program-guide .facility-program-row { padding: 20px; margin-top: 12px; background: #fff; border: 1px solid #dedede; border-radius: 10px; }
+.facility-program-row > div:first-child strong { font-size: 19px; }
+.facility-program-row .facility-program-editor { background: #f8f9f6; }
+@media(max-width: 500px) {
+ .checkin-mode #facility-cards .facility-card.editing .facility-program-guide { padding: 16px; }
+ .facility-program-guide .facility-program-row { padding: 16px; grid-template-columns: 1fr; }
+}
+
+.facility-slide.leaving { animation: facility-page-out 220ms ease-in both; }
+.facility-slide.entering { animation: facility-page-in 320ms ease-out both; }
+@keyframes facility-page-out { to { opacity: 0; transform: translateX(-35px); } }
+@keyframes facility-page-in { from { opacity: 0; transform: translateX(45px); } to { opacity: 1; transform: translateX(0); } }
+.facility-edit-page .facility-card { display: block; border: 0; background: transparent; border-radius: 0; }
+.facility-edit-page .prison-card-header, .facility-edit-page .prison-card-actions { display: none !important; }
+.facility-edit-page .yard-choices { display: grid; margin: 0; border: 0; padding: 0; gap: 12px; }
+.facility-edit-page .yard-choices legend, .facility-edit-page .yard-hint { display: none; }
+.facility-edit-page .yard-choices label { background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 16px; font-size: 18px; }
+.facility-edit-page .yard-choices label:has(input:checked) { border-color: var(--sage); background: #f0f6ee; }
+.facility-edit-page .facility-program-guide { display: none; }
+.facility-edit-page.show-programs .yard-choices { display: none; }
+.facility-edit-page.show-programs .facility-program-guide { display: block; padding: 0; background: transparent; }
+.facility-edit-page.show-programs .facility-program-guide > h3, .facility-edit-page.show-programs .facility-program-guide > p { display: none; }
+@media(prefers-reduced-motion: reduce) { .facility-slide.leaving, .facility-slide.entering { animation: none; } }
+
+.editing-facility-card { display: grid; gap: 6px; padding: 18px 22px; border: 1px solid #d8dfd3; border-radius: 12px; background: #f4f7f0; }
+.editing-facility-card > span { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: #69765e; }
+.editing-facility-card > strong { font-size: 22px; line-height: 1.25; }
+
+body.embed { min-height: 0; display: block; }
+body.embed main { flex: none; }
+body.embed .form-section { padding-top: 12px; padding-bottom: 24px; }
+.program-scope-dialog { width: min(560px, calc(100% - 32px)); max-height: 85vh; overflow: auto; border: 1px solid #ddd; border-radius: 20px; padding: 28px; color: #171717; }
+.program-scope-dialog::backdrop { background: rgb(0 0 0 / 40%); }
+.program-scope-dialog h2 { margin-top: 0; }
+.program-scope-dialog p, .program-scope-dialog li { line-height: 1.6; }
+.program-scope-dialog fieldset { border: 0; padding: 0; display: grid; gap: 10px; }
+.program-scope-dialog fieldset label { display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #ddd; border-radius: 10px; }
+.program-scope-dialog .next-actions { margin-top: 24px; }
+.program-edit-actions { align-items: center; }
+.program-edit-actions .program-edit-back { margin: 0; min-height: 54px; padding: 14px 24px; border: 1px solid #ccc; border-radius: 999px; background: #fff; color: #171717; font: inherit; font-weight: 600; cursor: pointer; }
+.program-edit-actions .program-edit-back:hover { background: #f5f5f5; border-color: #999; }
+.program-edit-actions .program-edit-back:focus-visible { outline: 2px solid #171717; outline-offset: 3px; }
 </style>
 <link rel="stylesheet" href="../dashboard/loading.css?v=1">
 </head>
@@ -561,6 +661,19 @@
         <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
         <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
+        <section id="facility-edit-step" class="question-step facility-edit-page" aria-labelledby="facility-edit-heading" hidden>
+          <div class="editing-facility-card"><span>Editing facility</span><strong id="editing-facility-name"></strong></div>
+          <p class="step-label" id="facility-edit-label">Facility details · Yards</p>
+          <h2 class="form-title" id="facility-edit-heading" tabindex="-1">Here are the yards you operate in. Do you need to make changes?</h2>
+          <p id="facility-edit-name" class="form-hint"></p>
+          <div id="facility-edit-content"></div>
+          <div class="next-actions"><button type="button" class="continue-button" id="facility-edit-next">Done</button><button type="button" class="edit-period" id="facility-edit-back">Back to facilities</button></div>
+        </section>
+        <section id="program-edit-step" class="question-step facility-slide program-edit-page" aria-labelledby="program-edit-heading" hidden>
+          <div class="editing-facility-card"><span>Editing program</span><strong id="editing-program-name"></strong><span id="editing-program-facility"></span></div>
+          <h2 class="form-title" id="program-edit-heading" tabindex="-1">What needs updating for this program?</h2>
+          <div id="program-edit-content"></div>
+        </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
           <aside class="program-sidebar" aria-label="Facilities, yards, and completed programs">
           <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
@@ -586,10 +699,10 @@
             <div id="submission-totals" class="success-totals"></div>
             <button type="button" id="start-over" class="continue-button start-over">Start a new submission</button>
             <section class="mock-impact" aria-labelledby="mock-impact-heading">
-              <span class="mock-label">Mock estimate</span>
+              <span class="mock-label">Estimate</span>
               <h3 id="mock-impact-heading">A glimpse of your impact</h3>
               <div id="mock-totals" class="success-totals"></div>
-              <p>Illustration only: 1 hour saved per participant and $50 per hour. These placeholder assumptions are not measured outcomes.</p>
+              <p>Estimated RAC days × $59 per day, using the same calculation as the dashboard.</p>
             </section>
             <details class="full-report">
               <summary>Expand full submission</summary>
@@ -851,6 +964,7 @@ function refreshPrisons() {
       badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
     }
   }
+  if (checkinContext) renderFacilityGuides();
   renderAddedPrograms();
   renderProgramSummary();
   for (const program of programList.children) {
@@ -899,11 +1013,13 @@ picker.addEventListener('change', () => {
   if (checkinContext) {
     const count = document.createElement('span'); count.className = 'prison-card-program-count';
     count.textContent = '0 programs'; header.append(count);
+    const guide = document.createElement('section'); guide.className = 'facility-program-guide'; guide.id = `checkin-programs-${code}`; card.append(guide);
     const actions = document.createElement('div'); actions.className = 'prison-card-actions';
     const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
     edit.setAttribute('aria-label', `Edit ${name}`); edit.setAttribute('aria-expanded', 'false');
-    yardGroup.id = `checkin-yards-${code}`; edit.setAttribute('aria-controls', yardGroup.id);
+    yardGroup.id = `checkin-yards-${code}`; edit.setAttribute('aria-controls', yardGroup.id + ' ' + guide.id);
     edit.addEventListener('click', () => {
+      if (checkinContext) { openFacilityEditor(code); return; }
       const open = card.classList.toggle('editing');
       edit.textContent = open ? 'Done' : 'Edit';
       edit.setAttribute('aria-expanded', String(open));
@@ -919,6 +1035,167 @@ picker.addEventListener('change', () => {
   option.disabled = true; picker.value = ''; refreshPrisons();
   announcement.textContent = `${name} added. ${prisons.size} facilities selected.`;
 });
+
+
+let activeFacilityEditor = null;
+function openFacilityEditor(code) {
+  if (transitioning || activeFacilityEditor) return;
+  const prison = prisons.get(code);
+  const marker = document.createComment('facility-row'); prison.card.before(marker);
+  activeFacilityEditor = { prison, marker, stage: 'yards' };
+  const page = document.querySelector('#facility-edit-step');
+  page.classList.remove('show-programs');
+  document.querySelector('#facility-edit-content').append(prison.card);
+  prison.card.classList.add('editing');
+  document.querySelector('#editing-facility-name').textContent = prison.name;
+  document.querySelector('#facility-edit-name').textContent = prison.name;
+  document.querySelector('#facility-edit-heading').textContent = 'Here are the yards you operate in. Do you need to make changes?';
+  document.querySelector('#facility-edit-label').textContent = 'Facility details · Yards';
+  document.querySelector('#facility-edit-next').textContent = 'Done';
+  document.querySelector('#facility-edit-back').textContent = 'Back to facilities';
+  facilitiesStep.classList.add('facility-slide'); page.classList.add('facility-slide');
+  showStep(facilitiesStep, page, document.querySelector('#facility-edit-heading'));
+}
+function closeFacilityEditor() {
+  if (transitioning || !activeFacilityEditor) return;
+  const {prison, marker} = activeFacilityEditor;
+  prison.card.classList.remove('editing'); marker.replaceWith(prison.card);
+  activeFacilityEditor = null;
+  refreshPrisons();
+  showStep(document.querySelector('#facility-edit-step'), facilitiesStep, document.querySelector('#facilities-question'));
+}
+document.querySelector('#facility-edit-next').addEventListener('click', () => {
+  if (!activeFacilityEditor || transitioning) return;
+  const {prison} = activeFacilityEditor;
+  if (!prison.yards.size) {
+    document.querySelector('#facility-edit-name').textContent = prison.name + ' · Select at least one yard to continue.';
+    return;
+  }
+  closeFacilityEditor();
+});
+document.querySelector('#facility-edit-back').addEventListener('click', closeFacilityEditor);
+
+function confirmProgramScope(program, code, selected) {
+  return new Promise(resolve => {
+    const dialog = document.createElement('dialog'); dialog.className = 'program-scope-dialog';
+    const heading = document.createElement('h2'); heading.id = 'program-scope-heading'; heading.textContent = 'Where should these changes apply?';
+    dialog.setAttribute('aria-labelledby', heading.id);
+    const hint = document.createElement('p'); hint.textContent = 'This program also runs at these locations. Other facilities keep their own yard selections.';
+    const list = document.createElement('ul');
+    for (const location of program.assignments) {
+      const item = document.createElement('li'); item.textContent = `${prisons.get(location.code)?.name || location.code}: ${location.yards.join(', ')}`; list.append(item);
+    }
+    const choices = document.createElement('fieldset');
+    const legend = document.createElement('legend'); legend.textContent = 'Apply changes to'; choices.append(legend);
+    for (const [value, text] of [['selected', 'Selected yards in this facility'], ['facility', 'All yards in this facility'], ['all', 'All facilities that have this program']]) {
+      const label = document.createElement('label'); const radio = document.createElement('input'); radio.type = 'radio'; radio.name = 'program-change-scope'; radio.value = value; radio.checked = value === 'selected'; label.append(radio, document.createTextNode(text)); choices.append(label);
+    }
+    const actions = document.createElement('div'); actions.className = 'next-actions';
+    const apply = document.createElement('button'); apply.type = 'button'; apply.className = 'continue-button'; apply.textContent = 'Confirm changes';
+    const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = 'Keep editing';
+    const finish = value => { dialog.close(); dialog.remove(); resolve(value); };
+    apply.onclick = () => finish(choices.querySelector('input:checked').value);
+    cancel.onclick = () => finish(null);
+    dialog.addEventListener('cancel', event => { event.preventDefault(); finish(null); });
+    actions.append(apply, cancel); dialog.append(heading, hint, list, choices, actions); document.body.append(dialog); dialog.showModal();
+  });
+}
+
+function renderFacilityGuides() {
+  for (const [code, prison] of prisons) {
+    const guide = prison.card.querySelector('.facility-program-guide');
+    if (!guide) continue;
+    guide.replaceChildren();
+    const heading = document.createElement('h3'); heading.textContent = 'Programs at this facility'; guide.append(heading);
+    const hint = document.createElement('p'); hint.textContent = 'Confirm names and yards here. Update quarterly hours and participant figures in the program step.'; guide.append(hint);
+    const matches = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code));
+    if (!matches.length) { const empty = document.createElement('p'); empty.textContent = 'No programs assigned yet. You can add them in the program step.'; guide.append(empty); }
+    for (const program of matches) {
+      const assignment = program.assignments.find(item => item.code === code);
+      const row = document.createElement('div'); row.className = 'facility-program-row';
+      const info = document.createElement('div');
+      const name = document.createElement('strong'); name.textContent = program.name;
+      const yards = document.createElement('span'); yards.textContent = `Yards: ${assignment.yards.join(', ')}`; info.append(name, yards);
+      const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit program';
+      const editor = document.createElement('div'); editor.className = 'facility-program-editor'; editor.hidden = true;
+      edit.setAttribute('aria-controls', 'program-edit-step');
+      const label = document.createElement('label'); label.textContent = 'Program name';
+      const input = document.createElement('input'); input.type = 'text'; input.value = program.name; input.maxLength = 120; label.append(input);
+      const fieldset = document.createElement('fieldset'); const legend = document.createElement('legend'); legend.textContent = 'Yards for this program'; fieldset.append(legend);
+      for (const yard of prison.yards) {
+        const option = document.createElement('label'); const box = document.createElement('input'); box.type = 'checkbox'; box.value = yard; box.checked = assignment.yards.includes(yard); option.append(box, document.createTextNode(yard)); fieldset.append(option);
+      }
+      const details = document.createElement('div'); details.append(document.querySelector('#program-fields').content.cloneNode(true));
+      details.querySelector('.form-field').remove();
+      for (const field of details.querySelectorAll('input, select')) {
+        const original = field.id; field.id = `facility-edit-${code}-${original}`;
+        details.querySelector(`label[for="${original}"]`).htmlFor = field.id;
+        field.value = programValue(program, field.name) || (field.type === 'number' ? '0' : '');
+      }
+      for (const stepper of details.querySelectorAll('.stepper')) {
+        const field = stepper.querySelector('input');
+        for (const button of stepper.querySelectorAll('button')) button.onclick = () => { field.value = Math.max(0, Number(field.value || 0) + Number(button.dataset.step)); };
+      }
+      const status = document.createElement('p'); status.setAttribute('role','status');
+      const save = document.createElement('button'); save.type = 'button'; save.textContent = 'Save changes';
+      const cancel = document.createElement('button'); cancel.type = 'button'; cancel.textContent = 'Cancel';
+      save.className = 'continue-button';
+      cancel.textContent = 'Back to programs';
+      const close = () => {
+        if (transitioning) return;
+        renderFacilityGuides();
+        showStep(document.querySelector('#program-edit-step'), document.querySelector('#facility-edit-step'), document.querySelector('#facility-edit-heading'));
+      };
+      save.onclick = async () => {
+        if (transitioning) return;
+        const selected = [...fieldset.querySelectorAll('input:checked')].map(box => box.value);
+        if (!input.value.trim() || !selected.length) { status.textContent = 'Enter a program name and select at least one yard.'; return; }
+        const fields = [...details.querySelectorAll('input, select')];
+        if (!fields.every(field => field.reportValidity())) return;
+        const updates = Object.fromEntries(fields.map(field => [field.name, field.value]));
+        if (updates.start_date && updates.end_date && updates.end_date < updates.start_date) { status.textContent = 'End date must be on or after start date.'; return; }
+        if (Number(updates.participants_completed) > Number(updates.participants)) { status.textContent = 'Participants completed cannot exceed participants.'; return; }
+        const changed = fields.some(field => String(programValue(program, field.name) ?? '') !== field.value) || input.value.trim() !== program.name || selected.join('\0') !== assignment.yards.join('\0');
+        if (!changed) { close(); return; }
+        const shared = program.assignments.length > 1;
+        const scope = shared ? await confirmProgramScope(program, code, selected) : 'selected';
+        if (!scope) return;
+        let target = program;
+        if (shared && scope !== 'all') {
+          target = structuredClone(program);
+          target.id = `${program.id || 'program'}-facility-${code}-${Date.now()}`;
+          target.assignments = [{code, yards: scope === 'facility' ? [...prison.yards] : selected}];
+          program.assignments = program.assignments.filter(item => item.code !== code);
+          completedPrograms.push(target);
+        } else {
+          assignment.yards = scope === 'facility' ? [...prison.yards] : selected;
+        }
+        target.name = input.value.trim();
+        for (const [field, value] of Object.entries(updates)) {
+          const key = Object.keys(target.values).find(key => key.endsWith(`[${field}]`)) || `programs[0][${field}]`;
+          target.values[key] = value;
+        }
+        target.needsReview = false;
+        for (const key of Object.keys(target.values)) if (key.endsWith('[program_name]')) target.values[key] = target.name;
+        refreshPrisons(); close();
+      };
+      cancel.onclick = close;
+      edit.onclick = () => {
+        if (transitioning) return;
+        document.querySelector('#editing-program-name').textContent = program.name;
+        document.querySelector('#editing-program-facility').textContent = prison.name;
+        editor.hidden = false;
+        document.querySelector('#program-edit-content').replaceChildren(editor);
+        showStep(document.querySelector('#facility-edit-step'), document.querySelector('#program-edit-step'), document.querySelector('#program-edit-heading'));
+      };
+      const actions = document.createElement('div'); actions.className = 'next-actions program-edit-actions';
+      cancel.className = 'program-edit-back';
+      actions.append(save, cancel);
+      editor.append(label, details, fieldset, status, actions); row.append(info, edit, editor); guide.append(row);
+    }
+  }
+}
+
 function addProgram(focus = true, saved = null, editIndex) {
   const number = ++programNumber;
   const program = document.createElement('section'); program.className = 'program-card question-step'; program.dataset.number = number;
@@ -1105,7 +1382,6 @@ function renderAddedPrograms() {
     remove.setAttribute('aria-label', `Remove ${program.name}`);
     remove.addEventListener('click', () => removeProgram(index));
     item.append(name, edit, remove);
-    if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
     if (!program.assignments.length) {
       const warning = document.createElement('p'); warning.className = 'needs-prison';
       warning.textContent = 'Its facilities or yards were removed. Edit it to choose new ones, or remove it.';
@@ -1136,9 +1412,6 @@ let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
   if (submitting) return;
   if (!completedPrograms.length) return;
-  if (completedPrograms.some(program => program.needsReview)) {
-    document.querySelector('#program-feedback').textContent = 'Edit and complete each carried-forward program for this quarter before submitting.'; return;
-  }
   const orphaned = completedPrograms.filter(program => !program.assignments.length);
   if (orphaned.length) {
     document.querySelector('#program-feedback').textContent = `Choose a facility and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
@@ -1184,6 +1457,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   document.querySelector('#submission-result').hidden = false;
   document.querySelector('#edit-prisons').hidden = true;
   document.querySelector('#submission-heading').focus();
+  document.querySelector('#submission-result').scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 document.querySelector('#start-over').addEventListener('click', () => location.reload());
@@ -1216,8 +1490,15 @@ function renderSubmission(submission) {
   metric(totalPanel, format(totals.completed), 'Participants completed');
   metric(totalPanel, format(totals.delivered), 'Participant hours delivered');
   const mock = document.querySelector('#mock-totals'); mock.replaceChildren();
-  metric(mock, format(totals.participants), 'Estimated hours saved');
-  metric(mock, '$' + format(totals.participants * 50), 'Estimated money saved');
+  const racDays = submission.programs.reduce((sum, program) => sum + Math.min(40, Math.floor(Math.max(0, number(programValue(program, 'course_hours'))) / 52) * 10) * Math.max(0, number(programValue(program, 'participants_completed'))), 0);
+  const savings = racDays * 59;
+  metric(mock, format(racDays), 'RAC credits estimate');
+  metric(mock, '$' + format(savings), 'Total taxpayer savings');
+  import('../dashboard/js/rolling-number.js?v=form-success-1').then(({ rollNumber, rollCurrency }) => {
+    const amounts = mock.querySelectorAll('.success-metric strong');
+    rollNumber(amounts[0], racDays);
+    rollCurrency(amounts[1], savings);
+  }).catch(error => console.error('Number animation unavailable:', error));
   const report = document.querySelector('#report-prisons'); report.replaceChildren();
   for (const prison of submission.prisons) {
     const card = document.createElement('article'); card.className = 'report-prison';
@@ -1280,7 +1561,7 @@ async function loadCheckin() {
     skeleton = loadingSkeleton('form');
     banner.style.position = 'absolute'; banner.style.clipPath = 'inset(50%)';
     form.append(skeleton);
-    const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../dashboard/js/data.js'), import('../dashboard/js/checkin-data.js')]);
+    const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../dashboard/js/data.js'), import('../dashboard/js/checkin-data.js?v=preserve-hours-11')]);
     const draft = checkinDraft(await loadDashboard(orgId));
     checkinContext = draft;
     form.classList.add('checkin-mode');

@@ -351,7 +351,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 .data-totals-note { font-size: 13px; color: #777; margin: -14px 0 30px; }
 @media(max-width:800px) { .submission-data-grid { grid-template-columns: 1fr; } .submission-summary { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 </style>
-<link rel="stylesheet" href="./workspace.css?v=20261025-chooser2">
+<link rel="stylesheet" href="./workspace.css?v=dropdown-spacing-1">
 <link rel="stylesheet" href="./loading.css?v=1">
 </head>
 <body>
@@ -370,6 +370,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 <section class="dashboard-heading"><div class="shell"><h1>Your data</h1></div></section>
 
 <div class="view-heading"><div><h2>Your submissions</h2><p id="submission-status" role="status">Loading submissions…</p></div><a class="action" id="submission-back" href="./submissions.html">← Submissions</a></div>
+<section id="submission-tracker" class="submission-tracker" aria-live="polite" hidden></section>
 <section class="submission-filters" aria-label="Filter submissions">
   <label>From<input id="date-from" type="date"></label>
   <label>To<input id="date-to" type="date"></label>
@@ -383,7 +384,6 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 
 </div>
 </main>
-<footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/submission-data.js"></script>
+<script type="module" src="./js/submission-data.js?v=paginated-1"></script>
 </body>
 </html>

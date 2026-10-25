@@ -1,5 +1,5 @@
-import { updateWorkspace } from './layout.js?v=submissions-1';
-import { racPanel } from './rac.js?v=in-view-1';
+import { updateWorkspace } from './layout.js?v=shared-nav-2';
+import { racPanel } from './rac.js?v=collective-1';
 import { participantsChart } from './chart.js?v=quarter-spacing-1';
 import { loadDashboard, existingPrograms } from './data.js';
 const views = { 'org-1': { name: 'Org 1' }, 'org-2': { name: 'Org 2' }, tpw: { name: 'TPW View', admin: true } };
@@ -16,26 +16,37 @@ function renderPrograms(data, admin) {
   const summary = element('div', 'program-stats');
   const totalParticipants = programs.reduce((sum, program) => sum + Math.max(0, Number(program.participants) || 0), 0);
   const completedHours = programs.reduce((sum, program) => sum + Math.max(0, Number(program.courseHours) || 0) * Math.max(0, Number(program.participantsCompleted) || 0), 0);
-  for (const [label, value] of [['Programs', programs.length], ['Facilities', new Set(programs.flatMap(program => (program.assignments || []).map(item => item.code))).size], ['Submissions', data.submissions.length], ['Total participants', totalParticipants], ['Total hours completed', completedHours]]) {
-    const tile = element(label === 'Programs' ? 'a' : 'div', 'program-stat');
+  const completions = programs.reduce((sum, program) => sum + Math.max(0, Number(program.participantsCompleted) || 0), 0);
+  const metrics = [
+    ...(admin ? [['Registered organizations', data.orgs.length]] : []),
+    ['Programs', programs.length],
+    ['Facilities', new Set(programs.flatMap(program => (program.assignments || []).map(item => item.code))).size],
+    ['Submissions', data.submissions.length],
+    ['Total participants', totalParticipants],
+    ...(admin ? [['Participants completed', completions], ['Completion rate', totalParticipants ? `${(completions / totalParticipants * 100).toFixed(1)}%` : '—']] : []),
+    ['Total hours completed', completedHours]
+  ];
+  for (const [label, value] of metrics) {
+    const tile = element(label === 'Programs' || label === 'Registered organizations' ? 'a' : 'div', 'program-stat');
     if (label === 'Programs') {
       tile.href = `./programs.html${location.hash}`;
       tile.setAttribute('aria-label', `View ${value} programs`);
     }
-    tile.append(element('strong', '', number(value)), element('span', '', label)); summary.append(tile);
+    if (label === 'Registered organizations') tile.href = './organizations.html#tpw';
+    tile.append(element('strong', '', typeof value === 'string' ? value : number(value)), element('span', '', label)); summary.append(tile);
   }
   const overview = element('div', 'dashboard-overview');
   overview.append(summary, participantsChart(data.submissions));
-  container.append(overview, racPanel(programs));
+  container.append(overview, racPanel(programs, { collective: admin }));
 }
 
-function renderLoading() {
+function renderLoading(admin = false) {
   const container = $('#view-sections');
   const skeleton = element('div', 'dashboard-skeleton');
   skeleton.setAttribute('aria-hidden', 'true');
   const overview = element('div', 'dashboard-overview');
   const stats = element('div', 'program-stats');
-  for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < (admin ? 8 : 5); i++) {
     const tile = element('div', 'program-stat');
     tile.append(element('span', 'skeleton-block skeleton-number'), element('span', 'skeleton-block skeleton-label')); stats.append(tile);
   }
@@ -59,18 +70,18 @@ async function renderView(focus = false) {
   updateWorkspace(key, 'overview');
   $('#signin').hidden = Boolean(view); $('#profile-view').hidden = !view;
   if (!view) { if (focus) $('#signin-heading').focus(); return; }
-  $('#profile-heading').textContent = view.name;
+  $('#profile-heading').textContent = view.admin ? 'Collective overview' : view.name;
   $('#view-type').textContent = view.admin ? 'TPW overview' : 'Organization';
   $('#view-description').hidden = true;
   $('#dashboard-status').hidden = false;
   $('#dashboard-status').classList.add('sr-loading');
   $('#dashboard-status').textContent = 'Loading programs…';
-  renderLoading(); $('#profile-view').setAttribute('aria-busy', 'true');
+  renderLoading(Boolean(view.admin)); $('#profile-view').setAttribute('aria-busy', 'true');
   if (focus) $('#profile-heading').focus();
   try {
     const data = await loadDashboard(view.admin ? null : key);
     if (token !== revision) return;
-    $('#profile-heading').textContent = data.org?.name || view.name;
+    $('#profile-heading').textContent = view.admin ? 'Collective overview' : data.org?.name || view.name;
     $('#dashboard-status').hidden = true;
     renderPrograms(data, view.admin);
   } catch (error) {

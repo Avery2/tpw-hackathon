@@ -12,7 +12,7 @@ export function estimatedSavings(days, dailyRate = 59) {
   return Math.max(0, Number(days) || 0) * Math.max(0, Number(dailyRate) || 0);
 }
 
-export function racPanel(programs) {
+export function racPanel(programs, { collective = false } = {}) {
   const node = (tag, text, className) => {
     const el = document.createElement(tag); if (text !== undefined) el.textContent = text;
     if (className) el.className = className; return el;
@@ -20,8 +20,8 @@ export function racPanel(programs) {
   const section = node('section', undefined, 'rac-panel');
   const groups = new Map();
   for (const program of programs) {
-    const key = program.orgId || program.organization || 'Unassigned';
-    if (!groups.has(key)) groups.set(key, { name: program.organization || 'Organization', programs: [] });
+    const key = collective ? 'network' : program.orgId || program.organization || 'Unassigned';
+    if (!groups.has(key)) groups.set(key, { name: collective ? 'Total RAC credits' : program.organization || 'Organization', programs: [] });
     groups.get(key).programs.push(program);
   }
   const heading = node('div', undefined, 'rac-heading');
@@ -38,7 +38,7 @@ export function racPanel(programs) {
       const row = node('div', undefined, 'rac-calculation');
       row.append(node('strong', program.name), node('span', `${result.hours} hours → ${result.daysPerEnrollment} days × ${result.completed} completed enrollments = ${result.days.toLocaleString()} days`)); details.append(row);
     }
-    card.append(details);
+    if (!collective) card.append(details);
     const savings = node('article', undefined, 'rac-org savings-card');
     savings.append(node('h4', 'Estimated taxpayer savings'));
     const money = node('strong', undefined, 'rac-total');
