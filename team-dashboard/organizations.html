@@ -327,21 +327,22 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 
 .org-search { display: grid; gap: 8px; max-width: 420px; font-size: 14px; font-weight: 700; margin: 26px 0; }
 .org-search input { min-height: 46px; padding: 10px 14px; border-radius: 8px; border: 1px solid #d6ddd2; font: inherit; }
-.org-directory { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 22px; }
-.org-card { display: block; text-decoration: none; color: inherit; border: 1px solid #e0e0e0; border-radius: 14px; background: #fff; padding: 26px; transition: box-shadow .2s, border-color .2s; }
+/* As many cards as fit, each about 300px wide, so a wide screen doesn't stretch two cards across it. */
+.org-directory { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 22px; }
+.org-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; border: 1px solid #e0e0e0; border-radius: 14px; background: #fff; padding: 26px; transition: box-shadow .2s, border-color .2s; }
 .org-card:hover { border-color: #9aac94; box-shadow: 0 6px 20px #00000008; }
-.org-card h3 { margin: 0 0 20px; font-size: 25px; }
+.org-card h3 { margin: 0 0 20px; font-size: 22px; }
 .org-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; margin: 20px 0; }
 .org-metrics > div { display: grid; gap: 5px; }
 .org-metrics strong { font-size: 24px; }
 .org-metrics span { color: #777; font-size: 13px; }
-.org-open { font-weight: 700; color: #4f7050; font-size: 15px; }
+.org-open { font-weight: 700; color: #4f7050; font-size: 15px; margin-top: auto; }
 .org-updated { color: #777; font-size: 13px; margin-bottom: 22px; }
 .org-detail-stats { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; margin: 24px 0; }
 .org-detail-stats > div { padding: 20px; border: 1px solid #e0e0e0; border-radius: 12px; background: #fff; display: grid; gap: 8px; }
 .org-detail-stats strong { font-size: 28px; }
 .org-detail-stats span { font-size: 13px; color: #777; }
-@media(max-width:750px) { .org-directory { grid-template-columns: 1fr; } .org-detail-stats { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+@media(max-width:750px) { .org-detail-stats { grid-template-columns: repeat(2,minmax(0,1fr)); } }
 </style>
 <link rel="stylesheet" href="./workspace.css?v=nav-20261025">
 <link rel="stylesheet" href="./loading.css">
