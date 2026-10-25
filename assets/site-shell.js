@@ -35,7 +35,8 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  nav.append(link('Dashboard', 'dashboard/'));
+  // The current form and dashboard; form-demo/ and dashboard/ are the older versions.
+  nav.append(link('Log data', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');

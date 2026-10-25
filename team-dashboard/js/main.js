@@ -1,8 +1,8 @@
-import { updateWorkspace } from './layout.js';
+import { updateWorkspace } from './layout.js?v=sheet-20261025b';
 import { getDemoAccount } from '../../assets/member-session.js';
-import { racPanel } from './rac.js';
-import { participantsChart } from './chart.js';
-import { loadDashboard, existingPrograms } from './data.js';
+import { racPanel } from './rac.js?v=sheet-20261025b';
+import { participantsChart } from './chart.js?v=sheet-20261025b';
+import { loadDashboard, existingPrograms } from './data.js?v=sheet-20261025b';
 const views = { 'org-1': { name: 'Org 1' }, 'org-2': { name: 'Org 2' }, tpw: { name: 'TPW View', admin: true } };
 let revision = 0;
 const $ = selector => document.querySelector(selector);

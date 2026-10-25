@@ -1,7 +1,7 @@
 import { updateWorkspace } from './layout.js?v=submissions-1';
 import { racPanel } from './rac.js?v=in-view-1';
 import { participantsChart } from './chart.js?v=quarter-spacing-1';
-import { loadDashboard, existingPrograms } from './data.js';
+import { loadDashboard, existingPrograms } from './data.js?v=sheet-20261025b';
 const views = { 'org-1': { name: 'Org 1' }, 'org-2': { name: 'Org 2' }, tpw: { name: 'TPW View', admin: true } };
 let revision = 0;
 const $ = selector => document.querySelector(selector);

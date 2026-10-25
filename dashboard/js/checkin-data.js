@@ -1,4 +1,4 @@
-import { existingPrograms } from './data.js';
+import { existingPrograms } from './data.js?v=sheet-20261025b';
 export function checkinDraft(data) {
   const ordered = [...data.submissions].sort((a,b) => String(b.submittedAt || '').localeCompare(String(a.submittedAt || '')));
   const latest = ordered[0];
