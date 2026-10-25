@@ -204,7 +204,7 @@ function render() {
 function demoPanel() {
   return `
     <div class="demo-panel">
-      <iframe src="../form-demo/?embed=1" title="Quarterly totals form" loading="lazy"></iframe>
+      <iframe src="../team-form/?embed=1" title="Quarterly totals form" loading="lazy"></iframe>
     </div>`;
 }
 

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { currentReportingPeriod } from '../js/reporting-period.js';
-import { checkinDraft } from '../../dashboard/js/checkin-data.js';
+import { checkinDraft } from '../../team-dashboard/js/checkin-data.js';
 const cases = [
   ['2026-01-01T07:59:59Z',4,2025], ['2026-01-01T08:00:00Z',1,2026],
   ['2026-04-01T06:59:59Z',1,2026], ['2026-04-01T07:00:00Z',2,2026],

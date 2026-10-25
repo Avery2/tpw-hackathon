@@ -7,7 +7,7 @@ const vm = require('node:vm');
 const crypto = require('node:crypto');
 const {execFileSync} = require('node:child_process');
 const root = path.resolve(__dirname, '../..');
-const code = fs.readFileSync(path.join(root, 'form-demo/receiver/Code.gs'), 'utf8');
+const code = fs.readFileSync(path.join(root, 'team-form/receiver/Code.gs'), 'utf8');
 const TAB = 'Submissions; comes from website form DO NOT RENAME';
 const instant = '2026-10-25T05:00:00Z';
 const plain = value => JSON.parse(JSON.stringify(value));

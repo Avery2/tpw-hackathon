@@ -44,7 +44,7 @@ try {
     if (m.method === 'Fetch.requestPaused') {
       const { requestId, request } = m.params;
       if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
-      else if (new URL(request.url).pathname.endsWith('/form-demo/js/submissions.js')) await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/javascript' }], body: Buffer.from(dashboardFixture).toString('base64') });
+      else if (new URL(request.url).pathname.endsWith('/team-form/js/submissions.js')) await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/javascript' }], body: Buffer.from(dashboardFixture).toString('base64') });
       else await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
     }
   });
@@ -59,7 +59,7 @@ try {
   };
   const screenshot = async name => { const image = await send('Page.captureScreenshot', { format: 'png' }); await writeFile(path.join(process.env.MEMBER_SCREENSHOT_DIR || tmpdir(), `tpw-${name}.png`), Buffer.from(image.data, 'base64')); };
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
-  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/form-demo/js/submissions.js' }] });
+  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/team-form/js/submissions.js' }] });
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     for (const route of ['/', '/site/ourstory/index.html', '/site/our-members/index.html', '/site/ourwork/index.html', '/site/our-team/index.html']) {
@@ -107,7 +107,7 @@ try {
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
     if (width >= 900) assert.equal(await ev('document.querySelector("[data-key=org]").getBoundingClientRect().top'), await ev('document.querySelector("[data-key=program]").getBoundingClientRect().top'));
-    await click('.tpw-member-nav a[href*="dashboard/#"]');
+    await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
     assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("not connected to the Google Sheet")'));
@@ -130,12 +130,12 @@ try {
     assert(await ev('!document.querySelector("#profile-view,#impact-view,.impact-card")'));
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
     console.log('PASS separate Data Sheet embed and direct link, without dashboard modules:', width);
-    await click('.tpw-member-nav a[href*="dashboard/#"]');
+    await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg")');
   }
-  await go('/dashboard/'); await wait('!!document.querySelector(".participants-chart svg")');
-  assert(await ev('location.pathname.endsWith("/dashboard/")'));
-  await go('/dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
+  await go('/team-dashboard/'); await wait('!!document.querySelector(".participants-chart svg")');
+  assert(await ev('location.pathname.endsWith("/team-dashboard/")'));
+  await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('!!document.querySelector(".rac-panel")'));
   await go('/intake/sheet.html'); await wait('!!document.querySelector(".tpw-member-nav")');
   await send('Emulation.setEmulatedMedia', { media: 'print' });

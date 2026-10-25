@@ -1,60 +1,31 @@
-# Dashboard, data and demo account entry
+# Organization program dashboard
 
-**Dashboard** (`dashboard/index.html`) preserves the original participant chart,
-program/prison/submission totals, RAC estimates and savings calculations. It
-loads the existing Firebase data modules, not the new Sheet filings; the page
-keeps a visible demo-preview notice. Demo organization keys (`#org-1`, `#org-2`,
-`#tpw`) select the original views. Without a hash, it uses the remembered demo
-account or Org 1. Nothing is removed or replaced by the embedded Sheet.
+Open `/dashboard/`, then choose Org 1, Org 2, or TPW View.
+The account chooser selects a view; it is not authentication.
 
-**Data** (`dashboard/raw-data.html`) separately embeds the actual [TPW reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0)
-using its `/preview` URL. **Open in Google Sheets** is always available as a
-fallback for sign-in, blocked third-party cookies, or a preview that fails to load.
-Google's existing sharing permissions apply. This does not publish the workbook,
-change its permissions, or bypass Google sign-in. Data does not load the
-Firebase dashboard or seeded charts. Its Sheet is not filtered by the
-`#org-1`, `#org-2` or `#tpw` demo keys; Google controls access to the whole workbook.
+- `orgs/org-1` and `orgs/org-2` contain organization names, descriptions, and a program catalog.
+- Submission documents link to organizations with `orgId`. Older entries with only a matching `organization` name are also included, unless linked to a different ID.
+- Program cards derive from submissions. Latest submission wins for each organization + program ID (or normalized name for older forms), avoiding double-counting updates.
+- Org views query their own records. TPW View reads all submissions and labels each program's organization.
+- The page shows loading, empty, and retry states. Refresh to fetch new submissions.
 
-## Account drawer
+Sample data: two fictional organizations, four submissions, six programs. All fixtures
+have `synthetic: true`, and program cards show a Sample data badge. The seed script
+is explicit and create-only: `python3 dashboard/seed_sample_data.py`. Existing documents
+are preserved. It is never run automatically by visitors. No security rules are changed.
 
-**Members Login / Account** opens a visual mock of TPW's existing plain white
-account drawer. Orders, Payment Methods, Address and Profile are static preview
-sections, not working account tools. The only new entry is **Intake**, marked
-with a small **New** badge, linking to **Log data**. The demo skips real sign-in:
-it never collects a password, email or payment details. Close, Escape, backdrop
-click and focus return work; the native modal keeps keyboard focus in the drawer.
+The browser reuses the Firebase client from `form-demo/js/submissions.js`. No build step.
 
-The mirror's captured `site/` source remains unchanged. `scripts/build_site.py`
-injects `assets/mirror-nav.js` into publication output; that bridge captures the
-original Squarespace account controls and loads the same drawer used by authored
-pages. Modified clicks still use the link's direct logging destination.
+## Quarterly check-in
 
-## Logging layout
+`checkin.html#org-1` (or `#org-2`) embeds the existing guided form with an
+organization-specific prefill. It combines the latest known version of each program
+because submissions may contain only part of the catalog. The most recent submission
+sets the default next reporting quarter, including Q4-to-Q1 year rollover. Without a
+prior record, the current quarter is used.
 
-The member pages keep the original TPW header/footer, a white background, and
-three quiet horizontal links: **Log data**, **Dashboard**, then **Data**. Forms use the site's
-normal gutters instead of a second narrow centered column. There is no outer
-workspace card, sidebar, avatar or account picker. The logging choices are
-**Quarterly totals** (first/default) and **Session**. After submission, a compact
-receipt shows the organization, quarter and actual entered counts; mock savings
-estimates are removed. Existing transport, retry IDs and backend validation are
-unchanged.
-
-`assets/site-shell.js` and `assets/site-shell.css` own the shared page layout.
-`assets/account-drawer.js` and its stylesheet own the account mock.
-`assets/member-session.js` stores only a demo account key in sessionStorage, not
-credentials or form answers. Demo access is **not authentication** and does not
-protect private data. Direct intake links work without a demo session. Old
-Programs/check-in routes and `/members/` bookmarks return to logging. Embedded
-guided forms omit duplicate website chrome and resize inside the parent;
-printable rosters retain their letter-sized geometry without website chrome.
-
-## Data sources
-
-The original dashboard imports its existing Firebase data modules; sample
-fixtures and seed scripts remain available. These records are not a summary of
-new Google Sheet filings. No seed script runs on a visit, no Firebase security
-rules are changed, and no new Sheet-to-Firebase sync is introduced. Data
-shows the separate Google Sheet directly, under its existing permissions.
-Legacy Programs/check-in helpers remain in the directory, with their old page
-routes redirecting to logging as before.
+Program names, stable IDs, prisons and yards carry forward. Period-specific counts,
+hours and dates reset; every program must be edited and completed before submission.
+Users can also add/remove programs or change prisons/yards. Saving creates a new
+submission with `orgId`, `reportingPeriod` and `previousSubmissionId`; old records are
+never updated. TPW View remains an overview; check-ins are organization-specific.

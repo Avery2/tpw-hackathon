@@ -5,9 +5,9 @@ const ROOT = new URL('../', import.meta.url);
 const url = path => new URL(path, ROOT).href;
 const route = location.pathname.slice(ROOT.pathname.length);
 const embedded = new URLSearchParams(location.search).has('embed');
-const dashboard = route.startsWith('dashboard/');
+const dashboard = route.startsWith('team-dashboard/');
 const intake = route.startsWith('intake/');
-const guided = route.startsWith('form-demo/');
+const guided = route.startsWith('team-form/');
 let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
 
 function element(tag, className, text) {
@@ -35,6 +35,7 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
+  nav.append(link('Form Demo', 'form-demo/'), link('Dashboard', 'dashboard/'));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
@@ -90,8 +91,8 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   nav.replaceChildren();
   for (const [id, label, path] of [
     ['intake', 'Log data', demoEntryPath(key)],
-    ['overview', 'Dashboard', `dashboard/#${key}`],
-    ['raw-data', 'Data', `dashboard/raw-data.html#${key}`]
+    ['overview', 'Dashboard', `team-dashboard/#${key}`],
+    ['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]
   ]) {
     const anchor = link(label, path);
     if (page === id) anchor.setAttribute('aria-current', 'page');

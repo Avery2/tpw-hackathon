@@ -45,10 +45,10 @@ claim to have saved comments it ignores. Refresh/retry after upgrading it.
 ## Checks (no real Google requests)
 
 ```bash
-node form-demo/test/receiver.cjs
-node form-demo/test/reporting.mjs
+node team-form/test/receiver.cjs
+node team-form/test/reporting.mjs
 python3 -m http.server 8826 --bind 127.0.0.1  # separate terminal
-node form-demo/test/browser.mjs
+node team-form/test/browser.mjs
 ```
 
 The receiver tests exercise both historical Rows.gs contracts from pinned Git

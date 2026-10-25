@@ -209,14 +209,13 @@
   a:focus-visible { outline: 3px solid var(--sage); outline-offset: 5px; }
 
   .form-section { padding: clamp(32px, 5vw, 64px) 0; background: #f6f6f6; }
-  .demo-form { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 4vw, 48px); display: grid; gap: 24px; }
-  .form-field { display: grid; gap: 8px; min-width: 0; }
+  .demo-form { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 4vw, 48px); display: grid; gap: 28px; }
+  .form-field { display: grid; gap: 9px; min-width: 0; }
   .form-field label { font-weight: 700; font-size: 20px; }
-  .form-field input, .form-field select, .form-field textarea { width: 100%; min-width: 0; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 12px 16px; }
+  .form-field input, .form-field select { width: 100%; min-width: 0; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 12px 16px; }
   .form-field select { padding-right: 36px; }
-  .form-field textarea { resize: vertical; min-height: 120px; }
-  .form-field input::placeholder, .form-field textarea::placeholder { color: #737373; }
-  .form-field input:focus-visible, .form-field select:focus-visible, .form-field textarea:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .form-field input::placeholder { color: #737373; }
+  .form-field input:focus-visible, .form-field select:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
   .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .count-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; }
   .count-row .form-field label { font-size: 16px; line-height: 1.25; }
@@ -233,8 +232,6 @@
 
   .form-title { font-family: var(--display); font-weight: 400; margin: 0 0 12px; font-size: 1.5rem; }
   .form-hint { color: var(--body); margin: 0 0 18px; }
-  .facility-overview { display: grid; gap: 8px; }
-  .facility-cards:empty { display: none; }
   .facility-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
   .facility-card { border: 2px solid #ddd; border-radius: 12px; overflow: hidden; display: flex; background: #fff; }
   .facility-card.active { border-color: var(--prison, var(--sage)); background: var(--prison-bg, #edf6ef); }
@@ -252,7 +249,7 @@
   .continue-button { justify-self: start; border: 0; border-radius: 999px; padding: 13px 26px; background: var(--ink); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
   .continue-button:hover { background: var(--sage); }
   button:focus-visible { outline: 3px solid var(--sage); outline-offset: 4px; }
-  .organization-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid #ddd; overflow-wrap: anywhere; }
+  .organization-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 18px; border-bottom: 1px solid #ddd; overflow-wrap: anywhere; }
   .organization-summary button { background: transparent; border: 0; text-decoration: underline; font: inherit; cursor: pointer; }
   .question-step.leaving { animation: slide-away 280ms ease-in forwards; pointer-events: none; }
   .question-step.entering { animation: slide-in 350ms ease-out both; }
@@ -323,17 +320,21 @@
   #programs-step.submitted { display: block; }
   .submitted .program-sidebar, .submitted .program-editor > :not(#submission-result) { display: none; }
   .submitted .program-editor { padding: 0; border: 0; }
-  #submission-result { border: 0; padding: 8px 0; background: transparent; text-align: left; gap: 18px; }
-  #submission-heading { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
-  .submission-context { margin: 0; color: #555; font-size: 17px; }
-  #submission-receipt { margin: 0; font-size: 14px; font-weight: 400; color: #666; overflow-wrap: anywhere; }
-  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid #e5e5e5; padding: 20px 0; }
-  .success-metric { display: grid; align-content: start; gap: 4px; }
-  .success-metric strong { font-size: 28px; font-weight: 700; line-height: 1.2; }
-  .success-metric span { font-size: 14px; color: #666; }
-  .report-note { font-size: 14px; color: var(--body); }
-  .full-report { text-align: left; padding-top: 4px; }
-  .full-report > summary { cursor: pointer; font-size: 16px; font-weight: 700; text-align: left; }
+  #submission-result { border: 0; padding: 20px 0; background: transparent; text-align: center; gap: 28px; }
+  .success-check { width: 104px; height: 104px; margin: 0 auto; border-radius: 50%; background: var(--green); color: #143c20; display: grid; place-items: center; font-size: 68px; line-height: 1; }
+  #submission-heading { font-size: clamp(2rem, 5vw, 3.5rem); }
+  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .success-metric { padding: 24px 16px; background: #f4f6f3; border-radius: 12px; display: grid; gap: 10px; }
+  .success-metric strong { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400; }
+  .success-metric span { font-size: 16px; }
+  .mock-impact { background: #fff7df; border-radius: 14px; padding: 28px; }
+  .mock-label { display: inline-block; background: var(--yellow); padding: 4px 12px; border-radius: 999px; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+  .mock-impact h3 { margin: 16px 0; font-size: 24px; }
+  .mock-impact .success-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mock-impact .success-metric { background: transparent; }
+  .mock-impact > p, .report-note { font-size: 15px; color: var(--body); }
+  .full-report { text-align: left; border-top: 1px solid #ddd; padding-top: 24px; }
+  .full-report > summary { cursor: pointer; font-size: 22px; font-weight: 700; text-align: center; }
   .report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; align-items: start; }
   .report-prison { min-width: 0; overflow-wrap: anywhere; padding: 20px; border: 2px solid var(--prison); background: var(--prison-bg); border-radius: 12px; }
   .report-prison h3 { margin: 0 0 12px; font-size: 21px; line-height: 1.2; }
@@ -341,7 +342,7 @@
   .report-program { border-top: 1px solid var(--prison); margin-top: 18px; padding-top: 14px; }
   .report-program h4 { margin: 0 0 10px; font-size: 19px; }
   @media (max-width: 900px) { .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .success-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-  @media (max-width: 560px) { .report-grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .report-grid { grid-template-columns: 1fr; } .mock-impact { padding: 18px; } }
 
   /* Consistent inset arrows for every form dropdown. */
   .demo-form select {
@@ -374,6 +375,7 @@
   .report-status { background: #f0f0ed; color: #555; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 4px 9px; }
   .report-status[data-status="Completed"] { background: #e4f4e8; color: #235c35; }
   .report-status[data-status="In Progress"] { background: #fff2ce; color: #775516; }
+  .report-status[data-status="Planned"] { background: #eaf0ff; color: #345399; }
   .report-prison .report-program-yards { font-size: 13px; color: #666; margin: 12px 0 16px; }
   .report-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid #eee; padding-top: 14px; margin: 0 0 16px; }
   .report-dates dt { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .04em; }
@@ -394,34 +396,9 @@
   .added-programs .added-name { flex: 1 1 auto; font-weight: 700; overflow-wrap: anywhere; }
   .added-programs .needs-prison { flex-basis: 100%; order: 3; margin: 0; font-size: 14px; color: #9a3412; }
   .added-programs button { background: transparent; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
-  .start-over { justify-self: start; }
+  .start-over { justify-self: center; }
   /* Headings get focus only so screen readers announce the new step; they don't need a focus box. */
   [tabindex="-1"]:focus { outline: none; }
-
-  /* Participants and completions, one row per prison and yard. */
-  .yard-numbers { margin: 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; min-width: 0; display: grid; gap: 12px; }
-  .yard-numbers legend { font-weight: 700; padding: 0 6px; }
-  .yard-number-rows { display: grid; gap: 10px; }
-  .yard-number-row { display: grid; grid-template-columns: minmax(90px, .8fr) 1fr 1fr; gap: 12px; align-items: end; padding: 10px 12px; border-left: 4px solid var(--prison, var(--sage)); background: var(--prison-bg, #f4f6f3); border-radius: 8px; }
-  .yard-number-place { font-weight: 700; align-self: center; }
-  .yard-count { display: grid; gap: 6px; min-width: 0; }
-  .yard-count-label { font-size: 14px; font-weight: 700; }
-  .yard-count .stepper { display: flex; align-items: stretch; min-height: 46px; border: 1px solid #aaa; border-radius: 8px; background: #fff; overflow: hidden; }
-  .yard-count .stepper:focus-within { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
-  .yard-count .stepper button { flex: 0 0 38px; border: 0; background: #f3f3f3; color: var(--ink); font: inherit; font-weight: 700; font-size: 20px; line-height: 1; cursor: pointer; }
-  .yard-count .stepper button:disabled { opacity: .35; cursor: default; }
-  .yard-count .stepper input { flex: 1 1 auto; width: auto; min-width: 0; border: 0; padding: 6px 4px; text-align: center; font: inherit; background: transparent; -moz-appearance: textfield; appearance: textfield; }
-  .yard-count .stepper input::-webkit-outer-spin-button,
-  .yard-count .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-  .yard-count .stepper input:focus-visible { outline: none; }
-  /* Side by side there's no room left for the number on a phone, so stack them. */
-  @media (max-width: 560px) {
-    .yard-numbers { padding: 12px; }
-    .yard-number-row { grid-template-columns: 1fr; gap: 8px; }
-  }
-  .count-row:has(> :only-child) { grid-template-columns: minmax(0, 260px); }
-  .submit-status { margin: 0; font-weight: 700; }
-  .submit-status.error { color: #9a3412; }
 
   /* Embedded as a tab in the intake (?embed=1): that page's tab row is the nav,
      so this page drops its own banner, header, title band and footer. */
@@ -429,20 +406,19 @@
   body.embed .site-header,
   body.embed .page-heading,
   body.embed footer { display: none; }
-  /* Match the Session tab's column and field spacing; keep the program overview wide. */
-  body.embed .form-section { padding: 24px 0; background: #fff; }
-  body.embed .form-section > .shell { max-width: 640px; padding-inline: 22px; }
-  body.embed .form-section:has(.program-mode) > .shell { max-width: 1244px; }
-  body.embed .demo-form { padding: 0; border: 0; border-radius: 0; }
-  body.embed .form-field label { font-size: 13.5px; }
-  body.embed .form-field > input,
-  body.embed .form-field > select,
-  body.embed .form-field > textarea {
-    font-size: 17px; min-height: 0; padding: 13px 14px; border-color: #d5d1c9;
-  }
-  body.embed .form-field select { padding-right: 48px; }
+  body.embed .form-section { padding-top: clamp(20px, 3vw, 34px); }
 
-.report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+.quarter-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; border: 0; padding: 0; margin: 0; }
+.quarter-options label { cursor: pointer; position: relative; }
+.quarter-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.quarter-options span { display: grid; gap: 6px; border: 2px solid #ddd; border-radius: 12px; padding: 20px 10px; text-align: center; }
+.quarter-options strong { font-size: 24px; }
+.quarter-options small { color: #666; font-size: 14px; }
+.quarter-options input:checked + span { border-color: var(--sage); background: #edf6ef; }
+.quarter-options input:focus-visible + span { outline: 3px solid var(--sage); outline-offset: 4px; }
+#reporting-year { max-width: 180px; }
+.edit-period { background: none; border: 0; text-decoration: underline; font: inherit; cursor: pointer; }
+@media(max-width: 500px) { .quarter-options { grid-template-columns: repeat(2, 1fr); } }
 .checkin-banner { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
 
 .checkin-mode #facilities-step > .step-label,
@@ -477,11 +453,15 @@
 .checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
 .checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
-<link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js"></script>
+<link rel="stylesheet" href="../dashboard/loading.css?v=1">
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
+
+<div class="demo-banner">
+  <b>Demo</b>
+  <span>Unofficial prototype for Hack for Social Impact 2026 · not affiliated with TPW</span>
+</div>
 
 <header class="site-header">
   <a class="logo" href="../"><img src="../assets/img/logo.png" alt="TPW"></a>
@@ -490,6 +470,7 @@
     <a href="../site/ourstory/">Our Story</a>
     <a href="../site/ourwork/">Our Work</a>
     <a href="../site/our-team/">Our Team</a>
+    <a class="cta" href="./" aria-current="page">Form Demo</a>
     <a href="../dashboard/">Dashboard</a>
     <a class="login" href="../intake/simple.html">Members Login</a>
   </nav>
@@ -514,23 +495,37 @@
           </div>
           <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </section>
+        <section id="quarter-step" class="question-step" aria-labelledby="quarter-question" hidden>
+          <p class="step-label">Step 2 · Reporting period</p>
+          <h2 class="form-title" id="quarter-question" tabindex="-1">Which quarter are you reporting for?</h2>
+          <p class="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
+          <fieldset class="quarter-options">
+            <legend class="sr-only">Reporting quarter</legend>
+            <label><input type="radio" name="reporting_quarter" value="1"><span><strong>Q1</strong><small>Jan – Mar</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="2"><span><strong>Q2</strong><small>Apr – Jun</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="3"><span><strong>Q3</strong><small>Jul – Sep</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="4"><span><strong>Q4</strong><small>Oct – Dec</small></span></label>
+          </fieldset>
+          <div class="form-field"><label for="reporting-year">Year</label><input id="reporting-year" name="reporting_year" type="number" min="1900" max="2100" step="1" required></div>
+          <div class="next-actions"><button type="button" class="continue-button" id="quarter-continue">Continue →</button><button type="button" class="edit-period" id="quarter-back">Back to organization</button></div>
+        </section>
         <section id="facilities-step" class="question-step" aria-labelledby="facilities-question" hidden>
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
-          <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
-          <p class="step-label">Step 2 · Facilities</p>
-          <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
-        <div class="facility-overview">
-          <h2 class="form-title">Your prisons</h2>
-          <p class="form-hint" id="facility-help">Select each prison where you operate, then check all the yards you work in at that prison.</p>
-          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected prisons"></div>
-          <p id="facility-empty" class="form-hint">No prisons selected yet.</p>
+          <div class="organization-summary"><span>Reporting period: <strong id="quarter-summary"></strong></span><button id="edit-quarter" type="button">Edit</button></div>
+          <p class="step-label">Step 3 · Facilities</p>
+          <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
+        <div>
+          <h2 class="form-title">Your facilities</h2>
+          <p class="form-hint" id="facility-help">Select each facility where you operate, then check all the yards you work in at that facility.</p>
+          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected facilities"></div>
+          <p id="facility-empty" class="form-hint">No facilities selected yet.</p>
           <p id="facility-announcement" class="sr-only" role="status"></p>
         </div>
         <div class="form-field">
-          <label for="facility">Add a prison</label>
+          <label for="facility">Add a facility</label>
           <select id="facility" aria-describedby="facility-help">
-            <option value="" selected disabled>Select a prison to add</option>
-          <option value="ASP">Avenal State Prison (ASP)</option>
+            <option value="" selected disabled>Select a facility to add</option>
+          <option value="ASP">Avenal State Facility (ASP)</option>
           <option value="CCI">California Correctional Institution (CCI)</option>
           <option value="CHCF">California Health Care Facility (CHCF), Stockton</option>
           <option value="CIM">California Institution for Men (CIM)</option>
@@ -538,43 +533,43 @@
           <option value="CMC">California Men&#x27;s Colony (CMC)</option>
           <option value="CMF">California Medical Facility (CMF)</option>
           <option value="CRC">California Rehabilitation Center (CRC)</option>
-          <option value="COR">California State Prison, Corcoran (COR)</option>
-          <option value="LAC">California State Prison, Los Angeles County (LAC)</option>
-          <option value="SAC">California State Prison, Sacramento (SAC)</option>
-          <option value="SOL">California State Prison, Solano (SOL)</option>
-          <option value="CAL">Calipatria State Prison (CAL)</option>
-          <option value="CEN">California State Prison, Centinela (CEN)</option>
+          <option value="COR">California State Facility, Corcoran (COR)</option>
+          <option value="LAC">California State Facility, Los Angeles County (LAC)</option>
+          <option value="SAC">California State Facility, Sacramento (SAC)</option>
+          <option value="SOL">California State Facility, Solano (SOL)</option>
+          <option value="CAL">Calipatria State Facility (CAL)</option>
+          <option value="CEN">California State Facility, Centinela (CEN)</option>
           <option value="CCWF">Central California Women&#x27;s Facility (CCWF)</option>
           <option value="CTF">Correctional Training Facility (CTF)</option>
-          <option value="FSP">Folsom State Prison (FSP)</option>
-          <option value="HDSP">High Desert State Prison (HDSP)</option>
-          <option value="ISP">Ironwood State Prison (ISP)</option>
-          <option value="KVSP">Kern Valley State Prison (KVSP)</option>
-          <option value="MCSP">Mule Creek State Prison (MCSP)</option>
-          <option value="NKSP">North Kern State Prison (NKSP)</option>
-          <option value="PBSP">Pelican Bay State Prison (PBSP)</option>
-          <option value="PVSP">Pleasant Valley State Prison (PVSP)</option>
+          <option value="FSP">Folsom State Facility (FSP)</option>
+          <option value="HDSP">High Desert State Facility (HDSP)</option>
+          <option value="ISP">Ironwood State Facility (ISP)</option>
+          <option value="KVSP">Kern Valley State Facility (KVSP)</option>
+          <option value="MCSP">Mule Creek State Facility (MCSP)</option>
+          <option value="NKSP">North Kern State Facility (NKSP)</option>
+          <option value="PBSP">Pelican Bay State Facility (PBSP)</option>
+          <option value="PVSP">Pleasant Valley State Facility (PVSP)</option>
           <option value="RJD">Richard J. Donovan Correctional Facility (RJD)</option>
-          <option value="SVSP">Salinas Valley State Prison (SVSP)</option>
+          <option value="SVSP">Salinas Valley State Facility (SVSP)</option>
           <option value="SQ">San Quentin Rehabilitation Center (SQ)</option>
           <option value="SCC">Sierra Conservation Center (SCC)</option>
-          <option value="SATF">Substance Abuse Treatment Facility and State Prison, Corcoran (SATF-CSP, Corcoran)</option>
-          <option value="VSP">Valley State Prison (VSP)</option>
-          <option value="WSP">Wasco State Prison (WSP)</option>
+          <option value="SATF">Substance Abuse Treatment Facility and State Facility, Corcoran (SATF-CSP, Corcoran)</option>
+          <option value="VSP">Valley State Facility (VSP)</option>
+          <option value="WSP">Wasco State Facility (WSP)</option>
           </select>
         </div>
         <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
-        <p id="continue-programs-help" class="yard-hint">Add at least one prison to continue.</p>
+        <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <aside class="program-sidebar" aria-label="Prisons, yards, and completed programs">
-          <div class="organization-summary"><span>Your prisons &amp; yards</span><button type="button" id="edit-prisons">Edit prisons</button></div>
+          <aside class="program-sidebar" aria-label="Facilities, yards, and completed programs">
+          <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
           </aside>
           <div class="program-editor">
-          <p class="step-label">Step 3 · Programs</p>
+          <p class="step-label">Step 4 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
-          <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
+          <p class="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
           <div id="program-list" class="question-step"></div>
           <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
             <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
@@ -583,17 +578,22 @@
               <button type="button" id="another-program" class="continue-button">+ Add another program</button>
               <button type="button" id="finish-form" class="continue-button">Finish and submit</button>
             </div>
-            <p class="form-hint" id="where-it-goes">Demo submission saves to this browser only.</p>
+            <p class="form-hint">Submissions are saved to the project database.</p>
           </section>
           <section id="submission-result" class="question-step" hidden>
-            <h2 class="form-title" id="submission-heading" tabindex="-1">Submission saved</h2>
-            <p id="submission-context" class="submission-context"></p>
-            <p id="submission-receipt" class="submit-status" role="status" hidden></p>
+            <div class="success-check" aria-hidden="true">✓</div>
+            <h2 class="form-title" id="submission-heading" tabindex="-1">You’re all set!</h2>
             <div id="submission-totals" class="success-totals"></div>
-            <button type="button" id="start-over" class="continue-button start-over">Log more data</button>
+            <button type="button" id="start-over" class="continue-button start-over">Start a new submission</button>
+            <section class="mock-impact" aria-labelledby="mock-impact-heading">
+              <span class="mock-label">Mock estimate</span>
+              <h3 id="mock-impact-heading">A glimpse of your impact</h3>
+              <div id="mock-totals" class="success-totals"></div>
+              <p>Illustration only: 1 hour saved per participant and $50 per hour. These placeholder assumptions are not measured outcomes.</p>
+            </section>
             <details class="full-report">
-              <summary>View submitted details</summary>
-              <p class="report-note">Program totals are counted once, even when a program serves multiple prisons. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across prisons.</p>
+              <summary>Expand full submission</summary>
+              <p class="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across facilities.</p>
               <div id="report-prisons" class="report-grid"></div>
             </details>
           </section>
@@ -608,6 +608,7 @@
           <label for="scheduled-status">Schedule Status</label>
           <select id="scheduled-status" name="scheduled_status" required>
             <option value="" selected disabled>Select a status</option>
+            <option value="Planned">Planned</option>
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
@@ -631,17 +632,22 @@
               <button type="button" data-step="1" aria-label="Increase course hours per participant">+</button>
             </div>
           </div>
-        </div>
-        <fieldset class="yard-numbers">
-          <legend>Participants at each yard</legend>
-          <p class="yard-hint">TPW counts each yard separately, so give the numbers for each yard where this program runs.</p>
-          <div class="yard-number-rows"></div>
-          <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
-        </fieldset>
-        <div class="form-field">
-          <label for="program-notes">Anything else you’d like to tell us about this programme? <span class="label-note">(optional)</span></label>
-          <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
-          <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Please don’t include participant names or other identifying information.</p>
+          <div class="form-field">
+            <label for="participants">Participants</label>
+            <div class="stepper">
+              <button type="button" data-step="-1" aria-label="Decrease participants">−</button>
+              <input id="participants" name="participants" type="number" min="0" step="1" inputmode="numeric" value="0">
+              <button type="button" data-step="1" aria-label="Increase participants">+</button>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="participants-completed">Completed</label>
+            <div class="stepper">
+              <button type="button" data-step="-1" aria-label="Decrease participants completed">−</button>
+              <input id="participants-completed" name="participants_completed" type="number" min="0" step="1" inputmode="numeric" value="0">
+              <button type="button" data-step="1" aria-label="Increase participants completed">+</button>
+            </div>
+          </div>
         </div>
         </template>
         </section>
@@ -659,19 +665,35 @@
   </div>
 </footer>
 
-<script src="backend.js"></script>
-<script type="module">
-import { currentReportingPeriod } from './js/reporting-period.js';
+<script>
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
 const organizationStep = document.querySelector('#organization-step');
 const facilitiesStep = document.querySelector('#facilities-step');
+const quarterStep = document.querySelector('#quarter-step');
+const reportingYear = document.querySelector('#reporting-year');
+const today = new Date();
+reportingYear.value = today.getFullYear();
+document.querySelector(`input[name="reporting_quarter"][value="${Math.floor(today.getMonth() / 3) + 1}"]`).checked = true;
 function reportingPeriod() {
-  const period = currentReportingPeriod();
-  document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
-  return period;
+  return { quarter: Number(document.querySelector('input[name="reporting_quarter"]:checked').value), year: Number(reportingYear.value) };
 }
-reportingPeriod();
+function continueQuarter() {
+  if (transitioning) return;
+  if (!reportingYear.reportValidity()) return;
+  const period = reportingPeriod();
+  document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
+  if (checkinContext) {
+    if (!programList.children.length && !completedPrograms.length) addProgram(false);
+    refreshPrisons(); form.classList.add('program-mode');
+    showStep(quarterStep, programsStep, document.querySelector('#programs-question'));
+  } else {
+    showStep(quarterStep, facilitiesStep, document.querySelector('#facilities-question'));
+  }
+}
+document.querySelector('#quarter-continue').addEventListener('click', continueQuarter);
+document.querySelector('#quarter-back').addEventListener('click', () => showStep(quarterStep, organizationStep, organization));
+document.querySelector('#edit-quarter').addEventListener('click', () => showStep(facilitiesStep, quarterStep, document.querySelector('#quarter-question')));
 let transitioning = false;
 async function showStep(from, to, focusTarget) {
   if (transitioning) return;
@@ -689,6 +711,7 @@ async function showStep(from, to, focusTarget) {
 }
 form.addEventListener('submit', event => {
   event.preventDefault();
+  if (!quarterStep.hidden) { continueQuarter(); return; }
   if (organizationStep.hidden || transitioning) return;
   if (!organization.value.trim()) {
     organization.setCustomValidity('Enter your organization name.');
@@ -697,8 +720,7 @@ form.addEventListener('submit', event => {
   }
   organization.value = organization.value.trim();
   document.querySelector('#organization-summary').textContent = organization.value;
-  reportingPeriod();
-  showStep(organizationStep, facilitiesStep, document.querySelector('#facilities-question'));
+  showStep(organizationStep, quarterStep, document.querySelector('#quarter-question'));
 });
 organization.addEventListener('input', () => organization.setCustomValidity(''));
 document.querySelector('#edit-organization').addEventListener('click', () => {
@@ -792,7 +814,7 @@ function syncAssignmentYards(program, row, code, prison) {
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
-    note.textContent = 'Choose yards for this prison in the previous step.';
+    note.textContent = 'Choose yards for this facility in the previous step.';
     yards.append(note);
     return;
   }
@@ -813,7 +835,7 @@ function refreshPrisons() {
   continuePrograms.disabled = prisons.size === 0 || (!checkinContext && missingYards.length > 0);
   // Say why the button is greyed out, not just that it is.
   document.querySelector('#continue-programs-help').textContent = prisons.size === 0
-    ? 'Add at least one prison to continue.'
+    ? 'Add at least one facility to continue.'
     : !checkinContext && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
   // A finished program can't keep pointing at a prison or yard that has since been removed.
   for (const program of completedPrograms) {
@@ -843,7 +865,6 @@ function refreshPrisons() {
       syncAssignmentYards(program, row, code, prison);
       assignments.append(row);
     }
-    syncYardNumbers(program);
   }
 }
 picker.addEventListener('change', () => {
@@ -896,100 +917,48 @@ picker.addEventListener('change', () => {
     announcement.textContent = `${name} removed.`;
   });
   option.disabled = true; picker.value = ''; refreshPrisons();
-  announcement.textContent = `${name} added. ${prisons.size} prisons selected.`;
+  announcement.textContent = `${name} added. ${prisons.size} facilities selected.`;
 });
-// The − / + buttons beside a number box.
-function wireStepper(stepper) {
-  const input = stepper.querySelector('input');
-  const down = stepper.querySelector('[data-step="-1"]');
-  const up = stepper.querySelector('[data-step="1"]');
-  const min = Number(input.min || 0);
-  const paint = () => { down.disabled = input.value !== '' && Number(input.value) <= min; };
-  const apply = (delta) => {
-    const current = input.value.trim() === '' ? 0 : Number(input.value);
-    const base = Number.isFinite(current) ? current : 0;
-    const next = Math.max(min, Math.round((base + delta) * 100) / 100);
-    input.value = String(next);
-    paint();
-  };
-  down.addEventListener('click', () => apply(-1));
-  up.addEventListener('click', () => apply(1));
-  input.addEventListener('input', paint);
-  input.addEventListener('focus', () => input.select());
-  input.addEventListener('blur', () => {
-    const typed = Number(input.value);
-    if (input.value.trim() === '' || !Number.isFinite(typed) || typed < min) input.value = String(min);
-    paint();
-  });
-  paint();
-}
-function countStepper(label, kind) {
-  const field = document.createElement('div'); field.className = 'yard-count';
-  const caption = document.createElement('span'); caption.className = 'yard-count-label'; caption.textContent = label;
-  const stepper = document.createElement('div'); stepper.className = 'stepper';
-  const down = document.createElement('button'); down.type = 'button'; down.dataset.step = '-1'; down.textContent = '−';
-  const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.step = '1';
-  input.inputMode = 'numeric'; input.value = '0'; input.dataset.kind = kind;
-  const up = document.createElement('button'); up.type = 'button'; up.dataset.step = '1'; up.textContent = '+';
-  stepper.append(down, input, up); field.append(caption, stepper);
-  return field;
-}
-// One row of Participants / Completed for every prison and yard the program is ticked for.
-// Rows that stay ticked keep what was typed in them.
-function syncYardNumbers(program) {
-  const holder = program.querySelector('.yard-number-rows');
-  if (!holder) return;
-  const wanted = [];
-  for (const row of program.querySelectorAll('.assignment-row')) {
-    if (!row.querySelector(':scope > label input').checked) continue;
-    for (const box of row.querySelectorAll('.program-yards input:checked')) wanted.push([row.dataset.code, box.value]);
-  }
-  const keys = new Set(wanted.map(([code, yard]) => `${code}|${yard}`));
-  for (const row of [...holder.children]) if (!keys.has(row.dataset.key)) row.remove();
-  for (const [code, yard] of wanted) {
-    const key = `${code}|${yard}`;
-    let row = [...holder.children].find(item => item.dataset.key === key);
-    if (!row) {
-      row = document.createElement('div'); row.className = 'yard-number-row'; row.dataset.key = key;
-      row.dataset.code = code; row.dataset.yard = yard;
-      const place = document.createElement('span'); place.className = 'yard-number-place';
-      place.textContent = `${code} · ${yard}`;
-      const participants = countStepper('Participants', 'participants');
-      const completed = countStepper('Completed', 'completed');
-      for (const [field, what] of [[participants, 'participants'], [completed, 'participants completed']]) {
-        const [down, up] = field.querySelectorAll('button');
-        down.setAttribute('aria-label', `Decrease ${what} at ${code} ${yard}`);
-        up.setAttribute('aria-label', `Increase ${what} at ${code} ${yard}`);
-        field.querySelector('input').setAttribute('aria-label', `${what[0].toUpperCase()}${what.slice(1)} at ${code} ${yard}`);
-        wireStepper(field.querySelector('.stepper'));
-      }
-      row.append(place, participants, completed);
-    }
-    const prison = prisons.get(code);
-    if (prison) paintPrison(row, prison);
-    holder.append(row);
-  }
-  program.querySelector('.yard-numbers-empty').hidden = wanted.length > 0;
-}
 function addProgram(focus = true, saved = null, editIndex) {
   const number = ++programNumber;
   const program = document.createElement('section'); program.className = 'program-card question-step'; program.dataset.number = number;
   const top = document.createElement('div'); top.className = 'organization-summary';
   const heading = document.createElement('h3'); heading.className = 'form-title'; heading.textContent = `Program ${completedPrograms.length + 1}`;
   top.append(heading); program.append(top, document.querySelector('#program-fields').content.cloneNode(true));
-  for (const field of program.querySelectorAll('input, select, textarea')) {
+  for (const field of program.querySelectorAll('input, select')) {
     const original = field.id; field.id = `program-${number}-${original}`;
     program.querySelector(`label[for="${original}"]`).htmlFor = field.id;
     field.name = `programs[${number}][${field.name}]`;
   }
-  for (const stepper of program.querySelectorAll('.stepper')) wireStepper(stepper);
+  for (const stepper of program.querySelectorAll('.stepper')) {
+    const input = stepper.querySelector('input');
+    const down = stepper.querySelector('[data-step="-1"]');
+    const up = stepper.querySelector('[data-step="1"]');
+    const min = Number(input.min || 0);
+    const paint = () => { down.disabled = input.value !== '' && Number(input.value) <= min; };
+    const apply = (delta) => {
+      const current = input.value.trim() === '' ? 0 : Number(input.value);
+      const base = Number.isFinite(current) ? current : 0;
+      const next = Math.max(min, Math.round((base + delta) * 100) / 100);
+      input.value = String(next);
+      paint();
+    };
+    down.addEventListener('click', () => apply(-1));
+    up.addEventListener('click', () => apply(1));
+    input.addEventListener('input', paint);
+    input.addEventListener('focus', () => input.select());
+    input.addEventListener('blur', () => {
+      const typed = Number(input.value);
+      if (input.value.trim() === '' || !Number.isFinite(typed) || typed < min) input.value = String(min);
+      paint();
+    });
+    paint();
+  }
   const fieldset = document.createElement('fieldset'); fieldset.className = 'prison-options';
-  const legend = document.createElement('legend'); legend.textContent = 'Which prisons does this program apply to?';
+  const legend = document.createElement('legend'); legend.textContent = 'Which facilities does this program apply to?';
   const assignments = document.createElement('div'); assignments.className = 'program-assignments';
   fieldset.append(legend, assignments);
   program.querySelector('.form-field').after(fieldset);
-  // Ticking or unticking a yard adds or removes its row of numbers.
-  assignments.addEventListener('change', () => syncYardNumbers(program));
   const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button'; complete.textContent = 'Complete program →';
   complete.addEventListener('click', () => completeProgram(program));
   program.append(complete);
@@ -1004,7 +973,7 @@ function addProgram(focus = true, saved = null, editIndex) {
     heading.textContent = `Editing ${saved.name}`;
     program.dataset.editIndex = editIndex;
     if (saved.id) program.dataset.programId = saved.id;
-    for (const input of program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')) {
+    for (const input of program.querySelectorAll('.form-field input, .form-field select')) {
       const key = input.name.slice(input.name.lastIndexOf('['));
       const entry = Object.entries(saved.values).find(([name]) => name.endsWith(key));
       if (entry) input.value = entry[1];
@@ -1018,21 +987,11 @@ function addProgram(focus = true, saved = null, editIndex) {
       for (const box of row.querySelectorAll('.program-yards input')) box.checked = assignment.yards.includes(box.value);
     }
   }
-  syncYardNumbers(program);
-  if (saved) {
-    for (const row of program.querySelectorAll('.yard-number-row')) {
-      const count = saved.counts?.[row.dataset.key];
-      if (!count) continue;
-      for (const input of row.querySelectorAll('input')) {
-        input.value = String(count[input.dataset.kind] ?? 0);
-        input.dispatchEvent(new Event('input'));
-      }
-    }
-  }
   if (focus) program.querySelector('input').focus();
 }
 continuePrograms.addEventListener('click', () => {
   if (continuePrograms.disabled || transitioning) return;
+  if (checkinContext) { showStep(facilitiesStep, quarterStep, document.querySelector('#quarter-question')); return; }
   if (!programList.children.length && !completedPrograms.length) addProgram(false);
   refreshPrisons();
   form.classList.add('program-mode');
@@ -1080,9 +1039,8 @@ function completeProgram(program) {
   nameInput.oninput = () => nameInput.setCustomValidity('');
   if (!name) { nameInput.reportValidity(); return; }
   // Clear last time's date and number messages so a fixed field doesn't stay flagged.
-  for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
-  for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
-  for (const field of program.querySelectorAll('input, select, textarea')) {
+  for (const suffix of ['start-date', 'end-date', 'participants-completed']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
+  for (const field of program.querySelectorAll('input, select')) {
     if (!field.checkValidity()) { field.reportValidity(); return; }
   }
   // Catch numbers and dates that can't be true before they reach the totals.
@@ -1090,6 +1048,8 @@ function completeProgram(program) {
   const status = field('scheduled-status').value;
   const start = field('start-date');
   const end = field('end-date');
+  const participants = field('participants');
+  const completed = field('participants-completed');
   const problem = (input, message) => {
     input.setCustomValidity(message);
     input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
@@ -1097,17 +1057,16 @@ function completeProgram(program) {
     input.reportValidity();
     feedback.textContent = message;
   };
-  if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
-  const notes = field('program-notes');
-  if (notes.value.length > 2000) { problem(notes, 'Use no more than 2,000 characters for the optional context.'); return; }
+  if (status !== 'Planned' && !start.value) { problem(start, 'Enter the date this program started.'); return; }
   if (status === 'Completed' && !end.value) { problem(end, 'Enter the date this program ended.'); return; }
   if (start.value && end.value && end.value < start.value) { problem(end, 'The end date is before the start date.'); return; }
+  if (Number(completed.value) > Number(participants.value)) { problem(completed, `Completed can’t be more than the ${participants.value} participants who started.`); return; }
   feedback.textContent = '';
   const assignments = [];
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
     if (checkinContext) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1115,25 +1074,11 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one prison and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
-  // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
-  const counts = {};
-  for (const row of program.querySelectorAll('.yard-number-row')) {
-    const participants = row.querySelector('[data-kind="participants"]');
-    const completed = row.querySelector('[data-kind="completed"]');
-    for (const input of [participants, completed]) {
-      if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
-    }
-    if (Number(completed.value) > Number(participants.value)) {
-      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants who started.`);
-      return;
-    }
-    counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
-  }
-  const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')].map(field => [field.name, field.value]));
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select')].map(field => [field.name, field.value]));
   // An edited program goes back where it was in the list.
   const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
-  completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
+  completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values });
   programList.replaceChildren();
   refreshPrisons();
   document.querySelector('#program-next').hidden = false;
@@ -1163,7 +1108,7 @@ function renderAddedPrograms() {
     if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
     if (!program.assignments.length) {
       const warning = document.createElement('p'); warning.className = 'needs-prison';
-      warning.textContent = 'Its prisons or yards were removed. Edit it to choose new ones, or remove it.';
+      warning.textContent = 'Its facilities or yards were removed. Edit it to choose new ones, or remove it.';
       item.append(warning);
     }
     list.append(item);
@@ -1196,7 +1141,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   }
   const orphaned = completedPrograms.filter(program => !program.assignments.length);
   if (orphaned.length) {
-    document.querySelector('#program-feedback').textContent = `Choose a prison and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
+    document.querySelector('#program-feedback').textContent = `Choose a facility and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
     return;
   }
   const submission = {
@@ -1209,44 +1154,22 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   };
   const button = document.querySelector('#finish-form');
   const feedback = document.querySelector('#program-feedback');
-  const showDone = (receipt) => {
-    document.querySelector('#program-next').hidden = true;
-    feedback.textContent = '';
-    renderSubmission(submission);
-    const note = document.querySelector('#submission-receipt');
-    note.textContent = receipt || 'Saved in this browser only. This demo doesn’t send your answers anywhere yet.';
-    note.hidden = false;
-    programsStep.classList.add('submitted');
-    document.querySelector('#submission-result').hidden = false;
-    document.querySelector('#edit-prisons').hidden = true;
-    document.querySelector('#submission-heading').focus();
-  };
-  // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
-  submissionId ||= crypto.randomUUID();
-  if (!backendUrl() && !window.google?.script?.run) {
-    // No back end set up: the demo behaviour, saved in this browser only.
-    try {
-      localStorage.setItem('tpw-form-demo-submission', JSON.stringify(submission));
-    } catch (error) {
-      feedback.textContent = 'Could not save in this browser. Your entries are still here; please try again.';
-      return;
-    }
-    showDone();
-    return;
-  }
-  const controls = [...programsStep.querySelectorAll('button, input, select, textarea')];
+  const controls = [...programsStep.querySelectorAll('button, input, select')];
   const originalDisabled = controls.map(control => control.disabled);
   submitting = true;
   controls.forEach(control => { control.disabled = true; });
   button.textContent = 'Submitting…';
-  feedback.textContent = 'Sending to TPW…';
+  feedback.textContent = 'Saving your submission…';
   programsStep.setAttribute('aria-busy', 'true');
-  let result;
   try {
-    result = await sendToBackend(toPayload(submission, submissionId));
+    submissionId ||= crypto.randomUUID();
+    const { saveSubmission } = await import('./js/submissions.js');
+    await saveSubmission(submission, submissionId);
   } catch (error) {
-    console.error('Submission failed:', error);
-    feedback.textContent = 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.';
+    console.error('Submission save failed:', error);
+    feedback.textContent = error.code === 'permission-denied'
+      ? 'The database refused this submission. Check the Firebase rules, then try again. Your entries are still here.'
+      : 'Could not save your submission. Check your connection and try again. Your entries are still here.';
     return;
   } finally {
     submitting = false;
@@ -1254,62 +1177,14 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     button.textContent = 'Finish and submit';
     programsStep.removeAttribute('aria-busy');
   }
-  if (!result || !result.ok) {
-    feedback.textContent = ((result && result.errors) || ['Something went wrong. Your entries are still here; please try again.']).join(' ');
-    return;
-  }
-  showDone(`Filed with TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
+  document.querySelector('#program-next').hidden = true;
+  document.querySelector('#program-feedback').textContent = '';
+  renderSubmission(submission);
+  programsStep.classList.add('submitted');
+  document.querySelector('#submission-result').hidden = false;
+  document.querySelector('#edit-prisons').hidden = true;
+  document.querySelector('#submission-heading').focus();
 });
-
-// The address in backend.js, if one is set.
-function backendUrl() {
-  const url = (window.TPW_BACKEND_URL || '').trim();
-  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || /^http:\/\/localhost:\d+\//.test(url) ? url : '';
-}
-// What the sheet writer needs, in plain field names. The organization is only a fallback
-// for the demo: once sign-in is connected, the server files under the signed-in organization.
-function toPayload(submission, submissionId) {
-  return {
-    submissionId,
-    organization: submission.organization,
-    reportingPeriod: submission.reportingPeriod,
-    ...(submission.orgId ? { orgId: submission.orgId, previousSubmissionId: submission.previousSubmissionId || '' } : {}),
-    programs: submission.programs.map(program => ({
-      id: program.id,
-      name: program.name,
-      notes: programValue(program, 'notes').trim(),
-      status: programValue(program, 'scheduled_status'),
-      startDate: programValue(program, 'start_date'),
-      endDate: programValue(program, 'end_date'),
-      courseHours: Number(programValue(program, 'course_hours')) || 0,
-      sites: programSites(program).map(site => ({ facilityCode: site.code, yard: site.yard, participants: site.participants, completed: site.completed }))
-    }))
-  };
-}
-// Sign-in hands the page a pass as window.tpwSession = { token, organization, email }.
-// Sent as plain text so the browser doesn't ask Google's server for permission first;
-// Apps Script reads the body either way.
-async function sendToBackend(payload) {
-  const token = window.tpwSession?.token || '';
-  // Older receivers ignore notes. Refuse rather than silently discard them.
-  if (payload.programs.some(program => program.notes)) {
-    const capabilities = window.google?.script?.run
-      ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
-      : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
-    if (!capabilities.features?.programNotes) {
-      return { ok: false, errors: ['The receiver needs its programme-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
-    }
-  }
-  if (window.google?.script?.run) {
-    return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
-  }
-  return fetch(backendUrl(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ token, payload })
-  }).then(response => response.json());
-}
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = 'Submitting sends your answers to TPW.';
 
 document.querySelector('#start-over').addEventListener('click', () => location.reload());
 
@@ -1317,24 +1192,17 @@ function programValue(program, key) {
   const entry = Object.entries(program.values).find(([name]) => name.endsWith(`[${key}]`));
   return entry ? entry[1] : '';
 }
-// Every prison and yard a program runs at, with that yard's numbers.
-function programSites(program) {
-  return program.assignments.flatMap(assignment => assignment.yards.map(yard => {
-    const count = program.counts?.[`${assignment.code}|${yard}`] || {};
-    return { code: assignment.code, yard, participants: Number(count.participants) || 0, completed: Number(count.completed) || 0 };
-  }));
-}
 function renderSubmission(submission) {
   const number = value => Number(value) || 0;
   const format = value => value.toLocaleString(undefined, { maximumFractionDigits: 2 });
   const totals = submission.programs.reduce((sum, program) => {
     const hours = number(programValue(program, 'course_hours'));
-    for (const site of programSites(program)) {
-      sum.participants += site.participants; sum.completed += site.completed;
-      sum.delivered += hours * site.completed;
-    }
+    const participants = number(programValue(program, 'participants'));
+    const completed = number(programValue(program, 'participants_completed'));
+    sum.hours += hours; sum.participants += participants; sum.completed += completed;
+    sum.delivered += hours * completed;
     return sum;
-  }, { participants: 0, completed: 0, delivered: 0 });
+  }, { hours: 0, participants: 0, completed: 0, delivered: 0 });
   function metric(container, value, label) {
     const tile = document.createElement('div'); tile.className = 'success-metric';
     const amount = document.createElement('strong'); amount.textContent = value;
@@ -1346,8 +1214,10 @@ function renderSubmission(submission) {
   metric(totalPanel, format(submission.programs.length), submission.programs.length === 1 ? 'Program' : 'Programs');
   metric(totalPanel, format(totals.participants), 'Participant enrollments');
   metric(totalPanel, format(totals.completed), 'Participants completed');
-  metric(totalPanel, format(totals.delivered), 'Estimated completer-hours');
-  document.querySelector('#submission-context').textContent = `${submission.organization} · Q${submission.reportingPeriod.quarter} ${submission.reportingPeriod.year}`;
+  metric(totalPanel, format(totals.delivered), 'Participant hours delivered');
+  const mock = document.querySelector('#mock-totals'); mock.replaceChildren();
+  metric(mock, format(totals.participants), 'Estimated hours saved');
+  metric(mock, '$' + format(totals.participants * 50), 'Estimated money saved');
   const report = document.querySelector('#report-prisons'); report.replaceChildren();
   for (const prison of submission.prisons) {
     const card = document.createElement('article'); card.className = 'report-prison';
@@ -1365,6 +1235,7 @@ function renderSubmission(submission) {
     yardSection.append(yardLabel, chips); card.append(yardSection);
     const body = document.createElement('div'); body.className = 'report-card-body'; card.append(body);
     for (const program of matches) {
+      const assignment = program.assignments.find(item => item.code === prison.code);
       const block = document.createElement('section'); block.className = 'report-program';
       const heading = document.createElement('div'); heading.className = 'report-program-heading';
       const name = document.createElement('h4'); name.textContent = program.name;
@@ -1372,10 +1243,7 @@ function renderSubmission(submission) {
       status.textContent = programValue(program, 'scheduled_status') || 'No status';
       status.dataset.status = programValue(program, 'scheduled_status');
       heading.append(name, status); block.append(heading);
-      const here = programSites(program).filter(site => site.code === prison.code);
-      const yards = document.createElement('p'); yards.className = 'report-program-yards';
-      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} started, ${site.completed} completed)`).join(', ')}`;
-      block.append(yards);
+      const yards = document.createElement('p'); yards.className = 'report-program-yards'; yards.textContent = `Yards · ${assignment.yards.join(', ')}`; block.append(yards);
       const dates = document.createElement('dl'); dates.className = 'report-dates';
       for (const [label, key] of [['Start date', 'start_date'], ['End date', 'end_date']]) {
         const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
@@ -1386,20 +1254,12 @@ function renderSubmission(submission) {
       }
       block.append(dates);
       const metrics = document.createElement('dl'); metrics.className = 'report-program-metrics';
-      const sum = kind => here.reduce((total, site) => total + site[kind], 0);
-      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants', sum('participants')], ['Completed', sum('completed')]]) {
+      for (const [label, key] of [['Course hours', 'course_hours'], ['Participants', 'participants'], ['Completed', 'participants_completed']]) {
         const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
-        const amount = document.createElement('dd'); amount.textContent = format(value);
-        group.append(amount, term); metrics.append(group);
+        const value = document.createElement('dd'); value.textContent = format(number(programValue(program, key)));
+        group.append(value, term); metrics.append(group);
       }
-      block.append(metrics);
-      const notes = programValue(program, 'notes').trim();
-      if (notes) {
-        const context = document.createElement('p'); context.className = 'report-program-notes';
-        context.textContent = `Additional context: ${notes}`;
-        block.append(context);
-      }
-      body.append(block);
+      block.append(metrics); body.append(block);
     }
     if (!matches.length) { const note = document.createElement('p'); note.className = 'report-empty'; note.textContent = 'No programs assigned yet.'; body.append(note); }
     report.append(card);
@@ -1413,7 +1273,13 @@ async function loadCheckin() {
   banner.textContent = 'Loading your latest programs…'; form.prepend(banner);
   const step = organizationStep;
   step.hidden = true;
+  let skeleton;
+  form.setAttribute('aria-busy', 'true');
   try {
+    const { loadingSkeleton } = await import('../dashboard/js/loading.js');
+    skeleton = loadingSkeleton('form');
+    banner.style.position = 'absolute'; banner.style.clipPath = 'inset(50%)';
+    form.append(skeleton);
     const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../dashboard/js/data.js'), import('../dashboard/js/checkin-data.js')]);
     const draft = checkinDraft(await loadDashboard(orgId));
     checkinContext = draft;
@@ -1421,7 +1287,10 @@ async function loadCheckin() {
     organization.value = draft.organization;
     organization.readOnly = true;
     document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
+    document.querySelector('#quarter-back').hidden = true;
     document.querySelector('#organization-summary').textContent = draft.organization;
+    reportingYear.value = draft.reportingPeriod.year;
+    document.querySelector(`input[name="reporting_quarter"][value="${draft.reportingPeriod.quarter}"]`).checked = true;
     for (const prison of draft.prisons) {
       if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
       picker.value = prison.code; picker.dispatchEvent(new Event('change'));
@@ -1436,14 +1305,19 @@ async function loadCheckin() {
     refreshPrisons();
     document.querySelector('#program-next').hidden = !completedPrograms.length;
     document.querySelector('#program-next-heading').textContent = 'Review your programs for this quarter';
+    quarterStep.hidden = true;
     facilitiesStep.hidden = false;
-    reportingPeriod();
-    document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+    document.querySelector('#quarter-summary').textContent = `Q${draft.reportingPeriod.quarter} ${draft.reportingPeriod.year}`;
+    document.querySelector('#facilities-question').textContent = 'Have any of the facilities you operate in changed?';
     document.querySelector('#facility-help').textContent = '';
     document.querySelector('#continue-programs').textContent = 'Continue →';
+    skeleton?.remove();
+    form.removeAttribute('aria-busy');
     banner.remove();
     document.querySelector('#facilities-question').focus();
   } catch (error) {
+    skeleton?.remove(); form.removeAttribute('aria-busy');
+    banner.style.position = ''; banner.style.clipPath = '';
     console.error('Check-in prefill failed:', error);
     banner.textContent = 'Could not load your previous submission. Your existing data has not changed.';
     const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'continue-button'; retry.textContent = 'Try again'; retry.onclick = () => location.reload(); banner.append(retry);

@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Form Demo</title>
+<style>
+  @font-face { font-family:'Rubik One'; src:url('../assets/fonts/rubik-one.woff2') format('woff2'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-500.woff2') format('woff2'); font-weight:400 500; font-display:swap; }
+  @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-700.woff2') format('woff2'); font-weight:700 800; font-display:swap; }
+
+  :root {
+    --green: #7cc089;
+    --sage: #5d8d67;
+    --yellow: #edca72;
+    --ink: #000;
+    --paper: #fff;
+    --body: #3e3e3e;
+    --display: 'Rubik One', 'Arial Black', sans-serif;
+    --text: 'Degular', ui-sans-serif, -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--text); font-size: 18px; line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { max-width: 100%; display: block; }
+  a { color: inherit; }
+  .shell { max-width: 1440px; margin: 0 auto; padding: 0 40px; }
+
+  /* ---------- demo banner ---------- */
+  .demo-banner {
+    background: var(--ink); color: #fff;
+    font-size: 13px; letter-spacing: .04em;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    padding: 9px 16px; text-align: center; flex-wrap: wrap;
+  }
+  .demo-banner b {
+    background: var(--yellow); color: #000; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em; font-size: 10px;
+    padding: 3px 8px; border-radius: 999px;
+  }
+  .demo-banner span { opacity: .8; }
+
+  /* ---------- header ---------- */
+  .site-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 32px; padding: 26px 40px; max-width: 1440px; margin: 0 auto;
+  }
+  .site-header .logo img { width: 190px; }
+  @media (max-width: 900px) { .site-header .logo img { width: 128px; } }
+  .site-header nav { display: flex; align-items: center; gap: 38px; font-size: 17px; }
+  .site-header nav a { text-decoration: none; }
+  .site-header nav a:hover { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+  .site-header nav a.cta {
+    background: var(--ink); color: #fff; padding: 10px 20px; border-radius: 999px;
+    font-weight: 700; font-size: 15px;
+  }
+  .site-header nav a.cta:hover { background: var(--sage); text-decoration: none; }
+  .site-header nav a.login { font-weight: 700; }
+  .site-header nav a.login:hover { color: var(--sage); }
+
+  /* ---------- hero ---------- */
+  .hero { position: relative; }
+  .hero img { width: 100%; height: clamp(420px, 62vh, 720px); object-fit: cover; object-position: center 42%; }
+  .hero .overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: flex-end;
+    padding: clamp(24px, 4vw, 64px);
+    background: linear-gradient(to top, rgba(0,0,0,.42) 0%, rgba(0,0,0,0) 55%);
+  }
+  .hero h1 {
+    font-family: var(--display); font-weight: 400; color: #fff;
+    font-size: clamp(1.9rem, 4.3vw, 3.9rem); line-height: 1.02;
+    margin: 0; max-width: 22ch; letter-spacing: -.01em;
+  }
+
+  /* ---------- green band ---------- */
+  .band { background: var(--green); padding: clamp(20px, 3vw, 34px) 24px; text-align: center; }
+  .band h2 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.5rem, 3.5vw, 3.3rem); line-height: 1; margin: 0;
+    text-transform: uppercase; letter-spacing: .005em;
+  }
+  .band p { margin: 14px auto 0; max-width: 52ch; font-size: clamp(1rem, 1.5vw, 1.2rem); text-wrap: balance; }
+
+  /* ---------- cards ---------- */
+  .cards-wrap { padding: clamp(32px, 5vw, 72px) 0 0; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  .card { padding: clamp(28px, 3vw, 44px); }
+  .card h3 {
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.25rem, 1.9vw, 1.6rem); margin: 0 0 22px;
+  }
+  .card ul { margin: 0; padding-left: 20px; display: grid; gap: 14px; font-size: 17px; }
+  .card.sage { background: var(--sage); color: #fff; border-radius: 14px 14px 0 0; }
+  .card.yellow { background: var(--yellow); color: #000; border-radius: 14px 14px 0 0; }
+  .card.black { background: var(--ink); color: #fff; }
+  .card.black ul { list-style: none; padding-left: 0; }
+
+  /* ---------- torn green panel ---------- */
+  .torn {
+    background: var(--green); color: #000;
+    margin-top: -14px; padding: clamp(64px, 8vw, 110px) 0 clamp(56px, 7vw, 96px);
+    clip-path: polygon(0 16px, 6% 9px, 13% 15px, 21% 6px, 29% 13px, 37% 7px, 45% 14px,
+                       53% 7px, 61% 13px, 69% 6px, 77% 14px, 85% 8px, 92% 15px, 100% 9px,
+                       100% 100%, 0 100%);
+  }
+  .torn-inner { display: grid; grid-template-columns: 1fr 1px 1.15fr; gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .torn-inner .divider { background: #000; width: 1px; height: 100%; min-height: 260px; opacity: .85; }
+  .pill {
+    display: inline-block; background: var(--yellow); color: #000;
+    font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.05rem, 1.7vw, 1.45rem);
+    padding: 12px 24px; border-radius: 8px; margin-bottom: 26px;
+  }
+  .torn .sub { font-weight: 700; font-size: clamp(1.1rem, 1.7vw, 1.5rem); margin: 0 0 20px; line-height: 1.25; }
+  .stat-inline { display: flex; align-items: flex-start; gap: 18px; }
+  .stat-inline .n { font-family: var(--display); font-weight: 400; font-size: clamp(3rem, 6vw, 5rem); line-height: .8; color: #fff; }
+  .stat-inline .d { font-size: clamp(1rem, 1.4vw, 1.25rem); max-width: 26ch; line-height: 1.35; }
+  blockquote {
+    margin: 0; font-family: var(--display); font-weight: 400;
+    font-size: clamp(1.4rem, 3vw, 2.6rem); line-height: 1.12; letter-spacing: -.01em;
+  }
+
+  /* ---------- generic content sections ---------- */
+  section { scroll-margin-top: 20px; }
+  .section { padding: clamp(56px, 7vw, 96px) 0; }
+  .section.alt { background: #f6f6f6; }
+  .eyebrow {
+    font-family: var(--display); font-weight: 400; text-transform: uppercase;
+    font-size: clamp(1.5rem, 3.2vw, 2.6rem); line-height: 1.04; margin: 0 0 18px;
+  }
+  .lede { font-size: clamp(1.05rem, 1.6vw, 1.3rem); max-width: 60ch; color: var(--body); margin: 0 0 40px; }
+
+  .grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  .tile { background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 2.6vw, 36px); }
+  .tile .kicker {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700;
+    color: #797979; margin-bottom: 14px;
+  }
+  .tile .big { font-family: var(--display); font-size: clamp(2.2rem, 4vw, 3.2rem); line-height: .95; margin-bottom: 12px; }
+  .tile .big.green { color: var(--sage); }
+  .tile p { margin: 0; color: var(--body); font-size: 16px; }
+  .tile.dark { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .tile.dark p { color: #cfcfcf; }
+  .tile.dark .kicker { color: #8f8f8f; }
+  .tile.dark .big { color: var(--yellow); }
+
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; border-top: 2px solid var(--ink); margin-top: 8px; }
+  .step { padding: 28px 26px 0 0; border-right: 1px solid #e4e4e4; }
+  .step:last-child { border-right: 0; }
+  .step .num { font-family: var(--display); font-size: 15px; color: var(--sage); margin-bottom: 10px; }
+  .step h4 { font-family: var(--display); font-weight: 400; font-size: 1.2rem; margin: 0 0 10px; }
+  .step p { margin: 0; font-size: 16px; color: var(--body); }
+
+  /* ---------- resources ---------- */
+  .links { list-style: none; padding: 0; margin: 0; border-top: 2px solid var(--ink); }
+  .links li { border-bottom: 1px solid #e4e4e4; }
+  .links a { display: flex; align-items: center; gap: 18px; padding: 20px 4px; text-decoration: none; }
+  .links a:hover .name { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+  .links .tag {
+    flex: 0 0 auto; min-width: 96px; text-align: center;
+    background: var(--yellow); color: #000; border-radius: 999px;
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    padding: 5px 12px;
+  }
+  .links .tag.g { background: var(--green); }
+  .links .tag.k { background: var(--ink); color: #fff; }
+  .links .name { flex: 1 1 auto; font-weight: 700; }
+  .links .meta { color: #797979; font-size: 14px; }
+
+  /* ---------- footer ---------- */
+  footer { background: var(--ink); color: #fff; padding: clamp(40px, 5vw, 64px) 0 48px; }
+  footer .logo img { width: 120px; filter: brightness(0) invert(1); margin-bottom: 22px; }
+  footer .cols { display: flex; flex-wrap: wrap; gap: 48px; justify-content: space-between; font-size: 15px; }
+  footer a { color: #cfcfcf; text-decoration: none; }
+  footer a:hover { color: var(--yellow); }
+  footer .note { color: #8f8f8f; font-size: 13px; max-width: 46ch; line-height: 1.5; }
+
+  @media (max-width: 900px) {
+    .shell, .site-header { padding-left: 22px; padding-right: 22px; }
+    .site-header { flex-wrap: wrap; gap: 16px; padding-top: 18px; padding-bottom: 18px; }
+    .site-header nav { width: 100%; flex-wrap: wrap; gap: 12px 20px; font-size: 15px; }
+    .hero h1 { font-size: clamp(1.5rem, 7.2vw, 2.3rem); max-width: none; }
+    .hero img { height: 62vh; min-height: 360px; }
+    .band h2 { font-size: clamp(1.3rem, 6.4vw, 2rem); }
+    .band p { font-size: 15px; }
+    .demo-banner { font-size: 12px; padding: 8px 14px; }
+    .cards, .grid3, .steps { grid-template-columns: 1fr; }
+    .card.yellow, .card.sage { border-radius: 14px; }
+    .card.black { border-radius: 0; }
+    .torn-inner { grid-template-columns: 1fr; }
+    .torn-inner .divider { display: none; }
+    .step { border-right: 0; border-bottom: 1px solid #e4e4e4; padding: 24px 0 20px; }
+    .links a { flex-wrap: wrap; gap: 8px 14px; }
+  }
+
+  body { min-height: 100vh; display: flex; flex-direction: column; }
+  .site-header { width: 100%; }
+  main { flex: 1; }
+  .page-heading { background: var(--green); padding: clamp(56px, 8vw, 112px) 0; }
+  .page-heading h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.5rem, 6vw, 5rem); line-height: 1.02; text-transform: uppercase; margin: 0; }
+  .site-header nav a[aria-current="page"] { text-decoration: underline; text-underline-offset: 5px; text-decoration-thickness: 2px; }
+  .site-header nav a.cta[aria-current="page"] { text-decoration: none; }
+  a:focus-visible { outline: 3px solid var(--sage); outline-offset: 5px; }
+
+  .form-section { padding: clamp(32px, 5vw, 64px) 0; background: #f6f6f6; }
+  .demo-form { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 4vw, 48px); display: grid; gap: 24px; }
+  .form-field { display: grid; gap: 8px; min-width: 0; }
+  .form-field label { font-weight: 700; font-size: 20px; }
+  .form-field input, .form-field select, .form-field textarea { width: 100%; min-width: 0; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 12px 16px; }
+  .form-field select { padding-right: 36px; }
+  .form-field textarea { resize: vertical; min-height: 120px; }
+  .form-field input::placeholder, .form-field textarea::placeholder { color: #737373; }
+  .form-field input:focus-visible, .form-field select:focus-visible, .form-field textarea:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .count-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; }
+  .count-row .form-field label { font-size: 16px; line-height: 1.25; }
+  .count-row .label-note { display: block; margin-top: 2px; font-size: 12px; font-weight: 500; color: var(--body); }
+  .form-field .stepper { display: flex; align-items: stretch; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; overflow: hidden; }
+  .form-field .stepper:focus-within { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .form-field .stepper button { flex: 0 0 42px; border: 0; background: #f3f3f3; color: var(--ink); font: inherit; font-weight: 700; font-size: 22px; line-height: 1; cursor: pointer; }
+  .form-field .stepper button:hover { background: #edf6ef; }
+  .form-field .stepper button:disabled { opacity: .35; cursor: default; background: #f3f3f3; }
+  .form-field .stepper input { flex: 1 1 auto; width: auto; min-width: 0; min-height: 0; border: 0; border-radius: 0; padding: 8px 4px; text-align: center; background: transparent; -moz-appearance: textfield; appearance: textfield; }
+  .form-field .stepper input::-webkit-outer-spin-button,
+  .form-field .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .form-field .stepper input:focus-visible { outline: none; }
+
+  .form-title { font-family: var(--display); font-weight: 400; margin: 0 0 12px; font-size: 1.5rem; }
+  .form-hint { color: var(--body); margin: 0 0 18px; }
+  .facility-overview { display: grid; gap: 8px; }
+  .facility-cards:empty { display: none; }
+  .facility-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 12px; }
+  .facility-card { border: 2px solid #ddd; border-radius: 12px; overflow: hidden; display: flex; background: #fff; }
+  .facility-card.active { border-color: var(--prison, var(--sage)); background: var(--prison-bg, #edf6ef); }
+  .facility-card button { font: inherit; cursor: pointer; color: inherit; background: transparent; border: 0; }
+  .facility-card .choose { flex: 1; text-align: left; padding: 16px; font-weight: 700; }
+  .facility-card .remove { padding: 12px; font-size: 24px; align-self: start; }
+  .facility-card button:focus-visible { outline: 3px solid var(--sage); outline-offset: -4px; }
+  .facility-panel { border-top: 2px solid var(--green); padding-top: 28px; display: grid; gap: 28px; }
+  [hidden] { display: none !important; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .question-step { display: grid; gap: 24px; }
+  .question-step .form-title, .question-step .form-hint { margin-bottom: 0; }
+  .step-label { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--sage); }
+  .continue-button { justify-self: start; border: 0; border-radius: 999px; padding: 13px 26px; background: var(--ink); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .continue-button:hover { background: var(--sage); }
+  button:focus-visible { outline: 3px solid var(--sage); outline-offset: 4px; }
+  .organization-summary { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding-bottom: 24px; border-bottom: 1px solid #ddd; overflow-wrap: anywhere; }
+  .organization-summary button { background: transparent; border: 0; text-decoration: underline; font: inherit; cursor: pointer; }
+  .question-step.leaving { animation: slide-away 280ms ease-in forwards; pointer-events: none; }
+  .question-step.entering { animation: slide-in 350ms ease-out both; }
+  @keyframes slide-away { to { opacity: 0; transform: translateY(-48px); } }
+  @keyframes slide-in { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .question-step.leaving, .question-step.entering { animation: none; } }
+
+  .continue-button:disabled { opacity: .4; cursor: default; }
+  .prison-summary { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .prison-summary li { background: var(--prison-bg, #edf6ef); border: 2px solid var(--prison, var(--sage)); border-radius: 10px; padding: 10px 14px; font-weight: 700; }
+  .program-card { border: 1px solid #ddd; border-radius: 12px; padding: clamp(18px, 3vw, 28px); }
+  .prison-options { margin: 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; min-width: 0; }
+  .prison-options legend { font-weight: 700; padding: 0 6px; }
+  .program-assignments { display: grid; gap: 10px; }
+  .assignment-row { display: grid; gap: 10px; padding: 12px 14px; border: 2px solid var(--prison, #ddd); border-radius: 12px; background: var(--prison-bg, #fff); }
+  .assignment-row label { display: flex; align-items: baseline; gap: 10px; cursor: pointer; }
+  .assignment-row input { accent-color: var(--prison, var(--sage)); width: 18px; height: 18px; flex-shrink: 0; }
+  .program-yards { margin: 2px 0 0 28px; padding: 8px 0 2px 12px; border: 0; border-left: 3px solid var(--prison, var(--sage)); display: grid; gap: 8px; min-width: 0; }
+  .program-yards legend { font-weight: 700; font-size: 15px; padding: 0; }
+  .program-yards label { font-weight: 500; align-items: center; }
+
+  #facility-cards .facility-card { display: block; }
+  .prison-card-header { display: flex; align-items: flex-start; }
+  .prison-card-header .choose { flex: 1; padding: 16px; font-weight: 700; }
+  .yard-choices { margin: 0 16px 16px; padding: 4px 0 0; border: 0; display: grid; gap: 10px; }
+  .yard-choices legend { font-weight: 700; padding: 0 0 8px; width: 100%; border-bottom: 2px solid var(--prison, #b8d2be); }
+  .yard-hint { margin: 0; font-size: 15px; color: var(--body); }
+  .yard-choices label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+  .yard-choices input { width: 18px; height: 18px; accent-color: var(--prison, var(--sage)); }
+
+  .demo-form.program-mode { max-width: 1200px; }
+  #programs-step { grid-template-columns: minmax(240px, .8fr) minmax(0, 1.4fr); align-items: start; gap: 36px; }
+  .program-sidebar { display: grid; gap: 20px; min-width: 0; }
+  .program-editor { display: grid; gap: 20px; min-width: 0; }
+  #prison-summary { display: grid; gap: 16px; }
+  #prison-summary > li { padding: 18px; }
+  #prison-summary h3 { margin: 0 0 16px; font-size: 20px; line-height: 1.2; }
+  .summary-yard { border-top: 1px solid var(--prison); padding-top: 12px; margin-top: 12px; }
+  .summary-yard h4 { margin: 0 0 6px; font-size: 17px; }
+  .summary-yard p { margin: 0; font-weight: 400; color: var(--body); font-size: 15px; }
+  #prison-summary .summary-yard ul { padding-left: 18px; }
+  #prison-summary .summary-yard li { border: 0; background: none; padding: 3px 0; font-weight: 500; }
+  @media (max-width: 800px) { #programs-step { grid-template-columns: 1fr; } }
+
+  /* Separate the overview from the active program editor. */
+  #programs-step { gap: 0; }
+  .program-sidebar { background: #f0f5f0; border: 1px solid #d4e2d6; border-radius: 14px; padding: 24px; margin-right: 30px; }
+  .program-editor { border-left: 2px solid #d4e2d6; padding-left: 30px; }
+  .program-editor > .form-title { margin-bottom: 0; }
+  .program-editor .program-card { background: #fff; border: 1px solid #d8d8d8; box-shadow: 0 4px 18px rgba(0, 0, 0, .04); }
+  @media (max-width: 800px) {
+    #programs-step { gap: 30px; }
+    .program-sidebar { margin-right: 0; padding: 20px; }
+    .program-editor { border-left: 0; border-top: 2px solid #d4e2d6; padding-left: 0; padding-top: 30px; }
+  }
+
+  #prison-summary summary { cursor: pointer; font-size: 20px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+  #prison-summary summary::marker { color: var(--prison, var(--sage)); }
+  #prison-summary summary:focus-visible { outline: 3px solid var(--prison, var(--sage)); outline-offset: 5px; border-radius: 3px; }
+  #prison-summary details[open] > summary { margin-bottom: 16px; }
+
+  #prison-summary .program-count { display: inline-block; vertical-align: middle; margin-left: 4px; padding: 3px 8px; border-radius: 999px; background: #fff; color: var(--prison, var(--sage)); font-size: 12px; font-weight: 700; line-height: 1.4; white-space: nowrap; }
+
+  .next-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+  #another-program { background: #edf6ef; color: #000; border: 1px solid var(--sage); }
+  #program-next, #submission-result { border: 1px solid #d4e2d6; border-radius: 12px; padding: 24px; background: #f0f5f0; }
+
+  #programs-step.submitted { display: block; }
+  .submitted .program-sidebar, .submitted .program-editor > :not(#submission-result) { display: none; }
+  .submitted .program-editor { padding: 0; border: 0; }
+  #submission-result { border: 0; padding: 8px 0; background: transparent; text-align: left; gap: 18px; }
+  #submission-heading { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .submission-context { margin: 0; color: #555; font-size: 17px; }
+  #submission-receipt { margin: 0; font-size: 14px; font-weight: 400; color: #666; overflow-wrap: anywhere; }
+  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid #e5e5e5; padding: 20px 0; }
+  .success-metric { display: grid; align-content: start; gap: 4px; }
+  .success-metric strong { font-size: 28px; font-weight: 700; line-height: 1.2; }
+  .success-metric span { font-size: 14px; color: #666; }
+  .report-note { font-size: 14px; color: var(--body); }
+  .full-report { text-align: left; padding-top: 4px; }
+  .full-report > summary { cursor: pointer; font-size: 16px; font-weight: 700; text-align: left; }
+  .report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; align-items: start; }
+  .report-prison { min-width: 0; overflow-wrap: anywhere; padding: 20px; border: 2px solid var(--prison); background: var(--prison-bg); border-radius: 12px; }
+  .report-prison h3 { margin: 0 0 12px; font-size: 21px; line-height: 1.2; }
+  .report-prison p { font-size: 15px; margin: 6px 0; }
+  .report-program { border-top: 1px solid var(--prison); margin-top: 18px; padding-top: 14px; }
+  .report-program h4 { margin: 0 0 10px; font-size: 19px; }
+  @media (max-width: 900px) { .report-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .success-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 560px) { .report-grid { grid-template-columns: 1fr; } }
+
+  /* Consistent inset arrows for every form dropdown. */
+  .demo-form select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 48px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%233e3e3e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    background-size: 16px 16px;
+  }
+  @media (forced-colors: active) {
+    .demo-form select { appearance: auto; background-image: none; }
+  }
+
+  .report-grid { gap: 24px; }
+  .report-prison { padding: 0; border: 1px solid #e0e5df; border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,.05); }
+  .report-card-header { padding: 22px; background: var(--prison-bg); border-top: 5px solid var(--prison); }
+  .report-code { display: inline-block; color: var(--prison); font-size: 12px; font-weight: 800; letter-spacing: .1em; margin-bottom: 12px; }
+  .report-prison .report-card-header h3 { font-size: 22px; line-height: 1.15; margin: 0 0 14px; }
+  .report-program-count { font-size: 13px; font-weight: 700; color: var(--body); }
+  .report-yard-section { padding: 18px 22px; border-bottom: 1px solid #e8ebe7; }
+  .report-label { display: block; text-transform: uppercase; font-size: 11px; font-weight: 700; letter-spacing: .09em; color: #666; margin-bottom: 9px; }
+  .report-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .report-chips span { background: #f1f3f0; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 700; }
+  .report-card-body { padding: 16px; display: grid; gap: 16px; }
+  .report-program { border: 1px solid #e2e6df; border-radius: 10px; margin: 0; padding: 16px; background: #fff; }
+  .report-program-heading { display: flex; flex-wrap: wrap; align-items: start; gap: 8px 12px; }
+  .report-program-heading h4 { flex: 1 1 100%; margin: 0; font-size: 20px; line-height: 1.2; }
+  .report-status { background: #f0f0ed; color: #555; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 4px 9px; }
+  .report-status[data-status="Completed"] { background: #e4f4e8; color: #235c35; }
+  .report-status[data-status="In Progress"] { background: #fff2ce; color: #775516; }
+  .report-prison .report-program-yards { font-size: 13px; color: #666; margin: 12px 0 16px; }
+  .report-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid #eee; padding-top: 14px; margin: 0 0 16px; }
+  .report-dates dt { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .04em; }
+  .report-dates dd { margin: 4px 0 0; font-size: 14px; font-weight: 700; }
+  .report-program-metrics { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 4px; background: #f5f7f3; border-radius: 8px; padding: 12px 6px; margin: 0; text-align: center; }
+  .report-program-metrics > div + div { border-left: 1px solid #dce2d8; }
+  .report-program-metrics dd { font-size: 22px; font-weight: 700; line-height: 1.2; margin: 0 0 6px; }
+  .report-program-metrics dt { font-size: 10px; color: #666; line-height: 1.3; }
+  .report-prison .report-empty { text-align: center; padding: 16px 0; color: #666; }
+
+  /* Three steppers side by side leave no room for the number on a phone, so stack them. */
+  @media (max-width: 560px) {
+    .count-row { grid-template-columns: 1fr; }
+    .date-row { grid-template-columns: 1fr; }
+  }
+  .added-programs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+  .added-programs li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; background: #fff; border: 1px solid #d4e2d6; border-radius: 10px; }
+  .added-programs .added-name { flex: 1 1 auto; font-weight: 700; overflow-wrap: anywhere; }
+  .added-programs .needs-prison { flex-basis: 100%; order: 3; margin: 0; font-size: 14px; color: #9a3412; }
+  .added-programs button { background: transparent; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+  .start-over { justify-self: start; }
+  /* Headings get focus only so screen readers announce the new step; they don't need a focus box. */
+  [tabindex="-1"]:focus { outline: none; }
+
+  /* Participants and completions, one row per prison and yard. */
+  .yard-numbers { margin: 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; min-width: 0; display: grid; gap: 12px; }
+  .yard-numbers legend { font-weight: 700; padding: 0 6px; }
+  .yard-number-rows { display: grid; gap: 10px; }
+  .yard-number-row { display: grid; grid-template-columns: minmax(90px, .8fr) 1fr 1fr; gap: 12px; align-items: end; padding: 10px 12px; border-left: 4px solid var(--prison, var(--sage)); background: var(--prison-bg, #f4f6f3); border-radius: 8px; }
+  .yard-number-place { font-weight: 700; align-self: center; }
+  .yard-count { display: grid; gap: 6px; min-width: 0; }
+  .yard-count-label { font-size: 14px; font-weight: 700; }
+  .yard-count .stepper { display: flex; align-items: stretch; min-height: 46px; border: 1px solid #aaa; border-radius: 8px; background: #fff; overflow: hidden; }
+  .yard-count .stepper:focus-within { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .yard-count .stepper button { flex: 0 0 38px; border: 0; background: #f3f3f3; color: var(--ink); font: inherit; font-weight: 700; font-size: 20px; line-height: 1; cursor: pointer; }
+  .yard-count .stepper button:disabled { opacity: .35; cursor: default; }
+  .yard-count .stepper input { flex: 1 1 auto; width: auto; min-width: 0; border: 0; padding: 6px 4px; text-align: center; font: inherit; background: transparent; -moz-appearance: textfield; appearance: textfield; }
+  .yard-count .stepper input::-webkit-outer-spin-button,
+  .yard-count .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .yard-count .stepper input:focus-visible { outline: none; }
+  /* Side by side there's no room left for the number on a phone, so stack them. */
+  @media (max-width: 560px) {
+    .yard-numbers { padding: 12px; }
+    .yard-number-row { grid-template-columns: 1fr; gap: 8px; }
+  }
+  .count-row:has(> :only-child) { grid-template-columns: minmax(0, 260px); }
+  .submit-status { margin: 0; font-weight: 700; }
+  .submit-status.error { color: #9a3412; }
+
+  /* Embedded as a tab in the intake (?embed=1): that page's tab row is the nav,
+     so this page drops its own banner, header, title band and footer. */
+  body.embed .demo-banner,
+  body.embed .site-header,
+  body.embed .page-heading,
+  body.embed footer { display: none; }
+  /* Match the Session tab's column and field spacing; keep the program overview wide. */
+  body.embed .form-section { padding: 24px 0; background: #fff; }
+  body.embed .form-section > .shell { max-width: 640px; padding-inline: 22px; }
+  body.embed .form-section:has(.program-mode) > .shell { max-width: 1244px; }
+  body.embed .demo-form { padding: 0; border: 0; border-radius: 0; }
+  body.embed .form-field label { font-size: 13.5px; }
+  body.embed .form-field > input,
+  body.embed .form-field > select,
+  body.embed .form-field > textarea {
+    font-size: 17px; min-height: 0; padding: 13px 14px; border-color: #d5d1c9;
+  }
+  body.embed .form-field select { padding-right: 48px; }
+
+.report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
+.checkin-banner { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
+
+.checkin-mode #facilities-step > .step-label,
+.checkin-mode #facilities-step > .organization-summary,
+.checkin-mode #facilities-step .yard-choices,
+.checkin-mode #facilities-step #facility-help,
+.checkin-mode #facilities-step h2:not(#facilities-question) { display: none; }
+.checkin-mode #facility-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media(max-width: 850px) { .checkin-mode #facility-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width: 500px) { .checkin-mode #facility-cards { grid-template-columns: 1fr; } }
+
+.checkin-mode #facility-cards .facility-card { display: flex; flex-direction: column; }
+.checkin-mode .prison-card-header { justify-content: center; text-align: center; }
+.checkin-mode .prison-card-header .choose { text-align: center; padding: 24px 16px; }
+.checkin-mode .prison-card-actions { margin-top: auto; display: grid; gap: 8px; padding: 0 16px 16px; }
+.checkin-mode .prison-card-actions button { border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; padding: 8px 12px; font-size: 14px; font-weight: 700; width: 100%; cursor: pointer; }
+.checkin-mode .prison-card-actions button.remove { color: #8b3934; font-size: 14px; align-self: auto; }
+.checkin-mode #facilities-step .facility-card.editing .yard-choices { display: grid; }
+
+.checkin-mode .prison-card-header { flex-direction: column; align-items: center; padding-bottom: 20px; }
+.checkin-mode .prison-card-header .choose { flex: none; padding-bottom: 8px; }
+.prison-card-program-count { font-size: 14px; color: #666; }
+
+/* Share title and count row heights across each row of facility cards. */
+.checkin-mode #facility-cards .facility-card { display: grid; grid-template-rows: subgrid; grid-row: span 3; gap: 0; }
+.checkin-mode #facility-cards .prison-card-header { display: contents; }
+.checkin-mode #facility-cards .prison-card-header .choose { display: flex; justify-content: center; align-items: center; text-align: center; padding: 24px 16px 8px; }
+.checkin-mode #facility-cards .prison-card-program-count { text-align: center; padding: 0 16px 20px; }
+.checkin-mode #facility-cards .prison-card-actions { align-self: end; margin-top: 0; }
+.checkin-mode #facility-cards .facility-card.editing { grid-template-rows: auto auto auto auto; grid-row: span 3; }
+.checkin-mode #facility-cards .facility-card.editing .prison-card-program-count { grid-row: 2; }
+.checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
+.checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
+</style>
+<link rel="stylesheet" href="../assets/site-shell.css">
+<script type="module" src="../assets/site-shell.js"></script>
+</head>
+<body id="top">
+<script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
+
+<header class="site-header">
+  <a class="logo" href="../"><img src="../assets/img/logo.png" alt="TPW"></a>
+  <nav aria-label="Main navigation">
+    <a href="../site/our-members/">Our Members</a>
+    <a href="../site/ourstory/">Our Story</a>
+    <a href="../site/ourwork/">Our Work</a>
+    <a href="../site/our-team/">Our Team</a>
+    <a href="../team-dashboard/">Dashboard</a>
+    <a class="login" href="../intake/simple.html">Members Login</a>
+  </nav>
+</header>
+
+
+<main>
+  <section class="page-heading" aria-labelledby="page-title">
+    <div class="shell"><h1 id="page-title">Form Demo</h1></div>
+  </section>
+  <section class="form-section" aria-label="Program location and organization">
+    <div class="shell">
+      <form class="demo-form" id="demo-form">
+        <section id="organization-step" class="question-step" aria-labelledby="organization-question">
+          <p class="step-label">Step 1 · Organization</p>
+          <h2 class="form-title" id="organization-question">What is your organization’s name?</h2>
+          <div class="form-field">
+            <label for="organization">Organization</label>
+            <input id="organization" name="organization" type="text" autocomplete="organization" maxlength="120" placeholder="Start typing to pick a TPW member" list="member-list" aria-describedby="organization-help" required>
+            <datalist id="member-list"></datalist>
+            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
+          </div>
+          <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
+        </section>
+        <section id="facilities-step" class="question-step" aria-labelledby="facilities-question" hidden>
+          <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
+          <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
+          <p class="step-label">Step 2 · Facilities</p>
+          <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
+        <div class="facility-overview">
+          <h2 class="form-title">Your prisons</h2>
+          <p class="form-hint" id="facility-help">Select each prison where you operate, then check all the yards you work in at that prison.</p>
+          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected prisons"></div>
+          <p id="facility-empty" class="form-hint">No prisons selected yet.</p>
+          <p id="facility-announcement" class="sr-only" role="status"></p>
+        </div>
+        <div class="form-field">
+          <label for="facility">Add a prison</label>
+          <select id="facility" aria-describedby="facility-help">
+            <option value="" selected disabled>Select a prison to add</option>
+          <option value="ASP">Avenal State Prison (ASP)</option>
+          <option value="CCI">California Correctional Institution (CCI)</option>
+          <option value="CHCF">California Health Care Facility (CHCF), Stockton</option>
+          <option value="CIM">California Institution for Men (CIM)</option>
+          <option value="CIW">California Institution for Women (CIW)</option>
+          <option value="CMC">California Men&#x27;s Colony (CMC)</option>
+          <option value="CMF">California Medical Facility (CMF)</option>
+          <option value="CRC">California Rehabilitation Center (CRC)</option>
+          <option value="COR">California State Prison, Corcoran (COR)</option>
+          <option value="LAC">California State Prison, Los Angeles County (LAC)</option>
+          <option value="SAC">California State Prison, Sacramento (SAC)</option>
+          <option value="SOL">California State Prison, Solano (SOL)</option>
+          <option value="CAL">Calipatria State Prison (CAL)</option>
+          <option value="CEN">California State Prison, Centinela (CEN)</option>
+          <option value="CCWF">Central California Women&#x27;s Facility (CCWF)</option>
+          <option value="CTF">Correctional Training Facility (CTF)</option>
+          <option value="FSP">Folsom State Prison (FSP)</option>
+          <option value="HDSP">High Desert State Prison (HDSP)</option>
+          <option value="ISP">Ironwood State Prison (ISP)</option>
+          <option value="KVSP">Kern Valley State Prison (KVSP)</option>
+          <option value="MCSP">Mule Creek State Prison (MCSP)</option>
+          <option value="NKSP">North Kern State Prison (NKSP)</option>
+          <option value="PBSP">Pelican Bay State Prison (PBSP)</option>
+          <option value="PVSP">Pleasant Valley State Prison (PVSP)</option>
+          <option value="RJD">Richard J. Donovan Correctional Facility (RJD)</option>
+          <option value="SVSP">Salinas Valley State Prison (SVSP)</option>
+          <option value="SQ">San Quentin Rehabilitation Center (SQ)</option>
+          <option value="SCC">Sierra Conservation Center (SCC)</option>
+          <option value="SATF">Substance Abuse Treatment Facility and State Prison, Corcoran (SATF-CSP, Corcoran)</option>
+          <option value="VSP">Valley State Prison (VSP)</option>
+          <option value="WSP">Wasco State Prison (WSP)</option>
+          </select>
+        </div>
+        <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
+        <p id="continue-programs-help" class="yard-hint">Add at least one prison to continue.</p>
+        </section>
+        <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
+          <aside class="program-sidebar" aria-label="Prisons, yards, and completed programs">
+          <div class="organization-summary"><span>Your prisons &amp; yards</span><button type="button" id="edit-prisons">Edit prisons</button></div>
+          <ul id="prison-summary" class="prison-summary"></ul>
+          </aside>
+          <div class="program-editor">
+          <p class="step-label">Step 3 · Programs</p>
+          <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
+          <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
+          <div id="program-list" class="question-step"></div>
+          <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
+            <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
+            <ul id="added-programs" class="added-programs" aria-label="Programs added so far"></ul>
+            <div class="next-actions">
+              <button type="button" id="another-program" class="continue-button">+ Add another program</button>
+              <button type="button" id="finish-form" class="continue-button">Finish and submit</button>
+            </div>
+            <p class="form-hint" id="where-it-goes">Demo submission saves to this browser only.</p>
+          </section>
+          <section id="submission-result" class="question-step" hidden>
+            <h2 class="form-title" id="submission-heading" tabindex="-1">Submission saved</h2>
+            <p id="submission-context" class="submission-context"></p>
+            <p id="submission-receipt" class="submit-status" role="status" hidden></p>
+            <div id="submission-totals" class="success-totals"></div>
+            <button type="button" id="start-over" class="continue-button start-over">Log more data</button>
+            <details class="full-report">
+              <summary>View submitted details</summary>
+              <p class="report-note">Program totals are counted once, even when a program serves multiple prisons. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across prisons.</p>
+              <div id="report-prisons" class="report-grid"></div>
+            </details>
+          </section>
+          <p id="program-feedback" class="form-hint" role="status"></p>
+          </div>
+        <template id="program-fields">
+        <div class="form-field">
+          <label for="program-name">Program Name</label>
+          <input id="program-name" name="program_name" type="text" maxlength="120" placeholder="Enter your program name">
+        </div>
+        <div class="form-field">
+          <label for="scheduled-status">Schedule Status</label>
+          <select id="scheduled-status" name="scheduled_status" required>
+            <option value="" selected disabled>Select a status</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div class="date-row">
+          <div class="form-field">
+            <label for="start-date">Start Date</label>
+            <input id="start-date" name="start_date" type="date">
+          </div>
+          <div class="form-field">
+            <label for="end-date">End Date</label>
+            <input id="end-date" name="end_date" type="date">
+          </div>
+        </div>
+        <div class="count-row">
+          <div class="form-field">
+            <label for="course-hours">Course Hours <span class="label-note">(per participant)</span></label>
+            <div class="stepper">
+              <button type="button" data-step="-1" aria-label="Decrease course hours per participant">−</button>
+              <input id="course-hours" name="course_hours" type="number" min="0" step="any" inputmode="decimal" value="0">
+              <button type="button" data-step="1" aria-label="Increase course hours per participant">+</button>
+            </div>
+          </div>
+        </div>
+        <fieldset class="yard-numbers">
+          <legend>Participants at each yard</legend>
+          <p class="yard-hint">TPW counts each yard separately, so give the numbers for each yard where this program runs.</p>
+          <div class="yard-number-rows"></div>
+          <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
+        </fieldset>
+        <div class="form-field">
+          <label for="program-notes">Anything else you’d like to tell us about this programme? <span class="label-note">(optional)</span></label>
+          <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
+          <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Please don’t include participant names or other identifying information.</p>
+        </div>
+        </template>
+        </section>
+      </form>
+    </div>
+  </section>
+</main>
+<footer>
+  <div class="shell">
+    <div class="logo"><img src="../assets/img/logo.png" alt="TPW"></div>
+    <div class="cols">
+      <p class="note">Unofficial hackathon demo built for Hack for Social Impact 2026. Not affiliated with Transformative Programming Works; their logo, photography, and copy belong to them and are used here to prototype in their design language.</p>
+      <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
+    </div>
+  </div>
+</footer>
+
+<script src="backend.js"></script>
+<script type="module">
+import { currentReportingPeriod } from './js/reporting-period.js';
+const form = document.querySelector('#demo-form');
+const organization = document.querySelector('#organization');
+const organizationStep = document.querySelector('#organization-step');
+const facilitiesStep = document.querySelector('#facilities-step');
+function reportingPeriod() {
+  const period = currentReportingPeriod();
+  document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
+  return period;
+}
+reportingPeriod();
+let transitioning = false;
+async function showStep(from, to, focusTarget) {
+  if (transitioning) return;
+  transitioning = true;
+  from.classList.add('leaving');
+  await Promise.all(from.getAnimations().map(animation => animation.finished.catch(() => {})));
+  from.hidden = true;
+  from.classList.remove('leaving');
+  to.hidden = false;
+  to.classList.add('entering');
+  focusTarget.focus({ preventScroll: true });
+  await Promise.all(to.getAnimations().map(animation => animation.finished.catch(() => {})));
+  to.classList.remove('entering');
+  transitioning = false;
+}
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  if (organizationStep.hidden || transitioning) return;
+  if (!organization.value.trim()) {
+    organization.setCustomValidity('Enter your organization name.');
+    organization.reportValidity();
+    return;
+  }
+  organization.value = organization.value.trim();
+  document.querySelector('#organization-summary').textContent = organization.value;
+  reportingPeriod();
+  showStep(organizationStep, facilitiesStep, document.querySelector('#facilities-question'));
+});
+organization.addEventListener('input', () => organization.setCustomValidity(''));
+document.querySelector('#edit-organization').addEventListener('click', () => {
+  showStep(facilitiesStep, organizationStep, organization);
+});
+// Suggest TPW's member names so one organization isn't filed under several spellings.
+// If the list can't load, the field still takes free text.
+fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
+  const names = text.split(/\r?\n/).slice(1).map(line => {
+    const match = line.match(/^"((?:[^"]|"")*)"|^([^,]*)/);
+    return match ? (match[1] ?? match[2]).replace(/""/g, '"').trim() : '';
+  }).filter(Boolean);
+  document.querySelector('#member-list').append(...names.map(name => new Option(name)));
+}).catch(() => {});
+
+const picker = document.querySelector('#facility');
+const cards = document.querySelector('#facility-cards');
+const empty = document.querySelector('#facility-empty');
+const announcement = document.querySelector('#facility-announcement');
+const prisons = new Map();
+const YARDS = ['North', 'South', 'Reception', 'Ad Seg'];
+const PRISON_COLORS = [
+  ['#157a45', '#e3f6ea'],
+  ['#1d4ed8', '#e7efff'],
+  ['#b45309', '#fff4d8'],
+  ['#be185d', '#fde7f0'],
+  ['#6d28d9', '#f3e8ff'],
+  ['#c2410c', '#ffedd5'],
+  ['#0f766e', '#e6f7f5'],
+  ['#b91c1c', '#fee2e2'],
+  ['#4d7c0f', '#ecfccb'],
+  ['#3730a3', '#e0e7ff'],
+  ['#a21caf', '#fae8ff'],
+  ['#0e7490', '#e0f2fe']
+];
+function claimColor() {
+  const used = new Set([...prisons.values()].map(prison => prison.color));
+  return PRISON_COLORS.find(pair => !used.has(pair[0])) || PRISON_COLORS[prisons.size % PRISON_COLORS.length];
+}
+function paintPrison(el, prison) {
+  el.style.setProperty('--prison', prison.color);
+  el.style.setProperty('--prison-bg', prison.colorBg);
+}
+
+const programsStep = document.querySelector('#programs-step');
+const continuePrograms = document.querySelector('#continue-programs');
+const programList = document.querySelector('#program-list');
+let programNumber = 0;
+const completedPrograms = [];
+let checkinContext = null;
+const prisonDisclosureState = new Map();
+function createAssignmentRow(program, code, prison) {
+  const row = document.createElement('div');
+  row.className = 'assignment-row';
+  row.dataset.code = code;
+  const label = document.createElement('label');
+  const check = document.createElement('input');
+  check.type = 'checkbox';
+  check.name = `programs[${program.dataset.number}][facilities][]`;
+  check.value = code;
+  const yards = document.createElement('fieldset');
+  yards.className = 'program-yards';
+  yards.id = `program-${program.dataset.number}-yards-${code}`;
+  yards.hidden = true;
+  const legend = document.createElement('legend');
+  legend.textContent = 'Yards for this program';
+  const hint = document.createElement('p');
+  hint.className = 'yard-hint';
+  hint.textContent = 'Choose the yards where this program runs.';
+  yards.append(legend, hint);
+  check.setAttribute('aria-expanded', 'false');
+  check.setAttribute('aria-controls', yards.id);
+  check.addEventListener('change', () => {
+    const open = check.checked;
+    yards.hidden = !open;
+    row.classList.toggle('expanded', open);
+    check.setAttribute('aria-expanded', String(open));
+    const boxes = [...yards.querySelectorAll('input')];
+    if (!open) boxes.forEach(box => { box.checked = false; });
+    else if (boxes.length === 1) boxes[0].checked = true;
+  });
+  label.append(check, document.createTextNode(prison.name));
+  row.append(label, yards);
+  return row;
+}
+function syncAssignmentYards(program, row, code, prison) {
+  const yards = row.querySelector('.program-yards');
+  const checked = new Set([...yards.querySelectorAll('input:checked')].map(input => input.value));
+  for (const node of [...yards.querySelectorAll('label, .yard-empty')]) node.remove();
+  const available = checkinContext && !prison.yards.size ? YARDS : YARDS.filter(name => prison.yards.has(name));
+  if (!available.length) {
+    const note = document.createElement('p');
+    note.className = 'yard-hint yard-empty';
+    note.textContent = 'Choose yards for this prison in the previous step.';
+    yards.append(note);
+    return;
+  }
+  for (const yardName of available) {
+    const label = document.createElement('label');
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.name = `programs[${program.dataset.number}][facilities][${code}][yards][]`;
+    box.value = yardName;
+    box.checked = checked.has(yardName);
+    label.append(box, document.createTextNode(yardName));
+    yards.append(label);
+  }
+}
+function refreshPrisons() {
+  empty.hidden = prisons.size > 0;
+  const missingYards = [...prisons.entries()].filter(([, prison]) => prison.yards.size === 0).map(([code]) => code);
+  continuePrograms.disabled = prisons.size === 0 || (!checkinContext && missingYards.length > 0);
+  // Say why the button is greyed out, not just that it is.
+  document.querySelector('#continue-programs-help').textContent = prisons.size === 0
+    ? 'Add at least one prison to continue.'
+    : !checkinContext && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
+  // A finished program can't keep pointing at a prison or yard that has since been removed.
+  for (const program of completedPrograms) {
+    program.assignments = program.assignments
+      .filter(assignment => prisons.has(assignment.code))
+      .map(assignment => ({ ...assignment, yards: assignment.yards.filter(yard => prisons.get(assignment.code).yards.has(yard)) }))
+      .filter(assignment => assignment.yards.length);
+  }
+  for (const [code, prison] of prisons) {
+    const badge = prison.card.querySelector('.prison-card-program-count');
+    if (badge) {
+      const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code)).length;
+      badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
+    }
+  }
+  renderAddedPrograms();
+  renderProgramSummary();
+  for (const program of programList.children) {
+    const assignments = program.querySelector('.program-assignments');
+    for (const row of [...assignments.children]) {
+      if (!prisons.has(row.dataset.code)) row.remove();
+    }
+    for (const [code, prison] of prisons) {
+      let row = [...assignments.children].find(item => item.dataset.code === code);
+      if (!row) row = createAssignmentRow(program, code, prison);
+      paintPrison(row, prison);
+      syncAssignmentYards(program, row, code, prison);
+      assignments.append(row);
+    }
+    syncYardNumbers(program);
+  }
+}
+picker.addEventListener('change', () => {
+  const code = picker.value;
+  if (!code || prisons.has(code)) return;
+  const option = picker.selectedOptions[0];
+  const name = option.textContent;
+  const card = document.createElement('div'); card.className = 'facility-card active';
+  const title = document.createElement('span'); title.className = 'choose'; title.textContent = name;
+  const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'remove'; remove.textContent = '×';
+  remove.setAttribute('aria-label', `Remove ${name}`);
+  const header = document.createElement('div'); header.className = 'prison-card-header'; header.append(title, remove);
+  const yardGroup = document.createElement('fieldset'); yardGroup.className = 'yard-choices';
+  const legend = document.createElement('legend'); legend.textContent = 'Yards you operate in';
+  const hint = document.createElement('p'); hint.className = 'yard-hint'; hint.textContent = 'Select all that apply.';
+  yardGroup.append(legend, hint);
+  const selectedYards = new Set();
+  for (const yardName of YARDS) {
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input'); checkbox.type = 'checkbox';
+    checkbox.name = `prisons[${code}][yards][]`; checkbox.value = yardName;
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) selectedYards.add(yardName); else selectedYards.delete(yardName);
+      refreshPrisons();
+    });
+    label.append(checkbox, document.createTextNode(yardName)); yardGroup.append(label);
+  }
+  const [color, colorBg] = claimColor();
+  const prison = { name, card, yards: selectedYards, color, colorBg };
+  paintPrison(card, prison);
+  card.append(header, yardGroup);
+  if (checkinContext) {
+    const count = document.createElement('span'); count.className = 'prison-card-program-count';
+    count.textContent = '0 programs'; header.append(count);
+    const actions = document.createElement('div'); actions.className = 'prison-card-actions';
+    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
+    edit.setAttribute('aria-label', `Edit ${name}`); edit.setAttribute('aria-expanded', 'false');
+    yardGroup.id = `checkin-yards-${code}`; edit.setAttribute('aria-controls', yardGroup.id);
+    edit.addEventListener('click', () => {
+      const open = card.classList.toggle('editing');
+      edit.textContent = open ? 'Done' : 'Edit';
+      edit.setAttribute('aria-expanded', String(open));
+    });
+    remove.textContent = 'Remove';
+    actions.append(edit, remove); card.append(actions);
+  }
+  cards.append(card); prisons.set(code, prison);
+  remove.addEventListener('click', () => {
+    card.remove(); prisons.delete(code); prisonDisclosureState.delete(code); option.disabled = false; refreshPrisons(); picker.focus();
+    announcement.textContent = `${name} removed.`;
+  });
+  option.disabled = true; picker.value = ''; refreshPrisons();
+  announcement.textContent = `${name} added. ${prisons.size} prisons selected.`;
+});
+// The − / + buttons beside a number box.
+function wireStepper(stepper) {
+  const input = stepper.querySelector('input');
+  const down = stepper.querySelector('[data-step="-1"]');
+  const up = stepper.querySelector('[data-step="1"]');
+  const min = Number(input.min || 0);
+  const paint = () => { down.disabled = input.value !== '' && Number(input.value) <= min; };
+  const apply = (delta) => {
+    const current = input.value.trim() === '' ? 0 : Number(input.value);
+    const base = Number.isFinite(current) ? current : 0;
+    const next = Math.max(min, Math.round((base + delta) * 100) / 100);
+    input.value = String(next);
+    paint();
+  };
+  down.addEventListener('click', () => apply(-1));
+  up.addEventListener('click', () => apply(1));
+  input.addEventListener('input', paint);
+  input.addEventListener('focus', () => input.select());
+  input.addEventListener('blur', () => {
+    const typed = Number(input.value);
+    if (input.value.trim() === '' || !Number.isFinite(typed) || typed < min) input.value = String(min);
+    paint();
+  });
+  paint();
+}
+function countStepper(label, kind) {
+  const field = document.createElement('div'); field.className = 'yard-count';
+  const caption = document.createElement('span'); caption.className = 'yard-count-label'; caption.textContent = label;
+  const stepper = document.createElement('div'); stepper.className = 'stepper';
+  const down = document.createElement('button'); down.type = 'button'; down.dataset.step = '-1'; down.textContent = '−';
+  const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.step = '1';
+  input.inputMode = 'numeric'; input.value = '0'; input.dataset.kind = kind;
+  const up = document.createElement('button'); up.type = 'button'; up.dataset.step = '1'; up.textContent = '+';
+  stepper.append(down, input, up); field.append(caption, stepper);
+  return field;
+}
+// One row of Participants / Completed for every prison and yard the program is ticked for.
+// Rows that stay ticked keep what was typed in them.
+function syncYardNumbers(program) {
+  const holder = program.querySelector('.yard-number-rows');
+  if (!holder) return;
+  const wanted = [];
+  for (const row of program.querySelectorAll('.assignment-row')) {
+    if (!row.querySelector(':scope > label input').checked) continue;
+    for (const box of row.querySelectorAll('.program-yards input:checked')) wanted.push([row.dataset.code, box.value]);
+  }
+  const keys = new Set(wanted.map(([code, yard]) => `${code}|${yard}`));
+  for (const row of [...holder.children]) if (!keys.has(row.dataset.key)) row.remove();
+  for (const [code, yard] of wanted) {
+    const key = `${code}|${yard}`;
+    let row = [...holder.children].find(item => item.dataset.key === key);
+    if (!row) {
+      row = document.createElement('div'); row.className = 'yard-number-row'; row.dataset.key = key;
+      row.dataset.code = code; row.dataset.yard = yard;
+      const place = document.createElement('span'); place.className = 'yard-number-place';
+      place.textContent = `${code} · ${yard}`;
+      const participants = countStepper('Participants', 'participants');
+      const completed = countStepper('Completed', 'completed');
+      for (const [field, what] of [[participants, 'participants'], [completed, 'participants completed']]) {
+        const [down, up] = field.querySelectorAll('button');
+        down.setAttribute('aria-label', `Decrease ${what} at ${code} ${yard}`);
+        up.setAttribute('aria-label', `Increase ${what} at ${code} ${yard}`);
+        field.querySelector('input').setAttribute('aria-label', `${what[0].toUpperCase()}${what.slice(1)} at ${code} ${yard}`);
+        wireStepper(field.querySelector('.stepper'));
+      }
+      row.append(place, participants, completed);
+    }
+    const prison = prisons.get(code);
+    if (prison) paintPrison(row, prison);
+    holder.append(row);
+  }
+  program.querySelector('.yard-numbers-empty').hidden = wanted.length > 0;
+}
+function addProgram(focus = true, saved = null, editIndex) {
+  const number = ++programNumber;
+  const program = document.createElement('section'); program.className = 'program-card question-step'; program.dataset.number = number;
+  const top = document.createElement('div'); top.className = 'organization-summary';
+  const heading = document.createElement('h3'); heading.className = 'form-title'; heading.textContent = `Program ${completedPrograms.length + 1}`;
+  top.append(heading); program.append(top, document.querySelector('#program-fields').content.cloneNode(true));
+  for (const field of program.querySelectorAll('input, select, textarea')) {
+    const original = field.id; field.id = `program-${number}-${original}`;
+    program.querySelector(`label[for="${original}"]`).htmlFor = field.id;
+    field.name = `programs[${number}][${field.name}]`;
+  }
+  for (const stepper of program.querySelectorAll('.stepper')) wireStepper(stepper);
+  const fieldset = document.createElement('fieldset'); fieldset.className = 'prison-options';
+  const legend = document.createElement('legend'); legend.textContent = 'Which prisons does this program apply to?';
+  const assignments = document.createElement('div'); assignments.className = 'program-assignments';
+  fieldset.append(legend, assignments);
+  program.querySelector('.form-field').after(fieldset);
+  // Ticking or unticking a yard adds or removes its row of numbers.
+  assignments.addEventListener('change', () => syncYardNumbers(program));
+  const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button'; complete.textContent = 'Complete program →';
+  complete.addEventListener('click', () => completeProgram(program));
+  program.append(complete);
+  programList.replaceChildren(program); refreshPrisons();
+  // With only one prison there's nothing to choose, so tick it (its yard too, if it has just one).
+  if (!saved && prisons.size === 1) {
+    const only = program.querySelector('.assignment-row > label input');
+    only.checked = true; only.dispatchEvent(new Event('change'));
+  }
+  if (saved) {
+    // Editing: put the saved answers back, then tick the prisons and yards it ran in.
+    heading.textContent = `Editing ${saved.name}`;
+    program.dataset.editIndex = editIndex;
+    if (saved.id) program.dataset.programId = saved.id;
+    for (const input of program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')) {
+      const key = input.name.slice(input.name.lastIndexOf('['));
+      const entry = Object.entries(saved.values).find(([name]) => name.endsWith(key));
+      if (entry) input.value = entry[1];
+      input.dispatchEvent(new Event('input'));
+    }
+    for (const assignment of saved.assignments) {
+      const row = program.querySelector(`.assignment-row[data-code="${assignment.code}"]`);
+      if (!row) continue;
+      const check = row.querySelector(':scope > label input');
+      check.checked = true; check.dispatchEvent(new Event('change'));
+      for (const box of row.querySelectorAll('.program-yards input')) box.checked = assignment.yards.includes(box.value);
+    }
+  }
+  syncYardNumbers(program);
+  if (saved) {
+    for (const row of program.querySelectorAll('.yard-number-row')) {
+      const count = saved.counts?.[row.dataset.key];
+      if (!count) continue;
+      for (const input of row.querySelectorAll('input')) {
+        input.value = String(count[input.dataset.kind] ?? 0);
+        input.dispatchEvent(new Event('input'));
+      }
+    }
+  }
+  if (focus) program.querySelector('input').focus();
+}
+continuePrograms.addEventListener('click', () => {
+  if (continuePrograms.disabled || transitioning) return;
+  if (!programList.children.length && !completedPrograms.length) addProgram(false);
+  refreshPrisons();
+  form.classList.add('program-mode');
+  showStep(facilitiesStep, programsStep, document.querySelector('#programs-question'));
+});
+document.querySelector('#edit-prisons').addEventListener('click', async () => { await showStep(programsStep, facilitiesStep, document.querySelector('#facilities-question')); form.classList.remove('program-mode'); });
+
+
+function renderProgramSummary() {
+  const summary = document.querySelector('#prison-summary'); summary.replaceChildren();
+  for (const [code, prison] of prisons) {
+    const item = document.createElement('li'); paintPrison(item, prison);
+    const disclosure = document.createElement('details');
+    disclosure.open = prisonDisclosureState.has(code) ? prisonDisclosureState.get(code) : prisons.size < 3;
+    disclosure.addEventListener('click', event => {
+      if (event.target.closest('summary')) prisonDisclosureState.set(code, !disclosure.open);
+    });
+    const title = document.createElement('summary');
+    const prisonName = document.createElement('span'); prisonName.textContent = prison.name;
+    const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.some(yard => prison.yards.has(yard)))).length;
+    const badge = document.createElement('span'); badge.className = 'program-count';
+    badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
+    title.append(prisonName, document.createTextNode(' '), badge);
+    disclosure.append(title); item.append(disclosure);
+    for (const yard of prison.yards) {
+      const block = document.createElement('div'); block.className = 'summary-yard';
+      const name = document.createElement('h4'); name.textContent = yard; block.append(name);
+      const matches = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.includes(yard)));
+      const list = document.createElement('ul');
+      for (const program of matches) {
+        const row = document.createElement('li'); row.textContent = program.name; list.append(row);
+      }
+      if (matches.length) block.append(list);
+      else { const note = document.createElement('p'); note.textContent = 'No programs added yet'; block.append(note); }
+      disclosure.append(block);
+    }
+    summary.append(item);
+  }
+}
+function completeProgram(program) {
+  const nameInput = program.querySelector('[id$="-program-name"]');
+  const name = nameInput.value.trim();
+  const feedback = document.querySelector('#program-feedback');
+  nameInput.setCustomValidity(name ? '' : 'Enter a program name.');
+  nameInput.oninput = () => nameInput.setCustomValidity('');
+  if (!name) { nameInput.reportValidity(); return; }
+  // Clear last time's date and number messages so a fixed field doesn't stay flagged.
+  for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
+  for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
+  for (const field of program.querySelectorAll('input, select, textarea')) {
+    if (!field.checkValidity()) { field.reportValidity(); return; }
+  }
+  // Catch numbers and dates that can't be true before they reach the totals.
+  const field = suffix => program.querySelector(`[id$="-${suffix}"]`);
+  const status = field('scheduled-status').value;
+  const start = field('start-date');
+  const end = field('end-date');
+  const problem = (input, message) => {
+    input.setCustomValidity(message);
+    input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
+    input.addEventListener('change', () => input.setCustomValidity(''), { once: true });
+    input.reportValidity();
+    feedback.textContent = message;
+  };
+  if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
+  const notes = field('program-notes');
+  if (notes.value.length > 2000) { problem(notes, 'Use no more than 2,000 characters for the optional context.'); return; }
+  if (status === 'Completed' && !end.value) { problem(end, 'Enter the date this program ended.'); return; }
+  if (start.value && end.value && end.value < start.value) { problem(end, 'The end date is before the start date.'); return; }
+  feedback.textContent = '';
+  const assignments = [];
+  for (const row of program.querySelectorAll('.assignment-row')) {
+    if (!row.querySelector(':scope > label input').checked) continue;
+    const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (checkinContext) {
+      const prison = prisons.get(row.dataset.code);
+      for (const yard of yards) prison.yards.add(yard);
+      for (const box of prison.card.querySelectorAll('.yard-choices input')) box.checked = prison.yards.has(box.value);
+    }
+    assignments.push({ code: row.dataset.code, yards });
+  }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one prison and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
+  const counts = {};
+  for (const row of program.querySelectorAll('.yard-number-row')) {
+    const participants = row.querySelector('[data-kind="participants"]');
+    const completed = row.querySelector('[data-kind="completed"]');
+    for (const input of [participants, completed]) {
+      if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
+    }
+    if (Number(completed.value) > Number(participants.value)) {
+      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants who started.`);
+      return;
+    }
+    counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
+  }
+  const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')].map(field => [field.name, field.value]));
+  // An edited program goes back where it was in the list.
+  const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
+  completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
+  programList.replaceChildren();
+  refreshPrisons();
+  document.querySelector('#program-next').hidden = false;
+  document.querySelector('#program-next-heading').focus();
+  feedback.textContent = program.dataset.editIndex === undefined ? `${name} added.` : `${name} updated.`;
+}
+
+document.querySelector('#another-program').addEventListener('click', () => {
+  document.querySelector('#program-next').hidden = true;
+  document.querySelector('#program-feedback').textContent = '';
+  addProgram();
+});
+// Finished programs stay editable: list them with Edit and Remove.
+function renderAddedPrograms() {
+  const list = document.querySelector('#added-programs');
+  list.replaceChildren();
+  completedPrograms.forEach((program, index) => {
+    const item = document.createElement('li');
+    const name = document.createElement('span'); name.className = 'added-name'; name.textContent = program.name;
+    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
+    edit.setAttribute('aria-label', `Edit ${program.name}`);
+    edit.addEventListener('click', () => editProgram(index));
+    const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
+    remove.setAttribute('aria-label', `Remove ${program.name}`);
+    remove.addEventListener('click', () => removeProgram(index));
+    item.append(name, edit, remove);
+    if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
+    if (!program.assignments.length) {
+      const warning = document.createElement('p'); warning.className = 'needs-prison';
+      warning.textContent = 'Its prisons or yards were removed. Edit it to choose new ones, or remove it.';
+      item.append(warning);
+    }
+    list.append(item);
+  });
+}
+function editProgram(index) {
+  const [program] = completedPrograms.splice(index, 1);
+  document.querySelector('#program-next').hidden = true;
+  document.querySelector('#program-feedback').textContent = '';
+  addProgram(true, program, index);
+}
+function removeProgram(index) {
+  const [program] = completedPrograms.splice(index, 1);
+  refreshPrisons();
+  document.querySelector('#program-feedback').textContent = `${program.name} removed.`;
+  if (!completedPrograms.length) {
+    document.querySelector('#program-next').hidden = true;
+    addProgram();
+  } else {
+    document.querySelector('#program-next-heading').focus();
+  }
+}
+let submissionId;
+let submitting = false;
+document.querySelector('#finish-form').addEventListener('click', async () => {
+  if (submitting) return;
+  if (!completedPrograms.length) return;
+  if (completedPrograms.some(program => program.needsReview)) {
+    document.querySelector('#program-feedback').textContent = 'Edit and complete each carried-forward program for this quarter before submitting.'; return;
+  }
+  const orphaned = completedPrograms.filter(program => !program.assignments.length);
+  if (orphaned.length) {
+    document.querySelector('#program-feedback').textContent = `Choose a prison and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
+    return;
+  }
+  const submission = {
+    organization: organization.value.trim(),
+    reportingPeriod: reportingPeriod(),
+    ...(checkinContext ? { orgId: checkinContext.orgId, previousSubmissionId: checkinContext.previousSubmissionId } : {}),
+    prisons: [...prisons].map(([code, prison]) => ({ code, name: prison.name, yards: [...prison.yards] })),
+    programs: completedPrograms,
+    submittedAt: new Date().toISOString()
+  };
+  const button = document.querySelector('#finish-form');
+  const feedback = document.querySelector('#program-feedback');
+  const showDone = (receipt) => {
+    document.querySelector('#program-next').hidden = true;
+    feedback.textContent = '';
+    renderSubmission(submission);
+    const note = document.querySelector('#submission-receipt');
+    note.textContent = receipt || 'Saved in this browser only. This demo doesn’t send your answers anywhere yet.';
+    note.hidden = false;
+    programsStep.classList.add('submitted');
+    document.querySelector('#submission-result').hidden = false;
+    document.querySelector('#edit-prisons').hidden = true;
+    document.querySelector('#submission-heading').focus();
+  };
+  // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
+  submissionId ||= crypto.randomUUID();
+  if (!backendUrl() && !window.google?.script?.run) {
+    // No back end set up: the demo behaviour, saved in this browser only.
+    try {
+      localStorage.setItem('tpw-form-demo-submission', JSON.stringify(submission));
+    } catch (error) {
+      feedback.textContent = 'Could not save in this browser. Your entries are still here; please try again.';
+      return;
+    }
+    showDone();
+    return;
+  }
+  const controls = [...programsStep.querySelectorAll('button, input, select, textarea')];
+  const originalDisabled = controls.map(control => control.disabled);
+  submitting = true;
+  controls.forEach(control => { control.disabled = true; });
+  button.textContent = 'Submitting…';
+  feedback.textContent = 'Sending to TPW…';
+  programsStep.setAttribute('aria-busy', 'true');
+  let result;
+  try {
+    result = await sendToBackend(toPayload(submission, submissionId));
+  } catch (error) {
+    console.error('Submission failed:', error);
+    feedback.textContent = 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.';
+    return;
+  } finally {
+    submitting = false;
+    controls.forEach((control, index) => { control.disabled = originalDisabled[index]; });
+    button.textContent = 'Finish and submit';
+    programsStep.removeAttribute('aria-busy');
+  }
+  if (!result || !result.ok) {
+    feedback.textContent = ((result && result.errors) || ['Something went wrong. Your entries are still here; please try again.']).join(' ');
+    return;
+  }
+  showDone(`Filed with TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
+});
+
+// The address in backend.js, if one is set.
+function backendUrl() {
+  const url = (window.TPW_BACKEND_URL || '').trim();
+  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || /^http:\/\/localhost:\d+\//.test(url) ? url : '';
+}
+// What the sheet writer needs, in plain field names. The organization is only a fallback
+// for the demo: once sign-in is connected, the server files under the signed-in organization.
+function toPayload(submission, submissionId) {
+  return {
+    submissionId,
+    organization: submission.organization,
+    reportingPeriod: submission.reportingPeriod,
+    ...(submission.orgId ? { orgId: submission.orgId, previousSubmissionId: submission.previousSubmissionId || '' } : {}),
+    programs: submission.programs.map(program => ({
+      id: program.id,
+      name: program.name,
+      notes: programValue(program, 'notes').trim(),
+      status: programValue(program, 'scheduled_status'),
+      startDate: programValue(program, 'start_date'),
+      endDate: programValue(program, 'end_date'),
+      courseHours: Number(programValue(program, 'course_hours')) || 0,
+      sites: programSites(program).map(site => ({ facilityCode: site.code, yard: site.yard, participants: site.participants, completed: site.completed }))
+    }))
+  };
+}
+// Sign-in hands the page a pass as window.tpwSession = { token, organization, email }.
+// Sent as plain text so the browser doesn't ask Google's server for permission first;
+// Apps Script reads the body either way.
+async function sendToBackend(payload) {
+  const token = window.tpwSession?.token || '';
+  // Older receivers ignore notes. Refuse rather than silently discard them.
+  if (payload.programs.some(program => program.notes)) {
+    const capabilities = window.google?.script?.run
+      ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
+      : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
+    if (!capabilities.features?.programNotes) {
+      return { ok: false, errors: ['The receiver needs its programme-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
+    }
+  }
+  if (window.google?.script?.run) {
+    return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
+  }
+  return fetch(backendUrl(), {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify({ token, payload })
+  }).then(response => response.json());
+}
+if (backendUrl()) document.querySelector('#where-it-goes').textContent = 'Submitting sends your answers to TPW.';
+
+document.querySelector('#start-over').addEventListener('click', () => location.reload());
+
+function programValue(program, key) {
+  const entry = Object.entries(program.values).find(([name]) => name.endsWith(`[${key}]`));
+  return entry ? entry[1] : '';
+}
+// Every prison and yard a program runs at, with that yard's numbers.
+function programSites(program) {
+  return program.assignments.flatMap(assignment => assignment.yards.map(yard => {
+    const count = program.counts?.[`${assignment.code}|${yard}`] || {};
+    return { code: assignment.code, yard, participants: Number(count.participants) || 0, completed: Number(count.completed) || 0 };
+  }));
+}
+function renderSubmission(submission) {
+  const number = value => Number(value) || 0;
+  const format = value => value.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  const totals = submission.programs.reduce((sum, program) => {
+    const hours = number(programValue(program, 'course_hours'));
+    for (const site of programSites(program)) {
+      sum.participants += site.participants; sum.completed += site.completed;
+      sum.delivered += hours * site.completed;
+    }
+    return sum;
+  }, { participants: 0, completed: 0, delivered: 0 });
+  function metric(container, value, label) {
+    const tile = document.createElement('div'); tile.className = 'success-metric';
+    const amount = document.createElement('strong'); amount.textContent = value;
+    const caption = document.createElement('span'); caption.textContent = label;
+    tile.append(amount, caption); container.append(tile);
+  }
+  const totalPanel = document.querySelector('#submission-totals'); totalPanel.replaceChildren();
+  // Hours per participant differ by program, so adding them up gives a meaningless number. Count programs instead.
+  metric(totalPanel, format(submission.programs.length), submission.programs.length === 1 ? 'Program' : 'Programs');
+  metric(totalPanel, format(totals.participants), 'Participant enrollments');
+  metric(totalPanel, format(totals.completed), 'Participants completed');
+  metric(totalPanel, format(totals.delivered), 'Estimated completer-hours');
+  document.querySelector('#submission-context').textContent = `${submission.organization} · Q${submission.reportingPeriod.quarter} ${submission.reportingPeriod.year}`;
+  const report = document.querySelector('#report-prisons'); report.replaceChildren();
+  for (const prison of submission.prisons) {
+    const card = document.createElement('article'); card.className = 'report-prison';
+    paintPrison(card, prisons.get(prison.code));
+    const matches = submission.programs.filter(program => program.assignments.some(item => item.code === prison.code));
+    const header = document.createElement('header'); header.className = 'report-card-header';
+    const code = document.createElement('span'); code.className = 'report-code'; code.textContent = prison.code;
+    const title = document.createElement('h3'); title.textContent = prison.name;
+    const count = document.createElement('span'); count.className = 'report-program-count'; count.textContent = `${matches.length} ${matches.length === 1 ? 'program' : 'programs'}`;
+    header.append(code, title, count); card.append(header);
+    const yardSection = document.createElement('div'); yardSection.className = 'report-yard-section';
+    const yardLabel = document.createElement('span'); yardLabel.className = 'report-label'; yardLabel.textContent = 'Operating yards';
+    const chips = document.createElement('div'); chips.className = 'report-chips';
+    for (const yard of prison.yards) { const chip = document.createElement('span'); chip.textContent = yard; chips.append(chip); }
+    yardSection.append(yardLabel, chips); card.append(yardSection);
+    const body = document.createElement('div'); body.className = 'report-card-body'; card.append(body);
+    for (const program of matches) {
+      const block = document.createElement('section'); block.className = 'report-program';
+      const heading = document.createElement('div'); heading.className = 'report-program-heading';
+      const name = document.createElement('h4'); name.textContent = program.name;
+      const status = document.createElement('span'); status.className = 'report-status';
+      status.textContent = programValue(program, 'scheduled_status') || 'No status';
+      status.dataset.status = programValue(program, 'scheduled_status');
+      heading.append(name, status); block.append(heading);
+      const here = programSites(program).filter(site => site.code === prison.code);
+      const yards = document.createElement('p'); yards.className = 'report-program-yards';
+      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} started, ${site.completed} completed)`).join(', ')}`;
+      block.append(yards);
+      const dates = document.createElement('dl'); dates.className = 'report-dates';
+      for (const [label, key] of [['Start date', 'start_date'], ['End date', 'end_date']]) {
+        const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
+        const value = document.createElement('dd');
+        const raw = programValue(program, key);
+        value.textContent = raw ? new Date(raw + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Not specified';
+        group.append(term, value); dates.append(group);
+      }
+      block.append(dates);
+      const metrics = document.createElement('dl'); metrics.className = 'report-program-metrics';
+      const sum = kind => here.reduce((total, site) => total + site[kind], 0);
+      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants', sum('participants')], ['Completed', sum('completed')]]) {
+        const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
+        const amount = document.createElement('dd'); amount.textContent = format(value);
+        group.append(amount, term); metrics.append(group);
+      }
+      block.append(metrics);
+      const notes = programValue(program, 'notes').trim();
+      if (notes) {
+        const context = document.createElement('p'); context.className = 'report-program-notes';
+        context.textContent = `Additional context: ${notes}`;
+        block.append(context);
+      }
+      body.append(block);
+    }
+    if (!matches.length) { const note = document.createElement('p'); note.className = 'report-empty'; note.textContent = 'No programs assigned yet.'; body.append(note); }
+    report.append(card);
+  }
+}
+
+async function loadCheckin() {
+  const orgId = new URLSearchParams(location.search).get('checkin');
+  if (!orgId) return;
+  const banner = document.createElement('div'); banner.className = 'checkin-banner'; banner.setAttribute('role', 'status');
+  banner.textContent = 'Loading your latest programs…'; form.prepend(banner);
+  const step = organizationStep;
+  step.hidden = true;
+  try {
+    const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../team-dashboard/js/data.js'), import('../team-dashboard/js/checkin-data.js')]);
+    const draft = checkinDraft(await loadDashboard(orgId));
+    checkinContext = draft;
+    form.classList.add('checkin-mode');
+    organization.value = draft.organization;
+    organization.readOnly = true;
+    document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
+    document.querySelector('#organization-summary').textContent = draft.organization;
+    for (const prison of draft.prisons) {
+      if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
+      picker.value = prison.code; picker.dispatchEvent(new Event('change'));
+      const record = prisons.get(prison.code);
+      if (!record) continue;
+      for (const box of record.card.querySelectorAll('.yard-choices input')) {
+        box.checked = prison.yards.includes(box.value);
+        if (box.checked) box.dispatchEvent(new Event('change'));
+      }
+    }
+    completedPrograms.push(...draft.programs);
+    refreshPrisons();
+    document.querySelector('#program-next').hidden = !completedPrograms.length;
+    document.querySelector('#program-next-heading').textContent = 'Review your programs for this quarter';
+    facilitiesStep.hidden = false;
+    reportingPeriod();
+    document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+    document.querySelector('#facility-help').textContent = '';
+    document.querySelector('#continue-programs').textContent = 'Continue →';
+    banner.remove();
+    document.querySelector('#facilities-question').focus();
+  } catch (error) {
+    console.error('Check-in prefill failed:', error);
+    banner.textContent = 'Could not load your previous submission. Your existing data has not changed.';
+    const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'continue-button'; retry.textContent = 'Try again'; retry.onclick = () => location.reload(); banner.append(retry);
+  }
+}
+loadCheckin();
+</script>
+</body>
+</html>
