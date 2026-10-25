@@ -767,6 +767,10 @@ const continuePrograms = document.querySelector('#continue-programs');
 const programList = document.querySelector('#program-list');
 let programNumber = 0;
 const completedPrograms = [];
+// A saved program that is open again for editing. It's out of completedPrograms while open, but the
+// left-hand panel still lists it, so its counts match "1 of 5".
+let openProgram = null;
+const panelPrograms = () => openProgram ? [...completedPrograms, openProgram] : completedPrograms;
 let lastQuarter = null;
 const prisonDisclosureState = new Map();
 function createAssignmentRow(program, code, prison) {
@@ -846,7 +850,7 @@ function refreshPrisons() {
   for (const [code, prison] of prisons) {
     const badge = prison.card.querySelector('.prison-card-program-count');
     if (badge) {
-      const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code)).length;
+      const count = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code)).length;
       badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
     }
   }
@@ -1053,6 +1057,7 @@ function addProgram(focus = true, saved = null, editIndex) {
   const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button'; complete.textContent = 'Complete program →';
   complete.addEventListener('click', () => completeProgram(program));
   program.append(complete);
+  openProgram = editIndex === undefined ? null : saved;
   programList.replaceChildren(program); refreshPrisons();
   // With only one prison there's nothing to choose, so tick it (its yard too, if it has just one).
   if (!saved && prisons.size === 1) {
@@ -1112,7 +1117,7 @@ function renderProgramSummary() {
     });
     const title = document.createElement('summary');
     const prisonName = document.createElement('span'); prisonName.textContent = prison.name;
-    const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.some(yard => prison.yards.has(yard)))).length;
+    const count = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.some(yard => prison.yards.has(yard)))).length;
     const badge = document.createElement('span'); badge.className = 'program-count';
     badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
     title.append(prisonName, document.createTextNode(' '), badge);
@@ -1120,10 +1125,12 @@ function renderProgramSummary() {
     for (const yard of prison.yards) {
       const block = document.createElement('div'); block.className = 'summary-yard';
       const name = document.createElement('h4'); name.textContent = yard; block.append(name);
-      const matches = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.includes(yard)));
+      const matches = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.includes(yard)));
       const list = document.createElement('ul');
       for (const program of matches) {
-        const row = document.createElement('li'); row.textContent = program.name; list.append(row);
+        const row = document.createElement('li'); row.textContent = program.name;
+        if (program === openProgram) { row.className = 'summary-open'; row.append(' · filling in'); }
+        list.append(row);
       }
       if (matches.length) block.append(list);
       else { const note = document.createElement('p'); note.textContent = 'No programs added yet'; block.append(note); }
@@ -1194,6 +1201,7 @@ function completeProgram(program) {
   const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')].map(field => [field.name, field.value]));
   // An edited program goes back where it was in the list.
   const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
+  openProgram = null;
   completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
   programList.replaceChildren();
   refreshPrisons();
