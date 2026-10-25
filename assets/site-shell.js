@@ -91,7 +91,7 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   for (const [id, label, path] of [
     ['intake', 'Log data', demoEntryPath(key)],
     ['overview', 'Dashboard', `dashboard/#${key}`],
-    ['raw-data', 'Raw data', `dashboard/raw-data.html#${key}`]
+    ['raw-data', 'Data', `dashboard/raw-data.html#${key}`]
   ]) {
     const anchor = link(label, path);
     if (page === id) anchor.setAttribute('aria-current', 'page');

@@ -1,4 +1,4 @@
-# Dashboard, raw data and demo account entry
+# Dashboard, data and demo account entry
 
 **Dashboard** (`dashboard/index.html`) preserves the original participant chart,
 program/prison/submission totals, RAC estimates and savings calculations. It
@@ -7,11 +7,11 @@ keeps a visible demo-preview notice. Demo organization keys (`#org-1`, `#org-2`,
 `#tpw`) select the original views. Without a hash, it uses the remembered demo
 account or Org 1. Nothing is removed or replaced by the embedded Sheet.
 
-**Raw data** (`dashboard/raw-data.html`) separately embeds the actual [TPW reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0)
+**Data** (`dashboard/raw-data.html`) separately embeds the actual [TPW reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0)
 using its `/preview` URL. **Open in Google Sheets** is always available as a
 fallback for sign-in, blocked third-party cookies, or a preview that fails to load.
 Google's existing sharing permissions apply. This does not publish the workbook,
-change its permissions, or bypass Google sign-in. Raw data does not load the
+change its permissions, or bypass Google sign-in. Data does not load the
 Firebase dashboard or seeded charts. Its Sheet is not filtered by the
 `#org-1`, `#org-2` or `#tpw` demo keys; Google controls access to the whole workbook.
 
@@ -32,7 +32,7 @@ pages. Modified clicks still use the link's direct logging destination.
 ## Logging layout
 
 The member pages keep the original TPW header/footer, a white background, and
-three quiet horizontal links: **Log data**, **Dashboard**, then **Raw data**. Forms use the site's
+three quiet horizontal links: **Log data**, **Dashboard**, then **Data**. Forms use the site's
 normal gutters instead of a second narrow centered column. There is no outer
 workspace card, sidebar, avatar or account picker. The logging choices are
 **Quarterly totals** (first/default) and **Session**. After submission, a compact
@@ -54,7 +54,7 @@ printable rosters retain their letter-sized geometry without website chrome.
 The original dashboard imports its existing Firebase data modules; sample
 fixtures and seed scripts remain available. These records are not a summary of
 new Google Sheet filings. No seed script runs on a visit, no Firebase security
-rules are changed, and no new Sheet-to-Firebase sync is introduced. Raw data
+rules are changed, and no new Sheet-to-Firebase sync is introduced. Data
 shows the separate Google Sheet directly, under its existing permissions.
 Legacy Programs/check-in helpers remain in the directory, with their old page
 routes redirecting to logging as before.

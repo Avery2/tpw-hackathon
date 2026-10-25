@@ -82,7 +82,7 @@ try {
       await click('.tpw-header .login,a.user-accounts-text-link'); await wait('document.querySelector(".tpw-account-drawer").open');
       await click('.tpw-account-intake');
       await wait('location.pathname.endsWith("/intake/simple.html")&&!!document.querySelector("iframe")?.contentDocument?.querySelector("#organization")');
-      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Raw data']);
+      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Data']);
       const left = await ev('document.querySelector(".tpw-header .logo").getBoundingClientRect().left');
       assert(Math.abs(await ev('document.querySelector("iframe").getBoundingClientRect().left') - left) < 2);
       const frameWidth = await ev('document.querySelector("iframe").getBoundingClientRect().width');
@@ -119,13 +119,9 @@ try {
     console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
     if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
     const beforeRaw = requests.length;
-    await click('.tpw-member-nav a[href*="raw-data.html"]');
-    await wait('!!document.querySelector("h1") && !!document.querySelector(".overview-sheet")').catch(async error => {
-      console.error(await ev('JSON.stringify({url:location.href,h1:document.querySelector("h1")?.textContent,sheet:!!document.querySelector(".overview-sheet"),body:document.body.innerHTML.slice(0,300)})'));
-      throw error;
-    });
-    assert.equal(await ev('document.querySelector("h1").textContent'), 'Raw data');
-    assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Raw data');
+    await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet")');
+    assert.equal(await ev('document.querySelector("h1").textContent'), 'Data');
+    assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Data');
     assert(await ev('document.querySelector("#sheet-access").textContent.includes("Google Sheet data, embedded")'));
     assert(!requests.slice(beforeRaw).some(url => /dashboard\/js\/main\.js|firestore\.googleapis\.com/.test(url)));
     assert.equal(await ev('document.querySelector(".overview-sheet").src'), 'https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/preview?gid=0');
@@ -133,7 +129,7 @@ try {
     assert(await ev('document.querySelector(".sheet-heading a").href.includes("/edit?gid=0#gid=0")'));
     assert(await ev('!document.querySelector("#profile-view,#impact-view,.impact-card")'));
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    console.log('PASS separate Raw data Sheet embed and direct link, without dashboard modules:', width);
+    console.log('PASS separate Data Sheet embed and direct link, without dashboard modules:', width);
     await click('.tpw-member-nav a[href*="dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg")');
   }
