@@ -1,0 +1,43 @@
+{
+  "schema": "tpw.additional-forms/1",
+  "service": "tpw.additional-forms",
+  "version": 1,
+  "facilities": "data/intake/facilities.json",
+  "sheets": "data/intake/sheets.json",
+  "formats": {
+    "participantId": "^(?:[A-Za-z]\\d{2}|[0-9a-f]{32})$",
+    "sheetCode": "^[A-Za-z0-9_-]{1,16}$"
+  },
+  "forms": {
+    "session": {
+      "tab": "Session records",
+      "contract": {"path": "data/intake/simple_forms.json", "kind": "session"},
+      "sources": ["quick-form", "scan", "scan-manual", "paper-sheet"],
+      "include_sheet_buckets": true,
+      "fields": {
+        "sheet": {"format": "sheetCode"},
+        "roster": {"format": "participantId"},
+        "present": {"format": "participantId"},
+        "sheet_template": {"type": "text", "max": 80, "format": "sheetTemplate"}
+      },
+      "rules": [
+        {"type": "subset", "field": "present", "of": "roster"},
+        {"type": "count", "field": "present_count", "of": "present"},
+        {"type": "count", "field": "roster_size", "of": "roster"}
+      ]
+    },
+    "aggregate": {
+      "tab": "Quarter records",
+      "contract": {"path": "data/intake/simple_forms.json", "kind": "aggregate"},
+      "sources": ["quick-form"],
+      "rules": [{"type": "lte", "field": "completed", "of": "served"}]
+    },
+    "followup": {
+      "tab": "Follow-ups",
+      "contract": {"path": "data/intake/simple_forms.json", "kind": "followup"},
+      "sources": ["quick-form"],
+      "fields": {"token": {"format": "participantId"}},
+      "rules": []
+    }
+  }
+}

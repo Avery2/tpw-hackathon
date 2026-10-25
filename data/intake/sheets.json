@@ -1,0 +1,40 @@
+{
+  "schema": "tpw.sheets/1",
+  "note": "Paper forms we can read off a photograph: the printed checkbox columns, in order, and which counted bucket each option feeds. Read by intake/js/paper.js. A sheet is read by geometry only — no OCR, no model, nothing leaving the phone — so a form can only be read if its option columns are declared here.",
+  "why": "A CDCR-issued sign-in sheet is the only record of who was in the room, and it arrives as a photo. Retyping twelve rows of ticks into six questions is where counting errors come from.",
+  "forms": [
+    {
+      "id": "cdcr-signin",
+      "label": "CDCR sign-in and demographic sheet",
+      "note": "Date, prepared by, service type and event across the top; one person per row; race, ethnicity, stable housing and veteran status per row. Screen sheets are printed by the institution, not by us, so there is no code to locate the page: the reader is calibrated by tapping the four corners of the table.",
+      "date_label": "Session date",
+      "groups": [
+        {
+          "id": "gender",
+          "buckets": ["gender_men", "gender_women", "gender_other"],
+          "labels": ["He / Him", "She / Her", "They / Them / Other"]
+        },
+        {
+          "id": "race",
+          "buckets": ["race_black", "race_asian_pacific", "race_white", "race_other_unknown"],
+          "labels": ["African American / Black", "Asian / Asian American", "Caucasian / White", "Other"]
+        },
+        {
+          "id": "ethnicity",
+          "buckets": ["race_hispanic", "race_native", "race_asian_pacific", "race_other_unknown"],
+          "labels": ["Latino/a/x or Hispanic", "Native American", "Pacific Islander", "Mixed Race"]
+        },
+        {
+          "id": "housing",
+          "buckets": [],
+          "labels": ["Stable housing: yes", "Stable housing: no"]
+        },
+        {
+          "id": "veteran",
+          "buckets": [],
+          "labels": ["Veteran: yes", "Veteran: no"]
+        }
+      ]
+    }
+  ]
+}

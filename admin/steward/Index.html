@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TPW steward console</title>
+<style>
+  :root { color-scheme: light; }
+  body { font: 15px/1.5 system-ui, -apple-system, Segoe UI, sans-serif; margin: 0; padding: 1.5rem; color: #1a1a1a; background: #fff; }
+  h1 { font-size: 1.25rem; margin: 0 0 .25rem; }
+  h2 { font-size: .95rem; text-transform: uppercase; letter-spacing: .06em; color: #666; margin: 2rem 0 .5rem; }
+  .sub { color: #666; margin: 0 0 1.5rem; }
+  .kpis { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+  .kpi strong { display: block; font-size: 1.6rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .kpi span { font-size: .8rem; color: #666; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  th, td { text-align: left; padding: .4rem .6rem; border-bottom: 1px solid #eee; vertical-align: top; }
+  th { font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; color: #555; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .tag { display: inline-block; font-size: .72rem; padding: .05rem .4rem; border-radius: 999px; border: 1px solid currentColor; }
+  .error { color: #a31515; } .warning { color: #8a5a00; } .info { color: #555; }
+  .note { background: #f6f6f6; border-left: 3px solid #999; padding: .6rem .85rem; margin: 1rem 0; }
+  .blocked { border-left-color: #a31515; background: #fdf3f3; }
+  .muted { color: #666; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; background: #f4f4f4; padding: .05rem .25rem; }
+</style>
+</head>
+<body>
+<p id="state">Checking who you are…</p>
+<main id="app" hidden></main>
+
+<script>
+function esc(s) {
+  return String(s === null || s === undefined ? '' : s).replace(/[&<>"']/g, function (c) {
+    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+  });
+}
+
+function render(res) {
+  var state = document.getElementById('state');
+  var app = document.getElementById('app');
+  app.hidden = false;
+
+  if (!res.ok) {
+    state.hidden = true;
+    app.innerHTML =
+      '<h1>Not signed in to the console</h1>' +
+      '<div class="note blocked"><p><strong>' + esc(res.code) + '</strong></p>' +
+      '<p>' + esc(res.hint) + '</p>' +
+      (res.caller ? '<p class="muted">Google says you are <code>' + esc(res.caller) + '</code>.</p>' : '') +
+      '</div>';
+    return;
+  }
+
+  state.hidden = true;
+  var v = res.view;
+  var k = v.kpis;
+
+  var kpis = [
+    ['organizations', k.organizations],
+    ['cycles on record', k.cycles],
+    ['committed via the form', k.committedCycles],
+    ['imported from the old sheet', k.importedCycles],
+    ['real (excl. sample)', k.realCycles],
+    ['participant slots started (all rows, incl. sample)', k.participantSlotsStarted],
+    ['participant slots completed (all rows, incl. sample)', '~' + k.participantSlotsCompleted],
+    ['last activity', k.lastActivity || '—']
+  ].map(function (pair) {
+    return '<div class="kpi"><strong>' + esc(pair[1]) + '</strong><span>' + esc(pair[0]) + '</span></div>';
+  }).join('');
+
+  var attention = v.attention.length
+    ? '<table><thead><tr><th>Rule</th><th>Level</th><th class="num">Cycles</th>' +
+      (res.role === 'steward' ? '<th>Organizations to chase</th>' : '') + '</tr></thead><tbody>' +
+      v.attention.map(function (a) {
+        return '<tr><td>' + esc(a.rule) + '</td>' +
+          '<td><span class="tag ' + esc(a.level) + '">' + esc(a.level) + '</span></td>' +
+          '<td class="num">' + a.cycles + '</td>' +
+          (res.role === 'steward' ? '<td>' + esc(a.orgs.join(', ')) + '</td>' : '') +
+          '</tr>';
+      }).join('') + '</tbody></table>'
+    : '<p class="muted">Nothing to chase.</p>';
+
+  var orgs = res.role === 'steward'
+    ? '<h2>Organizations</h2><table><thead><tr><th>Organization</th><th class="num">Cycles</th>' +
+      '<th class="num">Sample</th><th class="num">Programs</th><th class="num">Sites</th>' +
+      '<th>Last activity</th></tr></thead><tbody>' +
+      v.orgs.map(function (o) {
+        return '<tr><td>' + esc(o.org) + '</td>' +
+          '<td class="num">' + o.cycles + '</td>' +
+          '<td class="num">' + (o.sampleCycles ? '<span class="tag error">' + o.sampleCycles + '</span>' : '0') + '</td>' +
+          '<td class="num">' + o.programs + '</td>' +
+          '<td class="num">' + o.sites + '</td>' +
+          '<td>' + esc(o.lastActivity || '—') + '</td></tr>';
+      }).join('') + '</tbody></table>'
+    : '<div class="note"><p><strong>You are a viewer.</strong> You see the collective, not any single ' +
+      'organization: per-organization rows are not sent to this page at all, the same rule as ' +
+      '<code>min_cohort_for_release</code> in the schema. Ask a steward to add your email to ' +
+      '<code>LEADER_EMAILS</code> if you need the detail.</p></div>';
+
+  app.innerHTML =
+    '<h1>TPW steward console</h1>' +
+    '<p class="sub">Signed in as <strong>' + esc(res.caller) + '</strong> · ' + esc(res.role) +
+      (v.generatedAt ? ' · data as of ' + esc(String(v.generatedAt).replace('T', ' ').slice(0, 16)) : '') + '</p>' +
+    '<div class="note"><p>Every figure here is read from the published JSON in the repo, so it agrees with ' +
+      'the site by construction. Nothing on this page is confidential — the data is public in git. ' +
+      'The sign-in decides who may <em>act</em>, not who may see.</p></div>' +
+    '<div class="kpis">' + kpis + '</div>' +
+    '<h2>Data quality</h2>' + attention +
+    orgs;
+}
+
+google.script.run
+  .withSuccessHandler(render)
+  .withFailureHandler(function (err) {
+    document.getElementById('state').textContent = 'Call failed: ' + (err && err.message || err);
+  })
+  .getConsole();
+</script>
+</body>
+</html>

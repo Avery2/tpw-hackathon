@@ -5,13 +5,12 @@
 // the paper is which boxes have ink in them. Names never leave the sheet.
 
 import { TABLE, COL, checkBox, sheetToImage, imageScale } from './sheet_geometry.js';
-import { issueUrl } from './transport.js';
+import { submitRecord } from './sheets.js';
 
 const $ = (s) => document.querySelector(s);
 const app = () => document.getElementById('app');
 
 const state = {
-  config: {},
   facilities: [], // [{code, name}]
   image: null, // canvas holding the photograph
   location: null, // jsQR corner data
@@ -19,6 +18,8 @@ const state = {
   marks: [], // booleans, one per row
   manual: null, // present count when no QR was found
   done: null,
+  busy: false,
+  recordId: null,
 };
 
 const esc = (s) =>
@@ -51,14 +52,12 @@ function rememberOrg(org) {
 
 /* ------------------------------------------------------------------ boot */
 async function boot() {
-  const [config, facilities] = await Promise.all([
-    fetch('../data/intake/config.json', { cache: 'no-store' }).then((r) => r.json()).catch(() => ({})),
+  const [facilities] = await Promise.all([
     fetch('../data/intake/facilities.json', { cache: 'no-store' })
       .then((r) => r.json())
       .then((d) => d.facilities)
       .catch(() => []),
   ]);
-  state.config = config;
   state.facilities = facilities;
   render();
 }
@@ -110,13 +109,15 @@ function render() {
 }
 
 function reset() {
-  Object.assign(state, { image: null, location: null, decoded: null, marks: [], manual: null, done: null });
+  Object.assign(state, { image: null, location: null, decoded: null, marks: [], manual: null, done: null, recordId: null });
   render();
   window.scrollTo({ top: 0 });
 }
 
 /* ------------------------------------------------------------- the image */
 async function handleFile(file) {
+  if (state.busy) return;
+  state.recordId = null;
   const bitmap = await createImageBitmap(file).catch(
     () =>
       new Promise((resolve) => {
@@ -275,12 +276,18 @@ function renderResult() {
       <div class="row"><div><label>Session date</label>
         <input id="f-date" type="date" value="${new Date().toISOString().slice(0, 10)}"></div></div>
       <button class="primary" type="button" id="manual-file">File this session</button>
-      <div class="alts"><button type="button" data-act="again">Try another photo</button></div>`;
+      <div class="alts">
+        <button type="button" data-act="download">Download JSON backup</button>
+        <button type="button" data-act="again">Try another photo</button>
+      </div>
+      <p id="save-status" role="status"></p>`;
     $('#manual-file').addEventListener('click', () => {
-      state.manual = Math.max(0, Number($('#f-present').value) || 0);
+      if (state.busy) return;
       const record = buildRecord();
       if (record) publish(record);
     });
+    $('[data-act="download"]').addEventListener('click', download);
+    $('[data-act="again"]').addEventListener('click', reset);
     return;
   }
 
@@ -312,14 +319,15 @@ function renderResult() {
       </div>
       <button class="primary" type="submit">File this session</button>
       <div class="alts">
-        <button type="button" data-act="download">Download the file</button>
+        <button type="button" data-act="download">Download JSON backup</button>
         <button type="button" data-act="again">Use a different photo</button>
       </div>
+      <p id="save-status" role="status"></p>
     </form>`;
 
   $('#chips').addEventListener('click', (e) => {
     const chip = e.target.closest('.chip');
-    if (!chip) return;
+    if (!chip || state.busy) return;
     const i = Number(chip.dataset.row);
     state.marks[i] = !state.marks[i];
     chip.classList.toggle('in', state.marks[i]);
@@ -329,21 +337,12 @@ function renderResult() {
 
   $('#session-form').addEventListener('submit', (e) => {
     e.preventDefault();
+    if (state.busy) return;
     const record = buildRecord();
     if (record) publish(record);
   });
 
-  $('[data-act="download"]')?.addEventListener('click', () => {
-    const record = buildRecord();
-    if (!record) return;
-    const blob = new Blob([JSON.stringify(record, null, 2) + '\n'], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `${record.id}.json`;
-    a.click();
-    state.done = { record, channel: 'file' };
-    render();
-  });
+  $('[data-act="download"]')?.addEventListener('click', download);
 
   $('[data-act="again"]')?.addEventListener('click', reset);
 }
@@ -352,11 +351,15 @@ function buildRecord() {
   const program = ($('#f-program')?.value || '').trim();
   const facility = ($('#f-facility')?.value || '').trim();
   const date = $('#f-date')?.value || '';
-  const present = state.manual != null ? state.manual : state.marks.filter(Boolean).length;
+  const present = !state.decoded ? Number($('#f-present')?.value) : state.marks.filter(Boolean).length;
+  if (!Number.isInteger(present) || present < 0 || (!state.decoded && !$('#f-present')?.value)) {
+    return toast('Enter a whole-number present count, including zero if nobody attended.', 'bad'), null;
+  }
   const org = ($('#f-org')?.value || '').trim();
 
   if (!org) return toast('Which organization is filing this?', 'bad'), null;
-  if (!program) return toast('Which program is this?', 'bad'), null;  if (!facility) return toast('Which facility?', 'bad'), null;
+  if (!program) return toast('Which program is this?', 'bad'), null;
+  if (!facility) return toast('Which facility?', 'bad'), null;
   if (!date) return toast('Session date is missing.', 'bad'), null;
 
   rememberOrg(org);
@@ -368,7 +371,7 @@ function buildRecord() {
   const walkins = ticked.filter((i) => !roster[i]).length;
 
   return {
-    id: `session-${slug}-${date}-${Math.random().toString(36).slice(2, 8)}`,
+    id: state.recordId ||= `session-${slug}-${date}-${Math.random().toString(36).slice(2, 8)}`,
     kind: 'session',
     schema: 'tpw.simple/1',
     source: state.decoded ? 'scan' : 'scan-manual',
@@ -379,35 +382,54 @@ function buildRecord() {
     session_date: date,
     session_no: state.decoded?.n || null,
     sheet: state.decoded?.s || null,
-    roster,
+    ...(roster.some(Boolean) ? { roster: roster.filter(Boolean), present: presentIds } : {}),
     roster_size: roster.filter(Boolean).length,
-    present: presentIds,
-    present_count: presentIds.length,
+    present_count: roster.some(Boolean) ? presentIds.length : present,
     walkins,
     checked_count: present,
   };
 }
 
-function publish(record) {
-  const url = issueUrl(record, state.config, `[intake:session] ${record.program} · ${record.session_date}`);
-  if (url.length > 7000) {
-    toast('Too large for an issue link — download the file instead.', 'bad');
-    return;
+function download() {
+  if (state.busy) return;
+  const record = buildRecord();
+  if (!record) return;
+  const url = URL.createObjectURL(new Blob([JSON.stringify(record, null, 2) + '\n'], { type: 'application/json' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${record.id}.json`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  $('#save-status').textContent = 'JSON backup downloaded to this device only. This session has not been filed.';
+}
+
+async function publish(record) {
+  if (state.busy) return;
+  state.busy = true;
+  const controls = [...app().querySelectorAll('button, input')];
+  controls.forEach((el) => { el.disabled = true; });
+  $('#save-status').textContent = 'Saving session to Google Sheets…';
+  try {
+    const receipt = await submitRecord(record);
+    state.done = { record, receipt };
+    render();
+  } catch (err) {
+    $('#save-status').textContent = `Save not confirmed: ${err.message}. Your corrections are still here; retry or download a local backup.`;
+  } finally {
+    state.busy = false;
+    controls.forEach((el) => { el.disabled = false; });
   }
-  window.open(url, '_blank', 'noopener');
-  state.done = { record, channel: 'issue', url };
-  render();
 }
 
 function doneScreen() {
-  const { record, channel, url } = state.done;
+  const { record, receipt } = state.done;
   return `
     <div class="done">
       <div class="mark">✓</div>
-      <h2>Session recorded</h2>
-      <p>${record.present} present · ${esc(record.program || '')} · ${esc(record.session_date)}
-        ${channel === 'issue' ? '<br>A GitHub tab opened — submit the issue to finish.' : ''}</p>
-      ${url ? `<p><a href="${esc(url)}" target="_blank" rel="noopener">Open it on GitHub →</a></p>` : ''}
+      <h2>Session saved to Google Sheets</h2>
+      <p>${esc(record.checked_count)} present · ${esc(record.program || '')} · ${esc(record.session_date)}</p>
+      <p>Receipt: ${esc(receipt.submissionId)}<br>Record: ${esc(receipt.recordId)}<br>Sheet tab: ${esc(receipt.tab)}</p>
+      <p>Saved to the intake sheet. This does not yet update the report or rollup.</p>
       <button class="primary" data-act="again" type="button">Scan another sheet</button>
     </div>`;
 }

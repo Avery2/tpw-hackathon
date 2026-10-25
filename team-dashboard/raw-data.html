@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data — TPW</title>
+<meta name="description" content="View TPW reporting data in the shared Google Sheet.">
+<link rel="stylesheet" href="../assets/site-shell.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; color: #111; background: #fff; font: 18px/1.5 'Degular', sans-serif; }
+  a { color: inherit; }
+  .sheet-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 16px 28px; flex-wrap: wrap; margin-bottom: 16px; }
+  .sheet-heading h1 { margin: 0; font: 400 clamp(1.8rem, 4vw, 2.5rem)/1.15 'Rubik One', sans-serif; }
+  .sheet-heading a { font-size: 16px; text-underline-offset: 4px; }
+  .sheet-help { margin: 0 0 24px; color: #666; font-size: 14px; }
+  .overview-sheet { display: block; width: 100%; height: 70vh; min-height: 420px; border: 0; background: #fff; }
+</style>
+<script type="module" src="../assets/site-shell.js"></script>
+</head>
+<body>
+<main class="dashboard-layout">
+  <div class="workspace-content">
+    <div class="sheet-heading">
+      <h1>Data</h1>
+      <a href="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">Open in Google Sheets ↗</a>
+    </div>
+    <p id="sheet-access" class="sheet-help">Google Sheet data, embedded. Existing Google permissions apply. If the preview doesn’t load or needs sign-in, use the link above.</p>
+    <iframe class="overview-sheet" title="TPW reporting data — Google Sheets" aria-describedby="sheet-access" src="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/preview?gid=0" loading="lazy"></iframe>
+  </div>
+</main>
+</body>
+</html>
