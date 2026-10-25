@@ -46,6 +46,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | `crob-2024-credit-groups.md` | A 2024 state list of every credit-earning group at 32 prisons. It exists, but we decided on 24 October 2026 it's too old to use, and no newer version will come. Read before anyone suggests pre-filling from it. |
 | `kickoff-briefing.md` | What the hackathon pack and the kickoff video actually contain, including the video transcript, and what that implies for what we build. |
 | `right-4.0-application-example.md` | Page-by-page guide to the dummy filled application, and what's still missing from it. |
+| `chatgpt-skills-for-tpw-staff.md` | Candidate ChatGPT skills Ken or other TPW staff could install for day-to-day work around the data tool (data requests, briefs, checking submissions, member questions), with what each needs, what was left out and why, and what to settle first. Working draft, 25 October 2026. Nothing built yet. |
 
 ### `tpw-website-text/`
 
