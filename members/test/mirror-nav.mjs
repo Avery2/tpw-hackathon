@@ -25,7 +25,7 @@ const source = await readFile(new URL('../../assets/mirror-nav.js', import.meta.
 assert.equal(source.split('import(drawerUrl)').length, 2);
 vm.runInNewContext(source.replace('import(drawerUrl)', 'loadDrawer(drawerUrl)'), context);
 documentHandlers.get('DOMContentLoaded')();
-assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html?account=org-1' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
+assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
 async function click(modifiers = {}, accountLink = true) {
   opened = imported = undefined;
   const result = { stopped: false, prevented: false };
