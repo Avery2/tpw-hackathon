@@ -29,8 +29,12 @@ const shortDate = (iso) => {
 function toast(message, tone = '') {
   const el = document.createElement('div');
   el.className = `toast ${tone}`;
-  el.textContent = message;
+  // Errors interrupt; everything else waits its turn.
+  el.setAttribute('role', tone === 'bad' ? 'alert' : 'status');
   document.body.appendChild(el);
+  // Text goes in after the live region is in the page, or some screen readers
+  // never notice it arrived.
+  setTimeout(() => (el.textContent = message), 50);
   setTimeout(() => el.remove(), 4200);
 }
 
@@ -147,12 +151,12 @@ function render() {
 
   const el = app.querySelector('form');
   el.addEventListener('input', (e) => {
-    const f = form.fields.find((x) => x.key === e.target.name);
+    const f = form.fields.find((x) => x.key === e.target.name || x.items?.some((it) => it.key === e.target.name));
     if (f) {
       if (errors[f.key]) {
         delete errors[f.key];
-        e.target.classList.remove('invalid');
-        e.target.parentElement.querySelector('.err')?.remove();
+        el.querySelectorAll(`[name="${e.target.name}"]`).forEach(clearInvalid);
+        e.target.closest('[data-key], details')?.querySelector('.err')?.remove();
       }
       if (f.key === 'status') syncConditional(form);
     }
@@ -363,6 +367,27 @@ function syncConditional(form) {
 }
 
 /* --------------------------------------------------------------- validate */
+// Shows msg under the field and ties it to the inputs, so assistive tech
+// reads the error when one of them takes focus.
+function markInvalid(box, inputs, key, msg) {
+  const p = document.createElement('p');
+  p.className = 'err';
+  p.id = `err-${key}`;
+  p.textContent = msg;
+  box?.appendChild(p);
+  for (const input of inputs) {
+    input.classList.add('invalid');
+    input.setAttribute('aria-invalid', 'true');
+    input.setAttribute('aria-describedby', p.id);
+  }
+}
+
+function clearInvalid(input) {
+  input.classList.remove('invalid');
+  input.removeAttribute('aria-invalid');
+  input.removeAttribute('aria-describedby');
+}
+
 function collect(form, el) {
   errors = {};
   const values = {};
@@ -377,6 +402,7 @@ function collect(form, el) {
         const n = Number(raw);
         if (!Number.isInteger(n) || n < 0 || (f.max != null && n > f.max)) {
           errors[f.key] = `${item.label} must be a whole number between 0 and ${f.max}.`;
+          errors[`_i_${f.key}`] = item.key;
           break;
         }
         values[item.key] = n;
@@ -398,25 +424,33 @@ function collect(form, el) {
     }
   }
 
+  let firstInvalid = null;
   for (const f of form.fields) {
     if (f.hidden) continue;
     const v = values[f.key];
-    const box = el.querySelector(`[data-key="${f.key}"]`);
-    const input = el.querySelector(`[name="${f.key}"]`);
-    box?.querySelector('.err')?.remove();
-    input?.classList.remove('invalid');
-
-    if (f.show_if && !Object.entries(f.show_if).every(([k, want]) => values[k] === want)) continue;
 
     if (f.type === 'counts') {
+      // The group is a <details>, not a [data-key] box, so the error goes there.
+      const items = (f.items || []).map((it) => el.querySelector(`[name="${it.key}"]`)).filter(Boolean);
+      const group = items[0]?.closest('details');
+      group?.querySelector(':scope > .err')?.remove();
+      items.forEach(clearInvalid);
       if (errors[f.key]) {
-        const p = document.createElement('p');
-        p.className = 'err';
-        p.textContent = errors[f.key];
-        box?.appendChild(p);
+        const bad = el.querySelector(`[name="${errors[`_i_${f.key}`]}"]`);
+        if (group) group.open = true;
+        markInvalid(group, bad ? [bad] : [], f.key, errors[f.key]);
+        firstInvalid ||= bad;
       }
       continue;
     }
+
+    const box = el.querySelector(`[data-key="${f.key}"]`);
+    // Radio groups share one name, so every option is marked together.
+    const inputs = [...el.querySelectorAll(`[name="${f.key}"]`)];
+    box?.querySelector('.err')?.remove();
+    inputs.forEach(clearInvalid);
+
+    if (f.show_if && !Object.entries(f.show_if).every(([k, want]) => values[k] === want)) continue;
 
     let msg = null;
     if (f.required && (!v || (Array.isArray(v) && v.length === 0))) msg = `${f.label} is required.`;
@@ -436,17 +470,16 @@ function collect(form, el) {
 
     if (msg) {
       errors[f.key] = msg;
-      input?.classList.add('invalid');
-      const p = document.createElement('p');
-      p.className = 'err';
-      p.textContent = msg;
-      box?.appendChild(p);
+      markInvalid(box, inputs, f.key, msg);
+      firstInvalid ||= inputs[0];
     }
   }
 
   if (Object.keys(errors).length) {
-    const first = el.querySelector('.field .err');
-    first?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    // Move focus, not just the viewport, so a screen reader announces the field
+    // and, through aria-describedby, its error.
+    (firstInvalid || el.querySelector('.err'))?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    firstInvalid?.focus({ preventScroll: true });
     return null;
   }
 
