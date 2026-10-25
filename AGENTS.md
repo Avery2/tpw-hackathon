@@ -38,6 +38,8 @@ What we've built is a static site with no server. It has a form-intake system th
 | `data/tpw-collective-impact.csv` | The real TPW form data (Data Entry Sheet tab) as CSV. Input to the seed and the report. | Only when re-pulling the live sheet |
 | `data/tpw-collective-impact-form.xlsx`, `data/snapshots/` | Dated snapshots of TPW's live Google Sheet. | No: add a new dated snapshot instead |
 | `scripts/` | Python, standard library only. Seed builder, validators, issue ingester, reindexer, registry builder, public-data builder. Each file's docstring explains it. | Yes |
+| `form-demo/` | Yuki's guided form (organization → prisons and yards → programs, with participants and completions per yard). `backend.js` holds the address it submits to; empty means it saves in the browser only. Also embedded in the intake as a tab (`?embed=1`). | Yes |
+| `apps-script/` | The Google Apps Script web app the guided form submits to. Checks the sign-in pass (`Session.gs`), turns a submission into one row per program per yard in TPW's column order (`Rows.gs`), and writes them to a Google Sheet with the Sheets API as the account that deployed it (`Sheet.gs`). Setup in its `README.md`; `node apps-script/tests.js` checks the row rules. | Yes |
 | `report/build.py` | Builds a print-ready "Collective Impact Report 2026" HTML and PDF from the CSV. Needs headless Chrome for the PDF. Working files go in `report/work/`, which is gitignored. | Yes |
 | `report/assets/` | TPW logos and preview images for the report. | Rarely |
 | `docs/` | Source documents from TPW, CDCR and the hackathon, plus our write-ups. See `docs/AGENTS.md`. | Add, don't rewrite sources |
