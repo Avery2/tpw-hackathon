@@ -39,7 +39,7 @@ export function racPanel(programs) {
     }
     card.append(details);
     const savings = node('article', undefined, 'rac-org savings-card');
-    savings.append(node('h4', 'Prison costs, if every credit day were applied'));
+    savings.append(node('h4', 'Prison costs avoided, if every credit day were applied'));
     const money = node('strong', undefined, 'rac-total');
     money.setAttribute('aria-live', 'polite');
     const currency = value => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
