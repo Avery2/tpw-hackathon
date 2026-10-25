@@ -227,7 +227,7 @@ function render() {
  */
 function demoPanel() {
   return `
-    <p class="hint demo-note">Submitting this form saves to Firebase for the <a href="../dashboard/">dashboard</a>.
+    <p class="hint demo-note">Submitting this form appends to TPW’s Google Sheet.
       <a href="#session">Session</a> entries use the separate GitHub ledger.</p>
     <div class="demo-panel">
       <iframe src="../form-demo/?embed=1" title="Guided program form" loading="lazy"></iframe>
