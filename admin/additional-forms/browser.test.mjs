@@ -59,7 +59,7 @@ try{
  await send('Page.addScriptToEvaluateOnNewDocument',{source:`addEventListener('DOMContentLoaded',()=>{const style=document.createElement('style');style.textContent='*{animation:none!important;transition:none!important}';document.head.append(style);});`});
  async function open(width=1280){
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-  await send('Page.navigate',{url:base+'/form-demo/?embed=1'});
+  await send('Page.navigate',{url:base+'/team-form/?embed=1'});
   await wait(`!!document.querySelector('#quarter-summary')?.textContent`);
   assert(await evaluate(`!document.querySelector('#quarter-step')&&!document.querySelector('[name=reporting_quarter]')&&!document.querySelector('#reporting-year')`));
   await evaluate(`document.querySelector('#organization').value='SYNTHETIC TEST';document.querySelector('#demo-form').requestSubmit();`);
