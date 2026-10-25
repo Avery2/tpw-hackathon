@@ -18,8 +18,8 @@ export function setDemoAccount(account) {
 export function demoEntryPath(account = getDemoAccount()) {
   return Object.hasOwn(demoAccounts, account) ? `intake/simple.html?account=${account}` : 'intake/simple.html';
 }
-// Header links for a signed-in member; signed out there are none, so the header matches TPW's
-// own site. Used by assets/site-shell.js and, on the copied TPW pages, assets/mirror-nav.js.
+// Links for a signed-in member; signed out there are none. assets/site-shell.js shows them in the
+// member bar under the top menu (Log data, Dashboard, Annual report); the top menu stays TPW's own.
 const REPORTS = Object.freeze({
   'org-1': 'report/organizations/org-1-annual-report-2026.pdf',
   'org-2': 'report/organizations/org-2-annual-report-2026.pdf',
