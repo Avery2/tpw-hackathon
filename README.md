@@ -100,6 +100,7 @@ scripts/      validators, issue ingester, reindexer, rollup, profile deriver
 docs/         TPW + CDCR source documents
 data/         snapshots of the Collective Impact form
 site/         local mirror of thetpw.org (offline copy, for reference and extension)
+admin/        optional Google-side tools (Apps Script receiver, steward console) — inert, not wired in; see admin/README.md
 ```
 
 ## The intake
