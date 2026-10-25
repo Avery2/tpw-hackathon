@@ -28,8 +28,9 @@ Filling the form in again every quarter is the burden TPW's members complain abo
 form starts from the organization's last report when it knows who is filing. Log data passes
 the member's demo account to the embedded form as `?account=org-1`; the form then loads that
 organization's earlier submissions (`js/last-quarter.js`, reading TPW's Google Sheet through the receiver, plus the sample organizations),
-fills in its prisons, yards and program names, and asks only this quarter's dates and numbers.
-Participants and completions are never carried forward: they start at 0. It opens straight on
+fills in its prisons, yards, program names and course hours per participant (they belong to
+the curriculum, so rarely change; members can still edit them), and asks only this quarter's
+status, dates and counts. Participants and completions are never carried forward: they start at 0. It opens straight on
 the first program ("1 of 5: …"), because the numbers change every quarter and the prisons
 rarely do; finishing one opens the next. Each program can tick or untick any yard at its
 prisons as it goes; adding or removing a prison is under **Edit prisons**. Every carried-forward

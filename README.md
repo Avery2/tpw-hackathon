@@ -122,8 +122,11 @@ organizations are badged. **Data** separately embeds the
 [reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0),
 with an **Open in Google Sheets** fallback link. Google's existing sharing
 permissions apply; nothing is published publicly.
-**Members Login / Account** opens a mock of TPW's existing account drawer, with
-one added **Intake · New** entry leading to **Log data**. No passwords are collected.
+**Members Login**, when signed out, opens a copy of TPW's own sign-in box ("Welcome to
+TPW", from thetpw.org/account/login) with three demo accounts (Org 1, Org 2, TPW staff);
+signing in goes straight to **Log data**. Signed in, **Account** opens a mock of TPW's
+existing account drawer, with one added **Intake · New** entry leading to **Log data**.
+No passwords are collected: the password box is switched off.
 There is no workspace sidebar; old `/members/` links enter the log automatically.
 The shared TPW header/footer remain visible throughout. Real sign-in is deferred: demo access is **not
 authentication** and does not protect private data. Use synthetic demo data only.

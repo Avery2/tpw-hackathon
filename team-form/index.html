@@ -1162,7 +1162,7 @@ function reviewNext(before = '') {
   const card = programList.querySelector('.program-card');
   card.querySelector('h3').textContent = `${total - left + 1} of ${total}: ${card.querySelector('[id$="-program-name"]').value}`;
   const hint = document.createElement('p'); hint.className = 'form-hint';
-  hint.textContent = 'Last quarter’s prisons and yards are ticked. Add this quarter’s status, dates, course hours, and participants and completions for each yard.';
+  hint.textContent = 'Last quarter’s prisons, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
   card.querySelector('.organization-summary').after(hint);
   document.querySelector('#program-feedback').textContent = before;
   card.querySelector('[id$="-scheduled-status"]').focus();
