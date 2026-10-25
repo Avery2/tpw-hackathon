@@ -1,0 +1,96 @@
+name: Tests
+
+# Runs every test suite on every push, to any branch. It only reads the code:
+# it never publishes the website (that's pages.yml) and never writes to Google.
+# Every test fakes Google, and the browser tests intercept requests to it.
+#
+# A red cross next to a commit on GitHub means a step below failed. Click the
+# cross, then the red step, to see which check and why. Every step runs even
+# if an earlier one fails, so you see all the failures at once.
+#
+# Left out on purpose: members/test/browser.mjs. It has failed since at least
+# commit 7a9ae50 (25 Oct 2026, 00:46): it times out waiting for the account
+# menu on the second page it opens. Add it as a step here once it passes
+# locally.
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Website build
+        if: ${{ !cancelled() }}
+        run: python3 scripts/test_build_site.py
+
+      - name: Second Apps Script settings (Config.gs) builder
+        if: ${{ !cancelled() }}
+        run: |
+          python3 scripts/test_additional_forms.py
+          python3 scripts/build_additional_forms.py --check
+
+      - name: Quarterly Apps Script, Google faked
+        if: ${{ !cancelled() }}
+        run: node team-form/test/receiver.cjs
+
+      - name: Quarter dates and last quarter's prefill
+        if: ${{ !cancelled() }}
+        run: node team-form/test/reporting.mjs
+
+      - name: Second Apps Script, Google faked
+        if: ${{ !cancelled() }}
+        run: node admin/additional-forms/test.cjs
+
+      - name: Code that sends records to the second Apps Script
+        if: ${{ !cancelled() }}
+        run: node admin/additional-forms/client.test.mjs
+
+      - name: Demo sign-in and account menu
+        if: ${{ !cancelled() }}
+        run: |
+          node members/test/session.mjs
+          node members/test/mirror-nav.mjs
+
+      - name: Older intake receiver (sheetforms), Google faked
+        if: ${{ !cancelled() }}
+        run: node admin/sheetforms/test/run.mjs
+
+      - name: Steward console, Google faked
+        if: ${{ !cancelled() }}
+        run: node admin/steward/test/run.mjs
+
+      # The browser tests open the site in headless Chrome, which GitHub's
+      # machines already have. They expect the repo served on port 8826.
+      - name: Start a local copy of the site for the browser tests
+        if: ${{ !cancelled() }}
+        run: |
+          python3 -m http.server 8826 --bind 127.0.0.1 > /dev/null 2>&1 &
+          for n in $(seq 1 50); do curl -sf http://127.0.0.1:8826/ > /dev/null && exit 0; sleep 0.2; done
+          echo "The local copy of the site didn't start." && exit 1
+
+      - name: Team form in a browser
+        if: ${{ !cancelled() }}
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node team-form/test/browser.mjs
+
+      - name: Log data and its other forms in a browser
+        if: ${{ !cancelled() }}
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node admin/additional-forms/browser.test.mjs
