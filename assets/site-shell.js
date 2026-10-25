@@ -50,12 +50,16 @@ function mountHeader() {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault(); openAccountDrawer(member);
   });
-  window.addEventListener('tpw:member-change', () => {
+  // Signing in or out, or switching account in the address (#org-1 → #tpw), redraws these links.
+  const refresh = () => {
+    activeAccount();
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
     member.href = url(demoEntryPath());
     nav.querySelectorAll('.tpw-member-link').forEach(node => node.remove());
     member.before(...memberLinks());
-  });
+  };
+  window.addEventListener('tpw:member-change', refresh);
+  window.addEventListener('hashchange', refresh);
   nav.append(member); header.append(logo, nav);
 }
 function mountFooter() {
