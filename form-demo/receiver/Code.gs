@@ -5,7 +5,7 @@
 function getFormCapabilities() {
   return {
     ok: true, service: 'TPW guided form submissions', formVersion: 2,
-    features: { programNotes: true, currentQuarter: true, additionalData: true }
+    features: { programNotes: true, currentQuarter: true, additionalData: true, headerRecovery: true }
   };
 }
 
@@ -132,6 +132,7 @@ function appendFormRows_(result) {
   ensureSubmissionsTab_(id);
   var rows = Sheets.Spreadsheets.Values.get(id, submissionRange_('1:1')).values || [];
   var headings = rows[0] || [];
+  recoverReportingQuarterHeader_(id, headings);
   var normalized = headings.map(normalizeFormHeader_);
   var columns = HEADER.map(function (heading) {
     var key = normalizeFormHeader_(heading);
@@ -169,6 +170,34 @@ function appendFormRows_(result) {
     return output;
   });
   appendRows_(mapped);
+}
+
+// A newer Rows.gs adds Reporting Quarter after the original columns. Recover its
+// blank heading only when EVERY other core heading is uniquely in its canonical
+// position and the candidate column contains only quarter values (or is empty).
+// Never infer a metric column, rename a label, move data, or repair duplicates.
+function recoverReportingQuarterHeader_(id, headings) {
+  var key = normalizeFormHeader_('Reporting Quarter');
+  var expected = HEADER.map(normalizeFormHeader_);
+  var at = expected.indexOf(key);
+  var actual = headings.map(normalizeFormHeader_);
+  if (at < 0 || actual.indexOf(key) >= 0 || normalizeFormHeader_(headings[at])) return;
+  var canonical = expected.every(function (heading, index) {
+    return index === at || (actual.indexOf(heading) === index && actual.lastIndexOf(heading) === index);
+  });
+  if (!canonical) return;
+  var letter = formColumnLetter_(at + 1);
+  var cells = Sheets.Spreadsheets.Values.get(id, submissionRange_(letter + '2:' + letter)).values || [];
+  var safe = cells.every(function (row) {
+    var value = row[0] === undefined || row[0] === null ? '' : String(row[0]).trim().replace(/^'/, '');
+    return !value || /^(?:\d{4}\s*Q[1-4]|Q[1-4]\s*\d{4})$/i.test(value);
+  });
+  if (!safe) {
+    throw formSetupError_('Reporting Quarter has a blank heading, but that column contains other data. Restore its correct heading manually; no data was changed.');
+  }
+  Sheets.Spreadsheets.Values.update({ values: [[HEADER[at]]] }, id,
+    submissionRange_(letter + '1'), { valueInputOption: 'RAW' });
+  headings[at] = HEADER[at];
 }
 
 function normalizeFormHeader_(value) { return String(value || '').trim().replace(/\s+/g, ' ').toLowerCase(); }

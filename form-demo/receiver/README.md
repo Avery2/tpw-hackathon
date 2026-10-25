@@ -21,8 +21,11 @@ The update:
   It retains structured submission/programme/site data, including future fields
   sent by the form. Unknown fields are preserved there, not promoted to metrics.
 - Maps core values by their existing header names, so adding or reordering columns
-  does not shift data. Missing/duplicate core headings fail with a clear message;
-  it does not guess when an important column has been renamed.
+  does not shift data. A blank **Reporting Quarter** heading is recovered in place
+  when the other core headings uniquely match the canonical layout and the column
+  is empty or contains only recognizable quarter values. Existing values are never
+  rewritten or backfilled. Other missing/duplicate core headings, conflicting data
+  and ambiguous layouts still fail rather than guessing or overwriting anything.
 - Preserves existing rows and column names. It never renames the destination tab.
 - Excludes the HTTP envelope, authentication tokens and common credential/file/ID
   fields from snapshots. Free text must still not contain personal information.

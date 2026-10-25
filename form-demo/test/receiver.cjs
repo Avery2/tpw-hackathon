@@ -36,7 +36,12 @@ function harness(rowsSource, options = {}) {
     Sheets: {Spreadsheets: {
       get: id => {assert.equal(id,'test-master');return {sheets:[{properties:{title:TAB,sheetId:7,gridProperties:{columnCount:100}}}]};},
       Values: {
-        get: (id, range) => {assert.equal(id,'test-master');assert.equal(range,"'"+TAB+"'!1:1");return {values:[headers.slice()]};},
+        get: (id, range) => {
+          assert.equal(id,'test-master');
+          if (range === "'"+TAB+"'!1:1") return {values:[headers.slice()]};
+          assert.equal(range,"'"+TAB+"'!R2:R");
+          return {values:options.quarterValues || []};
+        },
         update: (request,id,range) => {
           assert.equal(id,'test-master');assert(range.startsWith("'"+TAB+"'!"));
           let col=0;for(const c of range.split('!')[1].match(/^[A-Z]+/)[0])col=col*26+c.charCodeAt(0)-64;
@@ -51,6 +56,12 @@ function harness(rowsSource, options = {}) {
   if (options.missing) headers = headers.filter(h => h !== 'Notes');
   if (options.duplicate) headers.push('Notes');
   if (options.custom) headers.splice(2,0,'Staff-only extra column');
+  if (options.missingQuarter) {
+    const at=headers.indexOf('Reporting Quarter');
+    if(at>=0)headers[at]='';
+    while(headers.length && !headers.at(-1))headers.pop();
+  }
+  if (options.duplicateQuarter) headers.push('Reporting Quarter');
   const post = payload => JSON.parse(ctx.doPost({postData:{contents:JSON.stringify({token:'a'.repeat(64),payload})}}).text);
   return {ctx,writes,updates,post,headers:()=>headers,releases:()=>releases};
 }
@@ -82,5 +93,23 @@ for (const [label,commit] of [['older','bb13e5d'],['newer','4792dcf']]) {
   test(label+': unsigned gate, busy lock, write failure and receipt-cache failure',()=>{for(const [options,ok] of [[{unsigned:false},false],[{busy:true},false],[{writeFails:true},false],[{cacheFails:true},true]]){const h=harness(source,options);assert.equal(h.post(payload()).ok,ok);if(options.writeFails)assert.equal(h.releases(),1);}});
   test(label+': malformed request returns JSON; capabilities are public and explicit',()=>{const h=harness(source);assert.equal(JSON.parse(h.ctx.doPost({postData:{contents:'bad'}}).text).ok,false);assert.equal(plain(h.ctx.getFormCapabilities()).features.programNotes,true);});
   test(label+': California quarter boundaries match intended reporting date',()=>{const h=harness(source);assert.deepEqual(plain(h.ctx.currentReportingPeriod_(new Date('2027-01-01T07:59:59Z'))),{quarter:4,year:2026});assert.deepEqual(plain(h.ctx.currentReportingPeriod_(new Date('2027-01-01T08:00:00Z'))),{quarter:1,year:2027});});
+  if(label==='newer') {
+    test('recover blank Reporting Quarter heading over existing quarter data without changing it',()=>{
+      const values=[[],[],['2026 Q4'],['2026 Q4']], before=plain(values);
+      const h=harness(source,{missingQuarter:true,quarterValues:values});
+      assert(h.post(payload()).ok);assert.equal(h.headers()[17],'Reporting Quarter');
+      assert.equal(h.updates[0].range,"'"+TAB+"'!R1");assert.deepEqual(plain(h.updates[0].request.values),[['Reporting Quarter']]);
+      assert.deepEqual(values,before);assert.equal(h.writes.length,1);
+    });
+    test('new missing quarter header can be added over an empty column',()=>{
+      const h=harness(source,{missingQuarter:true});assert(h.post(payload()).ok);assert.equal(h.headers()[17],'Reporting Quarter');assert.equal(h.updates.length,2);
+    });
+    test('never relabel an anonymous column containing non-quarter data',()=>{
+      for(const value of ['staff notes',2026,false]){const h=harness(source,{missingQuarter:true,quarterValues:[[value]]}),reply=h.post(payload());assert.equal(reply.ok,false);assert(reply.errors[0].includes('contains other data'));assert.equal(h.writes.length,0);assert.equal(h.updates.length,0);}
+    });
+    test('ambiguous/reordered layout or duplicate quarter heading is not repaired by guessing',()=>{
+      for(const options of [{missingQuarter:true,reorder:true},{duplicateQuarter:true}]){const h=harness(source,options);assert.equal(h.post(payload()).ok,false);assert.equal(h.writes.length,0);assert.equal(h.updates.length,0);}
+    });
+  }
 }
 console.log(`${passed} receiver checks passed; zero Google calls or live writes.`);
