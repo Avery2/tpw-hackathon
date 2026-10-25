@@ -693,8 +693,8 @@ async function showStep(from, to, focusTarget) {
   to.classList.add('entering');
   focusTarget.focus({ preventScroll: true });
   // Inside Log data the form grows to its full height, so the page around it doesn't move
-  // by itself: on a phone the next step would open off-screen. Bring its top into view.
-  if (window.parent !== window) to.scrollIntoView({ block: 'start' });
+  // by itself: on a phone the next step would open off-screen. Bring its heading into view.
+  if (window.parent !== window) focusTarget.scrollIntoView({ block: 'start' });
   await Promise.all(to.getAnimations().map(animation => animation.finished.catch(() => {})));
   to.classList.remove('entering');
   transitioning = false;
