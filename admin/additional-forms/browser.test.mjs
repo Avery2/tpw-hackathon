@@ -113,7 +113,9 @@ try{
  await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-program').value='SYNTHETIC QUARTER';document.querySelector('#f-facilities').value=document.querySelector('#facilities option').value;document.querySelector('[data-act=add-facility]').click();document.querySelector('#f-quarter').value='2026-Q4';document.querySelector('#f-served').value='10';document.querySelector('#f-completed').value='7';document.querySelector('form').requestSubmit();`);
  await wait(`!!document.querySelector('.done')`);assert.equal(posts.at(-1).payload.kind,'aggregate');assert.equal(posts.at(-1).payload.facilities.length,1);console.log('PASS older Quarter form also uses the same workbook');
  // The printable roster, sheet scanner and packet reader were removed on 25 Oct 2026.
- for(const page of ['sheet','scan','upload']){await send('Page.navigate',{url:base+'/intake/'+page+'.html'});await wait(`location.pathname.endsWith('/intake/simple.html')`);}
+ // They redirect at once, so Chrome can drop a check that lands mid-redirect ("Inspected target navigated"); ask again.
+ const landed=async()=>{for(let n=0;n<160;n++){try{if(await evaluate(`location.pathname.endsWith('/intake/simple.html')`))return;}catch(error){if(!String(error.message).includes('navigated or closed'))throw error;}await sleep(100);}throw Error('Timed out: removed page did not redirect to Log data');};
+ for(const page of ['sheet','scan','upload']){await send('Page.navigate',{url:base+'/intake/'+page+'.html'});await landed();}
  console.log('PASS removed roster, scanner and packet pages redirect to Log data');
  assert.deepEqual(exceptions,[]);console.log('PASS browser checks: zero unhandled exceptions, zero live Google requests');
 }finally{socket?.close();chrome.kill();await new Promise(resolve=>{if(chrome.exitCode!==null)resolve();else{chrome.once('exit',resolve);setTimeout(resolve,3000);}});await rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:200});}

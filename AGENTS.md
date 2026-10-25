@@ -54,6 +54,7 @@ What we've built is a static site with no server, hosted on GitHub Pages at <htt
 | `docs/` | Source documents from TPW, CDCR and the hackathon, plus our write-ups. See `docs/AGENTS.md`. | Add, don't rewrite sources |
 | `site/` | Offline copy of thetpw.org (HTML plus all assets). The member pages live inside it on the published site: `build_site.py` adds one script to the published copy so its Members Login opens our account menu. The files here stay untouched. | No: it's a copy of TPW's site. For the text, read `docs/tpw-website-text/` |
 | `.github/workflows/pages.yml` | Publishes the website on every push to `main`: runs `scripts/test_build_site.py`, builds with `scripts/build_site.py`, deploys to GitHub Pages. | Carefully |
+| `.github/workflows/tests.yml` | Runs every test suite on every push, to any branch, and never publishes anything. A red cross next to a commit on GitHub means a step failed; click it to see which. `members/test/browser.mjs` is left out until it passes again. When you add a test file, add a step for it here. | Yes |
 | `.github/workflows/intake.yml` | The older ledger bot: turns a labelled GitHub issue into a validated commit, and re-validates and re-indexes on every push to `main` that touches `data/intake/`. Only the packet upload still files this way. | Carefully |
 | `NOTES-data-recon.md` | Analysis notes (see above). | Yes |
 
@@ -84,6 +85,8 @@ node admin/additional-forms/test.cjs        # second Apps Script checks, Google 
 python3 scripts/test_additional_forms.py    # tests for the Config.gs builder
 python3 scripts/build_additional_forms.py   # rebuild admin/additional-forms/Config.gs (--check tests it's current)
 ```
+
+GitHub runs the tests on every push. `.github/workflows/tests.yml` lists every test command it runs. The browser tests need the repo served first: `python3 -m http.server 8826 --bind 127.0.0.1` from the repo root, then `node team-form/test/browser.mjs` in another terminal.
 
 ## Outside the repo
 
