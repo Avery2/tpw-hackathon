@@ -130,7 +130,9 @@ try {
     assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    await click('.tpw-member-nav a[href*="team-dashboard/#"]');
+    // Sign out sticks: ?account=org-1 leaves the address and the tabs, or the page signs Org 1 back in.
+    assert(await ev('!location.search.includes("account=") && ![...document.querySelectorAll(".tpw-member-nav a")].some(a => /org-1/.test(a.href))'));
+    await go('/team-dashboard/#org-1');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
     assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));

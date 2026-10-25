@@ -57,6 +57,8 @@ function mountHeader() {
     member.href = url(demoEntryPath());
     nav.querySelectorAll('.tpw-member-link').forEach(node => node.remove());
     member.before(...memberLinks());
+    // The Log data / Dashboard tabs too, or after Sign out they still carry ?account=org-1.
+    if (document.querySelector('.tpw-member-nav')) updateMemberWorkspace(getDemoAccount());
   };
   window.addEventListener('tpw:member-change', refresh);
   window.addEventListener('hashchange', refresh);
