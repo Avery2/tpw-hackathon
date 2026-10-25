@@ -104,6 +104,10 @@ jobs:
 
       # Chrome's first start on a fresh machine can take longer than the 10
       # seconds the browser tests wait for it, so start it once beforehand.
+      # The tests can also read Chrome's port file in the moment before Chrome
+      # has written the port into it. Either way they stop with "Chrome did
+      # not start" before any check runs, so each browser step below tries
+      # once more in that case only. Any other failure fails the step.
       - name: Start Chrome once
         if: ${{ !cancelled() }}
         run: timeout 60 google-chrome --headless=new --no-first-run --dump-dom about:blank > /dev/null 2>&1 || true
@@ -112,10 +116,28 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           CHROME_BIN: /usr/bin/google-chrome
-        run: node team-form/test/browser.mjs
+        run: |
+          for attempt in 1 2; do
+            status=0
+            node team-form/test/browser.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
+            cat "$RUNNER_TEMP/browser.log"
+            [ "$status" -eq 0 ] && exit 0
+            grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"
+            echo "Chrome didn't start in time, so trying once more."
+          done
+          exit 1
 
       - name: Log data and its other forms in a browser
         if: ${{ !cancelled() }}
         env:
           CHROME_BIN: /usr/bin/google-chrome
-        run: node admin/additional-forms/browser.test.mjs
+        run: |
+          for attempt in 1 2; do
+            status=0
+            node admin/additional-forms/browser.test.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
+            cat "$RUNNER_TEMP/browser.log"
+            [ "$status" -eq 0 ] && exit 0
+            grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"
+            echo "Chrome didn't start in time, so trying once more."
+          done
+          exit 1
