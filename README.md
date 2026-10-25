@@ -208,8 +208,8 @@ tabs. Run `python3 scripts/build_additional_forms.py` to compile it, together wi
 receiver's `Config.gs`; do not hand-edit generated configuration. See
 [additional receiver setup](admin/additional-forms/README.md).
 
-Session records (whose form was removed from the site on 25 Oct 2026) still have an
-approved tab in the receiver; quick aggregates and follow-ups use their own approved tabs. A confirmed
+Quick aggregates and follow-ups use their own approved tabs. Session records were removed
+on 25 Oct 2026 and the receiver now refuses them. A confirmed
 receipt is required before success; unchanged retries reuse their record ID. JSON
 download is only a local backup, not a filing. Until the new endpoint is configured,
 these forms must not fall back to the quarterly receiver or GitHub.
