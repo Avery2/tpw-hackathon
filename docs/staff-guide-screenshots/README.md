@@ -9,7 +9,8 @@ Taken on 25 October 2026 from `main`, with headless Chrome at twice the normal p
 | File | What it shows |
 |---|---|
 | `door_menu.png` | Members Login opening the account menu, with the new Intake entry |
-| `door_logdata.png` | The Log data page: Quarterly totals and Session tabs, step 1 of the form |
+| `door_logdata.png` | The Log data page when no one is signed in: Quarterly totals and Session tabs, step 1 of the form |
+| `door_checkin.png` | Log data for a sample organization: the form starts from last quarter's report and asks only for this quarter's numbers |
 | `form_org.png` | Step 1: the organization's name |
 | `form_prisons.png` | Step 2: choosing a prison and its yards |
 | `form_prog_a.png` | Step 3: program name, prisons and yards |
