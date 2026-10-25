@@ -31,8 +31,8 @@ async function renderView(focus = false) {
   const token = ++revision;
   const key = location.hash.slice(1); const view = views[key];
   updateWorkspace(key, 'overview');
-  $('#signin').hidden = Boolean(view); $('#profile-view').hidden = !view;
-  if (!view) { if (focus) $('#signin-heading').focus(); return; }
+  $('#profile-view').hidden = !view;
+  if (!view) return; // updateWorkspace sends visitors to the member entry screen.
   $('#profile-heading').textContent = view.name;
   $('#view-type').textContent = view.admin ? 'TPW overview' : 'Organization';
   $('#view-description').textContent = view.admin ? 'Programs across the TPW network.' : 'Your programs and the places they serve.';

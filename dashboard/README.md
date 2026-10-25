@@ -1,7 +1,21 @@
 # Organization program dashboard
 
-Open `/dashboard/`, then choose Org 1, Org 2, or TPW View.
-The account chooser selects a view; it is not authentication.
+Open `/members/` (**Members Login**), then choose a demo account: Org 1,
+Org 2, or TPW View. This is demo access, **not authentication**; no credentials
+are collected and it does not protect private data. `/dashboard/` opens the
+last demo workspace in this tab, or returns to the member entry screen.
+
+The website header and black TPW footer stay consistent across the home page,
+login, dashboard, programs, check-in, guided form and intake tools. Inside a
+workspace, the shared sidebar includes **Overview**, **Programs**, **Intake**,
+and organization-specific **Quarterly check-in**. On mobile, **Menu** expands
+these links. **Leave demo** clears the selected demo view, not form drafts.
+
+`assets/site-shell.js` and `assets/site-shell.css` own this shared layout;
+`assets/member-session.js` stores only the demo account key in sessionStorage.
+Direct intake links still work without a demo session. Embedded guided forms
+omit their own website chrome and resize inside the parent; printable rosters
+omit website chrome without changing the letter-sized sheet geometry.
 
 - `orgs/org-1` and `orgs/org-2` contain organization names, descriptions, and a program catalog.
 - Submission documents link to organizations with `orgId`. Older entries with only a matching `organization` name are also included, unless linked to a different ID.

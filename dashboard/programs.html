@@ -309,11 +309,20 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 .view-toggle button[aria-pressed="true"] { background: #fff; color: #000; box-shadow: 0 1px 4px #0002; font-weight: 700; }
 </style>
 <link rel="stylesheet" href="./workspace.css">
+<link rel="stylesheet" href="../assets/site-shell.css">
+<script type="module" src="../assets/site-shell.js"></script>
 </head>
 <body>
 
-<header class="workspace-topbar">
-  <a class="workspace-logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+<header class="site-header">
+  <a class="logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+  <nav aria-label="Main navigation">
+    <a href="../site/our-members/">Our Members</a>
+    <a href="../site/ourstory/">Our Story</a>
+    <a href="../site/ourwork/">Our Work</a>
+    <a href="../site/our-team/">Our Team</a>
+    <a class="login" href="../members/">Members Login</a>
+  </nav>
 </header>
 <main class="dashboard-layout choosing-account">
 <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Dashboard workspace" hidden>

@@ -310,11 +310,20 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 @media(max-width: 650px) { .rac-pair { grid-template-columns: 1fr; } }
 </style>
 <link rel="stylesheet" href="./workspace.css">
+<link rel="stylesheet" href="../assets/site-shell.css">
+<script type="module" src="../assets/site-shell.js"></script>
 </head>
 <body>
 
-<header class="workspace-topbar">
-  <a class="workspace-logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+<header class="site-header">
+  <a class="logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+  <nav aria-label="Main navigation">
+    <a href="../site/our-members/">Our Members</a>
+    <a href="../site/ourstory/">Our Story</a>
+    <a href="../site/ourwork/">Our Work</a>
+    <a href="../site/our-team/">Our Team</a>
+    <a class="login" href="../members/">Members Login</a>
+  </nav>
 </header>
 <main class="dashboard-layout choosing-account">
 <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Dashboard workspace" hidden>
@@ -326,14 +335,6 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 <div class="workspace-content">
   <section class="dashboard-heading"><div class="shell"><h1>Overview</h1><p>Your programs. Your community. Your collective impact.</p></div></section>
   <div class="shell dashboard-content">
-    <section id="signin" aria-labelledby="signin-heading">
-      <div class="view-heading"><div><span class="account-label">Demo views</span><h2 id="signin-heading" tabindex="-1">Choose a view</h2><p>This chooser is not authentication. Use synthetic demo data only; do not enter confidential information.</p></div></div>
-      <div class="signin-grid">
-        <a class="signin-option" href="#org-1" aria-label="View Org 1 demo"><span class="option-icon" aria-hidden="true">01</span><span>Org 1</span></a>
-        <a class="signin-option" href="#org-2" aria-label="View Org 2 demo"><span class="option-icon org-two" aria-hidden="true">02</span><span>Org 2</span></a>
-        <a class="signin-option" href="#tpw" aria-label="Open TPW demo view"><span class="option-icon tpw-icon" aria-hidden="true">TPW</span><span>TPW View</span></a>
-      </div>
-    </section>
     <section id="profile-view" aria-labelledby="profile-heading" hidden>
       <div class="view-heading"><div><span class="account-label" id="view-type"></span><h2 id="profile-heading" tabindex="-1"></h2><p id="view-description"></p></div><a class="action switch" href="#">Switch view <span aria-hidden="true">↗</span></a></div>
       <p id="dashboard-status" class="dashboard-status" role="status" hidden></p>
