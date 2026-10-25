@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js';
+import { participantHistory } from './data.js?v=sheet-20261025b';
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {
@@ -37,13 +37,22 @@ export function participantsChart(submissions) {
     svg.append(svgNode('path', { d: line, fill: 'none', stroke: '#5d8d67', 'stroke-width': 3, 'stroke-linejoin': 'round' }));
   }
   const formatDate = day => new Date(day + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  points.forEach((point, i) => {
+  points.forEach(point => {
     const dot = svgNode('circle', { cx: x(point), cy: y(point.participants), r: 6, fill: '#5d8d67', stroke: '#fff', 'stroke-width': 2, tabindex: 0, 'aria-label': `${formatDate(point.day)}: ${point.participants} participant enrollments` });
     dot.append(svgNode('title', {}, `${formatDate(point.day)} · ${point.participants.toLocaleString()} participants`)); svg.append(dot);
-    if (i === 0 || i === points.length - 1 || (points.length > 5 && i % Math.ceil(points.length / 4) === 0)) {
-      svg.append(svgNode('text', { x: x(point), y: height - 16, 'text-anchor': points.length === 1 ? 'middle' : i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle', class: 'chart-axis' }, formatDate(point.day)));
-    }
   });
+  // Date labels by distance, not by count: dates bunched together (several filings in one
+  // week) would otherwise print on top of each other. The last date is always shown.
+  const gap = 170;
+  const lastPoint = points.at(-1);
+  const labels = points.length > 1 && x(lastPoint) - x(points[0]) >= gap ? [points[0]] : [];
+  for (const point of points.slice(1, -1)) {
+    if (labels.length && x(point) - x(labels.at(-1)) >= gap && x(lastPoint) - x(point) >= gap) labels.push(point);
+  }
+  labels.push(lastPoint);
+  for (const point of labels) {
+    svg.append(svgNode('text', { x: x(point), y: height - 16, 'text-anchor': points.length === 1 ? 'middle' : point === lastPoint ? 'end' : point === points[0] ? 'start' : 'middle', class: 'chart-axis' }, formatDate(point.day)));
+  }
   section.append(svg);
   if (points.length === 1) { const note = document.createElement('p'); note.className = 'chart-caption'; note.textContent = 'One reporting date so far. More submissions on later dates will build the trend.'; section.append(note); }
   const details = document.createElement('details'); details.className = 'chart-data';

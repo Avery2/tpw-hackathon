@@ -1519,7 +1519,7 @@ async function prefillFromLastQuarter() {
   organizationStep.hidden = true;
   let draft;
   try {
-    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js'), import('./js/last-quarter.js')]);
+    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=sheet-20261025b'), import('./js/last-quarter.js')]);
     draft = lastQuarterDraft(await loadDashboard(orgId));
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.

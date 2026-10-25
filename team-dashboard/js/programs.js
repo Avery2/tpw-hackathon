@@ -1,6 +1,6 @@
-import { updateWorkspace } from './layout.js';
-import { programCards } from './cards.js';
-import { loadDashboard, existingPrograms } from './data.js';
+import { updateWorkspace } from './layout.js?v=sheet-20261025b';
+import { programCards } from './cards.js?v=sheet-20261025b';
+import { loadDashboard, existingPrograms } from './data.js?v=sheet-20261025b';
 const $ = selector => document.querySelector(selector);
 const views = { 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' };
 const columns = [
