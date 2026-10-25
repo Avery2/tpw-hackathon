@@ -20,8 +20,9 @@ Its measured activity, bounds, published claims and models are explicitly separa
 This change does not restore the unrelated stashed report-builder changes.
 
 The organization PDFs are **synthetic demo previews**, built offline from
-`dashboard/seed_sample_data.py` (October 24, 2026 fixtures). No seed script is run
-against Firebase and no live submissions are read. Current dashboard counts may
+`data/demo/dashboard-sample.json` (base `sample-org-1-1/2` and
+`sample-org-2-1/2` fixtures dated October 24, 2026). Historical and later RAC demo
+examples are not included in this fixed snapshot. No live submissions are read. Current dashboard counts may
 differ; both the callout and PDF state this. These are not real nonprofit annual
 reports and must not be used as evidence of impact. Course hours × completions
 produces participant-hours; enrollments are not unique people. Planned and

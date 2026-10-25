@@ -78,6 +78,16 @@ function mountFooter() {
     document.body.append(footer);
   }
 }
+// Data embeds TPW's private Google Sheet, which holds every organization's numbers, so only the
+// TPW staff view gets the tab; members would only hit Google's sign-in wall. Not access control:
+// Google's sharing still decides who can open the Sheet.
+const seesData = account => account === 'tpw';
+function leaveDataForMembers() {
+  if (!route.includes('raw-data.html') || seesData(activeAccount())) return false;
+  const account = getDemoAccount();
+  location.replace(url(`team-dashboard/${account ? `#${account}` : ''}`));
+  return true;
+}
 // A small horizontal navigation, not a separate application shell.
 export function updateMemberWorkspace(account, page = workspacePage) {
   if (embedded) return;
@@ -93,11 +103,9 @@ export function updateMemberWorkspace(account, page = workspacePage) {
     document.querySelector('.tpw-header').after(nav);
   }
   nav.replaceChildren();
-  for (const [id, label, path] of [
-    ['intake', 'Log data', demoEntryPath(key)],
-    ['overview', 'Dashboard', `team-dashboard/#${key}`],
-    ['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]
-  ]) {
+  const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', `team-dashboard/#${key}`]];
+  if (seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
+  for (const [id, label, path] of tabs) {
     const anchor = link(label, path);
     if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
@@ -144,13 +152,14 @@ function sizeForms() {
 function mount() {
   if (embedded) return;
   if (new URLSearchParams(location.search).has('signout')) clearDemoAccount();
+  if (leaveDataForMembers()) return;
   document.body.classList.add('tpw-site');
   mountHeader(); mountFooter();
   if (intake || guided) mountIntakeWorkspace();
   if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
   sizeForms();
   window.addEventListener('hashchange', () => {
-    if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
+    if (dashboard && !leaveDataForMembers()) updateMemberWorkspace(activeAccount(), workspacePage);
   });
 }
 mount();

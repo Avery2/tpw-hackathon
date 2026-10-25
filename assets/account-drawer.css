@@ -24,3 +24,34 @@ html.tpw-account-open { overflow: hidden !important; }
 .tpw-account-drawer a:focus-visible, .tpw-account-drawer button:focus-visible { outline: 2px solid #555; outline-offset: 4px; }
 .tpw-account-drawer .tpw-account-preview { margin: 20px 0 0; color: #777; font-size: 12px; }
 @media print { .tpw-account-drawer, .tpw-account-drawer::backdrop { display: none !important; } }
+
+/* Copy of TPW's own sign-in box (thetpw.org/account/login), measured 25 Oct 2026:
+   480px white box, 44px padding, 4px corners, soft shadow over a 30% dark backdrop,
+   #3e3e3e text and button. Clarkson is Squarespace's font; the fallbacks are theirs too. */
+.tpw-signin { box-sizing: border-box; width: min(480px, calc(100vw - 32px)); max-width: none; margin: auto; padding: 44px 44px 22px; border: 0; border-radius: 4px; background: #fff; color: #3e3e3e; box-shadow: 0 2px 114px rgb(0 0 0 / 30%); font: 300 13px/1.5 Clarkson, 'Proxima Nova', 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif; text-align: center; }
+.tpw-signin::backdrop { background: rgb(0 0 0 / 30%); }
+.tpw-signin * { box-sizing: border-box; }
+.tpw-signin h2 { margin: 0 0 22px; color: #3e3e3e; font-family: inherit; font-size: 24px; font-weight: 400; line-height: 1.7; letter-spacing: 0; }
+.tpw-signin input { display: block; width: 100%; margin: 0; padding: 13px 11px; border: 1px solid transparent; border-radius: 0; color: #000; font: inherit; text-align: left; }
+.tpw-signin .tpw-signin-email { background: #f7f7f7; }
+.tpw-signin .tpw-signin-email:focus { outline: none; border-color: #3e3e3e; }
+.tpw-signin .tpw-signin-password { background: #fff; border-bottom-color: #e6e6e6; padding-left: 0; padding-right: 0; }
+.tpw-signin .tpw-signin-password:disabled { color: #999; cursor: not-allowed; }
+.tpw-signin button { width: auto; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.tpw-signin .tpw-signin-submit { display: block; width: 100%; height: 44px; margin-top: 18px; padding: 11px; border-radius: 3px; background: #3e3e3e; color: #fff; font-weight: 500; }
+.tpw-signin .tpw-signin-submit:hover { background: #2b2b2b; }
+.tpw-signin .tpw-signin-message { min-height: 0; margin: 10px 0 0; color: #a33; font-size: 12px; }
+.tpw-signin .tpw-signin-message:empty { display: none; }
+.tpw-signin .tpw-signin-links { margin: 14px 0 0; font-size: 12px; }
+.tpw-signin .tpw-signin-links button { padding-right: 11px; }
+.tpw-signin .tpw-signin-links button:last-child { padding-right: 0; }
+.tpw-signin .tpw-signin-links button:hover { text-decoration: underline; }
+.tpw-signin .tpw-signin-demo { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid #eee; }
+.tpw-signin .tpw-signin-demo p { width: 100%; margin: 0 0 2px; color: #777; font-size: 12px; }
+.tpw-signin .tpw-signin-demo button { padding: 8px 14px; border: 1px solid #d6d6d6; border-radius: 3px; font-size: 13px; font-weight: 500; }
+.tpw-signin .tpw-signin-demo button:hover { border-color: #3e3e3e; }
+.tpw-signin .tpw-signin-close { position: absolute; top: 14px; right: 16px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.tpw-signin a:focus-visible, .tpw-signin button:focus-visible { outline: 2px solid #555; outline-offset: 3px; }
+.tpw-signin .tpw-account-preview { margin: 18px 0 0; color: #777; font-size: 12px; }
+@media (max-width: 480px) { .tpw-signin { padding: 36px 22px 18px; } }
+@media print { .tpw-signin, .tpw-signin::backdrop { display: none !important; } }

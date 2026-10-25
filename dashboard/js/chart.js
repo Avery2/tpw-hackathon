@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js?v=impact-1';
+import { participantHistory } from './data.js?v=sheet-20261025b';
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {
   const node = document.createElementNS(NS, tag);
@@ -37,7 +37,7 @@ export function participantsChart(submissions) {
     for (const [key, button] of buttons) button.setAttribute('aria-pressed', String(key === mode));
     content.replaceChildren();
     const latest = document.createElement('strong'); latest.className = 'chart-current';
-    latest.textContent = points.length ? impact ? `${points.at(-1).racDays.toLocaleString()} estimated credit days` : rate ? rateText(points.at(-1).completionRate) : points.at(-1).participants.toLocaleString() : 'No history yet';
+    latest.textContent = points.length ? impact ? `${points.at(-1).racDays.toLocaleString()} credit days, at most` : rate ? rateText(points.at(-1).completionRate) : points.at(-1).participants.toLocaleString() : 'No history yet';
     const caption = document.createElement('p'); caption.className = 'chart-caption';
     caption.textContent = 'Latest reported program data for each quarter. Select a metric to explore its trend.';
     content.append(latest, caption);
@@ -93,8 +93,8 @@ function renderImpact(content, points, formatDate) {
   const first=Date.parse(points[0].day), last=Date.parse(points.at(-1).day);
   const x=p=>first===last ? (left+width-right)/2 : left+(Date.parse(p.day)-first)/(last-first)*(width-left-right);
   const y=days=>height-bottom-days/ceiling*(height-top-bottom);
-  const svg=svgNode('svg',{viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':`Estimated RAC credit days over time. Latest: ${points.at(-1).racDays} days.`});
-  svg.append(svgNode('text',{x:left,y:18,fill:'#5d8d67',class:'chart-axis'},'Estimated RAC credit days'));
+  const svg=svgNode('svg',{viewBox:`0 0 ${width} ${height}`,role:'img','aria-label':`Credit days participants could have earned over time, upper limit. Latest: ${points.at(-1).racDays} days.`});
+  svg.append(svgNode('text',{x:left,y:18,fill:'#5d8d67',class:'chart-axis'},'Credit days participants could have earned (upper limit)'));
   for(let i=0;i<=4;i++){
     const days=step*i;
     svg.append(svgNode('line',{x1:left,x2:width-right,y1:y(days),y2:y(days),stroke:'#e3e9df'}));
@@ -108,15 +108,15 @@ function renderImpact(content, points, formatDate) {
   points.forEach((p,i)=>{
     const attrs={cx:x(p),cy:y(p.racDays),class:'chart-dot-enter',style:`animation-delay:${120+i*25}ms`};
     svg.append(svgNode('circle',{...attrs,r:6,fill:'#5d8d67',stroke:'#fff','stroke-width':2}));
-    const dot=svgNode('circle',{...attrs,r:6,fill:'#5d8d67',tabindex:0,'aria-label':`${formatDate(p.day)}: ${p.racDays} estimated credit days`});
-    dot.append(svgNode('title',{},`${formatDate(p.day)} · ${p.racDays.toLocaleString()} RAC days`));svg.append(dot);
+    const dot=svgNode('circle',{...attrs,r:6,fill:'#5d8d67',tabindex:0,'aria-label':`${formatDate(p.day)}: ${p.racDays} credit days, at most`});
+    dot.append(svgNode('title',{},`${formatDate(p.day)} · ${p.racDays.toLocaleString()} credit days, at most`));svg.append(dot);
   });
   appendDateLabels(svg, points, x, height);
   content.append(svg);
   const details=document.createElement('details');details.className='chart-data';
   const summary=document.createElement('summary');summary.textContent='View chart data';details.append(summary);
   const table=document.createElement('table');const head=document.createElement('thead');const row=document.createElement('tr');
-  for(const text of ['Submission date','Estimated RAC days']){const th=document.createElement('th');th.scope='col';th.textContent=text;row.append(th);}head.append(row);table.append(head);
+  for(const text of ['Submission date','Credit days, at most']){const th=document.createElement('th');th.scope='col';th.textContent=text;row.append(th);}head.append(row);table.append(head);
   const body=document.createElement('tbody');
   for(const p of points){const tr=document.createElement('tr');for(const text of [formatDate(p.day),p.racDays.toLocaleString()]){const td=document.createElement('td');td.textContent=text;tr.append(td);}body.append(tr);}table.append(body);details.append(table);content.append(details);
 }

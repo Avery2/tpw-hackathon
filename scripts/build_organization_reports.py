@@ -7,7 +7,7 @@ Uses the dashboard's checked-in demo fixtures, not live submissions. Requires Ch
 The combined TPW PDF is a separately preserved prototype, not built by this script.
 """
 import html
-import importlib.util
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -16,17 +16,17 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'report' / 'organizations'
 CHROME = os.environ.get('CHROME_BIN', '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome')
-spec = importlib.util.spec_from_file_location('demo_fixtures', ROOT / 'dashboard/seed_sample_data.py')
-fixtures = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(fixtures)
+SOURCE = ROOT / 'data/demo/dashboard-sample.json'
 
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
-    records = list(fixtures.fixtures())
+    records = json.loads(SOURCE.read_text())['submissions']
     for key in ('org-1', 'org-2'):
-        submissions = [data for path, data in records if path.startswith('submissions/') and data['orgId'] == key]
-        assert submissions and all(data['synthetic'] for data in submissions)
+        # Keep the original base-fixture snapshot, not later history or RAC examples.
+        # This dedicated demo file is explicitly fictional; it is never a live export.
+        submissions = [data for data in records if data['id'] in (f'sample-{key}-1', f'sample-{key}-2')]
+        assert len(submissions) == 2 and all(data['orgId'] == key for data in submissions)
         programs = [p for data in submissions for p in data['programs']]
         enrolled = sum(p['participants'] for p in programs)
         completed = sum(p['participantsCompleted'] for p in programs)
@@ -51,7 +51,7 @@ main{{padding:28px 38px}}header img{{width:150px}}header{{padding-bottom:12px}}h
 <table><thead><tr><th>Program / status</th><th>Facility</th><th>Enrolled</th><th>Completed</th><th>Course hours</th><th>Participant-hours</th></tr></thead><tbody>{rows}</tbody></table>
 <h2>Completion by program · demo figures</h2>{bars}
 <p><b>{completed} of {enrolled} enrollments completed ({completed / enrolled:.1%}).</b> Includes planned and in-progress programs, so this is a snapshot ratio, not a final annual completion rate.</p>
-<div class="note"><b>What these numbers do—and do not—tell us</b><p>Enrollments count program places, not unique people. Participant-hours equal completions × course hours; partial attendance is not measured. These activity figures do not establish changes in return to prison, release dates, or public savings.</p><p><b>Source:</b> dashboard/seed_sample_data.py, synthetic Org {key[-1]} fixtures. Live data was not used. This public prototype contains no real member organization’s private report.</p></div>
+<div class="note"><b>What these numbers do—and do not—tell us</b><p>Enrollments count program places, not unique people. Participant-hours equal completions × course hours; partial attendance is not measured. These activity figures do not establish changes in return to prison, release dates, or public savings.</p><p><b>Source:</b> data/demo/dashboard-sample.json, base sample-{key}-1/2 fixtures. Live data was not used. This public prototype contains no real member organization’s private report.</p></div>
 <footer><span>Transformative Programming Works · Hack for Social Impact prototype</span><span>2026 · {name} · 1 / 1</span></footer></main></html>'''
         source = OUT / f'{key}-annual-report-2026.html'
         pdf = OUT / f'{key}-annual-report-2026.pdf'
