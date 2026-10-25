@@ -681,11 +681,19 @@ if (staffView) {
     ['#organization-question', 'Which organization are you logging data for?'],
     ['#organization-help', 'Pick the organization from the list so their numbers are submitted under one name. If it isn’t listed, type it in full.'],
     ['#prisons-heading', 'Their facilities'],
-    ['#facility-help', 'Select each facility where they operate, then check all the yards they work in at that facility.']
+    ['#facility-help', 'Select each facility where they operate, then check all the yards they work in at that facility.'],
+    ['#facilities-question', 'Which facilities do they operate in?'],
+    ['#programs-question', 'What programs do they run?']
   ]) for (const node of document.querySelectorAll(selector)) node.textContent = text;
   // The label beside Edit facilities, not the organization line on each program card.
   const sideLabel = document.querySelector('#edit-prisons')?.previousElementSibling;
   if (sideLabel) sideLabel.textContent = 'Their facilities & yards';
+  // Each program card is copied from this template, so word it once here.
+  const fields = document.querySelector('#program-fields')?.content;
+  fields?.querySelector('#program-name')?.setAttribute('placeholder', 'Enter the program name');
+  const notesLabel = fields?.querySelector('label[for="program-notes"]');
+  if (notesLabel) notesLabel.firstChild.textContent = 'Anything else TPW should know about this program? ';
+  fields?.querySelector('#program-notes')?.setAttribute('placeholder', 'Any context about this program');
 }
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
@@ -1444,7 +1452,7 @@ async function sendToBackend(payload) {
     body: JSON.stringify({ token, payload })
   }).then(response => response.json());
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = 'Submitting sends your answers to TPW.';
+if (backendUrl()) document.querySelector('#where-it-goes').textContent = (staffView ? 'Submitting sends these answers to TPW.' : 'Submitting sends your answers to TPW.');
 
 document.querySelector('#start-over').addEventListener('click', () => location.reload());
 
@@ -1551,7 +1559,7 @@ async function prefillFromLastQuarter() {
   const orgId = params.get('account');
   if (!orgId || orgId === 'tpw' || params.get('blank') === '1') return;
   const note = document.createElement('div'); note.className = 'prefill-note'; note.setAttribute('role', 'status');
-  note.textContent = 'Loading what you reported last time…'; form.prepend(note);
+  note.textContent = staffView ? 'Loading what they reported last time…' : 'Loading what you reported last time…'; form.prepend(note);
   organizationStep.hidden = true;
   let draft;
   try {
@@ -1560,7 +1568,7 @@ async function prefillFromLastQuarter() {
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.
     console.error('Last-quarter prefill failed:', error);
-    showWithContact(note, 'We couldn’t load what you reported last time, so this form starts blank.', 'If your programs should be here, email');
+    showWithContact(note, staffView ? 'We couldn’t load what they reported last time, so this form starts blank.' : 'We couldn’t load what you reported last time, so this form starts blank.', staffView ? 'If their programs should be here, email' : 'If your programs should be here, email');
     organizationStep.hidden = false;
     return;
   }
@@ -1608,7 +1616,7 @@ async function prefillFromLastQuarter() {
   document.querySelector('#program-next-heading').textContent = staffView ? 'Their programs this quarter' : 'Your programs this quarter';
   reportingPeriod();
   // The prisons screen is still there behind "Edit prisons", worded for this case.
-  document.querySelector('#facilities-question').textContent = 'Have any of the facilities you operate in changed?';
+  document.querySelector('#facilities-question').textContent = staffView ? 'Have any of the facilities they operate in changed?' : 'Have any of the facilities you operate in changed?';
   document.querySelector('#facility-help').textContent = '';
   document.querySelector('#continue-programs').textContent = 'Continue →';
   // What changes every quarter is the numbers, not the facilities, so open straight on the first
@@ -1617,7 +1625,8 @@ async function prefillFromLastQuarter() {
   programsStep.hidden = false;
   document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
   document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a facility…"
-  note.textContent = `We’ve filled in your ${draft.prisons.length} ${draft.prisons.length === 1 ? 'facility' : 'facilities'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from your last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a facility, use Edit facilities. `;
+  const their = staffView ? 'their' : 'your';
+  note.textContent = `We’ve filled in ${their} ${draft.prisons.length} ${draft.prisons.length === 1 ? 'facility' : 'facilities'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from ${their} last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a facility, use Edit facilities. `;
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);
