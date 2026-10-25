@@ -90,24 +90,21 @@ try{
  await open();await fill('Retry preserves context');failNextPost=true;before=posts.length;await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('Couldn’t reach')`);await clickFinish();await success();assert.equal(posts.length,before+2);assert.equal(posts[before].payload.submissionId,posts[before+1].payload.submissionId);assert.equal(posts.at(-1).payload.programs[0].notes,'Retry preserves context');console.log('PASS network failure preserves notes and retry ID');
  await open();await evaluate(`const p=document.querySelector('#program-list > section');p.querySelector('[id$="-program-name"]').value='SYNTHETIC';p.querySelector('[id$="-scheduled-status"]').value='In Progress';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('textarea').value='x'.repeat(2001);p.querySelector('.continue-button').click();`);assert(await evaluate(`document.querySelector('#program-next').hidden`));console.log('PASS oversized optional context is rejected');
  await send('Page.navigate',{url:base+'/intake/simple.html'});await wait(`!!document.querySelector('iframe')?.contentDocument?.querySelector('#quarter-summary')?.textContent`);assert(await evaluate(`!document.querySelector('iframe').contentDocument.querySelector('#quarter-step')`));console.log('PASS embedded intake uses slim form');
- // Seed the old unversioned URL before loading the updated Session page.
+ // Seed the old unversioned URL before loading the updated Log data page.
  assert((await evaluate(`fetch('/intake/js/simple.js').then(r=>r.text())`)).includes('__legacySessionHandlerLoaded'));
+ // The Session form was removed on 25 Oct 2026 (it recorded a coded ID per person).
+ // An old #session link must land on Quarterly totals and post nothing.
  for(const width of [1280,390]){
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
-  await send('Page.navigate',{url:base+'/intake/simple.html?record-test='+width+'#session'});
-  await wait(`!!document.querySelector('#f-org')`);
-  assert(await evaluate(`!window.__legacySessionHandlerLoaded&&document.querySelector('script[src*="js/simple.js"]').src.includes('?v=sheets-20261025')`));
-  assert(await evaluate(`!document.querySelector('[data-act=token]')&&!document.body.textContent.includes('separate GitHub ledger')`));
-  await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-program').value='SYNTHETIC SESSION';document.querySelector('#f-facility').value=document.querySelector('#facilities option').value;document.querySelector('#f-session_date').value='2026-10-25';document.querySelector('#f-present_count').value='3';`);
-  await evaluate(`window.tpwSession={token:'QUARTERLY_AUTH_MUST_NOT_LEAK'}`);
   const before=posts.length;
-  if(width===1280){supportsRecords=false;await evaluate(`document.querySelector('form').requestSubmit()`);await wait(`document.querySelector('.toast.bad')?.textContent.includes('not the standalone additional-forms receiver')`);assert.equal(posts.length,before);supportsRecords=true;failNextPost=true;await evaluate(`document.querySelector('form').requestSubmit()`);await wait(`!document.querySelector('[type=submit]').disabled`);assert.equal(posts.length,before+1);assert.equal(await evaluate(`document.querySelector('#f-present_count').value`),'3');await evaluate(`document.querySelector('#f-notes').value='SYNTHETIC CORRECTION'`);}
-  await evaluate(`document.querySelector('form').requestSubmit()`);await wait(`!!document.querySelector('.done')`);
-  assert.equal(posts.at(-1).action,'submitRecord');assert.equal(posts.at(-1).payload.present_count,3);assert.equal(posts.at(-1).payload.kind,'session');
-  assert(await evaluate(`document.querySelector('.done').textContent.includes('Session records')&&document.querySelector('.done').textContent.includes('MOCK-RECORD-ONLY')`));
-  if(width===1280){assert.equal(posts[before].payload.id,posts[before+1].payload.id);assert.equal(posts[before].payload.submitted_at,posts[before+1].payload.submitted_at);assert.equal(posts[before+1].payload.notes,'SYNTHETIC CORRECTION');}
+  await send('Page.navigate',{url:base+'/intake/simple.html?record-test='+width+'#session'});
+  await wait(`!!document.querySelector('#tabs a')&&!!document.querySelector('iframe')`);
+  assert(await evaluate(`!window.__legacySessionHandlerLoaded&&document.querySelector('script[src*="js/simple.js"]').src.includes('?v=no-session-20261025')`));
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#tabs a')].map(a=>a.textContent)`),['Quarterly totals']);
+  assert(await evaluate(`!document.querySelector('#f-present_count')&&!document.querySelector('.ways')&&!document.querySelector('a[href$="sheet.html"],a[href$="scan.html"],a[href$="upload.html"]')`));
+  assert.equal(posts.length,before);
   assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));
-  console.log('PASS stale GitHub module bypassed; Session saves to Sheets and confirms receipt; width:',width);
+  console.log('PASS Session form removed: #session lands on Quarterly totals; width:',width);
  }
  await send('Page.navigate',{url:base+'/intake/simple.html#followup'});await wait(`!!document.querySelector('#f-token')`);
  await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-token').value='M78';document.querySelector('#f-release_date').value='2026-08-01';document.querySelector('[name=status][value=new_conviction]').click();document.querySelector('#f-days').value='20';document.querySelector('[name=status][value=unknown]').click();document.querySelector('form').requestSubmit();`);
@@ -115,11 +112,8 @@ try{
  await send('Page.navigate',{url:base+'/intake/simple.html#aggregate'});await wait(`!!document.querySelector('#f-served')`);
  await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-program').value='SYNTHETIC QUARTER';document.querySelector('#f-facilities').value=document.querySelector('#facilities option').value;document.querySelector('[data-act=add-facility]').click();document.querySelector('#f-quarter').value='2026-Q4';document.querySelector('#f-served').value='10';document.querySelector('#f-completed').value='7';document.querySelector('form').requestSubmit();`);
  await wait(`!!document.querySelector('.done')`);assert.equal(posts.at(-1).payload.kind,'aggregate');assert.equal(posts.at(-1).payload.facilities.length,1);console.log('PASS older Quarter form also uses the same workbook');
- await send('Page.navigate',{url:base+'/intake/scan.html'});await wait(`!!document.querySelector('#file')`);
- await evaluate(`(async()=>{const canvas=document.createElement('canvas');canvas.width=500;canvas.height=500;canvas.getContext('2d').fillRect(0,0,500,500);const blob=await new Promise(resolve=>canvas.toBlob(resolve));const transfer=new DataTransfer();transfer.items.add(new File([blob],'synthetic.png',{type:'image/png'}));const input=document.querySelector('#file');input.files=transfer.files;input.dispatchEvent(new Event('change'));})()`);
- await wait(`!!document.querySelector('#f-present')`);
- await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-program').value='SYNTHETIC SCAN';document.querySelector('#f-facility').value=document.querySelector('datalist option').value;document.querySelector('#f-date').value='2026-10-25';document.querySelector('#f-present').value='7';document.querySelector('#manual-file').click();`);
- await wait(`!!document.querySelector('.done')`);assert.equal(posts.at(-1).payload.present_count,7);assert.equal(posts.at(-1).payload.source,'scan-manual');assert.equal(posts.at(-1).payload.present,undefined);assert.equal(posts.at(-1).payload.roster,undefined);
- console.log('PASS manual scanner files positive attendance without nonexistent roster IDs');
+ // The printable roster, sheet scanner and packet reader were removed on 25 Oct 2026.
+ for(const page of ['sheet','scan','upload']){await send('Page.navigate',{url:base+'/intake/'+page+'.html'});await wait(`location.pathname.endsWith('/intake/simple.html')`);}
+ console.log('PASS removed roster, scanner and packet pages redirect to Log data');
  assert.deepEqual(exceptions,[]);console.log('PASS browser checks: zero unhandled exceptions, zero live Google requests');
 }finally{socket?.close();chrome.kill();await new Promise(resolve=>{if(chrome.exitCode!==null)resolve();else{chrome.once('exit',resolve);setTimeout(resolve,3000);}});await rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:200});}

@@ -128,17 +128,18 @@ The shared TPW header/footer remain visible throughout. Real sign-in is deferred
 authentication** and does not protect private data. Use synthetic demo data only.
 See `form-demo/README.md` and `dashboard/README.md`.
 
-Four small pages, no build step or application server. The browser holds the
-arithmetic; the separate additional-forms Apps Script receiver appends quick records
-to private Google Sheet tabs once configured. No account is required in unsigned demo mode (synthetic data only).
-Packet-profile upload is still a legacy GitHub-backed route.
+No build step or application server. The browser holds the arithmetic; the separate
+additional-forms Apps Script receiver appends quick records to private Google Sheet tabs.
+No account is required in unsigned demo mode (synthetic data only).
 
 | Page | What it is |
 |---|---|
-| `intake/simple.html` | three single-screen forms — a week, a quarter, a follow-up |
-| `intake/sheet.html` | prints a session roster with participant IDs pre-printed and a QR anchor |
-| `intake/scan.html` | photograph a filled sheet; it reads which boxes are ticked |
-| `intake/upload.html` | read a partner's packet (PDF) into the same shapes |
+| `intake/simple.html` | Log data: the Quarterly totals tab, plus the follow-up (`#followup`) and older quick quarter (`#aggregate`) forms, which have no tab |
+
+**Removed on 25 Oct 2026:** the Session tab, the printable session roster (`intake/sheet.html`),
+the sheet scanner (`intake/scan.html`) and the packet reader (`intake/upload.html`). The roster
+and scanner recorded a coded ID per person, which TPW asked us not to collect, and there was no
+time to secure them. The three pages now redirect to Log data; their code is in git history.
 
 The old cycle wizard — five steps, a HMAC join spine, a ledger and an impact view — has been
 removed. It asked organizations to file a program *cycle*, which turned out to be the wrong
@@ -155,7 +156,7 @@ included automatically.
 
 | Path | Who it is for | Produces |
 |---|---|---|
-| **Session sheets + scan** (`intake/sheet.html`, `intake/scan.html`) | organizations that run a room | per-person attendance |
+| ~~**Session sheets + scan**~~ (removed 25 Oct 2026) | organizations that run a room | per-person attendance |
 | **Quarterly totals** (`intake/simple.html#aggregate`) | organizations that already count their own numbers | one aggregate row per program-quarter, across one or many facilities |
 | **Follow-up** (`intake/simple.html#followup`) | anyone who hears what happened after release | one outcome per participant ID |
 
@@ -206,8 +207,8 @@ tabs. Run `python3 scripts/build_additional_forms.py` to compile it, together wi
 receiver's `Config.gs`; do not hand-edit generated configuration. See
 [additional receiver setup](admin/additional-forms/README.md).
 
-Typed Sessions, roster scans and photo-counted Sessions share the new receiver's
-Session tab; quick aggregates and follow-ups use their own approved tabs. A confirmed
+Session records (whose form was removed from the site on 25 Oct 2026) still have an
+approved tab in the receiver; quick aggregates and follow-ups use their own approved tabs. A confirmed
 receipt is required before success; unchanged retries reuse their record ID. JSON
 download is only a local backup, not a filing. Until the new endpoint is configured,
 these forms must not fall back to the quarterly receiver or GitHub.

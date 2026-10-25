@@ -9,7 +9,7 @@ Taken on 25 October 2026 from `main`, with headless Chrome at twice the normal p
 | File | What it shows |
 |---|---|
 | `door_menu.png` | Members Login opening the account menu, with the new Intake entry |
-| `door_logdata.png` | The Log data page when no one is signed in: Quarterly totals and Session tabs, step 1 of the form |
+| `door_logdata.png` | The Log data page when no one is signed in, step 1 of the form. Taken before the Session tab was removed (25 Oct 2026), so it still shows that tab |
 | `door_checkin.png` | Log data for a sample organization: the form starts from last quarter's report and asks only for this quarter's numbers |
 | `form_org.png` | Step 1: the organization's name |
 | `form_prisons.png` | Step 2: choosing a prison and its yards |
@@ -20,7 +20,7 @@ Taken on 25 October 2026 from `main`, with headless Chrome at twice the normal p
 | `form_receipt.png` | The receipt after a successful submission |
 | `form_error_numbers.png` | The message when completed is higher than started |
 | `form_error_connection.png` | The message when the connection drops on submit |
-| `session_tab.png` | The Session tab (an extra feature) |
+| `session_tab.png` | The Session tab. **Removed from the site on 25 Oct 2026; don't use this picture** |
 | `dashboard.png` | The Dashboard page, which shows sample data only |
 | `datapage.png` | The Data page: the Google Sheet shown inside the website |
 | `sheet_strip_a.png`, `sheet_strip_b.png`, `sheet_strip_c.png` | The main tab's columns A to G, H to M and N to R, first rows |
