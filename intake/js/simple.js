@@ -29,8 +29,12 @@ const shortDate = (iso) => {
 function toast(message, tone = '') {
   const el = document.createElement('div');
   el.className = `toast ${tone}`;
-  el.textContent = message;
+  // Errors interrupt; everything else waits its turn.
+  el.setAttribute('role', tone === 'bad' ? 'alert' : 'status');
   document.body.appendChild(el);
+  // Text goes in after the live region is in the page, or some screen readers
+  // never notice it arrived.
+  setTimeout(() => (el.textContent = message), 50);
   setTimeout(() => el.remove(), 4200);
 }
 
