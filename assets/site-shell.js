@@ -8,7 +8,7 @@ const embedded = new URLSearchParams(location.search).has('embed');
 const dashboard = route.startsWith('dashboard/');
 const intake = route.startsWith('intake/');
 const guided = route.startsWith('form-demo/');
-let workspacePage = dashboard ? route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
+let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -90,7 +90,8 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   nav.replaceChildren();
   for (const [id, label, path] of [
     ['intake', 'Log data', demoEntryPath(key)],
-    ['overview', 'Overview', `dashboard/#${key}`]
+    ['overview', 'Dashboard', `dashboard/#${key}`],
+    ['raw-data', 'Raw data', `dashboard/raw-data.html#${key}`]
   ]) {
     const anchor = link(label, path);
     if (page === id) anchor.setAttribute('aria-current', 'page');

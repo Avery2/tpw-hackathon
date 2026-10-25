@@ -19,6 +19,22 @@ try {
   socket = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise(resolve => socket.addEventListener('open', resolve, { once: true }));
   let sequence = 0; const pending = new Map(), exceptions = [], requests = [], submissions = [];
+  // Mock the Firebase client, not the dashboard's rendering or data calculations.
+  const dashboardFixture = `export async function firestoreClient() {
+    const org = { id: 'org-1', name: 'SYNTHETIC DASHBOARD ORG' };
+    const records = [{ id: 'fixture', orgId: org.id, organization: org.name,
+      submittedAt: '2026-10-01T12:00:00Z', synthetic: true,
+      programs: [{ id: 'fixture-program', name: 'Synthetic program', status: 'Completed',
+        participants: 5, participantsCompleted: 4, courseHours: 52,
+        assignments: [{ code: 'SQ', yards: ['North'] }] }] }];
+    return { db: {}, doc: (_, name, id) => ({ name, id }),
+      getDoc: async ref => ({ id: ref.id, exists: () => true, data: () => ({ ...org, id: ref.id }) }),
+      collection: (_, name) => ({ name }), where: (field, op, value) => ({ field, value }),
+      query: (collection, ...filters) => ({ ...collection, filters }),
+      getDocs: async request => ({ docs: (request.name === 'orgs' ? [org] : records.filter(row =>
+        (request.filters || []).every(filter => row[filter.field] === filter.value)))
+        .map(row => ({ id: row.id, data: () => row })) }) };
+  }`;
   const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++sequence; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
   socket.addEventListener('message', async event => {
     const m = JSON.parse(event.data);
@@ -28,6 +44,7 @@ try {
     if (m.method === 'Fetch.requestPaused') {
       const { requestId, request } = m.params;
       if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
+      else if (new URL(request.url).pathname.endsWith('/form-demo/js/submissions.js')) await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/javascript' }], body: Buffer.from(dashboardFixture).toString('base64') });
       else await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
     }
   });
@@ -42,7 +59,7 @@ try {
   };
   const screenshot = async name => { const image = await send('Page.captureScreenshot', { format: 'png' }); await writeFile(path.join(process.env.MEMBER_SCREENSHOT_DIR || tmpdir(), `tpw-${name}.png`), Buffer.from(image.data, 'base64')); };
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
-  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }] });
+  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/form-demo/js/submissions.js' }] });
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     for (const route of ['/', '/site/ourstory/index.html', '/site/our-members/index.html', '/site/ourwork/index.html', '/site/our-team/index.html']) {
@@ -65,7 +82,7 @@ try {
       await click('.tpw-header .login,a.user-accounts-text-link'); await wait('document.querySelector(".tpw-account-drawer").open');
       await click('.tpw-account-intake');
       await wait('location.pathname.endsWith("/intake/simple.html")&&!!document.querySelector("iframe")?.contentDocument?.querySelector("#organization")');
-      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Overview']);
+      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Raw data']);
       const left = await ev('document.querySelector(".tpw-header .logo").getBoundingClientRect().left');
       assert(Math.abs(await ev('document.querySelector("iframe").getBoundingClientRect().left') - left) < 2);
       const frameWidth = await ev('document.querySelector("iframe").getBoundingClientRect().width');
@@ -90,22 +107,49 @@ try {
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
     if (width >= 900) assert.equal(await ev('document.querySelector("[data-key=org]").getBoundingClientRect().top'), await ev('document.querySelector("[data-key=program]").getBoundingClientRect().top'));
-    await click('.tpw-member-nav a[href*="dashboard/"]'); await wait('!!document.querySelector(".overview-sheet")');
+    await click('.tpw-member-nav a[href*="dashboard/#"]');
+    await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
+    assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
+    assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("not connected to the Google Sheet")'));
+    assert.deepEqual(await ev('[...document.querySelectorAll(".program-stats strong")].map(n=>n.textContent)'), ['1', '1', '1']);
+    assert.equal(await ev('document.querySelector(".chart-latest").textContent'), '5 participants');
+    assert.deepEqual(await ev('[...document.querySelectorAll(".rac-total")].map(n=>n.textContent)'), ['40', '$2,360']);
+    assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Dashboard');
+    assert(await ev('!document.querySelector(".overview-sheet") && document.documentElement.scrollWidth<=innerWidth'));
+    console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
+    if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
+    const beforeRaw = requests.length;
+    await click('.tpw-member-nav a[href*="raw-data.html"]');
+    await wait('!!document.querySelector("h1") && !!document.querySelector(".overview-sheet")').catch(async error => {
+      console.error(await ev('JSON.stringify({url:location.href,h1:document.querySelector("h1")?.textContent,sheet:!!document.querySelector(".overview-sheet"),body:document.body.innerHTML.slice(0,300)})'));
+      throw error;
+    });
+    assert.equal(await ev('document.querySelector("h1").textContent'), 'Raw data');
+    assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Raw data');
+    assert(await ev('document.querySelector("#sheet-access").textContent.includes("Google Sheet data, embedded")'));
+    assert(!requests.slice(beforeRaw).some(url => /dashboard\/js\/main\.js|firestore\.googleapis\.com/.test(url)));
     assert.equal(await ev('document.querySelector(".overview-sheet").src'), 'https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/preview?gid=0');
     assert.equal(await ev('document.querySelector(".sheet-heading a").target'), '_blank');
     assert(await ev('document.querySelector(".sheet-heading a").href.includes("/edit?gid=0#gid=0")'));
     assert(await ev('!document.querySelector("#profile-view,#impact-view,.impact-card")'));
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    console.log('PASS embedded Sheet and always-available direct link; no bespoke charts:', width);
+    console.log('PASS separate Raw data Sheet embed and direct link, without dashboard modules:', width);
+    await click('.tpw-member-nav a[href*="dashboard/#"]');
+    await wait('!!document.querySelector(".participants-chart svg")');
   }
+  await go('/dashboard/'); await wait('!!document.querySelector(".participants-chart svg")');
+  assert(await ev('location.pathname.endsWith("/dashboard/")'));
+  await go('/dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
+  assert(await ev('!!document.querySelector(".rac-panel")'));
   await go('/intake/sheet.html'); await wait('!!document.querySelector(".tpw-member-nav")');
   await send('Emulation.setEmulatedMedia', { media: 'print' });
   assert.equal(await ev('getComputedStyle(document.querySelector(".tpw-member-nav")).display'), 'none');
   assert.equal(await ev('document.querySelector(".page").getBoundingClientRect().width'), 816);
   assert.equal(await ev('getComputedStyle(document.querySelector(".page")).transform'), 'none');
-  assert(!requests.some(url => /firestore\.googleapis\.com|dashboard\/js\/main\.js/.test(url)));
+  assert(requests.some(url => /dashboard\/js\/main\.js/.test(url)));
+  assert(!requests.some(url => /firestore\.googleapis\.com/.test(url)));
   assert.deepEqual(submissions, []); assert.deepEqual(exceptions, []);
-  console.log('PASS print geometry, no Firebase/chart loads, no exceptions, zero live submissions.');
+  console.log('PASS default and coalition dashboard routes, print geometry, no exceptions, zero live submissions.');
 } finally {
   socket?.close(); chrome.kill();
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else { chrome.once('exit', resolve); setTimeout(resolve, 3000); } });

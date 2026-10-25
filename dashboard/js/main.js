@@ -1,4 +1,5 @@
 import { updateWorkspace } from './layout.js';
+import { getDemoAccount } from '../../assets/member-session.js';
 import { racPanel } from './rac.js';
 import { participantsChart } from './chart.js';
 import { loadDashboard, existingPrograms } from './data.js';
@@ -25,7 +26,7 @@ function renderPrograms(data, admin) {
 
 async function renderView(focus = false) {
   const token = ++revision;
-  const key = location.hash.slice(1); const view = views[key];
+  const key = location.hash.slice(1) || getDemoAccount() || 'org-1'; const view = views[key];
   updateWorkspace(key, 'overview');
   $('#profile-view').hidden = !view;
   if (!view) return; // Old entry points return directly to logging.

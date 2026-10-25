@@ -115,10 +115,12 @@ both scanner paths and the older quick Quarter/follow-up forms instead target a
 and separate approved tabs in the same workbook. Its new endpoint is configured
 in `intake/backend.js`; a live synthetic Session and same-ID retry returned the
 same confirmed receipt. The Session frontend uses this separate endpoint.
-There is no client-side Firebase second write. **Overview** now embeds the
+There is no client-side Firebase second write. **Dashboard** retains the original
+charts and estimates, with a visible notice that its Firebase preview is not
+connected to new Sheet filings. **Raw data** separately embeds the
 [reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0),
-with a direct link as fallback, rather than showing disconnected Firebase charts.
-Google's existing sharing permissions apply; nothing is published publicly.
+with an **Open in Google Sheets** fallback link. Google's existing sharing
+permissions apply; nothing is published publicly.
 **Members Login / Account** opens a mock of TPW's existing account drawer, with
 one added **Intake · New** entry leading to **Log data**. No passwords are collected.
 There is no workspace sidebar; old `/members/` links enter the log automatically.
