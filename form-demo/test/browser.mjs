@@ -60,7 +60,14 @@ try{
  for(const width of [1280,390]){
   await open(width);await fill('');const count=posts.length;await clickFinish();await success();assert.equal(posts.length,count+1);assert.equal(posts.at(-1).payload.programs[0].notes,'');
   const expected=await evaluate(`import('./js/reporting-period.js').then(m=>m.currentReportingPeriod())`);assert.deepEqual(posts.at(-1).payload.reportingPeriod,expected);
-  assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));console.log('PASS quarter question removed, two statuses, optional notes, empty-notes submit, no overflow:',width);
+  assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));
+  assert.equal(await evaluate(`document.querySelector('#submission-heading').textContent`),'Submission saved');
+  assert.equal(await evaluate(`document.querySelector('#submission-context').textContent`),`SYNTHETIC TEST · Q${expected.quarter} ${expected.year}`);
+  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#submission-totals strong')].map(n=>n.textContent)`),['1','5','4','40']);
+  assert(await evaluate(`!document.querySelector('.mock-impact,.success-check')&&!document.querySelector('#submission-result').textContent.includes('Estimated money saved')`));
+  assert(await evaluate(`document.querySelector('#submission-receipt').textContent.includes('Filed with TPW')`));
+  assert(await evaluate(`getComputedStyle(document.querySelector('#submission-result')).textAlign==='left'`));
+  console.log('PASS slim quarterly form, compact actual-count receipt, no mock impact, no overflow:',width);
  }
  const notes='=literal context\n<script>not executable</script>';
  await open();await fill(notes);await evaluate(`document.querySelector('#added-programs button').click();`);

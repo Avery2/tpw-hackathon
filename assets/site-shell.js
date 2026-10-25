@@ -1,4 +1,5 @@
 import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js';
+import { openAccountDrawer } from './account-drawer.js';
 
 const ROOT = new URL('../', import.meta.url);
 const url = path => new URL(path, ROOT).href;
@@ -36,7 +37,15 @@ function mountHeader() {
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
-  if (dashboard || intake || guided || route.startsWith('members/')) member.setAttribute('aria-current', 'page');
+  member.setAttribute('aria-haspopup', 'dialog');
+  member.addEventListener('click', event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault(); openAccountDrawer(member);
+  });
+  window.addEventListener('tpw:member-change', () => {
+    member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
+    member.href = url(demoEntryPath());
+  });
   nav.append(member); header.append(logo, nav);
 }
 function mountFooter() {

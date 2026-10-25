@@ -13,7 +13,7 @@ export function setDemoAccount(account) {
   try { sessionStorage.setItem(KEY, account); } catch { /* Links also carry the demo account. */ }
   return true;
 }
-// The header button is the demo login: open the log immediately, not a login page.
+// Direct destination used by the account drawer's Intake link and legacy entries.
 export function demoEntryPath(account = getDemoAccount()) {
   const key = Object.hasOwn(demoAccounts, account) ? account : 'org-1';
   return `intake/simple.html?account=${key}`;

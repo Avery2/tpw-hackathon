@@ -115,12 +115,14 @@ both scanner paths and the older quick Quarter/follow-up forms instead target a
 and separate approved tabs in the same workbook. Its new endpoint is configured
 in `intake/backend.js`; a live synthetic Session and same-ID retry returned the
 same confirmed receipt. The Session frontend uses this separate endpoint.
-There is no client-side Firebase second write;
-`dashboard/` still reads Firebase and needs the receiver's server-side copy enabled
-to show new filings. **Members Login** opens **Log data** immediately, with
-**Overview** as a secondary link. There is no login screen or workspace sidebar;
-old `/members/` links enter the log automatically. The shared TPW header/footer
-remain visible throughout. Real sign-in is deferred: demo access is **not
+There is no client-side Firebase second write. **Overview** now embeds the
+[reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0),
+with a direct link as fallback, rather than showing disconnected Firebase charts.
+Google's existing sharing permissions apply; nothing is published publicly.
+**Members Login / Account** opens a mock of TPW's existing account drawer, with
+one added **Intake · New** entry leading to **Log data**. No passwords are collected.
+There is no workspace sidebar; old `/members/` links enter the log automatically.
+The shared TPW header/footer remain visible throughout. Real sign-in is deferred: demo access is **not
 authentication** and does not protect private data. Use synthetic demo data only.
 See `form-demo/README.md` and `dashboard/README.md`.
 

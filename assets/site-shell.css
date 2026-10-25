@@ -37,12 +37,12 @@
 .tpw-site .dashboard-sidebar { display: none !important; }
 .tpw-site .workspace-content, .tpw-site .tpw-workspace-content { min-width: 0; padding: 36px 0 32px; background: #fff; }
 .tpw-site .dashboard-heading { background: #fff; }
-.tpw-site .tpw-page-title { max-width: 680px; margin: 0 auto 24px; color: #000; font: 400 clamp(1.8rem, 4vw, 2.5rem)/1.15 'Rubik One', sans-serif; }
-.tpw-site .tpw-workspace .wrap, .tpw-site .tpw-workspace .controls { box-sizing: border-box; width: 100%; max-width: 680px; margin: 0 auto; padding: 0 0 32px; }
+.tpw-site .tpw-page-title { max-width: none; margin: 0 0 24px; color: #000; font: 400 clamp(1.8rem, 4vw, 2.5rem)/1.15 'Rubik One', sans-serif; }
+.tpw-site .tpw-workspace .wrap, .tpw-site .tpw-workspace .controls { box-sizing: border-box; width: 100%; max-width: none; margin: 0; padding: 0 0 32px; }
 .tpw-site .wrap:has(.demo-panel) { max-width: none; }
 .tpw-site .demo-panel { margin: 0; width: 100%; }
 .tpw-site .demo-panel iframe, .tpw-site #checkin-form { display: block; width: 100%; min-height: 0; height: 640px; border: 0; background: #fff; }
-.tpw-site .tpw-workspace .tabs { max-width: 680px; margin: 0 auto 24px; }
+.tpw-site .tpw-workspace .tabs { max-width: none; margin: 0 0 24px; }
 .tpw-site .tpw-workspace .tabs a { padding: 8px 0; margin-right: 22px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: #666; }
 .tpw-site .tpw-workspace .tabs a[aria-current] { border-bottom-color: #5d8d67; background: none; color: #42674b; font-weight: 700; }
 .tpw-site .tpw-workspace .page-heading { background: none; padding: 0 0 28px; }
@@ -51,7 +51,7 @@
 .tpw-site .tpw-workspace .form-section { padding: 0; background: #fff; }
 .tpw-site .tpw-workspace .form-section > .shell { max-width: 100%; padding: 0; }
 .tpw-site .tpw-workspace .demo-form { max-width: 100%; margin: 0; padding: 0; border: 0; background: #fff; }
-.tpw-site .tpw-workspace .demo-form:not(.program-mode) { max-width: 680px; margin-inline: auto; }
+.tpw-site .tpw-workspace .demo-form:not(.program-mode) { max-width: none; margin-inline: 0; }
 .tpw-site .tpw-sheet-preview { width: 100%; overflow-x: auto; padding: 12px 0 32px; }
 @media screen { .tpw-site .tpw-sheet-preview .page { transform: none; transform-origin: initial; margin: 0 auto; } }
 
@@ -59,8 +59,12 @@
 body.embed { min-height: 0; display: block; }
 body.embed main { flex: initial; }
 body.embed .form-section { padding: 8px 0 24px; }
-body.embed .form-section > .shell { max-width: 680px; padding-inline: 0; }
-body.embed .form-section:has(.program-mode) > .shell { max-width: 100%; }
+body.embed .form-section > .shell { max-width: none; padding-inline: 0; }
+body.embed .form-section:has(.program-mode) > .shell { max-width: none; }
+body.embed .demo-form { max-width: none; margin: 0; }
+@media (min-width: 900px) {
+  .tpw-workspace .field[data-key="org"], .tpw-workspace .field[data-key="program"] { grid-column: span 1; }
+}
 @media (max-width: 1000px) {
   .tpw-site .tpw-header { gap: 24px; }
   .tpw-site .tpw-header .logo img { width: 168px; }
