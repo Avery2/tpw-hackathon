@@ -1,0 +1,10 @@
+{
+  "name": "tpw",
+  "version": "0.1.0",
+  "description": "Skills for TPW staff: who hasn't submitted, this quarter's numbers, checking submissions, a member's own numbers for its funders, and plain-words help with TPW's data collection tool. They read TPW's submissions Google Sheet through Google Drive and never change it.",
+  "author": {
+    "name": "Hack for Social Impact 2026 TPW team"
+  },
+  "homepage": "https://github.com/Avery2/tpw-hackathon/tree/main/chatgpt-plugin",
+  "keywords": ["tpw", "data collection", "google sheets"]
+}

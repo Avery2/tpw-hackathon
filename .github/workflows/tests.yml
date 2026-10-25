@@ -88,6 +88,13 @@ jobs:
         if: ${{ !cancelled() }}
         run: node admin/sheetforms/test/run.mjs
 
+      - name: ChatGPT skills (answers, built copies, same counts as the website)
+        if: ${{ !cancelled() }}
+        run: |
+          python3 scripts/test_chatgpt_skills.py
+          python3 scripts/build_chatgpt_skills.py --check
+          node chatgpt-plugin/tests/parity.mjs
+
       - name: Steward console, Google faked
         if: ${{ !cancelled() }}
         run: node admin/steward/test/run.mjs

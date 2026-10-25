@@ -1,0 +1,13 @@
+{
+  "name": "tpw-plugins",
+  "owner": {
+    "name": "Hack for Social Impact 2026 TPW team"
+  },
+  "plugins": [
+    {
+      "name": "tpw",
+      "source": "./tpw",
+      "description": "Skills for TPW staff that read TPW's submissions Google Sheet: who hasn't submitted, this quarter's numbers, checking submissions, a member's own numbers, and help with the tool."
+    }
+  ]
+}
