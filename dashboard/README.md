@@ -16,16 +16,11 @@ are preserved. It is never run automatically by visitors. No security rules are 
 
 The browser reuses the Firebase client from `form-demo/js/submissions.js`. No build step.
 
-## Quarterly check-in
+## Quarterly check-in (removed)
 
-`checkin.html#org-1` (or `#org-2`) embeds the existing guided form with an
-organization-specific prefill. It combines the latest known version of each program
-because submissions may contain only part of the catalog. The most recent submission
-sets the default next reporting quarter, including Q4-to-Q1 year rollover. Without a
-prior record, the current quarter is used.
-
-Program names, stable IDs, prisons and yards carry forward. Period-specific counts,
-hours and dates reset; every program must be edited and completed before submission.
-Users can also add/remove programs or change prisons/yards. Saving creates a new
-submission with `orgId`, `reportingPeriod` and `previousSubmissionId`; old records are
-never updated. TPW View remains an overview; check-ins are organization-specific.
+The separate check-in page (`checkin.html`) and its sidebar link are gone (25 Oct 2026).
+Cutting form burden is a core goal, so prefilling from last quarter now happens inside the
+form members already use: Log data's **Quarterly totals** form (`team-form/`) opens on
+this quarter's numbers with the organization's prisons, yards and programs carried forward.
+See `team-form/README.md`. `js/checkin-data.js` and the guided form's `?checkin=` mode in
+`form-demo/` are left in place but nothing links to them.
