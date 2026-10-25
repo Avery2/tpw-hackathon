@@ -1149,6 +1149,7 @@ document.querySelector('#finish-form').addEventListener('click', () => {
     finish.disabled = false;
     if (!result.ok) {
       feedback.textContent = (result.errors || ['Something went wrong. Your entries are still here; please try again.']).join(' ');
+      if (result.signInNeeded) window.tpwSignIn?.renew();
       return;
     }
     showDone(`Filed with TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.submissionId}.`);
@@ -1284,5 +1285,6 @@ function renderSubmission(submission) {
   }
 }
 </script>
+<script src="signin.js"></script>
 </body>
 </html>

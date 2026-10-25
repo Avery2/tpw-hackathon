@@ -6,8 +6,11 @@
 //     { token, payload } as JSON.
 //   - submitForm: the same, for a copy of the form served by this script itself
 //     (google.script.run).
+// doPost also answers the two sign-in steps, { action: 'requestCode', email } and
+// { action: 'verifyCode', email, code } (SignIn.gs). From google.script.run, call
+// requestCode and verifyCode directly.
 //
-// Script Properties:
+// Script Properties (SignIn.gs adds TPW_CONTACT_EMAIL and SENDER_NAME):
 //   SPREADSHEET_ID  required. The sheet to write to.
 //   ALLOW_UNSIGNED  "true" only for the hackathon demo, before sign-in is connected. Then a
 //                   submission without a valid sign-in is still written, under the name the
@@ -24,6 +27,9 @@ function doPost(e) {
   } catch (error) {
     return json({ ok: false, errors: ['The submission wasn’t readable.'] });
   }
+  // Sign-in steps (SignIn.gs) come through the same address; anything else is a submission.
+  if (body && body.action === 'requestCode') return json(requestCode(body.email));
+  if (body && body.action === 'verifyCode') return json(verifyCode(body.email, body.code));
   return json(handleSubmission(body && body.token, body && body.payload));
 }
 
@@ -32,7 +38,7 @@ function submitForm(token, payload) {
 }
 
 function handleSubmission(token, payload) {
-  var session = getSession(token);
+  var session = getSession_(token);
   var allowUnsigned = PropertiesService.getScriptProperties().getProperty('ALLOW_UNSIGNED') === 'true';
   if (!session && !allowUnsigned) {
     return { ok: false, signInNeeded: true, errors: ['Please sign in again before submitting. Your answers are still on the page.'] };
