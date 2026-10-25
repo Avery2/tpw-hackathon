@@ -133,10 +133,17 @@ function mountSignIn() {
   });
   document.body.append(signin);
 }
-// Signing in goes straight to Log data, where the form starts from that account's last report.
+// Signing in on the Dashboard or Data page keeps you there, now signed in (the dashboard redraws
+// on the new #account). Anywhere else, the copy of TPW's site included, it goes to Log data, where
+// the form starts from that account's last report; on Log data itself that reloads the same page.
 function signInAs(account) {
   if (!setDemoAccount(account)) return;
   changed();
+  if (location.pathname.slice(root.pathname.length).startsWith('team-dashboard/')) {
+    signin.close();
+    location.replace(`#${account}`);
+    return;
+  }
   location.assign(new URL(demoEntryPath(account), root).href);
 }
 
