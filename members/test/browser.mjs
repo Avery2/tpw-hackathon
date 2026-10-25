@@ -87,6 +87,7 @@ try {
       assert.equal(await ev('location.href'), before);
       assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-account-row h3")].map(n=>n.textContent)'), ['Orders', 'Payment Methods', 'Address', 'Profile']);
       assert.equal(await ev('document.querySelector(".tpw-new-badge").textContent'), 'New');
+      assert.equal(await ev('document.querySelector(".tpw-account-caption").textContent'), 'Quarterly totals');
       assert.equal(await ev('document.querySelector(".tpw-account-greeting h3").textContent'), 'Hi, Org 1');
       assert(await ev('!document.querySelector(".tpw-account-drawer input,.tpw-account-drawer form")'));
       assert(await ev('document.querySelector(".tpw-account-drawer").contains(document.activeElement)'));
@@ -100,7 +101,8 @@ try {
       await click('.tpw-header .login,a.user-accounts-text-link'); await wait('document.querySelector(".tpw-account-drawer").open');
       await click('.tpw-account-intake');
       await wait('location.pathname.endsWith("/intake/simple.html")&&!!document.querySelector("iframe")?.contentDocument?.querySelector("#organization")');
-      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Data']);
+      // Data shows TPW's whole Google Sheet, so member accounts don't get the tab (25 Oct 2026).
+      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard']);
       const left = await ev('document.querySelector(".tpw-header .logo").getBoundingClientRect().left');
       assert(Math.abs(await ev('document.querySelector("iframe").getBoundingClientRect().left') - left) < 2);
       const frameWidth = await ev('document.querySelector("iframe").getBoundingClientRect().width');
@@ -137,6 +139,15 @@ try {
     assert(await ev('!document.querySelector(".overview-sheet") && document.documentElement.scrollWidth<=innerWidth'));
     console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
     if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard']);
+    // A member who opens Data directly lands on their own Dashboard instead.
+    await go('/team-dashboard/raw-data.html#org-1');
+    await wait('location.pathname.endsWith("/team-dashboard/") && location.hash === "#org-1" && !!document.querySelector(".participants-chart svg")');
+    assert(await ev('!document.querySelector(".overview-sheet")'));
+    console.log('PASS members see no Data tab; opening Data directly goes to their Dashboard:', width);
+    // The TPW staff view keeps the Data tab.
+    await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".tpw-member-nav a[href*=\\"raw-data.html\\"]")');
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Data']);
     const beforeRaw = requests.length;
     await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet")');
     assert.equal(await ev('document.querySelector("h1").textContent'), 'Data');
@@ -152,6 +163,10 @@ try {
     await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg")');
   }
+  // Signed out, Data also sends people to the Dashboard.
+  await ev('sessionStorage.clear()'); await go('/team-dashboard/raw-data.html');
+  await wait('location.pathname.endsWith("/team-dashboard/") && !!document.querySelector(".participants-chart svg")');
+  assert(await ev('!document.querySelector(".overview-sheet, .tpw-member-nav a[href*=raw-data]")'));
   await go('/team-dashboard/'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('location.pathname.endsWith("/team-dashboard/")'));
   await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');

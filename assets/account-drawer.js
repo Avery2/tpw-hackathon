@@ -42,7 +42,7 @@ function mount() {
   entry = element('a', 'tpw-account-row tpw-account-intake');
   const label = element('span', 'tpw-account-intake-label', 'Intake');
   label.append(element('span', 'tpw-new-badge', 'New'));
-  entry.append(label, element('span', 'tpw-account-caption', 'Quarterly totals and sessions'));
+  entry.append(label, element('span', 'tpw-account-caption', 'Quarterly totals'));
   const preview = element('p', 'tpw-account-preview', 'Demo account preview · no real sign-in');
   preview.id = 'tpw-account-preview';
   body.append(entry, preview);
