@@ -28,7 +28,6 @@ globalThis.fetch = async (url) => {
 };
 
 const { loadDashboard } = await import('../../assets/dashboard-source.js');
-const dashboardData = await import('../../dashboard/js/data.js');
 const teamDashboardData = await import('../../team-dashboard/js/data.js');
 const { lastQuarterDraft } = await import('../js/last-quarter.js');
 
@@ -111,11 +110,18 @@ test('an organization with no profile is an error, as before', async () => {
   await assert.rejects(loadDashboard('org-99'), /not found/);
 });
 
-test('parallel dashboards retain their separate Firebase and Sheet loaders', async () => {
-  assert.notEqual(dashboardData.loadDashboard, loadDashboard);
-  const original = fs.readFileSync(path.join(root, 'dashboard/js/data.js'), 'utf8');
-  assert.match(original, /firestoreClient/);
+test('the team dashboard uses this loader; the old form and dashboard only redirect to the Sheet versions', async () => {
   assert.equal(teamDashboardData.loadDashboard, loadDashboard);
+  // Firebase was retired on 25 Oct 2026: form-demo/ and dashboard/ pages are redirects now.
+  const redirects = {
+    'form-demo/index.html': '../team-form/', 'dashboard/index.html': '../team-dashboard/',
+    'dashboard/programs.html': '../team-dashboard/programs.html'
+  };
+  for (const [file, target] of Object.entries(redirects)) {
+    const text = fs.readFileSync(path.join(root, file), 'utf8');
+    assert.match(text, new RegExp(`new URL\\('${target.replace(/[.]/g, '\\.')}'`), file);
+    assert.match(text, /location\.replace\(/, file);
+  }
 });
 
 test('the form\'s last-quarter prefill comes from the sheet: a program filed in the sheet is carried forward', async () => {
@@ -133,7 +139,7 @@ test('the form\'s last-quarter prefill comes from the sheet: a program filed in 
   assert.deepEqual(draft.reportingPeriod, { quarter: 1, year: 2027 });
 });
 
-test('Firebase stays confined to the preserved original dashboard and form', () => {
+test('no page or script reads or writes Firebase', () => {
   const offenders = [];
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -147,5 +153,5 @@ test('Firebase stays confined to the preserved original dashboard and form', () 
     }
   };
   walk(root);
-  assert.deepEqual(offenders.sort(), ['dashboard/js/data.js', 'form-demo/js/submissions.js']);
+  assert.deepEqual(offenders.sort(), []);
 });

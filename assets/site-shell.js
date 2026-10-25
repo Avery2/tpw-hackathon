@@ -36,7 +36,7 @@ function mountHeader() {
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
   // The pages members use: Log data and the team dashboard, both on TPW's Google Sheet.
-  // Yuki's originals stay at form-demo/ and dashboard/, unlinked from the header.
+  // Yuki's originals at form-demo/ and dashboard/ only forward here (Firebase retired 25 Oct 2026).
   nav.append(link('Log data', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
   const report = link('Annual report (PDF)', 'report/TPW-Collective-Impact-Report-2026.pdf');
   report.target = '_blank'; report.rel = 'noopener';
