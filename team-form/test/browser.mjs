@@ -65,7 +65,7 @@ try{
   assert.equal(await evaluate(`document.querySelector('#submission-context').textContent`),`SYNTHETIC TEST · Q${expected.quarter} ${expected.year}`);
   assert.deepEqual(await evaluate(`[...document.querySelectorAll('#submission-totals strong')].map(n=>n.textContent)`),['1','5','4','40']);
   assert(await evaluate(`!document.querySelector('.mock-impact,.success-check')&&!document.querySelector('#submission-result').textContent.includes('Estimated money saved')`));
-  assert(await evaluate(`document.querySelector('#submission-receipt').textContent.includes('Filed with TPW')`));
+  assert(await evaluate(`document.querySelector('#submission-receipt').textContent.includes('Submitted to TPW')`));
   assert(await evaluate(`getComputedStyle(document.querySelector('#submission-result')).textAlign==='left'`));
   console.log('PASS slim quarterly form, compact actual-count receipt, no mock impact, no overflow:',width);
  }
