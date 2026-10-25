@@ -540,7 +540,7 @@ function doneScreen() {
 
 /** What a filing is for. Quiet, once, under the form — not a pitch. */
 function rollsInto() {
-  return `<p class="rolls">This entry is saved to TPW’s master Google Sheet for reporting.
+  return `<p class="rolls">This entry is saved to <a href="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">TPW’s master Google Sheet</a> for reporting.
     It is not a submission to CDCR.</p>`;
 }
 
