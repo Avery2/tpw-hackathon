@@ -1,9 +1,11 @@
 # Organization program dashboard
 
-Open `/members/` (**Members Login**), then choose a demo account: Org 1,
-Org 2, or TPW View. This is demo access, **not authentication**; no credentials
-are collected and it does not protect private data. `/dashboard/` opens the
-last demo workspace in this tab, or returns to the member entry screen.
+Open `/members/` (**Members Login**) and click **Log in**. There are no fields
+or account picker: it opens Org 1, or the last demo workspace in this tab.
+This is demo access, **not authentication**; no credentials are collected and
+it does not protect private data. `/dashboard/` opens the last demo workspace
+in this tab, or returns to the member entry screen. Org 2 and TPW View remain
+available through `/dashboard/#org-2` and `/dashboard/#tpw` for demonstrations.
 
 The website header and black TPW footer stay consistent across the home page,
 login, dashboard, programs, check-in, guided form and intake tools. Inside a
