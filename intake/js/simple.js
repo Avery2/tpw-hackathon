@@ -3,13 +3,14 @@
 // intake; this page exists for the twenty-second version.
 
 import { submitRecord } from './sheets.js';
+import { getDemoAccount } from '../../assets/member-session.js';
 
 const DATA = new URL('../../data/intake/', import.meta.url);
 // Keep confirmed Sheet receipts separate from the old GitHub queue.
 const QUEUE = 'tpw.simple.sheets.v1';
 
 const state = { forms: [], facilities: [], orgs: [], local: [] };
-let kind = 'session';
+let kind = 'demo'; // the Quarterly totals tab; DEMO_KIND is declared further down
 let errors = {};
 let done = null;
 let multi = []; // facilities chosen in the current form
@@ -69,14 +70,12 @@ async function boot() {
   state.orgs = orgs.orgs || [];
   state.local = loadLocal();
 
-  const visible = state.forms.filter((f) => !f.hidden);
   kind = (location.hash.replace(/^#\/?/, '') || DEMO_KIND).split('/')[0];
-  if (kind !== DEMO_KIND && !visible.some((f) => f.kind === kind)) kind = visible[0]?.kind || 'session';
+  if (kind !== DEMO_KIND && !offered(kind)) kind = DEMO_KIND;
 
   window.addEventListener('hashchange', () => {
     kind = location.hash.replace(/^#\/?/, '').split('/')[0] || DEMO_KIND;
-    if (kind !== DEMO_KIND && !state.forms.some((f) => f.kind === kind && !f.hidden))
-      kind = state.forms.filter((f) => !f.hidden)[0]?.kind;
+    if (kind !== DEMO_KIND && !offered(kind)) kind = DEMO_KIND;
     done = null;
     errors = {};
     multi = [];
@@ -91,15 +90,22 @@ const current = () => state.forms.find((f) => f.kind === kind);
 
 /* ----------------------------------------------------------------- tabs */
 /**
- * Session and the guided form append to separate tabs in the same master
- * Google Sheet. The older Quarter form stays in the contract at
- * #aggregate, but is not offered in the tab row.
+ * The guided form is the only tab. The older Quarter form stays in the
+ * contract at #aggregate, but is not offered in the tab row.
  */
 const DEMO_KIND = 'demo';
 
+// Removed 25 Oct 2026: the Session form and its printed roster and scanner
+// recorded a coded ID per person, which TPW asked us not to collect. Its
+// definition stays in simple_forms.json for the older ledger scripts, but
+// this page no longer offers it, and #session lands on Quarterly totals.
+const REMOVED = new Set(['session']);
+
+const offered = (k) => state.forms.some((f) => f.kind === k && !f.hidden && !REMOVED.has(k));
+
 function tabs() {
   const out = state.forms
-    .filter((f) => !f.hidden && f.tab !== false)
+    .filter((f) => offered(f.kind) && f.tab !== false)
     .map((f) => ({ kind: f.kind, label: f.label }));
   return [{ kind: DEMO_KIND, label: 'Quarterly totals' }, ...out];
 }
@@ -200,11 +206,14 @@ function render() {
 
 /** The quarterly form stays embedded and resizes with each step.
  * Its own header/footer are hidden; the parent page provides navigation.
+ * The member's demo account goes with it, so the form can start from last quarter's report.
  */
 function demoPanel() {
+  const account = new URLSearchParams(location.search).get('account') || getDemoAccount();
+  const src = `../team-form/?embed=1${account ? `&account=${encodeURIComponent(account)}` : ''}`;
   return `
     <div class="demo-panel">
-      <iframe src="../team-form/?embed=1" title="Quarterly totals form" loading="lazy"></iframe>
+      <iframe src="${esc(src)}" title="Quarterly totals form" loading="lazy"></iframe>
     </div>`;
 }
 
@@ -213,7 +222,6 @@ function formScreen(form) {
     <h1>${esc(form.title)}</h1>
     <p class="lede">${esc(form.blurb)}</p>
     ${rollsInto()}
-    ${waysIn(form)}
     <form novalidate>
       ${form.fields
         .filter((f) => !f.hidden)
@@ -229,18 +237,6 @@ function formScreen(form) {
     ${footnote(form)}
     ${recent(form)}
   `;
-}
-
-/** The paper routes into the same record. Quiet, and under the heading it belongs to. */
-function waysIn(form) {
-  if (form.kind !== 'session') return '';
-  return `
-    <div class="ways">
-      <span>Paper instead</span>
-      <a href="sheet.html">Print a blank sheet</a>
-      <a href="scan.html">Scan a filled one</a>
-      <a href="upload.html">Read your packet</a>
-    </div>`;
 }
 
 /** The one thing that is not a quarterly filing, kept out of the tabs. */
@@ -567,9 +563,7 @@ function recent(form) {
           .map((r) => {
             const when = r.submitted_at ? new Date(r.submitted_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '—';
             const bits =
-              form.kind === 'session'
-                ? `${esc(r.program || '—')} · ${esc(r.facility || '—')} · ${r.present_count ?? '—'} present`
-                : form.kind === 'aggregate'
+              form.kind === 'aggregate'
                 ? `${esc(r.program || '—')} · ${esc(r.quarter || '—')} · ${r.served ?? '—'} served`
                 : `${esc((r.token || '').slice(0, 8))}… · ${esc(String(r.status || '').replace(/_/g, ' '))}`;
             return `<li><span>${bits}</span><span class="when">${esc(when)}</span></li>`;

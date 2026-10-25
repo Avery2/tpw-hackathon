@@ -8,7 +8,7 @@ which is a different, older receiver.
 1. Copy all of [`Code.gs`](Code.gs) into the existing project's **Code.gs**.
 2. Save. Deploy → Manage deployments → pencil/Edit → Version: **New version** → Deploy.
 3. Keep the same `/exec` URL; no website configuration change is needed.
-4. Submit a clearly labeled synthetic programme with optional context. Check its
+4. Submit a clearly labeled synthetic program with optional context. Check its
    **Notes** cell and **Additional data (JSON)** cell in the existing named tab.
 
 The update:
@@ -18,7 +18,7 @@ The update:
   validation still comes from the unchanged `Rows.gs`.
 - Saves optional context (up to 2,000 characters) into the existing **Notes** column.
 - Adds one **Additional data (JSON)** column at the right, on the first valid write.
-  It retains structured submission/programme/site data, including future fields
+  It retains structured submission/program/site data, including future fields
   sent by the form. Unknown fields are preserved there, not promoted to metrics.
 - Maps core values by their existing header names, so adding or reordering columns
   does not shift data. A blank **Reporting Quarter** heading is recovered in place

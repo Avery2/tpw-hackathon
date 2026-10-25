@@ -3,8 +3,8 @@
 **Create a new standalone Apps Script project. Do not edit, redeploy or add files to
 the working quarterly project.** Its `form-demo/backend.js` URL, sources under
 `form-demo/receiver/`, Script Properties and Google deployment stay unchanged.
-This receiver has one new endpoint for Sessions, follow-ups and future approved
-forms. It writes to the same private master workbook, not a second spreadsheet.
+This receiver has one new endpoint for follow-ups, the older quick quarter form and
+future approved forms. (It accepted Sessions until 25 Oct 2026; see below.) It writes to the same private master workbook, not a second spreadsheet.
 
 ## One-time Google setup
 
@@ -45,7 +45,7 @@ forms. It writes to the same private master workbook, not a second spreadsheet.
    Publish the website configuration change using the normal site deployment.
 8. Open the new `/exec` URL. It should report `service: "tpw.additional-forms"`,
    `version: 1`, `recordKinds` and `recordTabs`; it never returns records or the
-   workbook ID. File a clearly labeled **synthetic** Session and compare its
+   workbook ID. File a clearly labeled **synthetic** quick quarter record and compare its
    displayed receipt with the new tab's **Submission reference** column.
 
 **No manual tab setup.** The first valid record creates its approved tab, with
@@ -64,19 +64,23 @@ returned receipt `BA7532FA-383E-4F7C-9ADE-AFAAE1290C9A` for **Session records**.
 Repeating the exact same payload/record ID returned that original receipt, rather
 than a new filing. This is receiver confirmation; the private workbook was not
 independently read. Exclude the test row from all reporting. The website endpoint
-is configured in `intake/backend.js` and used by the Session frontend.
+is configured in `intake/backend.js`.
 
 ## Configuration, schemas and approved destinations
 
 The policy is [`data/intake/additional_forms.json`](../../data/intake/additional_forms.json).
 It explicitly approves each form kind, its source contract, record schema, sources,
-extra fields, validation rules and destination tab. Initially:
+extra fields, validation rules and destination tab:
 
 | Kind | Destination | Callers |
 |---|---|---|
-| `session` | **Session records** | Typed form, roster scanner, photo checkbox reader |
 | `followup` | **Follow-ups** | Follow-up form |
 | `aggregate` | **Quarter records** | Older quick totals form; **not** the working guided quarterly form |
+
+**`session` was removed on 25 Oct 2026.** Its form, printed roster and scanner recorded a
+coded ID per person, which TPW asked us not to collect, so the receiver now refuses Session
+records. Its definition is in git history if TPW ever wants a later phase. Any test rows already
+in the **Session records** tab stay there; nothing new is written to it.
 
 Compile the policy and its referenced field/facility/photo contracts with:
 
