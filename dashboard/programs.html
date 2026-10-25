@@ -309,6 +309,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 .view-toggle button[aria-pressed="true"] { background: #fff; color: #000; box-shadow: 0 1px 4px #0002; font-weight: 700; }
 </style>
 <link rel="stylesheet" href="./workspace.css?v=20261025-chooser2">
+<link rel="stylesheet" href="./loading.css?v=1">
 </head>
 <body>
 
@@ -331,13 +332,13 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
     <button type="button" data-program-view="table" aria-pressed="true">Table view</button>
     <button type="button" data-program-view="cards" aria-pressed="false">Card view</button>
   </div>
-  <label class="table-search">Search programs<input id="program-search" type="search" placeholder="Search programs, prisons, or yards" disabled></label>
+  <label class="table-search">Search programs<input id="program-search" type="search" placeholder="Search programs, facilities, or yards" disabled></label>
   </div>
   <div id="program-table-container" aria-busy="true"></div>
 </div>
 </div>
 </main>
 <footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/programs.js"></script>
+<script type="module" src="./js/programs.js?v=skeleton-1"></script>
 </body>
 </html>

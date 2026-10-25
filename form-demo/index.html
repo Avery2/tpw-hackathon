@@ -453,6 +453,7 @@
 .checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
 .checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
+<link rel="stylesheet" href="../dashboard/loading.css?v=1">
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -512,19 +513,19 @@
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
           <div class="organization-summary"><span>Reporting period: <strong id="quarter-summary"></strong></span><button id="edit-quarter" type="button">Edit</button></div>
           <p class="step-label">Step 3 · Facilities</p>
-          <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
+          <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
         <div>
-          <h2 class="form-title">Your prisons</h2>
-          <p class="form-hint" id="facility-help">Select each prison where you operate, then check all the yards you work in at that prison.</p>
-          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected prisons"></div>
-          <p id="facility-empty" class="form-hint">No prisons selected yet.</p>
+          <h2 class="form-title">Your facilities</h2>
+          <p class="form-hint" id="facility-help">Select each facility where you operate, then check all the yards you work in at that facility.</p>
+          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected facilities"></div>
+          <p id="facility-empty" class="form-hint">No facilities selected yet.</p>
           <p id="facility-announcement" class="sr-only" role="status"></p>
         </div>
         <div class="form-field">
-          <label for="facility">Add a prison</label>
+          <label for="facility">Add a facility</label>
           <select id="facility" aria-describedby="facility-help">
-            <option value="" selected disabled>Select a prison to add</option>
-          <option value="ASP">Avenal State Prison (ASP)</option>
+            <option value="" selected disabled>Select a facility to add</option>
+          <option value="ASP">Avenal State Facility (ASP)</option>
           <option value="CCI">California Correctional Institution (CCI)</option>
           <option value="CHCF">California Health Care Facility (CHCF), Stockton</option>
           <option value="CIM">California Institution for Men (CIM)</option>
@@ -532,43 +533,43 @@
           <option value="CMC">California Men&#x27;s Colony (CMC)</option>
           <option value="CMF">California Medical Facility (CMF)</option>
           <option value="CRC">California Rehabilitation Center (CRC)</option>
-          <option value="COR">California State Prison, Corcoran (COR)</option>
-          <option value="LAC">California State Prison, Los Angeles County (LAC)</option>
-          <option value="SAC">California State Prison, Sacramento (SAC)</option>
-          <option value="SOL">California State Prison, Solano (SOL)</option>
-          <option value="CAL">Calipatria State Prison (CAL)</option>
-          <option value="CEN">California State Prison, Centinela (CEN)</option>
+          <option value="COR">California State Facility, Corcoran (COR)</option>
+          <option value="LAC">California State Facility, Los Angeles County (LAC)</option>
+          <option value="SAC">California State Facility, Sacramento (SAC)</option>
+          <option value="SOL">California State Facility, Solano (SOL)</option>
+          <option value="CAL">Calipatria State Facility (CAL)</option>
+          <option value="CEN">California State Facility, Centinela (CEN)</option>
           <option value="CCWF">Central California Women&#x27;s Facility (CCWF)</option>
           <option value="CTF">Correctional Training Facility (CTF)</option>
-          <option value="FSP">Folsom State Prison (FSP)</option>
-          <option value="HDSP">High Desert State Prison (HDSP)</option>
-          <option value="ISP">Ironwood State Prison (ISP)</option>
-          <option value="KVSP">Kern Valley State Prison (KVSP)</option>
-          <option value="MCSP">Mule Creek State Prison (MCSP)</option>
-          <option value="NKSP">North Kern State Prison (NKSP)</option>
-          <option value="PBSP">Pelican Bay State Prison (PBSP)</option>
-          <option value="PVSP">Pleasant Valley State Prison (PVSP)</option>
+          <option value="FSP">Folsom State Facility (FSP)</option>
+          <option value="HDSP">High Desert State Facility (HDSP)</option>
+          <option value="ISP">Ironwood State Facility (ISP)</option>
+          <option value="KVSP">Kern Valley State Facility (KVSP)</option>
+          <option value="MCSP">Mule Creek State Facility (MCSP)</option>
+          <option value="NKSP">North Kern State Facility (NKSP)</option>
+          <option value="PBSP">Pelican Bay State Facility (PBSP)</option>
+          <option value="PVSP">Pleasant Valley State Facility (PVSP)</option>
           <option value="RJD">Richard J. Donovan Correctional Facility (RJD)</option>
-          <option value="SVSP">Salinas Valley State Prison (SVSP)</option>
+          <option value="SVSP">Salinas Valley State Facility (SVSP)</option>
           <option value="SQ">San Quentin Rehabilitation Center (SQ)</option>
           <option value="SCC">Sierra Conservation Center (SCC)</option>
-          <option value="SATF">Substance Abuse Treatment Facility and State Prison, Corcoran (SATF-CSP, Corcoran)</option>
-          <option value="VSP">Valley State Prison (VSP)</option>
-          <option value="WSP">Wasco State Prison (WSP)</option>
+          <option value="SATF">Substance Abuse Treatment Facility and State Facility, Corcoran (SATF-CSP, Corcoran)</option>
+          <option value="VSP">Valley State Facility (VSP)</option>
+          <option value="WSP">Wasco State Facility (WSP)</option>
           </select>
         </div>
         <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
-        <p id="continue-programs-help" class="yard-hint">Add at least one prison to continue.</p>
+        <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <aside class="program-sidebar" aria-label="Prisons, yards, and completed programs">
-          <div class="organization-summary"><span>Your prisons &amp; yards</span><button type="button" id="edit-prisons">Edit prisons</button></div>
+          <aside class="program-sidebar" aria-label="Facilities, yards, and completed programs">
+          <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
           </aside>
           <div class="program-editor">
           <p class="step-label">Step 4 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
-          <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
+          <p class="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
           <div id="program-list" class="question-step"></div>
           <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
             <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
@@ -592,7 +593,7 @@
             </section>
             <details class="full-report">
               <summary>Expand full submission</summary>
-              <p class="report-note">Program totals are counted once, even when a program serves multiple prisons. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across prisons.</p>
+              <p class="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across facilities.</p>
               <div id="report-prisons" class="report-grid"></div>
             </details>
           </section>
@@ -813,7 +814,7 @@ function syncAssignmentYards(program, row, code, prison) {
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
-    note.textContent = 'Choose yards for this prison in the previous step.';
+    note.textContent = 'Choose yards for this facility in the previous step.';
     yards.append(note);
     return;
   }
@@ -834,7 +835,7 @@ function refreshPrisons() {
   continuePrograms.disabled = prisons.size === 0 || (!checkinContext && missingYards.length > 0);
   // Say why the button is greyed out, not just that it is.
   document.querySelector('#continue-programs-help').textContent = prisons.size === 0
-    ? 'Add at least one prison to continue.'
+    ? 'Add at least one facility to continue.'
     : !checkinContext && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
   // A finished program can't keep pointing at a prison or yard that has since been removed.
   for (const program of completedPrograms) {
@@ -916,7 +917,7 @@ picker.addEventListener('change', () => {
     announcement.textContent = `${name} removed.`;
   });
   option.disabled = true; picker.value = ''; refreshPrisons();
-  announcement.textContent = `${name} added. ${prisons.size} prisons selected.`;
+  announcement.textContent = `${name} added. ${prisons.size} facilities selected.`;
 });
 function addProgram(focus = true, saved = null, editIndex) {
   const number = ++programNumber;
@@ -954,7 +955,7 @@ function addProgram(focus = true, saved = null, editIndex) {
     paint();
   }
   const fieldset = document.createElement('fieldset'); fieldset.className = 'prison-options';
-  const legend = document.createElement('legend'); legend.textContent = 'Which prisons does this program apply to?';
+  const legend = document.createElement('legend'); legend.textContent = 'Which facilities does this program apply to?';
   const assignments = document.createElement('div'); assignments.className = 'program-assignments';
   fieldset.append(legend, assignments);
   program.querySelector('.form-field').after(fieldset);
@@ -1065,7 +1066,7 @@ function completeProgram(program) {
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
     if (checkinContext) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1073,7 +1074,7 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one prison and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
   const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select')].map(field => [field.name, field.value]));
   // An edited program goes back where it was in the list.
   const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
@@ -1107,7 +1108,7 @@ function renderAddedPrograms() {
     if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
     if (!program.assignments.length) {
       const warning = document.createElement('p'); warning.className = 'needs-prison';
-      warning.textContent = 'Its prisons or yards were removed. Edit it to choose new ones, or remove it.';
+      warning.textContent = 'Its facilities or yards were removed. Edit it to choose new ones, or remove it.';
       item.append(warning);
     }
     list.append(item);
@@ -1140,7 +1141,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   }
   const orphaned = completedPrograms.filter(program => !program.assignments.length);
   if (orphaned.length) {
-    document.querySelector('#program-feedback').textContent = `Choose a prison and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
+    document.querySelector('#program-feedback').textContent = `Choose a facility and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
     return;
   }
   const submission = {
@@ -1272,7 +1273,13 @@ async function loadCheckin() {
   banner.textContent = 'Loading your latest programs…'; form.prepend(banner);
   const step = organizationStep;
   step.hidden = true;
+  let skeleton;
+  form.setAttribute('aria-busy', 'true');
   try {
+    const { loadingSkeleton } = await import('../dashboard/js/loading.js');
+    skeleton = loadingSkeleton('form');
+    banner.style.position = 'absolute'; banner.style.clipPath = 'inset(50%)';
+    form.append(skeleton);
     const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../dashboard/js/data.js'), import('../dashboard/js/checkin-data.js')]);
     const draft = checkinDraft(await loadDashboard(orgId));
     checkinContext = draft;
@@ -1301,12 +1308,16 @@ async function loadCheckin() {
     quarterStep.hidden = true;
     facilitiesStep.hidden = false;
     document.querySelector('#quarter-summary').textContent = `Q${draft.reportingPeriod.quarter} ${draft.reportingPeriod.year}`;
-    document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+    document.querySelector('#facilities-question').textContent = 'Have any of the facilities you operate in changed?';
     document.querySelector('#facility-help').textContent = '';
     document.querySelector('#continue-programs').textContent = 'Continue →';
+    skeleton?.remove();
+    form.removeAttribute('aria-busy');
     banner.remove();
     document.querySelector('#facilities-question').focus();
   } catch (error) {
+    skeleton?.remove(); form.removeAttribute('aria-busy');
+    banner.style.position = ''; banner.style.clipPath = '';
     console.error('Check-in prefill failed:', error);
     banner.textContent = 'Could not load your previous submission. Your existing data has not changed.';
     const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'continue-button'; retry.textContent = 'Try again'; retry.onclick = () => location.reload(); banner.append(retry);

@@ -309,6 +309,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 .view-toggle button[aria-pressed="true"] { background: #fff; color: #000; box-shadow: 0 1px 4px #0002; font-weight: 700; }
 </style>
 <link rel="stylesheet" href="./workspace.css?v=20261025-chooser2">
+<link rel="stylesheet" href="./loading.css?v=1">
 </head>
 <body>
 
@@ -324,12 +325,12 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 </aside>
 <div class="workspace-content">
 <section class="dashboard-heading"><div class="shell"><h1>Check in</h1><p>Update your programs for the next reporting quarter.</p></div></section>
-<p class="checkin-info">Prisons, yards, and program names carry forward. Review each program and enter this quarter’s hours and participant counts.</p>
+<p class="checkin-info">Facilities, yards, and program names carry forward. Review each program and enter this quarter’s hours and participant counts.</p>
 <iframe id="checkin-form" title="Check in form" style="display:block;width:100%;height:1100px;border:0;border-radius:14px;background:#fff" hidden></iframe>
 <p id="checkin-status" role="status">Loading your organization…</p>
 </div>
 </main>
 <footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/checkin.js"></script>
+<script type="module" src="./js/checkin.js?v=skeleton-1"></script>
 </body>
 </html>

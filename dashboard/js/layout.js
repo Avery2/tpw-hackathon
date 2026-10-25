@@ -13,6 +13,7 @@ export function updateWorkspace(account, page) {
     { page: 'overview', label: 'Overview', href: `./#${account}`, icon: 'overview' },
     { page: 'programs', label: 'Programs', href: `./programs.html#${account}`, icon: 'programs' }
   ];
+  links.push({ page: 'submissions', label: 'Submissions', href: `./submissions.html#${account}`, icon: 'programs' });
   if (account !== 'tpw') links.push({ page: 'checkin', label: 'Check in', href: `./checkin.html#${account}`, icon: 'programs' });
   const nav = sidebar.querySelector('nav'); nav.replaceChildren();
   const paths = {

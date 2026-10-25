@@ -1,3 +1,4 @@
+import { rollCurrency } from './rolling-number.js?v=in-view-1';
 // Scenario estimate only: approved hours per completed enrollment in a 12-month window.
 // Aggregate submissions cannot verify approval, attendance, or cross-program person caps.
 export function estimateRac(program) {
@@ -43,7 +44,7 @@ export function racPanel(programs) {
     const money = node('strong', undefined, 'rac-total');
     money.setAttribute('aria-live', 'polite');
     const currency = value => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
-    money.textContent = currency(estimatedSavings(days));
+    rollCurrency(money, estimatedSavings(days));
     savings.append(money, node('span', `${days.toLocaleString()} estimated RAC days × daily cost`, 'rac-unit'));
     const costSource = node('a', 'Rate: LAO marginal cost, $21,534/year ÷ 365 (rounded)');
     costSource.href = 'https://www.lao.ca.gov/PolicyAreas/CJ/6_cj_inmatecost'; costSource.className = 'savings-source'; savings.append(costSource);
