@@ -9,7 +9,106 @@ function getFormCapabilities() {
   };
 }
 
-function doGet() { return json(getFormCapabilities()); }
+// ?view=summary is the dashboard's only view of the private Sheet. Anyone can call
+// it, so it returns combined figures across all organizations: never organization
+// names, program names or one organization's numbers.
+function doGet(e) {
+  if (e && e.parameter && e.parameter.view === 'summary') {
+    try {
+      return json({ ok: true, service: 'TPW guided form submissions', summary: dashboardSummary_() });
+    } catch (error) {
+      console.error(error);
+      return json({ ok: false, errors: ['The dashboard figures could not be read from the Sheet. Try again in a minute.'] });
+    }
+  }
+  return json(getFormCapabilities());
+}
+
+// Cached for five minutes so a busy dashboard doesn't read the whole Sheet on every visit.
+function dashboardSummary_() {
+  var cache = CacheService.getScriptCache();
+  var cached = cache.get('dashboard-summary-v1');
+  if (cached) return JSON.parse(cached);
+  var values = Sheets.Spreadsheets.Values.get(spreadsheetId_(), submissionRange_('A:ZZ')).values || [];
+  var summary = summarizeRows_(values);
+  try { cache.put('dashboard-summary-v1', JSON.stringify(summary), 300); }
+  catch (error) { console.error('Could not cache the dashboard summary.'); }
+  return summary;
+}
+
+// One row per program, per prison, per yard. A later filing for the same
+// organization, program, prison and yard replaces the earlier counts.
+function summarizeRows_(values) {
+  var headings = (values[0] || []).map(normalizeFormHeader_);
+  var at = {};
+  [['facility', 'CDCR Facility'], ['yard', 'Yard'], ['org', 'Organization Name'], ['program', 'Program Name'],
+   ['start', 'Start Date'], ['hours', 'Total Programming hours'], ['participants', 'Number of Participants'],
+   ['completed', 'Number of Participants Completed'], ['submission', 'Submission ID'], ['submittedAt', 'Submitted At']
+  ].forEach(function (pair) {
+    at[pair[0]] = headings.indexOf(normalizeFormHeader_(pair[1]));
+    if (at[pair[0]] < 0) throw formSetupError_('The Sheet heading "' + pair[1] + '" is missing.');
+  });
+  var cell = function (row, key) { var value = row[at[key]]; return value === undefined || value === null ? '' : String(value).trim(); };
+  var count = function (row, key) { var number = Number(cell(row, key).replace(/,/g, '')); return isFinite(number) && number > 0 ? number : 0; };
+  var latest = {};
+  var submissions = {};
+  values.slice(1).forEach(function (row) {
+    var org = cell(row, 'org').toLowerCase();
+    var program = cell(row, 'program').toLowerCase();
+    if (!org || !program) return;
+    if (cell(row, 'submission')) submissions[cell(row, 'submission')] = true;
+    var key = JSON.stringify([org, program, cell(row, 'facility').toLowerCase(), cell(row, 'yard').toLowerCase()]);
+    if (!latest[key] || cell(latest[key], 'submittedAt') <= cell(row, 'submittedAt')) latest[key] = row;
+  });
+  var rows = Object.keys(latest).map(function (key) { return latest[key]; });
+  var programs = {};
+  var facilities = {};
+  var months = {};
+  var totals = { participants: 0, completed: 0, hoursCompleted: 0 };
+  rows.forEach(function (row) {
+    var participants = count(row, 'participants');
+    var completed = Math.min(count(row, 'completed'), participants);
+    var hours = count(row, 'hours');
+    totals.participants += participants;
+    totals.completed += completed;
+    totals.hoursCompleted += hours * completed;
+    if (cell(row, 'facility')) facilities[cell(row, 'facility').toLowerCase()] = true;
+    var programKey = JSON.stringify([cell(row, 'org').toLowerCase(), cell(row, 'program').toLowerCase()]);
+    var entry = programs[programKey] || (programs[programKey] = { courseHours: 0, completed: 0 });
+    entry.courseHours = Math.max(entry.courseHours, hours);
+    entry.completed += completed;
+    var month = startMonth_(cell(row, 'start'));
+    if (month) months[month] = (months[month] || 0) + participants;
+  });
+  var running = 0;
+  var history = Object.keys(months).sort().map(function (month) {
+    running += months[month];
+    return { day: month + '-01', participants: running };
+  });
+  return {
+    submissions: Object.keys(submissions).length,
+    programs: Object.keys(programs).length,
+    facilities: Object.keys(facilities).length,
+    participants: totals.participants,
+    completed: totals.completed,
+    hoursCompleted: totals.hoursCompleted,
+    // Sorted pairs of numbers only, with no names, so none can be traced to a program.
+    racInputs: Object.keys(programs).map(function (key) { return programs[key]; })
+      .sort(function (a, b) { return a.courseHours - b.courseHours || a.completed - b.completed; }),
+    history: history,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+// "2026-10-08", "10/8/2026" or a Sheets date serial number → "2026-10".
+function startMonth_(value) {
+  var text = String(value || '').replace(/^'/, '');
+  var iso = /^(\d{4})-(\d{2})/.exec(text);
+  if (iso) return iso[1] + '-' + iso[2];
+  var us = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/.exec(text);
+  if (us) return us[3] + '-' + ('0' + us[1]).slice(-2);
+  return '';
+}
 
 function doPost(e) {
   var body;
