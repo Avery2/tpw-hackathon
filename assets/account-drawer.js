@@ -3,6 +3,18 @@ import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEnt
 const root = new URL('../', import.meta.url);
 let dialog, entry, greetingName, signin, returnFocus, stylesReady;
 const changed = () => window.dispatchEvent(new Event('tpw:member-change'));
+// Signing out also takes the account out of the address (?account=org-1, or #org-1 on the
+// dashboard), or site-shell.js would read it back and sign the same account straight back in.
+function forgetAccountInAddress() {
+  const address = new URL(location.href);
+  address.searchParams.delete('account');
+  const hashWasAccount = Object.hasOwn(demoAccounts, address.hash.slice(1));
+  if (hashWasAccount) address.hash = '';
+  if (address.href === location.href) return;
+  history.replaceState(history.state, '', address);
+  // replaceState fires no hashchange, and the dashboard redraws on hashchange.
+  if (hashWasAccount) window.dispatchEvent(new HashChangeEvent('hashchange'));
+}
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -29,7 +41,7 @@ function mount() {
   const body = element('div', 'tpw-account-body');
   const greeting = element('section', 'tpw-account-greeting');
   const signout = element('button', 'tpw-account-signout', 'Sign out'); signout.type = 'button';
-  signout.addEventListener('click', () => { clearDemoAccount(); changed(); dialog.close(); });
+  signout.addEventListener('click', () => { clearDemoAccount(); forgetAccountInAddress(); changed(); dialog.close(); });
   greetingName = element('h3', '', 'Hi, Member');
   greeting.append(greetingName, signout);
   body.append(greeting);
@@ -121,10 +133,17 @@ function mountSignIn() {
   });
   document.body.append(signin);
 }
-// Signing in goes straight to Log data, where the form starts from that account's last report.
+// Signing in on the Dashboard or Data page keeps you there, now signed in (the dashboard redraws
+// on the new #account). Anywhere else, the copy of TPW's site included, it goes to Log data, where
+// the form starts from that account's last report; on Log data itself that reloads the same page.
 function signInAs(account) {
   if (!setDemoAccount(account)) return;
   changed();
+  if (location.pathname.slice(root.pathname.length).startsWith('team-dashboard/')) {
+    signin.close();
+    location.replace(`#${account}`);
+    return;
+  }
   location.assign(new URL(demoEntryPath(account), root).href);
 }
 

@@ -51,6 +51,8 @@ function mountHeader() {
   const refresh = () => {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
     member.href = url(demoEntryPath());
+    // The Log data / Dashboard tabs too, or after Sign out they still carry ?account=org-1.
+    if (document.querySelector('.tpw-member-nav')) updateMemberWorkspace(getDemoAccount());
   };
   window.addEventListener('tpw:member-change', refresh);
   window.addEventListener('hashchange', () => { activeAccount(); refresh(); });
