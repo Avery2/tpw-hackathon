@@ -8,7 +8,7 @@ const embedded = new URLSearchParams(location.search).has('embed');
 const dashboard = route.startsWith('team-dashboard/');
 const intake = route.startsWith('intake/');
 const guided = route.startsWith('team-form/');
-let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : 'overview' : 'intake';
+let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -35,12 +35,7 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  // The current form and dashboard; form-demo/ and dashboard/ are the older versions.
-  nav.append(link('Log data', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
-  const report = link('Annual report (PDF)', 'report/TPW-Collective-Impact-Report-2026.pdf');
-  report.target = '_blank'; report.rel = 'noopener';
-  report.title = 'Combined TPW prototype report · June 2026 data · opens in a new tab';
-  nav.append(report);
+  nav.append(link('Form Demo', 'form-demo/'), link('Dashboard', 'dashboard/'));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
@@ -147,7 +142,7 @@ function sizeForms() {
     };
     frame.addEventListener('load', resize); resize();
   };
-  const scan = () => document.querySelectorAll('.demo-panel iframe').forEach(connect);
+  const scan = () => document.querySelectorAll('.demo-panel iframe, #checkin-form').forEach(connect);
   scan(); new MutationObserver(scan).observe(document.body, {childList:true, subtree:true});
 }
 function mount() {

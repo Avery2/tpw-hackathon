@@ -122,3 +122,112 @@ main.dashboard-layout.choosing-account > .workspace-content { width: 100%; }
 .currency-strip { display: flex; flex-direction: column; will-change: transform; }
 .currency-strip > span { display: block; height: 1em; min-height: 1em; line-height: 1; }
 .rolling-currency { line-height: 1.2; }
+
+.submission-tracker { margin: 28px 0 40px; }
+.submission-tracker h2 { font-size: 25px; margin: 0 0 8px; }
+.tracker-description { font-size: 14px; color: #777; margin: 0 0 22px; }
+.tracker-quarter-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; }
+.tracker-quarter { padding: 24px; border: 1px solid #e0e0e0; border-radius: 14px; background: #fff; }
+.tracker-quarter h3 { margin: 0 0 18px; font-size: 23px; }
+.tracker-counts { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+.tracker-counts > div { display: grid; gap: 6px; }
+.tracker-counts strong { font-size: 32px; }
+.tracker-counts span { font-size: 14px; color: #777; }
+.tracker-quarter summary { cursor: pointer; font-size: 14px; font-weight: 700; }
+.tracker-quarter li { margin-top: 8px; }
+.tracker-table-wrap { overflow-x: auto; background: #fff; border: 1px solid #e0e0e0; border-radius: 12px; margin-top: 20px; }
+.tracker-table { width: 100%; border-collapse: collapse; min-width: 440px; text-align: left; font-size: 15px; }
+.tracker-table th, .tracker-table td { padding: 16px 20px; border-bottom: 1px solid #eee; }
+.tracker-table thead { background: #f4f5f2; }
+.tracker-status { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+.tracker-status.submitted { background: #edf3e9; color: #426440; }
+.tracker-status.missing { background: #fff0d5; color: #8b611e; }
+@media(max-width:650px) { .tracker-quarter-grid { grid-template-columns: 1fr; } }
+
+.tracker-counts > div { padding: 14px 16px; border-radius: 10px; }
+.tracker-counts .tracker-missing-count { background: #fff0ef; border: 1px solid #f2ceca; }
+.tracker-missing-count strong { color: #ae3931; }
+.tracker-counts .tracker-missing-count span { color: #944740; }
+
+.tracker-quarter .followup-grid { list-style: none; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; padding: 0; margin: 18px 0 0; }
+.tracker-quarter .followup-grid li { margin: 0; min-width: 0; }
+.followup-grid a { display: flex; align-items: center; justify-content: space-between; gap: 10px; height: 100%; min-height: 58px; padding: 12px 14px; background: #f8f9f6; border: 1px solid #e1e6db; border-radius: 9px; color: #35442f; text-decoration: none; font-size: 14px; font-weight: 700; overflow-wrap: anywhere; transition: background .15s, border-color .15s; }
+.followup-grid a:hover { background: #edf3e8; border-color: #aabb9f; }
+.followup-arrow { flex-shrink: 0; font-size: 16px; color: #829275; }
+@media(max-width: 500px) { .tracker-quarter .followup-grid { grid-template-columns: 1fr; } }
+
+.tracker-quarter > h3 { display: inline-block; background: var(--yellow); color: #594719; border-radius: 999px; padding: 7px 15px; font-size: 16px; font-weight: 700; line-height: 1.3; margin-bottom: 20px; }
+
+.tracker-quarter-grid { grid-template-columns: 1fr; align-items: start; }
+
+.tracker-quarter .followup-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1100px) { .tracker-quarter .followup-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 800px) { .tracker-quarter .followup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 500px) { .tracker-quarter .followup-grid { grid-template-columns: 1fr; } }
+
+.followup-grid a { background: #fff0ef; border-color: #f2ceca; color: #943f38; }
+.followup-grid a:hover { background: #fde3e0; border-color: #dfa39c; }
+
+.followup-grid a { background: #fff; border-color: #222; color: #222; }
+.followup-grid a:hover { background: #f5f5f5; border-color: #000; }
+
+.followup-grid a { border-color: #dedede; }
+.followup-grid a:hover { border-color: #bcbcbc; }
+
+.tracker-toolbar { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; margin-top: 30px; }
+.tracker-toolbar label { display: grid; gap: 7px; font-size: 13px; font-weight: 700; }
+.tracker-toolbar label:first-child { flex: 1; min-width: 200px; }
+.tracker-toolbar input, .tracker-toolbar select, .tracker-toolbar button, .tracker-pagination button { font: inherit; font-size: 14px; min-height: 42px; padding: 9px 12px; background: #fff; border: 1px solid #d7d7d7; border-radius: 8px; }
+.tracker-toolbar button, .tracker-pagination button { cursor: pointer; }
+.tracker-pagination { display: flex; align-items: center; justify-content: flex-end; gap: 18px; margin-top: 18px; font-size: 14px; }
+.tracker-pagination button:disabled { opacity: .4; cursor: default; }
+.tracker-result-count { font-size: 14px; color: #777; margin: 18px 0 0; }
+
+.tracker-toolbar select,
+.submission-filters select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 44px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23444' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+@media (forced-colors: active) {
+  .tracker-toolbar select, .submission-filters select { appearance: auto; background-image: none; }
+}
+
+/* Scale overview totals to their card width, including six-digit hour totals. */
+.dashboard-layout .dashboard-overview .program-stat { container-type: inline-size; }
+.dashboard-layout .dashboard-overview .program-stat strong { font-size: clamp(18px, 18cqi, 28px); line-height: 1.15; white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
+.dashboard-layout .dashboard-overview .program-stat span { overflow-wrap: anywhere; }
+
+/* Shared RAC and savings cards, including organization drill-downs. */
+.rac-panel { background: #fff; border: 1px solid #e0e0e0; border-radius: 16px; padding: 26px; margin-bottom: 40px; }
+.rac-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rac-heading h3 { font-size: 24px; margin: 0; }
+.rac-label { background: #f3f3f3; padding: 4px 10px; border-radius: 999px; font-size: 12px; color: #555; }
+.rac-description, .rac-footnote { color: #666; font-size: 14px; }
+.rac-orgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 18px; margin: 22px 0; }
+.rac-org { border: 1px solid #e4e4e4; border-radius: 12px; padding: 22px; }
+.rac-org h4 { font-size: 18px; margin: 0 0 14px; }
+.rac-total { display: block; font-family: var(--display); font-weight: 400; font-size: 40px; line-height: 1.2; }
+.rac-unit { display: block; color: #666; font-size: 14px; margin: 6px 0 20px; }
+.rac-org summary { cursor: pointer; font-size: 14px; font-weight: 700; }
+.rac-calculation { border-top: 1px solid #eee; margin-top: 14px; padding-top: 12px; display: grid; gap: 5px; font-size: 14px; }
+.rac-calculation span { color: #666; }
+.rac-panel > a { font-size: 13px; color: #555; }
+.rac-orgs { grid-template-columns: 1fr; }
+.rac-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.savings-rate { display: grid; gap: 8px; font-weight: 700; font-size: 14px; margin-top: 20px; }
+.savings-rate input { width: 150px; max-width: 100%; font: inherit; border: 1px solid #ccc; border-radius: 8px; padding: 10px 12px; background: #fff; }
+.savings-rate input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; }
+.savings-note { font-size: 13px; color: #666; margin: 16px 0 8px; }
+.savings-source { font-size: 12px; color: #666; }
+.rac-pair { grid-template-columns: 1fr; }
+@media(max-width:650px) { .rac-pair { grid-template-columns: 1fr; } }
+
+/* Keep the two impact totals side by side outside the mobile layout. */
+.dashboard-layout .rac-panel .rac-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.dashboard-layout .rac-panel .rac-org { min-width: 0; }
+@media (max-width: 650px) { .dashboard-layout .rac-panel .rac-pair { grid-template-columns: 1fr; } }

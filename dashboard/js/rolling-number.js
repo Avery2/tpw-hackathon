@@ -1,6 +1,10 @@
 // Visual digit reels; assistive technology receives the final formatted value.
 export function rollCurrency(element, value) {
-  const formatted = value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+  return rollNumber(element, value, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
+}
+
+export function rollNumber(element, value, options = { maximumFractionDigits: 2 }) {
+  const formatted = value.toLocaleString('en-US', options);
   element.textContent = '';
   element.classList.add('rolling-currency');
   element.setAttribute('aria-label', formatted);

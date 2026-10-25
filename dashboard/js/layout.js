@@ -13,7 +13,9 @@ export function updateWorkspace(account, page) {
     { page: 'overview', label: 'Overview', href: `./#${account}`, icon: 'overview' },
     { page: 'programs', label: 'Programs', href: `./programs.html#${account}`, icon: 'programs' }
   ];
+  if (account === 'tpw') links.splice(1, 0, { page: 'organizations', label: 'Organizations', href: './organizations.html#tpw', icon: 'overview' });
   links.push({ page: 'submissions', label: 'Submissions', href: `./submissions.html#${account}`, icon: 'programs' });
+  if (account !== 'tpw') links.push({ page: 'checkin', label: 'Check in', href: `./checkin.html#${account}`, icon: 'programs' });
   const nav = sidebar.querySelector('nav'); nav.replaceChildren();
   const paths = {
     overview: 'M3 3h7v7H3z M14 3h7v7h-7z M3 14h7v7H3z M14 14h7v7h-7z',

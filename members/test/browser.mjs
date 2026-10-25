@@ -169,11 +169,10 @@ try {
   assert(await ev('location.pathname.endsWith("/team-dashboard/") && !document.querySelector(".participants-chart svg, .rac-panel")'));
   assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
   assert(await ev('![...document.querySelectorAll(".tpw-member-nav a")].some(a => /org-1/.test(a.href))'));
-  assert(await ev('![...document.querySelectorAll(".tpw-header a")].some(a => a.textContent === "Form Demo")'), 'the retired Form Demo link is gone');
   await click('#view-sections button'); await wait('!!document.querySelector(".tpw-signin:modal")');
   await go('/members/'); await wait('!!document.querySelector(".tpw-signin:modal")');
   assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
-  console.log('PASS signed out: Dashboard and members/ ask to sign in, never Org 1; no Form Demo link');
+  console.log('PASS signed out: Dashboard and members/ ask to sign in, never Org 1');
   await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('!!document.querySelector(".rac-panel")'));
   // The printable roster, scanner and packet reader were removed (25 Oct 2026); old links land on Log data.

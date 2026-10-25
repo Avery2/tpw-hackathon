@@ -1,4 +1,4 @@
-import { existingPrograms } from './data.js?v=sheet-20261025b';
+import { existingPrograms } from './data.js';
 export function checkinDraft(data) {
   const ordered = [...data.submissions].sort((a,b) => String(b.submittedAt || '').localeCompare(String(a.submittedAt || '')));
   const latest = ordered[0];
@@ -14,5 +14,5 @@ export function checkinDraft(data) {
   }
   return { orgId: data.org.id, organization: data.org.name, previousSubmissionId: latest?.id || null, reportingPeriod, prisons: [...prisons.values()],
     programs: programs.map((program,index) => ({id: program.id || `carried-${index}-${program.name.toLowerCase().replace(/[^a-z0-9]+/g,'-')}`, name: program.name, assignments: program.assignments,
-      needsReview: true, values: Object.fromEntries(Object.entries({program_name: program.name, scheduled_status:'Planned',start_date:'',end_date:'',course_hours:'0',participants:'0',participants_completed:'0'}).map(([key,value])=>[`programs[${index}][${key}]`,value]))})) };
+      needsReview: true, values: Object.fromEntries(Object.entries({program_name: program.name, scheduled_status:'Planned',start_date:'',end_date:'',course_hours:String(program.courseHours ?? 0),participants:'0',participants_completed:'0'}).map(([key,value])=>[`programs[${index}][${key}]`,value]))})) };
 }
