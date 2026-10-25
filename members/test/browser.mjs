@@ -62,6 +62,23 @@ try {
   await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/team-form/js/submissions.js' }] });
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
+    // Signed out, Members Login opens the copy of TPW's own sign-in box (25 Oct 2026), not the
+    // account drawer. No password is ever asked for; a demo account goes straight to Log data.
+    await go('/'); await ev('sessionStorage.clear()'); await go('/'); await wait('!!document.querySelector(".tpw-header .login")');
+    assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
+    await click('.tpw-header .login'); await wait('!!document.querySelector(".tpw-signin:modal")');
+    assert.equal(await ev('document.querySelector(".tpw-signin h2").textContent'), 'Welcome to TPW');
+    assert(await ev('document.querySelector(".tpw-signin-password").disabled'), 'the password box must stay switched off');
+    assert(await ev('!document.querySelector(".tpw-account-drawer")?.open'));
+    assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
+    await ev('document.querySelector(".tpw-signin-email").value="someone@example.invalid"');
+    await click('.tpw-signin-submit'); await wait('document.querySelector(".tpw-signin-message").textContent.includes("only has three accounts")');
+    assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
+    if (width !== 1024) await screenshot(`sign-in-${width}`);
+    await click('.tpw-signin-demo button[data-account="org-1"]');
+    await wait('location.pathname.endsWith("/intake/simple.html") && location.search.includes("account=org-1")');
+    assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), 'org-1');
+    console.log('PASS signed-out Members Login opens the TPW-style sign-in; a demo account goes to Log data:', width);
     for (const route of ['/', '/site/ourstory/index.html', '/site/our-members/index.html', '/site/ourwork/index.html', '/site/our-team/index.html']) {
       await go(route); await wait('!!document.querySelector(".tpw-header .login,a.user-accounts-text-link")');
       if (width < 760 && route.startsWith('/site/')) { await click('.header-burger-btn'); await sleep(400); }
@@ -70,6 +87,7 @@ try {
       assert.equal(await ev('location.href'), before);
       assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-account-row h3")].map(n=>n.textContent)'), ['Orders', 'Payment Methods', 'Address', 'Profile']);
       assert.equal(await ev('document.querySelector(".tpw-new-badge").textContent'), 'New');
+      assert.equal(await ev('document.querySelector(".tpw-account-greeting h3").textContent'), 'Hi, Org 1');
       assert(await ev('!document.querySelector(".tpw-account-drawer input,.tpw-account-drawer form")'));
       assert(await ev('document.querySelector(".tpw-account-drawer").contains(document.activeElement)'));
       assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
