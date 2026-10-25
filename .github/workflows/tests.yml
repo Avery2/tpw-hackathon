@@ -29,7 +29,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
+      # Full history, not just the latest commit: team-form/test/receiver.cjs
+      # reads apps-script/Rows.gs from two older commits on the
+      # email-code-signin and sheet-firebase branches, because Rows.gs isn't
+      # on main yet. If those branches are deleted, that step fails.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -82,6 +88,12 @@ jobs:
           python3 -m http.server 8826 --bind 127.0.0.1 > /dev/null 2>&1 &
           for n in $(seq 1 50); do curl -sf http://127.0.0.1:8826/ > /dev/null && exit 0; sleep 0.2; done
           echo "The local copy of the site didn't start." && exit 1
+
+      # Chrome's first start on a fresh machine can take longer than the 10
+      # seconds the browser tests wait for it, so start it once beforehand.
+      - name: Start Chrome once
+        if: ${{ !cancelled() }}
+        run: timeout 60 google-chrome --headless=new --no-first-run --dump-dom about:blank > /dev/null 2>&1 || true
 
       - name: Team form in a browser
         if: ${{ !cancelled() }}
