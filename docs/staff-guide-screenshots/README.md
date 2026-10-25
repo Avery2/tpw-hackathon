@@ -4,15 +4,15 @@ Screenshots of the TPW data collection tool, used in the staff guide for Ken and
 
 **Everything on screen is made up.** The form was filled in with "Sample Organization (made-up data)" and "Sample Reading Circle (made-up)". The submit button was intercepted, and so was the dashboard's read of the sheet, so nothing was sent to or read from the real Google Sheet. The reference code (56F98641) is an example copied from the demo rows in the sheet.
 
-Taken on 25 October 2026 from `main` (after the Session tab was removed, Firebase was retired and the dashboards began reading the sheet), with headless Chrome at twice the normal pixel density. The date boxes are shown in US order (mm/dd/yyyy), the way a Californian member's browser draws them.
+Taken on 25 October 2026 from `main` (after Firebase was retired, the old dashboard and form began forwarding to the team versions, and the form began saying “facilities”), with headless Chrome at twice the normal pixel density. The date boxes are shown in US order (mm/dd/yyyy), the way a Californian member's browser draws them.
 
 | File | What it shows |
 |---|---|
 | `door_signin.png` | Members Login opening a copy of TPW's own sign-in box. On the demo site you pick Org 1, Org 2 or TPW staff, and no password is checked |
-| `door_logdata.png` | The Log data page when no one is signed in: the Quarterly totals tab, step 1 of the form. Only the Log data and Dashboard links show. The Data link appears for the TPW staff view |
+| `door_logdata.png` | The Log data page when no one is signed in: the Quarterly totals tab, step 1 of the form. Only the Log data and Dashboard links show. Signed in, the bar adds Programs, Submissions and Annual report, and the TPW staff view also gets Organizations and Data |
 | `door_checkin.png` | Log data for a sample organization: the form starts from last quarter's report and asks only for this quarter's numbers |
 | `form_org.png` | Step 1: the organization's name |
-| `form_prisons.png` | Step 2: choosing a prison and its yards, including the Yard not listed? box for adding one |
+| `form_prisons.png` | Step 2: choosing a facility (a prison) and its yards, including the Yard not listed? box for adding one |
 | `form_prog_a.png` | Step 3: program name, prisons and yards |
 | `form_prog_b.png` | Step 3: status, start and end dates, course hours |
 | `form_prog_c.png` | Step 3: participants started and completed at each yard, notes |
@@ -20,7 +20,9 @@ Taken on 25 October 2026 from `main` (after the Session tab was removed, Firebas
 | `form_receipt.png` | The receipt after a successful submission |
 | `form_error_numbers.png` | The message when completed is higher than started |
 | `form_error_connection.png` | The message when the connection drops on submit, with the membership@thetpw.org address to email |
-| `dashboard.png` | The Dashboard page. It reads TPW's Google Sheet plus the made-up sample organizations. For the picture the sheet read was stubbed out, so only the sample organizations show |
+| `dashboard.png` | The Dashboard page in the TPW staff view. It reads TPW's Google Sheet plus the made-up sample organizations. For the picture the sheet read was stubbed out, so only the sample organizations show |
+| `staff_submissions.png` | The Submissions page in the TPW staff view: who has and hasn't submitted for each of the last two quarters (sample organizations only) |
+| `staff_organizations.png` | The Organizations page in the TPW staff view: one card per organization (sample organizations only) |
 | `datapage.png` | The Data page as someone with access sees it: the Google Sheet shown inside the website. Taken while the workbook was still open to anyone with its link; it is private now, so someone signed out sees a Google sign-in prompt instead |
 | `sheet_strip_a.png`, `sheet_strip_b.png`, `sheet_strip_c.png` | The main tab's columns A to G, H to M and N to R, first rows. Taken before the sheet gained its Test data column at the far right, and not retaken because the workbook is private now |
 | `sheet_tabs.png` | The tabs along the bottom of the workbook |
