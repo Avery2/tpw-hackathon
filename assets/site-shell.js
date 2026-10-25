@@ -35,33 +35,26 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  // Log data, Dashboard and Annual report appear only once a member is signed in (memberMenu).
-  // Yuki's originals at form-demo/ and dashboard/ only forward here (Firebase retired 25 Oct 2026).
-  const memberLinks = () => memberMenu().map(item => {
-    const anchor = link(item.label, item.path, 'tpw-member-link');
-    if (item.newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.title = 'PDF · opens in a new tab'; }
-    return anchor;
-  });
+  // The top menu is TPW's own on every page. Log data, Dashboard and Annual report live in the
+  // member bar under it (updateMemberWorkspace), never up here (Richie, 25 Oct 2026).
   const account = activeAccount();
-  nav.append(...memberLinks());
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
   member.addEventListener('click', event => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     event.preventDefault(); openAccountDrawer(member);
   });
-  // Signing in or out, or switching account in the address (#org-1 → #tpw), redraws these links.
+  // Signing in or out, or switching account in the address (#org-1 → #tpw), updates the label.
+  // Only an address change reads the account from the address: after Sign out, the address
+  // still says #org-1, and reading it then would sign the visitor straight back in.
   const refresh = () => {
-    activeAccount();
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
     member.href = url(demoEntryPath());
-    nav.querySelectorAll('.tpw-member-link').forEach(node => node.remove());
-    member.before(...memberLinks());
     // The Log data / Dashboard tabs too, or after Sign out they still carry ?account=org-1.
     if (document.querySelector('.tpw-member-nav')) updateMemberWorkspace(getDemoAccount());
   };
   window.addEventListener('tpw:member-change', refresh);
-  window.addEventListener('hashchange', refresh);
+  window.addEventListener('hashchange', () => { activeAccount(); refresh(); });
   nav.append(member); header.append(logo, nav);
 }
 function mountFooter() {
@@ -115,9 +108,13 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   }
   nav.replaceChildren();
   const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', key ? `team-dashboard/#${key}` : 'team-dashboard/']];
+  // Signed in: that account's own annual report (memberMenu), a PDF in a new tab.
+  const report = memberMenu(key).find(item => item.label === 'Annual report');
+  if (report) tabs.push(['report', report.label, report.path, true]);
   if (seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
-  for (const [id, label, path] of tabs) {
+  for (const [id, label, path, newTab] of tabs) {
     const anchor = link(label, path);
+    if (newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.title = 'PDF · opens in a new tab'; }
     if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
   }
