@@ -1267,6 +1267,22 @@ function removeProgram(index) {
     document.querySelector('#program-next-heading').focus();
   }
 }
+// Where members write when the form breaks in a way they can't fix. Change it here only.
+const TPW_CONTACT_EMAIL = 'membership@thetpw.org';
+// Show a message and then "<lead> membership@thetpw.org." with the address as an email link.
+// Built from text nodes, never innerHTML, because some messages come from the server.
+function showWithContact(element, message, lead = 'If this keeps happening, email') {
+  const link = document.createElement('a');
+  link.href = `mailto:${TPW_CONTACT_EMAIL}`;
+  link.textContent = TPW_CONTACT_EMAIL;
+  element.replaceChildren(`${message} ${lead} `, link, '.');
+}
+// The receiver names the program for every problem a member can fix in the form
+// ("Program 2: the end date is before the start date."), or asks them to sign in again.
+// Anything else (a busy or misconfigured sheet, an unreadable reply) is TPW's to fix.
+function memberCanFix(result) {
+  return !!result.signInNeeded || (result.errors.length > 0 && result.errors.every(error => /^Program \d+\b/.test(error)));
+}
 let submissionId;
 let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
@@ -1309,7 +1325,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     try {
       localStorage.setItem('tpw-form-demo-submission', JSON.stringify(submission));
     } catch (error) {
-      feedback.textContent = 'Could not save in this browser. Your entries are still here; please try again.';
+      showWithContact(feedback, 'Could not save in this browser. Your entries are still here; please try again.');
       return;
     }
     showDone();
@@ -1327,7 +1343,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     result = await sendToBackend(toPayload(submission, submissionId));
   } catch (error) {
     console.error('Submission failed:', error);
-    feedback.textContent = 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.';
+    showWithContact(feedback, 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
     return;
   } finally {
     submitting = false;
@@ -1336,7 +1352,9 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     programsStep.removeAttribute('aria-busy');
   }
   if (!result || !result.ok) {
-    feedback.textContent = ((result && result.errors) || ['Something went wrong. Your entries are still here; please try again.']).join(' ');
+    const errors = Array.isArray(result?.errors) && result.errors.length ? result.errors.map(String) : null;
+    if (errors && memberCanFix({ ...result, errors })) feedback.textContent = errors.join(' ');
+    else showWithContact(feedback, errors ? errors.join(' ') : 'Something went wrong. Your entries are still here; please try again.');
     return;
   }
   showDone(`Submitted to TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
@@ -1506,7 +1524,7 @@ async function prefillFromLastQuarter() {
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.
     console.error('Last-quarter prefill failed:', error);
-    note.textContent = 'We couldn’t load what you reported last time, so this form starts blank.';
+    showWithContact(note, 'We couldn’t load what you reported last time, so this form starts blank.', 'If your programs should be here, email');
     organizationStep.hidden = false;
     return;
   }

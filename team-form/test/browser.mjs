@@ -17,7 +17,7 @@ try{
  let port;for(let n=0;n<100;n++){try{port=(await readFile(path.join(profile,'DevToolsActivePort'),'utf8')).split('\n')[0];break;}catch{}await sleep(100);}assert(port,'Chrome did not start');
  const target=await fetch(`http://localhost:${port}/json/new?about:blank`,{method:'PUT'}).then(r=>r.json());
  socket=new WebSocket(target.webSocketDebuggerUrl);await new Promise(resolve=>socket.addEventListener('open',resolve,{once:true}));
- let sequence=0, supportsNotes=true, failNextPost=false, dashboardStub='';const pending=new Map(),posts=[],exceptions=[];
+ let sequence=0, supportsNotes=true, failNextPost=false, nextPostReply=null, failDashboard=false, dashboardStub='';const pending=new Map(),posts=[],exceptions=[];
  const send=(method,params={})=>new Promise((resolve,reject)=>{const id=++sequence;pending.set(id,{resolve,reject});socket.send(JSON.stringify({id,method,params}));});
  socket.addEventListener('message',async event=>{
   const message=JSON.parse(event.data);
@@ -25,8 +25,9 @@ try{
   if(message.method==='Runtime.exceptionThrown')exceptions.push(message.params.exceptionDetails.text);
   if(message.method==='Fetch.requestPaused'){
    const {request,requestId}=message.params;
-   // Last quarter's report normally comes from the dashboard data; a check can swap in a synthetic one.
-   if(request.url.endsWith('/team-dashboard/js/data.js')){
+   // Last quarter's report normally comes from the dashboard data; a check can fail it (blank-form message) or swap in a synthetic one.
+   if(request.url.includes('/team-dashboard/js/data.js')){
+    if(failDashboard){await send('Fetch.failRequest',{requestId,errorReason:'ConnectionClosed'});return;}
     if(!dashboardStub){await send('Fetch.continueRequest',{requestId});return;}
     await send('Fetch.fulfillRequest',{requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/javascript'}],body:Buffer.from(dashboardStub).toString('base64')});return;
    }
@@ -34,15 +35,16 @@ try{
     posts.push(JSON.parse(request.postData));
     if(failNextPost){failNextPost=false;await send('Fetch.failRequest',{requestId,errorReason:'ConnectionClosed'});return;}
    }
-   const reply=request.method==='POST'?{ok:true,rows:1,submissionId:'MOCK-ONLY',signedIn:false}
+   const reply=request.method==='POST'?(nextPostReply||{ok:true,rows:1,submissionId:'MOCK-ONLY',signedIn:false})
     :{ok:true,features:{programNotes:supportsNotes}};
+   if(request.method==='POST')nextPostReply=null;
    await send('Fetch.fulfillRequest',{requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'application/json'},{name:'Access-Control-Allow-Origin',value:'*'}],body:Buffer.from(JSON.stringify(reply)).toString('base64')});
   }
  });
  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
  const wait=async expression=>{for(let n=0;n<160;n++){if(await evaluate(expression))return;await sleep(100);}throw Error('Timed out: '+expression);};
  await send('Runtime.enable');await send('Page.enable');
- await send('Fetch.enable',{patterns:[{urlPattern:'https://script.google.com/macros/s/*',requestStage:'Request'},{urlPattern:'*/team-dashboard/js/data.js',requestStage:'Request'}]});
+ await send('Fetch.enable',{patterns:[{urlPattern:'https://script.google.com/macros/s/*',requestStage:'Request'},{urlPattern:'*/team-dashboard/js/data.js*',requestStage:'Request'}]});
  await send('Page.addScriptToEvaluateOnNewDocument',{source:`addEventListener('DOMContentLoaded',()=>{const style=document.createElement('style');style.textContent='*{animation:none!important;transition:none!important}';document.head.append(style);});`});
  async function open(width=1280){
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -60,6 +62,7 @@ try{
   await evaluate(`(()=>{const p=document.querySelector('#program-list > section');p.querySelector('[id$="-program-name"]').value='SYNTHETIC TEST';p.querySelector('[id$="-scheduled-status"]').value='Completed';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('[id$="-end-date"]').value='2026-10-02';p.querySelector('[id$="-course-hours"]').value='10';p.querySelector('[data-kind=participants]').value='5';p.querySelector('[data-kind=completed]').value='4';p.querySelector('textarea').value=${JSON.stringify(notes)};p.querySelector('.continue-button').click();})()`);
   await wait(`!document.querySelector('#program-next').hidden`);
  }
+ const contactLink=selector=>`document.querySelector('${selector} a')?.getAttribute('href')==='mailto:membership@thetpw.org'&&document.querySelector('${selector}').textContent.endsWith('email membership@thetpw.org.')`;
  const clickFinish=()=>evaluate(`document.querySelector('#finish-form').click();`);
  const success=()=>wait(`!document.querySelector('#submission-result').hidden`);
  for(const width of [1280,390]){
@@ -81,7 +84,16 @@ try{
  await clickFinish();await success();assert.equal(posts.at(-1).payload.programs[0].notes,notes);
  assert.equal(await evaluate(`document.querySelector('.report-program-notes').textContent`),'Additional context: '+notes);assert(await evaluate(`!document.querySelector('.report-program-notes script')`));console.log('PASS notes survive editing, reach payload and render as literal text');
  await open();await fill('Keep my context');supportsNotes=false;let before=posts.length;await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('receiver needs')`);assert.equal(posts.length,before);assert(await evaluate(`document.querySelector('#submission-result').hidden`));supportsNotes=true;await clickFinish();await success();assert.equal(posts.at(-1).payload.programs[0].notes,'Keep my context');console.log('PASS legacy receiver cannot silently lose notes; retry works after capability upgrade');
- await open();await fill('Retry preserves context');failNextPost=true;before=posts.length;await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('Couldn’t reach')`);await clickFinish();await success();assert.equal(posts.length,before+2);assert.equal(posts[before].payload.submissionId,posts[before+1].payload.submissionId);assert.equal(posts.at(-1).payload.programs[0].notes,'Retry preserves context');console.log('PASS network failure preserves notes and retry ID');
+ await open();await fill('Retry preserves context');failNextPost=true;before=posts.length;await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('Couldn’t reach')`);assert(await evaluate(contactLink('#program-feedback')));await clickFinish();await success();assert.equal(posts.length,before+2);assert.equal(posts[before].payload.submissionId,posts[before+1].payload.submissionId);assert.equal(posts.at(-1).payload.programs[0].notes,'Retry preserves context');console.log('PASS network failure preserves notes and retry ID, and shows who to email');
+ // A problem the member can fix in the form names the program; TPW's own problems add who to email.
+ await open();await fill();nextPostReply={ok:false,errors:['Program 1: the end date is before the start date.']};await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('end date is before')`);assert(!await evaluate(`!!document.querySelector('#program-feedback a')`));assert(!await evaluate(`document.querySelector('#program-feedback').textContent.includes('membership@')`));
+ nextPostReply={ok:false,signInNeeded:true,errors:['Please sign in again before submitting. Your answers are still on the page.']};await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('sign in again')`);assert(!await evaluate(`!!document.querySelector('#program-feedback a')`));
+ nextPostReply={ok:false,errors:['The sheet is busy. Please try again in a minute.']};await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('sheet is busy')`);assert(await evaluate(contactLink('#program-feedback')));
+ nextPostReply={ok:false,errors:['<b>not markup</b>']};await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('<b>not markup</b>')`);assert(!await evaluate(`!!document.querySelector('#program-feedback b')`));assert(await evaluate(contactLink('#program-feedback')));
+ nextPostReply={ok:false};await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('Something went wrong')`);assert(await evaluate(contactLink('#program-feedback')));
+ await clickFinish();await success();console.log('PASS validation errors have no contact line; server and unknown errors link to membership@thetpw.org as text, not markup');
+ failDashboard=true;await send('Page.navigate',{url:base+'/team-form/?embed=1&account=SYNTHETIC-TEST'});await wait(`document.querySelector('.prefill-note')?.textContent.includes('starts blank')`);failDashboard=false;
+ assert(await evaluate(contactLink('.prefill-note')));assert(await evaluate(`document.querySelector('.prefill-note').textContent.includes('If your programs should be here, email')&&!document.querySelector('#organization-step').hidden`));console.log('PASS failed last-quarter load starts blank and says who to email');
  await open();await evaluate(`const p=document.querySelector('#program-list > section');p.querySelector('[id$="-program-name"]').value='SYNTHETIC';p.querySelector('[id$="-scheduled-status"]').value='In Progress';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('textarea').value='x'.repeat(2001);p.querySelector('.continue-button').click();`);assert(await evaluate(`document.querySelector('#program-next').hidden`));console.log('PASS oversized optional context is rejected');
  // Yards: TPW's letter yards come first, and a member can type in one that isn't listed.
  await send('Emulation.setDeviceMetricsOverride',{width:1280,height:1000,deviceScaleFactor:1,mobile:false});
