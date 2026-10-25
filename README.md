@@ -120,8 +120,8 @@ estimates but now reads the same Google Sheet through the receiver (`?view=dashb
 `team-form/receiver/Dashboard.gs`), so new filings appear; made-up sample
 organizations are badged. **Data** separately embeds the
 [reporting Google Sheet](https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0),
-with an **Open in Google Sheets** fallback link. Google's existing sharing
-permissions apply; nothing is published publicly.
+with an **Open in Google Sheets** fallback link, for the TPW staff view only (members don't
+see the tab). Google's existing sharing permissions apply; nothing is published publicly.
 **Members Login**, when signed out, opens a copy of TPW's own sign-in box ("Welcome to
 TPW", from thetpw.org/account/login) with three demo accounts (Org 1, Org 2, TPW staff);
 signing in goes straight to **Log data**. Signed in, **Account** opens a mock of TPW's
