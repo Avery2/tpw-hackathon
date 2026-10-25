@@ -1,3 +1,5 @@
+**Update 25 Oct 2026: Firebase is retired.** This dashboard now reads TPW's Google Sheet through the receiver (`team-form/receiver/Dashboard.gs`, `?view=dashboard`) via `assets/dashboard-source.js`, so new filings do reach it. The made-up Org 1 and Org 2 come from `data/demo/dashboard-sample.json`. The notes below about Firebase describe the earlier version.
+
 # Dashboard, data and demo account entry
 
 **Dashboard** (`team-dashboard/index.html`) preserves the original participant chart,
@@ -17,8 +19,16 @@ Firebase dashboard or seeded charts. Its Sheet is not filtered by the
 
 ## Account drawer
 
-**Members Login / Account** opens a visual mock of TPW's existing plain white
-account drawer. Orders, Payment Methods, Address and Profile are static preview
+**Members Login**, when signed out, opens a copy of TPW's own sign-in box: the
+"Welcome to TPW" panel from thetpw.org/account/login, measured on 25 Oct 2026 (480px
+white box, Email, Password, dark **Sign in** button, Forgot Password? and Create account).
+The password box is switched off and nothing is checked. Typing one of the demo emails, or
+pressing **Org 1**, **Org 2** or **TPW staff**, picks that demo account and goes straight to
+**Log data**; any other email gets "This demo only has three accounts". Forgot Password? and
+Create account just say they aren't part of the demo.
+
+Signed in, **Account** opens a visual mock of TPW's existing plain white
+account drawer, greeting the demo account by name ("Hi, Org 1"). Orders, Payment Methods, Address and Profile are static preview
 sections, not working account tools. The only new entry is **Intake**, marked
 with a small **New** badge, linking to **Log data**. The demo skips real sign-in:
 it never collects a password, email or payment details. Close, Escape, backdrop

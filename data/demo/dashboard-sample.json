@@ -1,0 +1,5893 @@
+{
+ "_about": "Made-up sample organizations and submissions, always shown with a Sample data badge (assets/dashboard-source.js adds it) so the dashboards have something to display. Exported once from the retired Firebase project on 25 Oct 2026. Real submissions come from TPW's Google Sheet. Delete this file (or empty its lists) when real data is enough.",
+ "orgs": [
+  {
+   "id": "org-1",
+   "name": "Org 1",
+   "description": "Sample organization with fictional program data for exploring the dashboard.",
+   "programCatalog": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue"
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways"
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop"
+    }
+   ]
+  },
+  {
+   "id": "org-2",
+   "name": "Org 2",
+   "description": "Sample organization with fictional program data for exploring the dashboard.",
+   "programCatalog": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness"
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness"
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership"
+    }
+   ]
+  }
+ ],
+ "submissions": [
+  {
+   "id": "sample-quarter-org-1-2024-q1",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 24,
+     "participants": 14,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 18,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 12,
+     "participants": 9,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 1,
+    "year": 2024
+   },
+   "submittedAt": "2024-03-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2024-q1",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 16,
+     "participants": 12,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 30,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31",
+     "courseHours": 20,
+     "participants": 8,
+     "participantsCompleted": 5
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 8,
+     "participantsCompleted": 5,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-01-01",
+     "endDate": "2024-03-31"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2024,
+    "quarter": 1
+   },
+   "submittedAt": "2024-03-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2024-q2",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 24,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 18,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 12,
+     "participants": 9,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2024,
+    "quarter": 2
+   },
+   "submittedAt": "2024-06-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2024-q2",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 16,
+     "participants": 12,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 30,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30",
+     "courseHours": 20,
+     "participants": 8,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 8,
+     "participantsCompleted": 6,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-04-01",
+     "endDate": "2024-06-30"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2024,
+    "quarter": 2
+   },
+   "submittedAt": "2024-06-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2024-q3",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 24,
+     "participants": 16,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 18,
+     "participants": 12,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 12,
+     "participants": 11,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 12,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 11,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 3,
+    "year": 2024
+   },
+   "submittedAt": "2024-09-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2024-q3",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 16,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 30,
+     "participants": 11,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30",
+     "courseHours": 20,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 12,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 10,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-07-01",
+     "endDate": "2024-09-30"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 3,
+    "year": 2024
+   },
+   "submittedAt": "2024-09-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2024-q4",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 24,
+     "participants": 17,
+     "participantsCompleted": 13
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 18,
+     "participants": 12,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 12,
+     "participants": 10,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 12,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 11,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 4,
+    "year": 2024
+   },
+   "submittedAt": "2024-12-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2024-q4",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 16,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 30,
+     "participants": 11,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31",
+     "courseHours": 20,
+     "participants": 9,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 12,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 9,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2024-10-01",
+     "endDate": "2024-12-31"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2024,
+    "quarter": 4
+   },
+   "submittedAt": "2024-12-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2025-q1",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 24,
+     "participants": 19,
+     "participantsCompleted": 13
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 18,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 12,
+     "participants": 12,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 14,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 13,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2025,
+    "quarter": 1
+   },
+   "submittedAt": "2025-03-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2025-q1",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 16,
+     "participants": 17,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 30,
+     "participants": 13,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31",
+     "courseHours": 20,
+     "participants": 11,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 14,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 11,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-01-01",
+     "endDate": "2025-03-31"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 1,
+    "year": 2025
+   },
+   "submittedAt": "2025-03-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2025-q2",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 24,
+     "participants": 19,
+     "participantsCompleted": 13
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 18,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 12,
+     "participants": 12,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 14,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 13,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2025,
+    "quarter": 2
+   },
+   "submittedAt": "2025-06-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2025-q2",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 16,
+     "participants": 17,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 30,
+     "participants": 13,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30",
+     "courseHours": 20,
+     "participants": 11,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 14,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 11,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-04-01",
+     "endDate": "2025-06-30"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2025,
+    "quarter": 2
+   },
+   "submittedAt": "2025-06-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2025-q3",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 24,
+     "participants": 22,
+     "participantsCompleted": 16
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 18,
+     "participants": 16,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 12,
+     "participants": 14,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 16,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 15,
+     "participantsCompleted": 11,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 3,
+    "year": 2025
+   },
+   "submittedAt": "2025-09-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2025-q3",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 16,
+     "participants": 19,
+     "participantsCompleted": 14
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 30,
+     "participants": 15,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30",
+     "courseHours": 20,
+     "participants": 13,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 16,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 13,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-07-01",
+     "endDate": "2025-09-30"
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 3,
+    "year": 2025
+   },
+   "submittedAt": "2025-09-30T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-1-2025-q4",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 24,
+     "participants": 22,
+     "participantsCompleted": 17
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 18,
+     "participants": 16,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 12,
+     "participants": 14,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "courseHours": 104,
+     "participants": 16,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31"
+    },
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "courseHours": 52,
+     "participants": 15,
+     "participantsCompleted": 11,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2025,
+    "quarter": 4
+   },
+   "submittedAt": "2025-12-31T18:00:00Z"
+  },
+  {
+   "id": "sample-quarter-org-2-2025-q4",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 16,
+     "participants": 19,
+     "participantsCompleted": 14
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 30,
+     "participants": 15,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31",
+     "courseHours": 20,
+     "participants": 12,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "courseHours": 156,
+     "participants": 16,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31"
+    },
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "courseHours": 208,
+     "participants": 12,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "status": "Completed",
+     "startDate": "2025-10-01",
+     "endDate": "2025-12-31"
+    }
+   ],
+   "reportingPeriod": {
+    "year": 2025,
+    "quarter": 4
+   },
+   "submittedAt": "2025-12-31T18:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-05-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 6,
+     "participantsCompleted": 3
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 4,
+     "participantsCompleted": 4
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 4,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-05-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-05-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 3,
+     "participantsCompleted": 1
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 3,
+     "participantsCompleted": 2
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 2,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-05-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-05-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 3,
+     "participantsCompleted": 3,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-05-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 3,
+     "participantsCompleted": 2,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-05-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 3,
+     "participantsCompleted": 3,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-05-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 3,
+     "participantsCompleted": 3,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-05-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 8,
+     "participantsCompleted": 4
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 6,
+     "participantsCompleted": 5
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 5,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-05-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-05-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 5,
+     "participantsCompleted": 2
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 4,
+     "participantsCompleted": 4
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 3,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-05-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-05-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 5,
+     "participantsCompleted": 4,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-05-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 4,
+     "participantsCompleted": 3,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-05-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 5,
+     "participantsCompleted": 4,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-05-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 5,
+     "participantsCompleted": 4,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-05-15T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-06-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 10,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 7,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 6,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-06-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-06-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 7,
+     "participantsCompleted": 3
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 6,
+     "participantsCompleted": 5
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 5,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-06-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-06-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 6,
+     "participantsCompleted": 5,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-06-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 5,
+     "participantsCompleted": 4,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-06-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 7,
+     "participantsCompleted": 6,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-06-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 7,
+     "participantsCompleted": 6,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-06-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 12,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 9,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 7,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-06-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-06-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 10,
+     "participantsCompleted": 4
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 7,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 6,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-06-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-06-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 8,
+     "participantsCompleted": 6,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-06-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 6,
+     "participantsCompleted": 5,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-06-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 9,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-06-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 9,
+     "participantsCompleted": 7,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-06-15T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-07-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 14,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 10,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 9,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-07-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-07-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 11,
+     "participantsCompleted": 5
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 9,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 7,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-07-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-07-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 9,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-07-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 8,
+     "participantsCompleted": 6,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-07-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 10,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-07-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 10,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-07-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 13,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 10,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 8,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-07-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-07-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 13,
+     "participantsCompleted": 6
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 10,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 8,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-07-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-07-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 11,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-07-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 9,
+     "participantsCompleted": 8,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-07-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 12,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-07-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 12,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-07-15T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-08-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 17,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 12,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 10,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-08-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-08-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 12,
+     "participantsCompleted": 5
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 10,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 8,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-08-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-08-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 13,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-08-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 10,
+     "participantsCompleted": 9,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-08-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 14,
+     "participantsCompleted": 11,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-08-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 14,
+     "participantsCompleted": 11,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-08-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 20,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 15,
+     "participantsCompleted": 13
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 12,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-08-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-08-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 16,
+     "participantsCompleted": 7
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 12,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 10,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-08-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-08-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 14,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-08-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 12,
+     "participantsCompleted": 10,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-08-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 15,
+     "participantsCompleted": 13,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-08-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 15,
+     "participantsCompleted": 13,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-08-15T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-09-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 22,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 16,
+     "participantsCompleted": 14
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 14,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-09-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-09-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 18,
+     "participantsCompleted": 8
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 14,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 12,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-09-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-09-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 16,
+     "participantsCompleted": 13,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-09-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 13,
+     "participantsCompleted": 11,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-09-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 17,
+     "participantsCompleted": 14,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-09-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 17,
+     "participantsCompleted": 14,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-09-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 25,
+     "participantsCompleted": 14
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 18,
+     "participantsCompleted": 16
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 15,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-09-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-09-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 20,
+     "participantsCompleted": 9
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 16,
+     "participantsCompleted": 14
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 13,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-09-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-09-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 17,
+     "participantsCompleted": 14,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-09-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 14,
+     "participantsCompleted": 12,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-09-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 19,
+     "participantsCompleted": 16,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-09-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 19,
+     "participantsCompleted": 16,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-09-15T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-10-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 27,
+     "participantsCompleted": 15
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 20,
+     "participantsCompleted": 18
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 17,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-01T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-10-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 24,
+     "participantsCompleted": 10
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 18,
+     "participantsCompleted": 16
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 15,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-01T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-10-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 19,
+     "participantsCompleted": 15,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-10-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 15,
+     "participantsCompleted": 13,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-10-01",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 21,
+     "participantsCompleted": 17,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-01T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-10-01",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 21,
+     "participantsCompleted": 17,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-01T20:00:00Z"
+  },
+  {
+   "id": "history-org-1-2026-10-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 24,
+     "participants": 30,
+     "participantsCompleted": 17
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 18,
+     "participants": 23,
+     "participantsCompleted": 20
+    },
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 12,
+     "participants": 19,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-15T18:00:00Z"
+  },
+  {
+   "id": "history-org-2-2026-10-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 16,
+     "participants": 26,
+     "participantsCompleted": 11
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 30,
+     "participants": 20,
+     "participantsCompleted": 18
+    },
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-04-01",
+     "endDate": "2026-10-24",
+     "courseHours": 20,
+     "participants": 17,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-15T18:00:00Z"
+  },
+  {
+   "id": "history-rac-community-leadership-2026-10-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 20,
+     "participantsCompleted": 17,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-peer-mentoring-2026-10-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 17,
+     "participantsCompleted": 14,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-reentry-skills-2026-10-15",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 22,
+     "participantsCompleted": 19,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-15T20:00:00Z"
+  },
+  {
+   "id": "history-rac-restorative-intensive-2026-10-15",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "In Progress",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 22,
+     "participantsCompleted": 19,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "submittedAt": "2026-10-15T20:00:00Z"
+  },
+  {
+   "id": "sample-org-1-1",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North",
+      "South"
+     ]
+    },
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "restorative-dialogue",
+     "name": "Restorative Dialogue",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North",
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 24,
+     "participants": 32,
+     "participantsCompleted": 18
+    },
+    {
+     "id": "creative-pathways",
+     "name": "Creative Pathways",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 18,
+     "participants": 24,
+     "participantsCompleted": 21
+    }
+   ],
+   "submittedAt": "2026-10-24T18:00:00Z"
+  },
+  {
+   "id": "sample-org-1-2",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "life-skills",
+     "name": "Life Skills Workshop",
+     "status": "Planned",
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 12,
+     "participants": 20,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-24T18:00:00Z"
+  },
+  {
+   "id": "sample-org-2-1",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "North"
+     ]
+    },
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "wellness",
+     "name": "Mindfulness & Wellness",
+     "status": "In Progress",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "North"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 16,
+     "participants": 28,
+     "participantsCompleted": 12
+    },
+    {
+     "id": "career-readiness",
+     "name": "Career Readiness",
+     "status": "Completed",
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 30,
+     "participants": 22,
+     "participantsCompleted": 19
+    }
+   ],
+   "submittedAt": "2026-10-24T18:00:00Z"
+  },
+  {
+   "id": "sample-org-2-2",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "peer-leadership",
+     "name": "Peer Leadership",
+     "status": "Planned",
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ],
+     "startDate": "2026-09-01",
+     "endDate": "2026-12-15",
+     "courseHours": 20,
+     "participants": 18,
+     "participantsCompleted": 0
+    }
+   ],
+   "submittedAt": "2026-10-24T18:00:00Z"
+  },
+  {
+   "id": "sample-rac-community-leadership",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "SQ",
+     "name": "San Quentin Rehabilitation Center (SQ)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-community-leadership",
+     "name": "Community Leadership",
+     "status": "Completed",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 52,
+     "participants": 22,
+     "participantsCompleted": 18,
+     "assignments": [
+      {
+       "code": "SQ",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 4,
+    "year": 2026
+   },
+   "submittedAt": "2026-10-24T20:00:00Z"
+  },
+  {
+   "id": "sample-rac-peer-mentoring",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SOL",
+     "name": "California State Prison, Solano (SOL)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-peer-mentoring",
+     "name": "Peer Mentoring",
+     "status": "Completed",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 208,
+     "participants": 18,
+     "participantsCompleted": 15,
+     "assignments": [
+      {
+       "code": "SOL",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 4,
+    "year": 2026
+   },
+   "submittedAt": "2026-10-24T20:00:00Z"
+  },
+  {
+   "id": "sample-rac-reentry-skills",
+   "orgId": "org-2",
+   "organization": "Org 2",
+   "prisons": [
+    {
+     "code": "SAC",
+     "name": "California State Prison, Sacramento (SAC)",
+     "yards": [
+      "South"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-reentry-skills",
+     "name": "Reentry Skills Intensive",
+     "status": "Completed",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 156,
+     "participants": 24,
+     "participantsCompleted": 20,
+     "assignments": [
+      {
+       "code": "SAC",
+       "yards": [
+        "South"
+       ]
+      }
+     ]
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 4,
+    "year": 2026
+   },
+   "submittedAt": "2026-10-24T20:00:00Z"
+  },
+  {
+   "id": "sample-rac-restorative-intensive",
+   "orgId": "org-1",
+   "organization": "Org 1",
+   "prisons": [
+    {
+     "code": "ASP",
+     "name": "Avenal State Prison (ASP)",
+     "yards": [
+      "North"
+     ]
+    }
+   ],
+   "programs": [
+    {
+     "id": "rac-restorative-intensive",
+     "name": "Restorative Practices Intensive",
+     "status": "Completed",
+     "startDate": "2026-01-15",
+     "endDate": "2026-10-20",
+     "courseHours": 104,
+     "participants": 24,
+     "participantsCompleted": 20,
+     "assignments": [
+      {
+       "code": "ASP",
+       "yards": [
+        "North"
+       ]
+      }
+     ]
+    }
+   ],
+   "reportingPeriod": {
+    "quarter": 4,
+    "year": 2026
+   },
+   "submittedAt": "2026-10-24T20:00:00Z"
+  }
+ ]
+}

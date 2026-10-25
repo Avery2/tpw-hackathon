@@ -5,11 +5,15 @@
 function getFormCapabilities() {
   return {
     ok: true, service: 'TPW guided form submissions', formVersion: 2,
-    features: { programNotes: true, currentQuarter: true, additionalData: true, headerRecovery: true }
+    features: { programNotes: true, currentQuarter: true, additionalData: true, headerRecovery: true, dashboard: true, testData: true }
   };
 }
 
-function doGet() { return json(getFormCapabilities()); }
+function doGet(e) {
+  // ?view=dashboard: the dashboards read submissions back out of the sheet (Dashboard.gs).
+  if (e && e.parameter && e.parameter.view === 'dashboard') return json(dashboardView_(e.parameter));
+  return json(getFormCapabilities());
+}
 
 function doPost(e) {
   var body;
@@ -142,34 +146,46 @@ function appendFormRows_(result) {
     }
     return at;
   });
-  var extraHeading = 'Additional data (JSON)';
-  var extraKey = normalizeFormHeader_(extraHeading);
-  var extraColumn = normalized.indexOf(extraKey);
-  if (extraColumn >= 0 && normalized.lastIndexOf(extraKey) !== extraColumn) {
-    throw formSetupError_('The Sheet has duplicate Additional data (JSON) headings. Keep just one.');
-  }
-  if (extraColumn < 0) {
-    extraColumn = headings.length;
-    // Usually still within the sheet's default 26 columns. Expand only if needed.
-    var book = Sheets.Spreadsheets.get(id, { fields: 'sheets.properties' });
-    var target = book.sheets.filter(function (sheet) { return sheet.properties.title === TAB; })[0];
-    var count = target.properties.gridProperties.columnCount;
-    if (extraColumn >= count) {
-      Sheets.Spreadsheets.batchUpdate({ requests: [{ appendDimension: {
-        sheetId: target.properties.sheetId, dimension: 'COLUMNS', length: extraColumn + 1 - count
-      } }] }, id);
-    }
-    Sheets.Spreadsheets.Values.update({ values: [[extraHeading]] }, id,
-      submissionRange_(formColumnLetter_(extraColumn + 1) + '1'), { valueInputOption: 'RAW' });
-  }
-  var width = Math.max(headings.length, extraColumn + 1);
+  var extraColumn = formExtraColumn_(id, headings, 'Additional data (JSON)');
+  // Yes while the TEST_DATA script setting says so (the hackathon demo); No otherwise, so a
+  // fresh copy for real use never marks real filings as test data.
+  var testColumn = formExtraColumn_(id, headings, 'Test data');
+  var testData = /^(yes|true)$/i.test(String(PropertiesService.getScriptProperties().getProperty('TEST_DATA') || '').trim()) ? 'Yes' : 'No';
+  var width = headings.length;
   var mapped = result.rows.map(function (row, index) {
     var output = Array(width).fill('');
     columns.forEach(function (destination, source) { output[destination] = row[source]; });
     output[extraColumn] = "'" + result.snapshots[index];
+    output[testColumn] = "'" + testData;
     return output;
   });
   appendRows_(mapped);
+}
+
+// The column with this heading, made at the end of the heading row if it isn't there yet.
+// Adds it to headings, so the next call finds the next free column.
+function formExtraColumn_(id, headings, heading) {
+  var key = normalizeFormHeader_(heading);
+  var normalized = headings.map(normalizeFormHeader_);
+  var at = normalized.indexOf(key);
+  if (at >= 0 && normalized.lastIndexOf(key) !== at) {
+    throw formSetupError_('The Sheet has duplicate ' + heading + ' headings. Keep just one.');
+  }
+  if (at >= 0) return at;
+  at = headings.length;
+  // Usually still within the sheet's default 26 columns. Expand only if needed.
+  var book = Sheets.Spreadsheets.get(id, { fields: 'sheets.properties' });
+  var target = book.sheets.filter(function (sheet) { return sheet.properties.title === TAB; })[0];
+  var count = target.properties.gridProperties.columnCount;
+  if (at >= count) {
+    Sheets.Spreadsheets.batchUpdate({ requests: [{ appendDimension: {
+      sheetId: target.properties.sheetId, dimension: 'COLUMNS', length: at + 1 - count
+    } }] }, id);
+  }
+  Sheets.Spreadsheets.Values.update({ values: [[heading]] }, id,
+    submissionRange_(formColumnLetter_(at + 1) + '1'), { valueInputOption: 'RAW' });
+  headings.push(heading);
+  return at;
 }
 
 // A newer Rows.gs adds Reporting Quarter after the original columns. Recover its
