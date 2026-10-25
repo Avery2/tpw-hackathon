@@ -529,7 +529,7 @@
           <p class="step-label">Step 2 · Facilities</p>
           <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
         <div class="facility-overview">
-          <h2 class="form-title">Your facilities</h2>
+          <h2 class="form-title" id="prisons-heading">Your facilities</h2>
           <p class="form-hint" id="facility-help">Select each facility where you operate, then check all the yards you work in at that facility.</p>
           <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected facilities"></div>
           <p id="facility-empty" class="form-hint">No facilities selected yet.</p>
@@ -671,6 +671,19 @@
 <script src="backend.js"></script>
 <script type="module">
 import { currentReportingPeriod } from './js/reporting-period.js';
+// Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
+// not "your".
+const staffView = new URLSearchParams(location.search).get('account') === 'tpw';
+if (staffView) {
+  for (const [selector, text] of [
+    ['#organization-question', 'Which organization are you logging data for?'],
+    ['#organization-help', 'Pick the organization from the list so their numbers are submitted under one name. If it isn’t listed, type it in full.'],
+    ['#prisons-heading', 'Their facilities']
+  ]) for (const node of document.querySelectorAll(selector)) node.textContent = text;
+  // The label beside Edit facilities, not the organization line on each program card.
+  const sideLabel = document.querySelector('#edit-prisons')?.previousElementSibling;
+  if (sideLabel) sideLabel.textContent = 'Their facilities & yards';
+}
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
 const organizationStep = document.querySelector('#organization-step');
@@ -703,7 +716,7 @@ form.addEventListener('submit', event => {
   event.preventDefault();
   if (organizationStep.hidden || transitioning) return;
   if (!organization.value.trim()) {
-    organization.setCustomValidity('Enter your organization name.');
+    organization.setCustomValidity(staffView ? 'Enter the organization name.' : 'Enter your organization name.');
     organization.reportValidity();
     return;
   }
@@ -1589,7 +1602,7 @@ async function prefillFromLastQuarter() {
   }
   completedPrograms.push(...draft.programs);
   refreshPrisons();
-  document.querySelector('#program-next-heading').textContent = 'Your programs this quarter';
+  document.querySelector('#program-next-heading').textContent = staffView ? 'Their programs this quarter' : 'Your programs this quarter';
   reportingPeriod();
   // The prisons screen is still there behind "Edit prisons", worded for this case.
   document.querySelector('#facilities-question').textContent = 'Have any of the facilities you operate in changed?';
