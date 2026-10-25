@@ -692,6 +692,9 @@ async function showStep(from, to, focusTarget) {
   to.hidden = false;
   to.classList.add('entering');
   focusTarget.focus({ preventScroll: true });
+  // Inside Log data the form grows to its full height, so the page around it doesn't move
+  // by itself: on a phone the next step would open off-screen. Bring its heading into view.
+  if (window.parent !== window) focusTarget.scrollIntoView({ block: 'start' });
   await Promise.all(to.getAnimations().map(animation => animation.finished.catch(() => {})));
   to.classList.remove('entering');
   transitioning = false;
@@ -1140,7 +1143,8 @@ function completeProgram(program) {
   for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
   for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
   for (const field of program.querySelectorAll('input, select, textarea')) {
-    if (!field.checkValidity()) { field.reportValidity(); return; }
+    // Say what's wrong now, so an earlier message (say, about dates) isn't left showing.
+    if (!field.checkValidity()) { feedback.textContent = field.validationMessage; field.reportValidity(); return; }
   }
   // Catch numbers and dates that can't be true before they reach the totals.
   const field = suffix => program.querySelector(`[id$="-${suffix}"]`);
@@ -1284,6 +1288,7 @@ function memberCanFix(result) {
   return !!result.signInNeeded || (result.errors.length > 0 && result.errors.every(error => /^Program \d+\b/.test(error)));
 }
 let submissionId;
+let submittedPayload = '';
 let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
   if (submitting) return;
@@ -1319,7 +1324,10 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     document.querySelector('#submission-heading').focus();
   };
   // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
-  submissionId ||= crypto.randomUUID();
+  // A new ID once the entries change: otherwise the receiver could answer a corrected retry
+  // with the first attempt's receipt and quietly drop the correction.
+  const payloadNow = JSON.stringify(toPayload(submission, ''));
+  if (!submissionId || payloadNow !== submittedPayload) { submissionId = crypto.randomUUID(); submittedPayload = payloadNow; }
   if (!backendUrl() && !window.google?.script?.run) {
     // No back end set up: the demo behavior, saved in this browser only.
     try {
@@ -1343,7 +1351,10 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     result = await sendToBackend(toPayload(submission, submissionId));
   } catch (error) {
     console.error('Submission failed:', error);
-    showWithContact(feedback, 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
+    // An unreadable reply (say, a Google sign-in page) isn't a connection problem.
+    showWithContact(feedback, error instanceof SyntaxError
+      ? 'TPW’s form service sent back something unexpected, so we can’t tell if this was saved. Your entries are still here; please try again.'
+      : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
     return;
   } finally {
     submitting = false;
@@ -1357,7 +1368,8 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     else showWithContact(feedback, errors ? errors.join(' ') : 'Something went wrong. Your entries are still here; please try again.');
     return;
   }
-  showDone(`Submitted to TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
+  const rows = Number.isInteger(result.rows) ? `${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, ` : '';
+  showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.`);
 });
 
 // The address in backend.js, if one is set.

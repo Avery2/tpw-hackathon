@@ -35,7 +35,8 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  nav.append(link('Form Demo', 'form-demo/'), link('Dashboard', 'dashboard/'));
+  // The current form and dashboard; form-demo/ and dashboard/ are the older versions.
+  nav.append(link('Form Demo', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
   const report = link('Annual report (PDF)', 'report/TPW-Collective-Impact-Report-2026.pdf');
   report.target = '_blank'; report.rel = 'noopener';
   report.title = 'Combined TPW prototype report · June 2026 data · opens in a new tab';
