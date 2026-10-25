@@ -19,22 +19,17 @@ try {
   socket = new WebSocket(target.webSocketDebuggerUrl);
   await new Promise(resolve => socket.addEventListener('open', resolve, { once: true }));
   let sequence = 0; const pending = new Map(), exceptions = [], requests = [], submissions = [];
-  // Mock the Firebase client, not the dashboard's rendering or data calculations.
-  const dashboardFixture = `export async function firestoreClient() {
-    const org = { id: 'org-1', name: 'SYNTHETIC DASHBOARD ORG' };
-    const records = [{ id: 'fixture', orgId: org.id, organization: org.name,
-      submittedAt: '2026-10-01T12:00:00Z', synthetic: true,
-      programs: [{ id: 'fixture-program', name: 'Synthetic program', status: 'Completed',
-        participants: 5, participantsCompleted: 4, courseHours: 52,
-        assignments: [{ code: 'SQ', yards: ['North'] }] }] }];
-    return { db: {}, doc: (_, name, id) => ({ name, id }),
-      getDoc: async ref => ({ id: ref.id, exists: () => true, data: () => ({ ...org, id: ref.id }) }),
-      collection: (_, name) => ({ name }), where: (field, op, value) => ({ field, value }),
-      query: (collection, ...filters) => ({ ...collection, filters }),
-      getDocs: async request => ({ docs: (request.name === 'orgs' ? [org] : records.filter(row =>
-        (request.filters || []).every(filter => row[filter.field] === filter.value)))
-        .map(row => ({ id: row.id, data: () => row })) }) };
-  }`;
+  // Mock TPW's Google Sheet (the receiver's ?view=dashboard reply) and the sample file, not the
+  // dashboard's rendering or data calculations.
+  const sheetFixture = JSON.stringify({ ok: true, orgs: [{ id: 'org-1', name: 'Org 1' }], submissions: [{
+    id: 'fixture', orgId: 'org-1', organization: 'Org 1', submittedAt: '2026-10-01T12:00:00Z',
+    reportingPeriod: { quarter: 4, year: 2026 }, previousSubmissionId: '', testData: false,
+    prisons: [{ code: 'SQ', name: 'San Quentin Rehabilitation Center (SQ)', yards: ['North'] }],
+    programs: [{ id: 'fixture-program', name: 'Synthetic program', status: 'Completed',
+      participants: 5, participantsCompleted: 4, courseHours: 52,
+      assignments: [{ code: 'SQ', yards: ['North'] }] }] }] });
+  const sampleFixture = JSON.stringify({ orgs: [{ id: 'org-1', name: 'Org 1' }, { id: 'org-2', name: 'Org 2' }], submissions: [] });
+  const json = body => ({ responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'application/json' }, { name: 'Access-Control-Allow-Origin', value: '*' }], body: Buffer.from(body).toString('base64') });
   const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++sequence; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params })); });
   socket.addEventListener('message', async event => {
     const m = JSON.parse(event.data);
@@ -43,8 +38,10 @@ try {
     if (m.method === 'Network.requestWillBeSent') requests.push(m.params.request.url);
     if (m.method === 'Fetch.requestPaused') {
       const { requestId, request } = m.params;
-      if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
-      else if (new URL(request.url).pathname.endsWith('/team-form/js/submissions.js')) await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/javascript' }], body: Buffer.from(dashboardFixture).toString('base64') });
+      const address = new URL(request.url);
+      if (request.url.startsWith('https://script.google.com/') && request.method === 'GET' && address.searchParams.get('view') === 'dashboard') await send('Fetch.fulfillRequest', { requestId, ...json(sheetFixture) });
+      else if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
+      else if (address.pathname.endsWith('/data/demo/dashboard-sample.json')) await send('Fetch.fulfillRequest', { requestId, ...json(sampleFixture) });
       else await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
     }
   });
@@ -59,7 +56,7 @@ try {
   };
   const screenshot = async name => { const image = await send('Page.captureScreenshot', { format: 'png' }); await writeFile(path.join(process.env.MEMBER_SCREENSHOT_DIR || tmpdir(), `tpw-${name}.png`), Buffer.from(image.data, 'base64')); };
   await send('Page.enable'); await send('Runtime.enable'); await send('Network.enable');
-  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/team-form/js/submissions.js' }] });
+  await send('Fetch.enable', { patterns: [{ urlPattern: 'https://docs.google.com/spreadsheets/*' }, { urlPattern: 'https://script.google.com/macros/s/*' }, { urlPattern: '*/data/demo/dashboard-sample.json' }] });
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     for (const route of ['/', '/site/ourstory/index.html', '/site/our-members/index.html', '/site/ourwork/index.html', '/site/our-team/index.html']) {
@@ -111,7 +108,7 @@ try {
     await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
-    assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("not connected to the Google Sheet")'));
+    assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
     assert.deepEqual(await ev('[...document.querySelectorAll(".program-stats strong")].map(n=>n.textContent)'), ['1', '1', '1']);
     assert.equal(await ev('document.querySelector(".chart-latest").textContent'), '5 participants');
     assert.deepEqual(await ev('[...document.querySelectorAll(".rac-total")].map(n=>n.textContent)'), ['40', '$2,360']);
