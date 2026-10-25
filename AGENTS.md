@@ -8,7 +8,7 @@ The team repo for **Transformative Programming Works (TPW)** at Hack for Social 
 
 The hackathon brief: TPW can only track *process* data (who enrolled, how many hours). Join that to parole and recidivism data so TPW can track *impact*.
 
-What we've built is a static site with no server, hosted on GitHub Pages at <https://www.averychan.site/tpw-hackathon/>. Members open **Log data** (`intake/simple.html`) from a copy of TPW's website and file either their quarterly totals or one session's attendance. Two Google Apps Scripts check each filing and add it to one private Google Sheet. Alongside sit a Dashboard (still showing Firebase sample data, not new filings), a Data page that shows the sheet, and a printable report prototype. The older "git is the database" ledger is kept for history; new filings don't go there. Two versions of the form and the dashboard now live side by side (the team's, writing to the sheet, and Yuki's original, writing to Firebase); `VERSIONS.md` says which is which.
+What we've built is a static site with no server, hosted on GitHub Pages at <https://www.averychan.site/tpw-hackathon/>. Members open **Log data** (`intake/simple.html`) from a copy of TPW's website and submit their quarterly totals. Two Google Apps Scripts check each submission and add it to one private Google Sheet. Alongside sit a Dashboard and a Data page that show the sheet, and a printable report prototype. Firebase was retired on 25 Oct 2026, so the Google Sheet is the only record: both dashboards read it, with made-up sample organizations that are always badged as sample data. The older "git is the database" ledger is kept for history; new submissions don't go there. `VERSIONS.md` says which route is which.
 
 ## Read these first
 
