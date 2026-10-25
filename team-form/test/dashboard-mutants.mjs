@@ -34,7 +34,7 @@ const MUTANTS = [
   ['team-form/receiver/Code.gs', "  if (at >= 0) return at;\n", "", 'makes a new Test data column on every filing'],
   ['team-form/receiver/Dashboard.gs', "if (/^yes$/i.test(dashboardText_(cell(at.test)))) submission.testData = true;", "", 'ignores the Test data column'],
   ['assets/dashboard-source.js', "synthetic: record.testData === true", "synthetic: false", 'never badges test rows'],
-  ['dashboard/js/data.js', "export { loadDashboard } from '../../assets/dashboard-source.js';", "export async function loadDashboard() { return { org: null, orgs: [], submissions: [] }; }", 'the original dashboard stops using the sheet']
+  ['team-dashboard/js/data.js', "export { loadDashboard } from '../../assets/dashboard-source.js';", "export async function loadDashboard() { return { org: null, orgs: [], submissions: [] }; }", 'the team dashboard stops using the sheet']
 ];
 
 const run = () => TESTS.every((t) => spawnSync(process.execPath, ['--test', t], { cwd: root, encoding: 'utf8' }).status === 0);

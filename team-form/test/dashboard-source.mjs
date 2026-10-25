@@ -111,8 +111,10 @@ test('an organization with no profile is an error, as before', async () => {
   await assert.rejects(loadDashboard('org-99'), /not found/);
 });
 
-test('both dashboards use this loader, so neither can drift back to Firebase', async () => {
-  assert.equal(dashboardData.loadDashboard, loadDashboard);
+test('parallel dashboards retain their separate Firebase and Sheet loaders', async () => {
+  assert.notEqual(dashboardData.loadDashboard, loadDashboard);
+  const original = fs.readFileSync(path.join(root, 'dashboard/js/data.js'), 'utf8');
+  assert.match(original, /firestoreClient/);
   assert.equal(teamDashboardData.loadDashboard, loadDashboard);
 });
 
@@ -131,7 +133,7 @@ test('the form\'s last-quarter prefill comes from the sheet: a program filed in 
   assert.deepEqual(draft.reportingPeriod, { quarter: 1, year: 2027 });
 });
 
-test('no page in the site still loads Firebase', () => {
+test('Firebase stays confined to the preserved original dashboard and form', () => {
   const offenders = [];
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -145,5 +147,5 @@ test('no page in the site still loads Firebase', () => {
     }
   };
   walk(root);
-  assert.deepEqual(offenders, []);
+  assert.deepEqual(offenders.sort(), ['dashboard/js/data.js', 'form-demo/js/submissions.js']);
 });
