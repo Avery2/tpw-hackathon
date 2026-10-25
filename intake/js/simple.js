@@ -97,11 +97,9 @@ const current = () => state.forms.find((f) => f.kind === kind);
 
 /* ----------------------------------------------------------------- tabs */
 /**
- * The row of ways in. Session comes from the contract; the guided form does not,
- * because it files nothing — it asks the same questions in order and saves to
- * the browser. Quarter is still in the contract and still routable at
- * #aggregate, but it is not offered: the guided form replaces it as the way a
- * member who counts their own numbers walks through the year.
+ * Session uses the git ledger; the guided form saves quarterly submissions to
+ * Firebase for the dashboard. The older Quarter form stays in the contract at
+ * #aggregate, but is not offered in the tab row.
  */
 const DEMO_KIND = 'demo';
 
@@ -129,7 +127,7 @@ function render() {
   const app = document.getElementById('app');
   if (kind === DEMO_KIND) {
     note(
-      'For TPW member organizations only — this is not a public form. Demo build: the guided form keeps its answers in this browser and files nothing.'
+      'For TPW member organizations only — this is not a public form. Demo build: guided submissions are saved to Firebase, not sent to CDCR.'
     );
     app.innerHTML = demoPanel();
     window.scrollTo({ top: 0 });
@@ -229,8 +227,8 @@ function render() {
  */
 function demoPanel() {
   return `
-    <p class="hint demo-note">The guided form keeps its answers in this browser and files nothing.
-      To file a record that counts, use <a href="#session">Session</a>.</p>
+    <p class="hint demo-note">Submitting this form saves to Firebase for the <a href="../dashboard/">dashboard</a>.
+      <a href="#session">Session</a> entries use the separate GitHub ledger.</p>
     <div class="demo-panel">
       <iframe src="../form-demo/?embed=1" title="Guided program form" loading="lazy"></iframe>
     </div>`;

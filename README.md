@@ -107,6 +107,12 @@ admin/        optional Google-side tools (Apps Script receiver, steward console)
 
 **Live:** <https://www.averychan.site/tpw-hackathon/intake/simple.html> · `/intake/` redirects here.
 
+The default **Form Demo** tab now saves guided quarterly submissions to Firebase;
+`dashboard/` reads them for organization views and quarterly check-ins. **Session**
+continues to use the separate git ledger — there is no double write between the two.
+The dashboard's view chooser is **not authentication**: use synthetic demo data only
+until access controls are in place. See `form-demo/README.md` and `dashboard/README.md`.
+
 Four small pages, no build step, no server, no account. The browser holds the arithmetic;
 GitHub holds the data.
 
