@@ -16,6 +16,9 @@ Google's existing sharing permissions apply. This does not publish the workbook,
 change its permissions, or bypass Google sign-in. Data does not load the
 Firebase dashboard or seeded charts. Its Sheet is not filtered by the
 `#org-1`, `#org-2` or `#tpw` demo keys; Google controls access to the whole workbook.
+Because the workbook holds every organization's numbers, only the TPW staff view (`#tpw`)
+shows the **Data** tab. A member account that opens `raw-data.html` directly is sent to its
+Dashboard. This only hides the tab; Google's sharing is still what decides who can open the Sheet.
 
 ## Account drawer
 
@@ -42,7 +45,7 @@ pages. Modified clicks still use the link's direct logging destination.
 ## Logging layout
 
 The member pages keep the original TPW header/footer, a white background, and
-three quiet horizontal links: **Log data**, **Dashboard**, then **Data**. Forms use the site's
+quiet horizontal links: **Log data** and **Dashboard**, plus **Data** for the TPW staff view only. Forms use the site's
 normal gutters instead of a second narrow centered column. There is no outer
 workspace card, sidebar, avatar or account picker. The only logging tab is
 **Quarterly totals** (the Session tab was removed on 25 Oct 2026). After submission, a compact
