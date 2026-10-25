@@ -73,6 +73,21 @@ and that a member can only ever load their own organization's history (which dep
 Dashboards, reports and anything TPW shares outside should add organizations together, never
 show one organization's numbers, unless TPW decides otherwise.
 
+**Now (checked 25 October 2026):** two things break this, and anyone can open them without
+signing in, because the repository and the website are public:
+
+- The TPW report, `report/TPW-Collective-Impact-Report-2026.pdf`, linked as "Annual report", names
+  Defy Ventures and GRIP Training Institute and compares their completion rates side by side.
+- `data/tpw-collective-impact.csv` and `.xlsx` hold TPW's real rows by organization (Defy Ventures
+  20, GRIP Training Institute 16, Enneagram Prison Project 1).
+
+The demo sign-in doesn't protect either: a menu link can be hidden, but the files themselves are
+public.
+
+**After the demo:** take both out of the public repository (including its history), or replace the
+names with "Organization A" and "Organization B". Share the report with TPW privately, for example
+as a Google Drive file shared only with named TPW staff.
+
 ## 7. The website moves somewhere TPW controls
 
 **Now:** the site runs on Avery's personal GitHub Pages (averychan.site).
