@@ -11,12 +11,29 @@ The spreadsheet stays private. The `/exec` URL is public browser configuration,
 not a credential. This frontend deployment does not modify the Google project,
 its properties, permissions, or deployed script version.
 
-One row is filed per program × prison × yard. Participants and completions are
-entered separately for each yard, avoiding duplicated program totals. Submission
+One row is filed per program × prison × yard. The current California quarter/year
+is inferred, not asked; check-in prefill also stays in the current quarter. Status
+is **In Progress** or **Completed**, not Planned. Optional programme context is
+limited to 2,000 characters, with a reminder not to include personal information.
+Participants and completions are entered separately for each yard, avoiding
+duplicated program totals. Submission
 success is shown only after the real receiver returns `ok: true`; its row count
 and reference are displayed. Errors leave the entries available for retry. The
 client reuses its submission ID on retry, but deduplication requires the deployed
 receiver to support it; the older deployed receiver has not been verified to do so.
+
+## Receiver compatibility
+
+The one-time [receiver update](receiver/README.md) saves context to the existing
+**Notes** column and automatically adds **Additional data (JSON)** to preserve
+future payload fields. It works with both historical row-builder contracts and
+maps columns by header, allowing insertion/reordering without shifting data. No
+existing tab or column is renamed. Current quarter and allowed statuses are also
+enforced on the server after that update.
+
+Until deployed, an older receiver can accept submissions without context. If
+context is nonempty, the form checks capabilities and refuses to silently lose it.
+The comments remain available for retry after the receiver is upgraded.
 
 ## Deliberate demo scope
 

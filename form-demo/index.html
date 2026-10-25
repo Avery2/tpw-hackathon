@@ -212,10 +212,11 @@
   .demo-form { max-width: 800px; margin: 0 auto; background: #fff; border: 1px solid #e4e4e4; border-radius: 14px; padding: clamp(24px, 4vw, 48px); display: grid; gap: 24px; }
   .form-field { display: grid; gap: 8px; min-width: 0; }
   .form-field label { font-weight: 700; font-size: 20px; }
-  .form-field input, .form-field select { width: 100%; min-width: 0; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 12px 16px; }
+  .form-field input, .form-field select, .form-field textarea { width: 100%; min-width: 0; min-height: 54px; border: 1px solid #aaa; border-radius: 8px; background: #fff; color: var(--ink); font: inherit; padding: 12px 16px; }
   .form-field select { padding-right: 36px; }
-  .form-field input::placeholder { color: #737373; }
-  .form-field input:focus-visible, .form-field select:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
+  .form-field textarea { resize: vertical; min-height: 120px; }
+  .form-field input::placeholder, .form-field textarea::placeholder { color: #737373; }
+  .form-field input:focus-visible, .form-field select:focus-visible, .form-field textarea:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
   .date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .count-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: end; }
   .count-row .form-field label { font-size: 16px; line-height: 1.25; }
@@ -377,7 +378,6 @@
   .report-status { background: #f0f0ed; color: #555; border-radius: 999px; font-size: 11px; font-weight: 700; padding: 4px 9px; }
   .report-status[data-status="Completed"] { background: #e4f4e8; color: #235c35; }
   .report-status[data-status="In Progress"] { background: #fff2ce; color: #775516; }
-  .report-status[data-status="Planned"] { background: #eaf0ff; color: #345399; }
   .report-prison .report-program-yards { font-size: 13px; color: #666; margin: 12px 0 16px; }
   .report-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid #eee; padding-top: 14px; margin: 0 0 16px; }
   .report-dates dt { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: .04em; }
@@ -440,22 +440,13 @@
   body.embed .demo-form { padding: 0; border: 0; border-radius: 0; }
   body.embed .form-field label { font-size: 13.5px; }
   body.embed .form-field > input,
-  body.embed .form-field > select {
+  body.embed .form-field > select,
+  body.embed .form-field > textarea {
     font-size: 17px; min-height: 0; padding: 13px 14px; border-color: #d5d1c9;
   }
   body.embed .form-field select { padding-right: 48px; }
 
-.quarter-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; border: 0; padding: 0; margin: 0; }
-.quarter-options label { cursor: pointer; position: relative; }
-.quarter-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
-.quarter-options span { display: grid; gap: 6px; border: 2px solid #ddd; border-radius: 12px; padding: 20px 10px; text-align: center; }
-.quarter-options strong { font-size: 24px; }
-.quarter-options small { color: #666; font-size: 14px; }
-.quarter-options input:checked + span { border-color: var(--sage); background: #edf6ef; }
-.quarter-options input:focus-visible + span { outline: 3px solid var(--sage); outline-offset: 4px; }
-#reporting-year { max-width: 180px; }
-.edit-period { background: none; border: 0; text-decoration: underline; font: inherit; cursor: pointer; }
-@media(max-width: 500px) { .quarter-options { grid-template-columns: repeat(2, 1fr); } }
+.report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 .checkin-banner { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
 
 .checkin-mode #facilities-step > .step-label,
@@ -525,24 +516,10 @@
           </div>
           <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </section>
-        <section id="quarter-step" class="question-step" aria-labelledby="quarter-question" hidden>
-          <p class="step-label">Step 2 · Reporting period</p>
-          <h2 class="form-title" id="quarter-question" tabindex="-1">Which quarter are you reporting for?</h2>
-          <p class="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
-          <fieldset class="quarter-options">
-            <legend class="sr-only">Reporting quarter</legend>
-            <label><input type="radio" name="reporting_quarter" value="1"><span><strong>Q1</strong><small>Jan – Mar</small></span></label>
-            <label><input type="radio" name="reporting_quarter" value="2"><span><strong>Q2</strong><small>Apr – Jun</small></span></label>
-            <label><input type="radio" name="reporting_quarter" value="3"><span><strong>Q3</strong><small>Jul – Sep</small></span></label>
-            <label><input type="radio" name="reporting_quarter" value="4"><span><strong>Q4</strong><small>Oct – Dec</small></span></label>
-          </fieldset>
-          <div class="form-field"><label for="reporting-year">Year</label><input id="reporting-year" name="reporting_year" type="number" min="2000" max="2099" step="1" required></div>
-          <div class="next-actions"><button type="button" class="continue-button" id="quarter-continue">Continue →</button><button type="button" class="edit-period" id="quarter-back">Back to organization</button></div>
-        </section>
         <section id="facilities-step" class="question-step" aria-labelledby="facilities-question" hidden>
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
-          <div class="organization-summary"><span>Reporting period: <strong id="quarter-summary"></strong></span><button id="edit-quarter" type="button">Edit</button></div>
-          <p class="step-label">Step 3 · Facilities</p>
+          <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
+          <p class="step-label">Step 2 · Facilities</p>
           <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
         <div class="facility-overview">
           <h2 class="form-title">Your prisons</h2>
@@ -597,7 +574,7 @@
           <ul id="prison-summary" class="prison-summary"></ul>
           </aside>
           <div class="program-editor">
-          <p class="step-label">Step 4 · Programs</p>
+          <p class="step-label">Step 3 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
           <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
           <div id="program-list" class="question-step"></div>
@@ -639,7 +616,6 @@
           <label for="scheduled-status">Schedule Status</label>
           <select id="scheduled-status" name="scheduled_status" required>
             <option value="" selected disabled>Select a status</option>
-            <option value="Planned">Planned</option>
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
@@ -670,6 +646,11 @@
           <div class="yard-number-rows"></div>
           <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
         </fieldset>
+        <div class="form-field">
+          <label for="program-notes">Anything else you’d like to tell us about this programme? <span class="label-note">(optional)</span></label>
+          <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
+          <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Please don’t include participant names or other identifying information.</p>
+        </div>
         </template>
         </section>
       </form>
@@ -687,35 +668,18 @@
 </footer>
 
 <script src="backend.js"></script>
-<script>
+<script type="module">
+import { currentReportingPeriod } from './js/reporting-period.js';
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
 const organizationStep = document.querySelector('#organization-step');
 const facilitiesStep = document.querySelector('#facilities-step');
-const quarterStep = document.querySelector('#quarter-step');
-const reportingYear = document.querySelector('#reporting-year');
-const today = new Date();
-reportingYear.value = today.getFullYear();
-document.querySelector(`input[name="reporting_quarter"][value="${Math.floor(today.getMonth() / 3) + 1}"]`).checked = true;
 function reportingPeriod() {
-  return { quarter: Number(document.querySelector('input[name="reporting_quarter"]:checked').value), year: Number(reportingYear.value) };
-}
-function continueQuarter() {
-  if (transitioning) return;
-  if (!reportingYear.reportValidity()) return;
-  const period = reportingPeriod();
+  const period = currentReportingPeriod();
   document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
-  if (checkinContext) {
-    if (!programList.children.length && !completedPrograms.length) addProgram(false);
-    refreshPrisons(); form.classList.add('program-mode');
-    showStep(quarterStep, programsStep, document.querySelector('#programs-question'));
-  } else {
-    showStep(quarterStep, facilitiesStep, document.querySelector('#facilities-question'));
-  }
+  return period;
 }
-document.querySelector('#quarter-continue').addEventListener('click', continueQuarter);
-document.querySelector('#quarter-back').addEventListener('click', () => showStep(quarterStep, organizationStep, organization));
-document.querySelector('#edit-quarter').addEventListener('click', () => showStep(facilitiesStep, quarterStep, document.querySelector('#quarter-question')));
+reportingPeriod();
 let transitioning = false;
 async function showStep(from, to, focusTarget) {
   if (transitioning) return;
@@ -733,7 +697,6 @@ async function showStep(from, to, focusTarget) {
 }
 form.addEventListener('submit', event => {
   event.preventDefault();
-  if (!quarterStep.hidden) { continueQuarter(); return; }
   if (organizationStep.hidden || transitioning) return;
   if (!organization.value.trim()) {
     organization.setCustomValidity('Enter your organization name.');
@@ -742,7 +705,8 @@ form.addEventListener('submit', event => {
   }
   organization.value = organization.value.trim();
   document.querySelector('#organization-summary').textContent = organization.value;
-  showStep(organizationStep, quarterStep, document.querySelector('#quarter-question'));
+  reportingPeriod();
+  showStep(organizationStep, facilitiesStep, document.querySelector('#facilities-question'));
 });
 organization.addEventListener('input', () => organization.setCustomValidity(''));
 document.querySelector('#edit-organization').addEventListener('click', () => {
@@ -1021,7 +985,7 @@ function addProgram(focus = true, saved = null, editIndex) {
   const top = document.createElement('div'); top.className = 'organization-summary';
   const heading = document.createElement('h3'); heading.className = 'form-title'; heading.textContent = `Program ${completedPrograms.length + 1}`;
   top.append(heading); program.append(top, document.querySelector('#program-fields').content.cloneNode(true));
-  for (const field of program.querySelectorAll('input, select')) {
+  for (const field of program.querySelectorAll('input, select, textarea')) {
     const original = field.id; field.id = `program-${number}-${original}`;
     program.querySelector(`label[for="${original}"]`).htmlFor = field.id;
     field.name = `programs[${number}][${field.name}]`;
@@ -1048,7 +1012,7 @@ function addProgram(focus = true, saved = null, editIndex) {
     heading.textContent = `Editing ${saved.name}`;
     program.dataset.editIndex = editIndex;
     if (saved.id) program.dataset.programId = saved.id;
-    for (const input of program.querySelectorAll('.form-field input, .form-field select')) {
+    for (const input of program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')) {
       const key = input.name.slice(input.name.lastIndexOf('['));
       const entry = Object.entries(saved.values).find(([name]) => name.endsWith(key));
       if (entry) input.value = entry[1];
@@ -1077,7 +1041,6 @@ function addProgram(focus = true, saved = null, editIndex) {
 }
 continuePrograms.addEventListener('click', () => {
   if (continuePrograms.disabled || transitioning) return;
-  if (checkinContext) { showStep(facilitiesStep, quarterStep, document.querySelector('#quarter-question')); return; }
   if (!programList.children.length && !completedPrograms.length) addProgram(false);
   refreshPrisons();
   form.classList.add('program-mode');
@@ -1127,7 +1090,7 @@ function completeProgram(program) {
   // Clear last time's date and number messages so a fixed field doesn't stay flagged.
   for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
   for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
-  for (const field of program.querySelectorAll('input, select')) {
+  for (const field of program.querySelectorAll('input, select, textarea')) {
     if (!field.checkValidity()) { field.reportValidity(); return; }
   }
   // Catch numbers and dates that can't be true before they reach the totals.
@@ -1142,7 +1105,9 @@ function completeProgram(program) {
     input.reportValidity();
     feedback.textContent = message;
   };
-  if (status !== 'Planned' && !start.value) { problem(start, 'Enter the date this program started.'); return; }
+  if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
+  const notes = field('program-notes');
+  if (notes.value.length > 2000) { problem(notes, 'Use no more than 2,000 characters for the optional context.'); return; }
   if (status === 'Completed' && !end.value) { problem(end, 'Enter the date this program ended.'); return; }
   if (start.value && end.value && end.value < start.value) { problem(end, 'The end date is before the start date.'); return; }
   feedback.textContent = '';
@@ -1173,7 +1138,7 @@ function completeProgram(program) {
     }
     counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
   }
-  const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select')].map(field => [field.name, field.value]));
+  const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')].map(field => [field.name, field.value]));
   // An edited program goes back where it was in the list.
   const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
   completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
@@ -1277,7 +1242,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     showDone();
     return;
   }
-  const controls = [...programsStep.querySelectorAll('button, input, select')];
+  const controls = [...programsStep.querySelectorAll('button, input, select, textarea')];
   const originalDisabled = controls.map(control => control.disabled);
   submitting = true;
   controls.forEach(control => { control.disabled = true; });
@@ -1320,6 +1285,7 @@ function toPayload(submission, submissionId) {
     programs: submission.programs.map(program => ({
       id: program.id,
       name: program.name,
+      notes: programValue(program, 'notes').trim(),
       status: programValue(program, 'scheduled_status'),
       startDate: programValue(program, 'start_date'),
       endDate: programValue(program, 'end_date'),
@@ -1331,8 +1297,17 @@ function toPayload(submission, submissionId) {
 // Sign-in hands the page a pass as window.tpwSession = { token, organization, email }.
 // Sent as plain text so the browser doesn't ask Google's server for permission first;
 // Apps Script reads the body either way.
-function sendToBackend(payload) {
+async function sendToBackend(payload) {
   const token = window.tpwSession?.token || '';
+  // Older receivers ignore notes. Refuse rather than silently discard them.
+  if (payload.programs.some(program => program.notes)) {
+    const capabilities = window.google?.script?.run
+      ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
+      : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
+    if (!capabilities.features?.programNotes) {
+      return { ok: false, errors: ['The receiver needs its programme-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
+    }
+  }
   if (window.google?.script?.run) {
     return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
   }
@@ -1427,7 +1402,14 @@ function renderSubmission(submission) {
         const amount = document.createElement('dd'); amount.textContent = format(value);
         group.append(amount, term); metrics.append(group);
       }
-      block.append(metrics); body.append(block);
+      block.append(metrics);
+      const notes = programValue(program, 'notes').trim();
+      if (notes) {
+        const context = document.createElement('p'); context.className = 'report-program-notes';
+        context.textContent = `Additional context: ${notes}`;
+        block.append(context);
+      }
+      body.append(block);
     }
     if (!matches.length) { const note = document.createElement('p'); note.className = 'report-empty'; note.textContent = 'No programs assigned yet.'; body.append(note); }
     report.append(card);
@@ -1449,10 +1431,7 @@ async function loadCheckin() {
     organization.value = draft.organization;
     organization.readOnly = true;
     document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
-    document.querySelector('#quarter-back').hidden = true;
     document.querySelector('#organization-summary').textContent = draft.organization;
-    reportingYear.value = draft.reportingPeriod.year;
-    document.querySelector(`input[name="reporting_quarter"][value="${draft.reportingPeriod.quarter}"]`).checked = true;
     for (const prison of draft.prisons) {
       if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
       picker.value = prison.code; picker.dispatchEvent(new Event('change'));
@@ -1467,9 +1446,8 @@ async function loadCheckin() {
     refreshPrisons();
     document.querySelector('#program-next').hidden = !completedPrograms.length;
     document.querySelector('#program-next-heading').textContent = 'Review your programs for this quarter';
-    quarterStep.hidden = true;
     facilitiesStep.hidden = false;
-    document.querySelector('#quarter-summary').textContent = `Q${draft.reportingPeriod.quarter} ${draft.reportingPeriod.year}`;
+    reportingPeriod();
     document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
     document.querySelector('#facility-help').textContent = '';
     document.querySelector('#continue-programs').textContent = 'Continue →';
