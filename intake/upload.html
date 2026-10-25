@@ -24,11 +24,21 @@
   body { margin:0; background:#fff; color:var(--body); font-family:var(--sans); font-size:17px; line-height:1.5; -webkit-font-smoothing:antialiased; }
   .wrap { max-width: 720px; margin: 0 auto; padding: 26px 22px 100px; }
 
-  header { display:flex; align-items:center; justify-content:space-between; gap:14px; margin-bottom:38px; }
-  header img { width: 96px; display:block; }
-  header .links { display:flex; gap:14px; }
-  header a.back { font-size:13.5px; color:var(--muted); text-decoration:none; }
-  header a.back:hover { color:var(--ink); }
+  /* The same header the member site uses, so the flow never feels like a different site. */
+  .site-header { display:flex; align-items:center; justify-content:space-between; gap:32px;
+    max-width:1440px; margin:0 auto; padding:26px 40px; }
+  .site-header .logo img { width:190px; display:block; }
+  .site-header nav { display:flex; align-items:center; gap:38px; font-size:17px; }
+  .site-header nav a { color:inherit; text-decoration:none; }
+  .site-header nav a:hover { text-decoration:underline; text-underline-offset:5px; text-decoration-thickness:2px; }
+  .site-header nav a.login { font-weight:700; }
+  .site-header nav a.login:hover, .site-header nav a[aria-current="page"] { color:var(--accent-dark); }
+  @media (max-width:900px) {
+    .site-header { flex-wrap:wrap; gap:16px; padding:18px 22px; }
+    .site-header .logo img { width:128px; }
+    .site-header nav { width:100%; flex-wrap:wrap; gap:12px 20px; font-size:15px; }
+  }
+  .site-foot { max-width:1440px; margin:0 auto; padding:0 40px 46px; font-size:13px; color:#797979; }
 
   h1 { font-family:var(--display); font-weight:400; color:var(--ink); font-size:clamp(1.7rem, 6vw, 2.3rem); line-height:1.08; margin:0 0 10px; }
   h2 { font-size:11px; letter-spacing:.17em; text-transform:uppercase; color:var(--muted); font-weight:700; margin:44px 0 12px; }
@@ -143,22 +153,21 @@
 .internal-bar span { opacity: .82; max-width: 74ch; }
 </style>
 </head>
-<body>
-<div class="internal-bar">
-  <b>Internal</b>
-  <span>For TPW member organizations only &mdash; this is not a public form. The packet is read in this browser and never uploaded; only the facts you approve are saved to a GitHub repository.</span>
-</div>
+<header class="site-header">
+  <a class="logo" href="../index.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
+  <nav>
+    <a href="../site/our-members/">Our Members</a>
+    <a href="../site/ourstory/">Our Story</a>
+    <a href="../site/ourwork/">Our Work</a>
+    <a href="../site/our-team/">Our Team</a>
+    <a href="../dashboard/">Dashboard</a>
+    <a class="login" href="simple.html" aria-current="page">Members Login</a>
+  </nav>
+</header>
 <div class="wrap">
-  <header>
-    <a href="simple.html"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
-    <div class="links">
-      <a class="back" href="simple.html">Quick forms</a>
-      <a class="back" href="scan.html">Scan</a>
-      <a class="back" href="sheet.html">Print a sheet</a>
-    </div>
-  </header>
   <div id="app"><p class="lede">Loading…</p></div>
 </div>
+<p class="site-foot">Internal prototype, demo build &mdash; the packet is read in this browser and never uploaded; only the facts you approve are saved to a GitHub repository.</p>
 <script type="module" src="js/upload.js"></script>
 </body>
 </html>
