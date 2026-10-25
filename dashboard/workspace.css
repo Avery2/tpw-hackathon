@@ -46,7 +46,6 @@
 .dashboard-layout { min-height: 100vh; max-width: none; border-top: 0; }
 .workspace-logo { display: block; width: 150px; max-width: 100%; margin-bottom: 6px; }
 .workspace-logo img { display: block; width: 100%; height: auto; }
-.dashboard-layout.choosing-account .dashboard-sidebar { display: flex !important; }
 .dashboard-layout.choosing-account { grid-template-columns: 230px minmax(0, 1fr); }
 .choosing-account .sidebar-account, .choosing-account .dashboard-sidebar > div { display: none; }
 @media(max-width: 1100px) { .dashboard-layout.choosing-account { grid-template-columns: 190px minmax(0, 1fr); } }
