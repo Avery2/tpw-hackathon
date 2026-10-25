@@ -30,10 +30,9 @@ jobs:
     timeout-minutes: 15
     steps:
       # Full history, not just the latest commit: team-form/test/receiver.cjs
-      # reads two versions of apps-script/Rows.gs from older commits on the
-      # email-code-signin and sheet-firebase branches. (The newer one is the
-      # same as team-form/receiver/Rows.gs.) If those branches are deleted,
-      # that step fails.
+      # reads the older apps-script/Rows.gs from commit bb13e5d, kept only on the
+      # email-code-signin branch. Don't delete that branch, or that step fails.
+      # (The newer Rows.gs is read from team-form/receiver/Rows.gs.)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0

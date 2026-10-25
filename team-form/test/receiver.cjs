@@ -74,8 +74,10 @@ function payload() {
 }
 let passed=0;
 function test(name, fn) {fn();passed++;console.log('PASS',name);}
-for (const [label,commit] of [['older','bb13e5d'],['newer','4792dcf']]) {
-  const source = execFileSync('git',['show',commit+':apps-script/Rows.gs'],{cwd:root,encoding:'utf8'});
+// The newer contract is the live script's Rows.gs, kept in the repo. (It used to be read from
+// commit 4792dcf, whose branch was deleted on 25 Oct 2026; the file is byte-for-byte the same.)
+for (const [label,read] of [['older',() => execFileSync('git',['show','bb13e5d:apps-script/Rows.gs'],{cwd:root,encoding:'utf8'})],['newer',() => fs.readFileSync(path.join(root,'team-form/receiver/Rows.gs'),'utf8')]]) {
+  const source = read();
   test(label+': current quarter is server-derived; notes go in existing Notes column; extra JSON retains additions, not tokens',()=>{
     const h=harness(source),reply=h.post(payload());assert.equal(reply.ok,true);assert.equal(reply.rows,2);assert.equal(reply.signedIn,false);
     const rows=h.writes[0],note=h.headers().indexOf('Notes'),extra=h.headers().indexOf('Additional data (JSON)');
