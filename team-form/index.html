@@ -527,18 +527,18 @@
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
           <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
           <p class="step-label">Step 2 · Facilities</p>
-          <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
+          <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
         <div class="facility-overview">
-          <h2 class="form-title">Your prisons</h2>
-          <p class="form-hint" id="facility-help">Select each prison where you operate, then check all the yards you work in at that prison.</p>
-          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected prisons"></div>
-          <p id="facility-empty" class="form-hint">No prisons selected yet.</p>
+          <h2 class="form-title">Your facilities</h2>
+          <p class="form-hint" id="facility-help">Select each facility where you operate, then check all the yards you work in at that facility.</p>
+          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected facilities"></div>
+          <p id="facility-empty" class="form-hint">No facilities selected yet.</p>
           <p id="facility-announcement" class="sr-only" role="status"></p>
         </div>
         <div class="form-field">
-          <label for="facility">Add a prison</label>
+          <label for="facility">Add a facility</label>
           <select id="facility" aria-describedby="facility-help">
-            <option value="" selected disabled>Select a prison to add</option>
+            <option value="" selected disabled>Select a facility to add</option>
           <option value="ASP">Avenal State Prison (ASP)</option>
           <option value="CCI">California Correctional Institution (CCI)</option>
           <option value="CHCF">California Health Care Facility (CHCF), Stockton</option>
@@ -573,17 +573,17 @@
           </select>
         </div>
         <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
-        <p id="continue-programs-help" class="yard-hint">Add at least one prison to continue.</p>
+        <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <aside class="program-sidebar" aria-label="Prisons, yards, and completed programs">
-          <div class="organization-summary"><span>Your prisons &amp; yards</span><button type="button" id="edit-prisons">Edit prisons</button></div>
+          <aside class="program-sidebar" aria-label="Facilities, yards, and completed programs">
+          <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
           </aside>
           <div class="program-editor">
           <p class="step-label">Step 3 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
-          <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
+          <p class="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
           <div id="program-list" class="question-step"></div>
           <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
             <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
@@ -602,7 +602,7 @@
             <button type="button" id="start-over" class="continue-button start-over">Log more data</button>
             <details class="full-report">
               <summary>View submitted details</summary>
-              <p class="report-note">Program totals are counted once, even when a program serves multiple prisons. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across prisons.</p>
+              <p class="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-facility cards show assignments; totals are not allocated across facilities.</p>
               <div id="report-prisons" class="report-grid"></div>
             </details>
           </section>
@@ -645,7 +645,7 @@
           <legend>Participants at each yard</legend>
           <p class="yard-hint">TPW counts each yard separately, so give the numbers for each yard where this program runs.</p>
           <div class="yard-number-rows"></div>
-          <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
+          <p class="yard-hint yard-numbers-empty">Choose a facility and yard above first.</p>
         </fieldset>
         <div class="form-field">
           <label for="program-notes">Anything else you’d like to tell us about this program? <span class="label-note">(optional)</span></label>
@@ -813,7 +813,7 @@ function syncAssignmentYards(program, row, code, prison) {
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
-    note.textContent = 'Choose yards for this prison in the previous step.';
+    note.textContent = 'Choose yards for this facility in the previous step.';
     yards.append(note);
     return;
   }
@@ -834,7 +834,7 @@ function refreshPrisons() {
   continuePrograms.disabled = prisons.size === 0 || (!lastQuarter && missingYards.length > 0);
   // Say why the button is greyed out, not just that it is.
   document.querySelector('#continue-programs-help').textContent = prisons.size === 0
-    ? 'Add at least one prison to continue.'
+    ? 'Add at least one facility to continue.'
     : !lastQuarter && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
   // A finished program can't keep pointing at a prison or yard that has since been removed.
   for (const program of completedPrograms) {
@@ -956,7 +956,7 @@ picker.addEventListener('change', () => {
     announcement.textContent = `${name} removed.`;
   });
   option.disabled = true; picker.value = ''; refreshPrisons();
-  announcement.textContent = `${name} added. ${prisons.size} prisons selected.`;
+  announcement.textContent = `${name} added. ${prisons.size} facilities selected.`;
 });
 // The − / + buttons beside a number box.
 function wireStepper(stepper) {
@@ -1044,7 +1044,7 @@ function addProgram(focus = true, saved = null, editIndex) {
   }
   for (const stepper of program.querySelectorAll('.stepper')) wireStepper(stepper);
   const fieldset = document.createElement('fieldset'); fieldset.className = 'prison-options';
-  const legend = document.createElement('legend'); legend.textContent = 'Which prisons does this program apply to?';
+  const legend = document.createElement('legend'); legend.textContent = 'Which facilities does this program apply to?';
   const assignments = document.createElement('div'); assignments.className = 'program-assignments';
   fieldset.append(legend, assignments);
   program.querySelector('.form-field').after(fieldset);
@@ -1168,7 +1168,7 @@ function completeProgram(program) {
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
     if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1176,7 +1176,7 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one prison and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
   // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
   const counts = {};
   for (const row of program.querySelectorAll('.yard-number-row')) {
@@ -1219,7 +1219,7 @@ function reviewNext(before = '') {
   const card = programList.querySelector('.program-card');
   card.querySelector('h3').textContent = `${total - left + 1} of ${total}: ${card.querySelector('[id$="-program-name"]').value}`;
   const hint = document.createElement('p'); hint.className = 'form-hint';
-  hint.textContent = 'Last quarter’s prisons, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
+  hint.textContent = 'Last quarter’s facilities, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
   card.querySelector('.organization-summary').after(hint);
   document.querySelector('#program-feedback').textContent = before;
   card.querySelector('[id$="-scheduled-status"]').focus();
@@ -1248,7 +1248,7 @@ function renderAddedPrograms() {
     if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
     if (!program.assignments.length) {
       const warning = document.createElement('p'); warning.className = 'needs-prison';
-      warning.textContent = 'Its prisons or yards were removed. Edit it to choose new ones, or remove it.';
+      warning.textContent = 'Its facilities or yards were removed. Edit it to choose new ones, or remove it.';
       item.append(warning);
     }
     list.append(item);
@@ -1298,7 +1298,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   }
   const orphaned = completedPrograms.filter(program => !program.assignments.length);
   if (orphaned.length) {
-    document.querySelector('#program-feedback').textContent = `Choose a prison and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
+    document.querySelector('#program-feedback').textContent = `Choose a facility and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
     return;
   }
   const submission = {
@@ -1584,16 +1584,16 @@ async function prefillFromLastQuarter() {
   document.querySelector('#program-next-heading').textContent = 'Your programs this quarter';
   reportingPeriod();
   // The prisons screen is still there behind "Edit prisons", worded for this case.
-  document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+  document.querySelector('#facilities-question').textContent = 'Have any of the facilities you operate in changed?';
   document.querySelector('#facility-help').textContent = '';
   document.querySelector('#continue-programs').textContent = 'Continue →';
-  // What changes every quarter is the numbers, not the prisons, so open straight on the first
+  // What changes every quarter is the numbers, not the facilities, so open straight on the first
   // program's numbers.
   form.classList.add('program-mode');
   programsStep.hidden = false;
   document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
-  document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a prison…"
-  note.textContent = `We’ve filled in your ${draft.prisons.length} ${draft.prisons.length === 1 ? 'prison' : 'prisons'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from your last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a prison, use Edit prisons. `;
+  document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a facility…"
+  note.textContent = `We’ve filled in your ${draft.prisons.length} ${draft.prisons.length === 1 ? 'facility' : 'facilities'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from your last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a facility, use Edit facilities. `;
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);

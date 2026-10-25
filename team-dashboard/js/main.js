@@ -15,7 +15,7 @@ function renderPrograms(data, admin) {
   const programs = existingPrograms(data.submissions);
   const container = $('#view-sections'); container.replaceChildren();
   const summary = element('div', 'program-stats');
-  for (const [label, value] of [['Programs', programs.length], ['Prisons', new Set(programs.flatMap(program => (program.assignments || []).map(item => item.code))).size], ['Submissions', data.submissions.length]]) {
+  for (const [label, value] of [['Programs', programs.length], ['Facilities', new Set(programs.flatMap(program => (program.assignments || []).map(item => item.code))).size], ['Submissions', data.submissions.length]]) {
     const tile = element('div', 'program-stat');
     tile.append(element('strong', '', number(value)), element('span', '', label)); summary.append(tile);
   }
