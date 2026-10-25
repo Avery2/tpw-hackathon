@@ -25,7 +25,7 @@ try{
   archive.stdout.pipe(extract.stdin);archive.stderr.pipe(process.stderr);extract.stderr.pipe(process.stderr);
   await Promise.all([archive,extract].map(child=>new Promise((resolve,reject)=>{child.on('error',reject);child.on('exit',code=>code===0?resolve():reject(Error('Snapshot command failed: '+code)));})));
 }catch(error){await rm(snapshot,{recursive:true,force:true});throw error;}
-const master='1EvmybTK2U5blq3brPBO4akV7yZ8odaL6fP_B4n-Unb8';
+const master='1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0';
 const owner='tpwhackathondemodemo@gmail.com';
 const base=`http://localhost:${port}`;
 const require=createRequire(import.meta.url);

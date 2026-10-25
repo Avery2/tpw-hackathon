@@ -3,7 +3,7 @@
 // Apps Script editor while signed in to the demo owner. Nothing runs on upload.
 // Every function is private to google.script.run (trailing underscore).
 
-var MASTER_SPREADSHEET_ID_ = '1EvmybTK2U5blq3brPBO4akV7yZ8odaL6fP_B4n-Unb8';
+var MASTER_SPREADSHEET_ID_ = '1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0';
 var MASTER_OWNER_EMAIL_ = 'tpwhackathondemodemo@gmail.com';
 
 function configureMasterSheet_() {

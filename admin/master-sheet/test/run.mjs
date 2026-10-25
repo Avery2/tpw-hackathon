@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 const source=readFileSync(new URL('../Setup.gs',import.meta.url),'utf8');
-const target='1EvmybTK2U5blq3brPBO4akV7yZ8odaL6fP_B4n-Unb8';
+const target='1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0';
 const owner='tpwhackathondemodemo@gmail.com';
 const headers={Members:['Email or @domain','Organization','Active','Notes'],Submissions:['Example program header','Example audit header']};
 function harness({email=owner,tabs={Sheet1:[]},properties={},accessible=true,sheetsEnabled=true,authInstalled=true}={}){

@@ -7,8 +7,9 @@ change the live forms, or write anything to Google automatically.
 ## Agreed destination
 
 - Owner/deployer/contact: **tpwhackathondemodemo@gmail.com**.
-- Private workbook: <https://docs.google.com/spreadsheets/d/1EvmybTK2U5blq3brPBO4akV7yZ8odaL6fP_B4n-Unb8/edit>.
-- Script property: `SPREADSHEET_ID=1EvmybTK2U5blq3brPBO4akV7yZ8odaL6fP_B4n-Unb8`.
+- Private workbook: <https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit>.
+- Script property: `SPREADSHEET_ID=1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0`.
+- This is Richie's existing workbook, chosen as the master instead of the earlier proposed workbook.
 - One spreadsheet file, with separate tabs for different record types. A session's
   attendance count is not a program's completion count: do not force both into the
   same numeric columns or add them together.
