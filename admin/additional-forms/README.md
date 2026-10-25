@@ -1,8 +1,8 @@
 # Separate additional-forms receiver → same master workbook
 
 **Create a new standalone Apps Script project. Do not edit, redeploy or add files to
-the working quarterly project.** Its `form-demo/backend.js` URL, sources under
-`form-demo/receiver/`, Script Properties and Google deployment stay unchanged.
+the working quarterly project.** Its `team-form/backend.js` URL, sources under
+`team-form/receiver/`, Script Properties and Google deployment stay unchanged.
 This receiver has one new endpoint for follow-ups, the older quick quarter form and
 future approved forms. (It accepted Sessions until 25 Oct 2026; see below.) It writes to the same private master workbook, not a second spreadsheet.
 
@@ -40,7 +40,7 @@ future approved forms. (It accepted Sessions until 25 Oct 2026; see below.) It w
    ```
 
    The team's new deployment is now configured there. For a replacement deployment,
-   use its new URL. Do **not** put this URL in `form-demo/backend.js`, and do not reuse
+   use its new URL. Do **not** put this URL in `team-form/backend.js`, and do not reuse
    that file's quarterly URL here.
    Publish the website configuration change using the normal site deployment.
 8. Open the new `/exec` URL. It should report `service: "tpw.additional-forms"`,

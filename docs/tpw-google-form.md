@@ -1,6 +1,6 @@
 # TPW's current Google Form: "TPW - Collective Impact Data"
 
-This is the Google Form TPW sends to member organizations today. It was rebuilt on 2026-10-24 from screenshots of a screen recording of the live form, because we don't have the form's own link. None of the questions appeared to be marked as required, and the form does not collect respondents' email addresses.
+This is the Google Form TPW sent to member organizations before this tool, written up question by question on 2026-10-24 from screenshots of the live form. None of the questions appeared to be marked as required, and the form does not collect respondents' email addresses.
 
 ## Questions, in order
 

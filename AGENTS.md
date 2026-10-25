@@ -1,94 +1,76 @@
 # AGENTS.md
 
-Signpost for AI agents working in this repo. Read this first, then `README.md` for the full design write-up.
+Starting point for AI coding agents working in this repository. Read this, then [`docs/technical-guide.md`](docs/technical-guide.md) for anything involving the Google Apps Script, the Google Sheet or publishing.
 
-## What this repo is
+## What this repository is
 
-The team repo for **Transformative Programming Works (TPW)** at Hack for Social Impact 2026. TPW is a coalition of about 120 community-based organizations (CBOs) that run rehabilitation programs inside California state prisons.
+A data collection tool for **Transformative Programming Works (TPW)**, a coalition of about 120 community-based organizations that run rehabilitative programs inside California state prisons. Each quarter, member organizations use the form to submit, for every program at every prison and yard: the program's name, participants enrolled, course hours and participants completed. TPW staff see the combined totals on a dashboard.
 
-The hackathon brief: TPW can only track *process* data (who enrolled, how many hours). Join that to parole and recidivism data so TPW can track *impact*.
+How it fits together:
 
-What we've built is a static site with no server, hosted on GitHub Pages at <https://www.averychan.site/tpw-hackathon/>. Members open **Log data** (`intake/simple.html`) from a copy of TPW's website and submit their quarterly totals. Two Google Apps Scripts check each submission and add it to one private Google Sheet. Alongside sit a Dashboard and a Data page that show the sheet, and a printable report prototype. Firebase was retired on 25 Oct 2026, so the Google Sheet is the only record: both dashboards read it, with made-up sample organizations that are always badged as sample data. The older "git is the database" ledger is kept for history; new submissions don't go there. `VERSIONS.md` says which route is which.
+- A static website: plain HTML, CSS and JavaScript modules, no framework, no build step, no npm packages. Published to GitHub Pages by `.github/workflows/pages.yml`.
+- The form (`team-form/index.html`, shown inside `intake/simple.html`) POSTs each submission to a Google Apps Script web app, whose address is in `team-form/backend.js`.
+- The Apps Script (source in `team-form/receiver/`) checks the submission and appends one row per program per yard to one tab of a Google Sheet.
+- The dashboards (`team-dashboard/`) read the Sheet back through the same web app (`?view=dashboard`), via `assets/dashboard-source.js`.
 
-## Read these first
-
-1. `README.md`: problem statement, the intake design, the join spine, how to run everything, honest limits.
-2. `docs/AGENTS.md`: what every source document is and when to read it.
-3. `NOTES-data-recon.md`: deep profile of the real Collective Impact data, its quality problems, three ways to do the join, a schema proposal and open questions for TPW.
-4. `docs/TPW Data Glossary Instructions.docx`: TPW's own field definitions for its current form. The intake schema is built from it.
-5. `docs/tpw-language.md`: how TPW talks about incarcerated people, participants, members and programs, and its mission. Read it before you write any text a member or TPW will see.
+It's a prototype: sign-in is a demo, not security. `docs/go-live-checklist.md` lists what must change before real member data goes in.
 
 ## Map
 
 | Path | What it is | Edit it? |
 |---|---|---|
-| `index.html` | Front page of the published site, in TPW's style. Links to Log data, the Dashboard, the copy of TPW's site and the source documents. | Yes |
-| `assets/` | Code every member page shares. `site-shell.js`/`.css`: TPW's header and footer plus the **Log data · Dashboard · Data** links. `account-drawer.*`: a mock of TPW's account menu, with one new **Intake** entry. `member-session.js`: the one-click demo login, which stores only a demo account key and is **not** authentication. `mirror-nav.js`: makes the copy of TPW's site open that menu. Also fonts and images. | Yes |
-| `members/` | The old member entry address; it now sends people straight to Log data. `test/` checks the demo login and the menu. | Rarely |
-| `intake/` | **Log data.** `simple.html` is the page members use: one **Quarterly totals** tab (the guided form from `team-form/`). The follow-up form (`#followup`) and the older quick quarter form (`#aggregate`) have no tab. The Session tab, the printable roster (`sheet.html`), the sheet scanner (`scan.html`) and the packet reader (`upload.html`) were **removed on 25 Oct 2026** because they collected a coded ID per person; those three pages now only redirect to `simple.html`, and their code is in git history. `index.html` only redirects to `simple.html`. Plain JS in `intake/js/`, no build step. | Yes |
-| `intake/backend.js` | Web address of the second Apps Script (`admin/additional-forms/`). Points at the live demo deployment, so a filing from your own computer is a real row. | Only when that deployment changes |
-| `team-form/` | The team's guided **quarterly** form (`index.html`) → Google Sheet: one row per program, per yard, per prison. `backend.js` holds the quarterly Apps Script's web address (the live demo deployment, so local filings are real rows). `js/` has the quarter logic and the last-quarter prefill (`last-quarter.js`: given `?account=`, the form opens on this quarter's numbers with that organization's prisons, yards and programs carried forward). `test/` has the receiver, quarter and browser tests. | Yes |
-| `team-form/receiver/` | The live quarterly Apps Script project, **all of it** (copied from the demo account's editor on 25 Oct 2026 and checked character for character): `Code.gs`, `Rows.gs`, `Session.gs`, `Sheet.gs` (writes to the tab "Submissions; comes from website form DO NOT RENAME"), `Dashboard.gs` (`?view=dashboard`: reads submissions back for the dashboards and prefill) and `appsscript.json`. Change these here first, test, then copy into Google; never edit the live project by hand. | Yes, carefully |
-| `form-demo/` | Yuki's original guided form, **retired** with Firebase on 25 Oct 2026: `index.html` forwards to `team-form/`. | No |
-| `admin/additional-forms/` | The **second Apps Script**, for follow-ups and the older quick quarter form. Since 25 Oct 2026 it refuses Session records, matching the site, which no longer offers that form. `Code.gs` is the engine, the same for every form. `Config.gs` is generated from `data/intake/additional_forms.json` by `scripts/build_additional_forms.py`. Writes its own tabs in the same workbook and never touches the quarterly tab. | `Code.gs` yes; `Config.gs` never by hand |
-| `admin/sheetforms/`, `admin/steward/` | Older and unused: an earlier receiver and a staff console. Nothing posts to them. | Rarely |
-| `dashboard/` | Yuki's original dashboard, **retired** with Firebase on 25 Oct 2026: every page forwards to `team-dashboard/` (Programs to its Programs page), keeping `#org-1` and similar. Its code is in git history. | No |
-| `team-dashboard/` | The team's dashboard, reading TPW's Google Sheet through `assets/dashboard-source.js`, the **Programs**, **Organizations** (TPW view only) and **Submissions** pages (`programs.html`, `organizations.html`, `submissions.html`, `submission-data.html`, restored 25 Oct 2026 from Yuki's earlier dashboard and reading the Sheet; their tabs are in the member bar built by `assets/site-shell.js`), plus the **Data** page (`raw-data.html`, TPW staff view only): the real Google Sheet, through Google's preview, so Google decides who can see it. | Yes |
-| `assets/dashboard-source.js` | The one place the dashboards and the form's last-quarter prefill get data: TPW's Google Sheet via the receiver's `?view=dashboard`, plus the sample organizations. Tests: `team-form/test/dashboard.cjs`, `team-form/test/dashboard-source.mjs`; `team-form/test/dashboard-mutants.mjs` checks they catch planted bugs. | Yes |
-| `data/demo/dashboard-sample.json` | Made-up sample organizations (Org 1, Org 2) and their submissions, exported once from the retired Firebase project. Always shown with a Sample data badge. Delete or empty it once real data is enough. | Yes |
-| `VERSIONS.md` | Which route is which version of the form and dashboard, and where each one's data goes (all Google Sheet since Firebase was retired on 25 Oct 2026). | Yes |
-| `data/intake/simple_forms.json` | Field definitions for the Session, follow-up and quick quarter forms. The page and the scripts both read it. | Yes, carefully |
-| `data/intake/additional_forms.json` | Which kinds of filing the second Apps Script accepts, their rules, and the tab each one goes to. Rebuild `Config.gs` after changing it. | Yes, carefully |
-| `data/intake/sheets.json` | The printable checkbox sheets the (now removed) scanner read off a photo. Still compiled into `Config.gs`. | Yes, carefully |
-| `data/intake/facilities.json`, `config.json` | Prison list and site settings the forms read. `facilities.json` is also compiled into `Config.gs`. | Yes |
-| `data/intake/documents.json` | What a complete application packet contains. Its page (`intake/upload.html`) was removed on 25 Oct 2026; the ledger scripts still read it. | Yes, carefully |
-| `data/intake/schema.json`, `seed.json`, `example/` | The older cycle form's contract, the 2026 Collective Impact sheet imported as cycles (problems flagged, not fixed), and an example cycle. | `seed.json` no: rebuild with `intake_build_seed.py` |
-| `data/intake/demo/join.json` | **Synthetic** participant spine and outcomes, for the demo only. Says so in its own first lines. | No: rebuild with `intake_build_seed.py` |
-| `data/intake/cycles/`, `records/`, `orgs/`, `standard/` | The older GitHub ledger: manifests, the organization registry and the quarterly rollup. New filings go to the Google Sheet, not here. | No: rebuilt by the scripts and the bot |
-| `data/public/` | Public data layer: CDCR programs by prison, RIGHT 4.0 Attachment A grid, a facility-name crosswalk, the TPW member list. `raw/` caches the source page. | No: rebuild with `build_public_data.py` |
-| `data/tpw-collective-impact.csv` | The real TPW form data (Data Entry Sheet tab) as CSV. Input to the seed and the report. | Only when re-pulling the live sheet |
-| `data/tpw-collective-impact-form.xlsx`, `data/snapshots/` | Dated snapshots of TPW's live Google Sheet. | No: add a new dated snapshot instead |
-| `scripts/` | Python, standard library only. `build_additional_forms.py` builds the second script's `Config.gs`. `build_site.py` builds the published site. `build_public_data.py` rebuilds `data/public/`. `standard_rollup.py` and the `intake_*.py` scripts run the older ledger. `test_*.py` test the first two. Each file's docstring explains it. | Yes |
-| `report/build.py` | Builds a print-ready "Collective Impact Report 2026" HTML and PDF from the CSV, not from new filings. Needs headless Chrome for the PDF. Working files go in `report/work/`, which is gitignored. | Yes |
-| `report/assets/` | TPW logos and preview images for the report. | Rarely |
-| `docs/` | Source documents from TPW, CDCR and the hackathon, plus our write-ups. See `docs/AGENTS.md`. | Add, don't rewrite sources |
-| `site/` | Offline copy of thetpw.org (HTML plus all assets). The member pages live inside it on the published site: `build_site.py` adds one script to the published copy so its Members Login opens our account menu. The files here stay untouched. | No: it's a copy of TPW's site. For the text, read `docs/tpw-website-text/` |
-| `.github/workflows/pages.yml` | Publishes the website on every push to `main`: runs `scripts/test_build_site.py`, builds with `scripts/build_site.py`, deploys to GitHub Pages. | Carefully |
-| `.github/workflows/tests.yml` | Runs every test suite on every push, to any branch, and never publishes anything. A red cross next to a commit on GitHub means a step failed; click it to see which. `members/test/browser.mjs` is left out until it passes again. When you add a test file, add a step for it here. | Yes |
-| `.github/workflows/intake.yml` | The older ledger bot: turns a labelled GitHub issue into a validated commit, and re-validates and re-indexes on every push to `main` that touches `data/intake/`. Only the packet upload still files this way. | Carefully |
-| `NOTES-data-recon.md` | Analysis notes (see above). | Yes |
+| `team-form/index.html` | The form: HTML, CSS and one JavaScript module in one file. | Yes |
+| `team-form/backend.js` | The Apps Script web app's address. | Only when the deployment changes |
+| `team-form/js/` | `reporting-period.js` (the current quarter in California time) and `last-quarter.js` (last quarter's answers as a starting point). | Yes |
+| `team-form/receiver/` | **The Apps Script back end**, the master copy of every file in the live project: `Code.gs`, `Rows.gs`, `Sheet.gs`, `Dashboard.gs`, `Session.gs`, `appsscript.json`. Change and test here, then copy into Google and deploy a new version (technical guide, section 5.10). | Yes, carefully |
+| `team-form/test/` | Tests for the back end (Google faked), the quarter logic, the dashboard data and the form in a browser. | Yes |
+| `intake/simple.html`, `intake/js/simple.js` | "Log data": TPW's header with the form in a frame. Also holds two older quick forms (`#followup`, `#aggregate`) that nothing links to. | Yes |
+| `team-dashboard/` | Dashboard pages: Overview, Programs, Organizations (TPW staff), Submissions, Data (TPW staff; the Sheet through Google's preview). Logic in `team-dashboard/js/`. | Yes |
+| `assets/` | Shared code. `site-shell.js`: header, footer, member bar. `member-session.js`: the demo sign-in (not authentication). `account-drawer.js`: the account menu. `dashboard-source.js`: the one place dashboards and the form's prefill load data. `mirror-nav.js`: wiring for the offline copy of thetpw.org. | Yes |
+| `data/demo/dashboard-sample.json` | Made-up sample organizations (Org 1, Org 2), always badged as sample data. | Yes |
+| `data/public/tpw-members.csv` | TPW's public member list; the form suggests these names. | Yes |
+| `report/` | Prebuilt annual report PDFs linked from the member bar. | Rarely |
+| `site/` | Offline copy of thetpw.org, for the demo only. `scripts/build_site.py` adds one script to the published copy; the files here stay untouched. | No |
+| `scripts/build_site.py` | Builds the folder that gets published. | Carefully |
+| `.github/workflows/pages.yml` | Publishes the site on every push to `main`. | Carefully |
+| `.github/workflows/tests.yml` | Runs every test on every push, to any branch. When you add a test file, add a step here. | Yes |
+| `docs/` | The technical guide, the go-live checklist and TPW's own source documents. See `docs/AGENTS.md`. | Yes |
+
+**Older parts, not used by the live tool:** `form-demo/` and `dashboard/` (forwarding pages only), `admin/additional-forms/` with `intake/backend.js` (a second Apps Script, still deployed, nothing links to it), `admin/sheetforms/` and `admin/steward/` (unused), the retired `intake/` pages, `data/intake/`, `scripts/intake_*.py`, `scripts/standard_rollup.py`, `scripts/build_additional_forms.py` and `.github/workflows/intake.yml`. Don't build new work on them. Technical guide, section 4, has the details.
 
 ## Rules
 
-- **No personal data, ever.** This repo is public. Never commit participant names, CDCR numbers, full dates of birth or anything else that identifies a person. Participants are tracked by a short ID: first initial plus birth year, like `M78`, or an organization's own stable IDs. The facilitator writes it next to each name on the paper sheet, and the scanner never reads the name column, so only the ID reaches the Google Sheet. `docs/standard-input.md` has the full rules. The older HMAC tokens in `data/intake/schema.json`, `data/intake/demo/join.json` and `report/build.py` belong to the retired cycle form and the synthetic demo; don't build new work on them.
-- **Use TPW's words.** In the app, forms, dashboard, docs and commit messages, write the way TPW writes: "incarcerated people" (never "inmates", "prisoners" or "offenders"), "participants", "members" or "CBOs", "programs" with American spelling, and "submit". `docs/tpw-language.md` has the full list, with the evidence and the few places the avoided words are fine (names and quotations).
-- **Keep synthetic and real apart.** The participant spine and outcomes in `data/intake/demo/join.json` are made up. The activity figures from the Collective Impact sheet are real. Label synthetic numbers wherever they appear, and never present them as evidence of impact.
-- **Protect member organizations.** Members may fear retaliation from CDCR. Anything aimed at TPW or the public that shows numbers should show combined figures, not one organization's, unless TPW says otherwise. Cohorts under five are aggregated before release, per `schema.json`.
-- **Don't hand-edit derived files.** Manifests, the registry, the seed and the public CSVs are all rebuilt by scripts. Fix the input or the script, then rebuild.
-- **No code reviews, but ask before changing someone else's code.** The team pushes straight to `main`. If you're about to modify code a teammate wrote (`git log -- <path>` shows who), stop and tell the human you're working for, so they can go and talk to that person first.
-- **Pull before you push.** The CI workflow commits to `main` as `tpw-intake-bot` after pushes that touch `data/intake/`, and teammates are pushing during the hackathon.
-- **Keep it buildless and dependency-free.** No npm, no bundler, no third-party Python packages. TPW staff have to be able to keep this running after the hackathon.
-- **Check numbers before they reach TPW or the judges.** Some headline figures disagree between sources. `NOTES-data-recon.md` lists the known problems in the data.
+- **Never send a test POST to the live Apps Script address.** There is no dry run: every valid POST writes real rows to TPW's Sheet. Test the back end with `node team-form/test/receiver.cjs` and the form with the browser tests, which fake Google. A local copy of the site also posts to the live address, so set `window.TPW_BACKEND_URL = ''` in `team-form/backend.js` while testing by hand, and don't commit that.
+- **The `.gs` files in `team-form/receiver/` are the master copy.** Change them here, run the tests, then the human copies them into the Apps Script editor and deploys a new version on the same address.
+- **Don't rename the Sheet's tab or its column headings**, and don't write to column S (Additional data) by hand. The script finds columns by heading name.
+- **No personal information, ever.** The tool collects counts only. Never put participant names, CDCR numbers, dates of birth or anything else that identifies a person into code, tests, sample data or commits.
+- **Combined figures in anything public.** Members may fear retaliation from CDCR, so anything shown outside TPW adds organizations together and never shows one organization's numbers, unless TPW decides otherwise.
+- **Label made-up data.** Sample and test data is always badged on screen and never presented as real results.
+- **Keep it buildless and dependency-free.** No npm packages, no frameworks, no bundler, Python standard library only. TPW has to be able to keep it running without a developer.
+- **When something breaks, say so in plain words.** Error messages are for small organizations' staff, not developers: say what happened, that their answers are still there, and who to contact.
+- **Bump the version token** (`?v=...`) on a script's address wherever it's loaded when you change that script, so browsers don't keep the old copy.
+
+## Wording
+
+Write the way TPW writes, in the app, the docs and commit messages:
+
+- "incarcerated people" or "people in California prisons", never "inmates", "prisoners" or "offenders"
+- "formerly incarcerated people", "people with lived experience"
+- "participants" for people in a program; "members" or "member organizations" for TPW's members
+- "programs", "facilities", "yards"; American spelling throughout
+- "submit" and "submission"
 
 ## Commands
 
 ```bash
-python3 -m http.server 8080                 # from the repo root, then open http://localhost:8080/intake/
-python3 scripts/intake_reindex.py           # validate everything, rebuild manifests and registry (what CI runs)
-python3 scripts/intake_validate.py          # validate every committed cycle
-python3 scripts/intake_build_seed.py        # rebuild seed.json and the synthetic spine from the CSV
-python3 scripts/intake_profiles.py          # rebuild the organization registry
-python3 scripts/build_public_data.py        # re-fetch and rebuild data/public/
-python3 report/build.py                     # build the report HTML and PDF
-node team-form/test/receiver.cjs            # quarterly Apps Script checks, Google faked
-node admin/additional-forms/test.cjs        # second Apps Script checks, Google faked
-python3 scripts/test_additional_forms.py    # tests for the Config.gs builder
-python3 scripts/build_additional_forms.py   # rebuild admin/additional-forms/Config.gs (--check tests it's current)
+python3 -m http.server 8080                    # serve the site at http://localhost:8080/
+node team-form/test/receiver.cjs               # Apps Script back end, Google faked
+node team-form/test/dashboard.cjs              # dashboard feed (Dashboard.gs), Google faked
+node team-form/test/reporting.mjs              # quarters and last quarter's prefill
+node --test team-form/test/dashboard-source.mjs   # dashboards' data loader
+node team-form/test/dashboard-mutants.mjs      # dashboard tests catch planted bugs
+python3 scripts/test_build_site.py             # the publishing build
+python3 scripts/build_site.py --output /tmp/tpw-site   # build the published folder (must be empty, outside the repo)
 ```
 
-GitHub runs the tests on every push. `.github/workflows/tests.yml` lists every test command it runs. The browser tests need the repo served first: `python3 -m http.server 8826 --bind 127.0.0.1` from the repo root, then `node team-form/test/browser.mjs` in another terminal.
-
-## Outside the repo
-
-- TPW's live Collective Impact Google Sheet and the hackathon pack are linked in the Resources table in `README.md`.
-- Judging: impact 30%, live demo 35%, innovation 20%, storytelling 15%. Devpost deadline is 3pm on Sunday 25 October 2026.
+Browser tests need Chrome and a local server first: `python3 -m http.server 8826 --bind 127.0.0.1`, then `node team-form/test/browser.mjs` in another terminal. `.github/workflows/tests.yml` lists everything GitHub runs. Node 22 or newer.

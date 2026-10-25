@@ -1,6 +1,6 @@
 # Staff guide screenshots
 
-Screenshots of the TPW data collection tool, used in the staff guide for Ken and Quan (a Google Slides deck). They show what a member and a staff person see, step by step.
+Screenshots of the TPW data collection tool, used in the TPW staff guide (a Google Slides deck). They show what a member and a staff person see, step by step.
 
 **Everything on screen is made up.** The form was filled in with "Sample Organization (made-up data)" and "Sample Reading Circle (made-up)". The submit button was intercepted, and so was the dashboard's read of the sheet, so nothing was sent to or read from the real Google Sheet. The reference code (56F98641) is an example copied from the demo rows in the sheet.
 

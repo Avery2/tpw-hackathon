@@ -1,59 +1,23 @@
-# One-time receiver update
+# team-form/receiver/: the Google Apps Script back end
 
-This is **Code.gs for the existing guided-form Google Apps Script project**, not
-another backend. Keep its current `Rows.gs`, renamed-tab `Sheet.gs`, `Session.gs`,
-Script Properties and deployment URL. Do not paste this into `admin/sheetforms`,
-which is a different, older receiver.
+These six files are the master copy of the Google Apps Script project that receives form submissions, writes them to the Google Sheet, and reads them back for the dashboards.
 
-1. Copy all of [`Code.gs`](Code.gs) into the existing project's **Code.gs**.
-2. Save. Deploy → Manage deployments → pencil/Edit → Version: **New version** → Deploy.
-3. Keep the same `/exec` URL; no website configuration change is needed.
-4. Submit a clearly labeled synthetic program with optional context. Check its
-   **Notes** cell and **Additional data (JSON)** cell in the existing named tab.
+| File | What it does |
+|---|---|
+| `appsscript.json` | Project settings: time zone, the Google Sheets API, permissions, and how the web app runs |
+| `Code.gs` | Entry points (`doGet`, `doPost`) and the save, step by step |
+| `Rows.gs` | The rules: checks a submission and turns it into Sheet rows. Holds the column headings, the prison list and the limits. |
+| `Sheet.gs` | Which Sheet and tab, creating the tab if missing, appending rows |
+| `Dashboard.gs` | The dashboard feed (`?view=dashboard`) |
+| `Session.gs` | Sign-in passes, ready for when real sign-in is built |
 
-The update:
+**How to change it:** edit the files here, run the tests below, copy the changed files into the Apps Script editor, then deploy a new version on the same address (**Deploy** → **Manage deployments** → **Edit** → **Version: New version** → **Deploy**). Saving in the editor alone doesn't change what the live address runs.
 
-- Uses the server's current **California** quarter, ignoring browser-supplied periods.
-- Accepts **In Progress** and **Completed**, not Planned. Existing count/date
-  validation still comes from the unchanged `Rows.gs`.
-- Saves optional context (up to 2,000 characters) into the existing **Notes** column.
-- Adds one **Additional data (JSON)** column at the right, on the first valid write.
-  It retains structured submission/program/site data, including future fields
-  sent by the form. Unknown fields are preserved there, not promoted to metrics.
-- Maps core values by their existing header names, so adding or reordering columns
-  does not shift data. A blank **Reporting Quarter** heading is recovered in place
-  when the other core headings uniquely match the canonical layout and the column
-  is empty or contains only recognizable quarter values. Existing values are never
-  rewritten or backfilled. Other missing/duplicate core headings, conflicting data
-  and ambiguous layouts still fail rather than guessing or overwriting anything.
-- Preserves existing rows and column names. It never renames the destination tab.
-- Excludes the HTTP envelope, authentication tokens and common credential/file/ID
-  fields from snapshots. Free text must still not contain personal information.
-  Nothing is written to the public repo or a public read endpoint.
-- Retains the existing unsigned-demo setting, session attribution, serialized
-  writes and bounded receipt-cache deduplication. There are no Firebase calls.
-
-Snapshots are limited to 20,000 characters per row and requests to 250,000
-characters. Cell text is escaped for `USER_ENTERED` writes. Cache deduplication
-lasts at most six hours and is best-effort: after an ambiguous network failure,
-check the Sheet before resubmitting. There is no permanent request-ID ledger.
-
-The frontend checks receiver capabilities before submitting nonempty context.
-An old receiver can still accept an empty-context filing, but cannot silently
-claim to have saved comments it ignores. Refresh/retry after upgrading it.
-
-## Checks (no real Google requests)
+**Never test by sending a POST to the live address.** Every valid POST writes real rows.
 
 ```bash
-node team-form/test/receiver.cjs
-node team-form/test/reporting.mjs
-python3 -m http.server 8826 --bind 127.0.0.1  # separate terminal
-node team-form/test/browser.mjs
+node team-form/test/receiver.cjs      # the save path, Google faked
+node team-form/test/dashboard.cjs     # the dashboard feed, Google faked
 ```
 
-The receiver tests exercise both historical Rows.gs contracts from pinned Git
-commits. A normal full clone includes those branch objects; fetch the existing
-`email-code-signin` and `sheet-firebase` branches if testing from a shallow clone.
-Browser tests require Chrome and Node 22+; set `CHROME_BIN` on non-macOS systems.
-All Google requests in that browser suite are intercepted; it never writes live
-rows or sends emails.
+Everything else (the settings it needs, the Sheet's columns, the requests and replies, setting up a fresh copy in TPW's account, and the limits) is in [`../../docs/technical-guide.md`](../../docs/technical-guide.md), sections 5 and 6.
