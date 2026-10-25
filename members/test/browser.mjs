@@ -61,7 +61,12 @@ try {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     // Signed out, Members Login opens the copy of TPW's own sign-in box (25 Oct 2026), not the
     // account drawer. No password is ever asked for; a demo account goes straight to Log data.
-    await go('/'); await ev('sessionStorage.clear()'); await go('/'); await wait('!!document.querySelector(".tpw-header .login")');
+    await go('/'); await ev('sessionStorage.clear()');
+    // Signed out on a copied page, Members Login must carry no account, or a new tab would sign in as Org 1.
+    const mirrorLogin = 'a.user-accounts-text-link, .customerAccountLoginDesktop a, .customerAccountLoginMobile a';
+    await go('/site/ourstory/index.html'); await wait(`!!document.querySelector('${mirrorLogin}')?.href.includes('/intake/simple.html')`);
+    assert(await ev(`[...document.querySelectorAll('${mirrorLogin}')].every(a => !a.href.includes('account='))`), 'signed-out Members Login must not carry an account');
+    await go('/'); await wait('!!document.querySelector(".tpw-header .login")');
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     await click('.tpw-header .login'); await wait('!!document.querySelector(".tpw-signin:modal")');
     assert.equal(await ev('document.querySelector(".tpw-signin h2").textContent'), 'Welcome to TPW');

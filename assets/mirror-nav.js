@@ -12,7 +12,8 @@
   }
   function destination() {
     const key = account();
-    return new URL(`intake/simple.html?account=${key || 'org-1'}`, root).href;
+    // Signed out, no account: a link must never sign anyone in as Org 1.
+    return new URL(key ? `intake/simple.html?account=${key}` : 'intake/simple.html', root).href;
   }
   function wire() {
     const href = destination();
