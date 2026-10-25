@@ -97,8 +97,8 @@ const current = () => state.forms.find((f) => f.kind === kind);
 
 /* ----------------------------------------------------------------- tabs */
 /**
- * Session uses the git ledger; the guided form saves quarterly submissions to
- * Firebase for the dashboard. The older Quarter form stays in the contract at
+ * Session uses the git ledger; the guided form appends quarterly submissions to
+ * the master Google Sheet. The older Quarter form stays in the contract at
  * #aggregate, but is not offered in the tab row.
  */
 const DEMO_KIND = 'demo';
@@ -127,7 +127,7 @@ function render() {
   const app = document.getElementById('app');
   if (kind === DEMO_KIND) {
     note(
-      'For TPW member organizations only — this is not a public form. Demo build: guided submissions are saved to Firebase, not sent to CDCR.'
+      'Demo build: guided submissions append to TPW’s Google Sheet, not CDCR. Sign-in is not enabled yet; use synthetic test data only.'
     );
     app.innerHTML = demoPanel();
     window.scrollTo({ top: 0 });
