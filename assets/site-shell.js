@@ -8,7 +8,7 @@ const embedded = new URLSearchParams(location.search).has('embed');
 const dashboard = route.startsWith('team-dashboard/');
 const intake = route.startsWith('intake/');
 const guided = route.startsWith('team-form/');
-let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : 'overview' : 'intake';
+let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -35,12 +35,7 @@ function mountHeader() {
   image.width = 220; logo.append(image);
   const nav = element('nav'); nav.setAttribute('aria-label', 'Main navigation');
   for (const [label, path] of [['Our Members', 'site/our-members/'], ['Our Story', 'site/ourstory/'], ['Our Work', 'site/ourwork/'], ['Our Team', 'site/our-team/']]) nav.append(link(label, path));
-  // The current form and dashboard; form-demo/ and dashboard/ are the older versions.
-  nav.append(link('Form Demo', 'intake/simple.html'), link('Dashboard', 'team-dashboard/'));
-  const report = link('Annual report (PDF)', 'report/TPW-Collective-Impact-Report-2026.pdf');
-  report.target = '_blank'; report.rel = 'noopener';
-  report.title = 'Combined TPW prototype report · June 2026 data · opens in a new tab';
-  nav.append(report);
+  nav.append(link('Form Demo', 'form-demo/'), link('Dashboard', 'dashboard/'));
   const account = activeAccount();
   const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
@@ -79,16 +74,6 @@ function mountFooter() {
     document.body.append(footer);
   }
 }
-// Data embeds TPW's private Google Sheet, which holds every organization's numbers, so only the
-// TPW staff view gets the tab; members would only hit Google's sign-in wall. Not access control:
-// Google's sharing still decides who can open the Sheet.
-const seesData = account => account === 'tpw';
-function leaveDataForMembers() {
-  if (!route.includes('raw-data.html') || seesData(activeAccount())) return false;
-  const account = getDemoAccount();
-  location.replace(url(`team-dashboard/${account ? `#${account}` : ''}`));
-  return true;
-}
 // A small horizontal navigation, not a separate application shell.
 export function updateMemberWorkspace(account, page = workspacePage) {
   if (embedded) return;
@@ -104,9 +89,11 @@ export function updateMemberWorkspace(account, page = workspacePage) {
     document.querySelector('.tpw-header').after(nav);
   }
   nav.replaceChildren();
-  const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', `team-dashboard/#${key}`]];
-  if (seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
-  for (const [id, label, path] of tabs) {
+  for (const [id, label, path] of [
+    ['intake', 'Log data', demoEntryPath(key)],
+    ['overview', 'Dashboard', `team-dashboard/#${key}`],
+    ['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]
+  ]) {
     const anchor = link(label, path);
     if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
@@ -147,20 +134,19 @@ function sizeForms() {
     };
     frame.addEventListener('load', resize); resize();
   };
-  const scan = () => document.querySelectorAll('.demo-panel iframe').forEach(connect);
+  const scan = () => document.querySelectorAll('.demo-panel iframe, #checkin-form').forEach(connect);
   scan(); new MutationObserver(scan).observe(document.body, {childList:true, subtree:true});
 }
 function mount() {
   if (embedded) return;
   if (new URLSearchParams(location.search).has('signout')) clearDemoAccount();
-  if (leaveDataForMembers()) return;
   document.body.classList.add('tpw-site');
   mountHeader(); mountFooter();
   if (intake || guided) mountIntakeWorkspace();
   if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
   sizeForms();
   window.addEventListener('hashchange', () => {
-    if (dashboard && !leaveDataForMembers()) updateMemberWorkspace(activeAccount(), workspacePage);
+    if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
   });
 }
 mount();
