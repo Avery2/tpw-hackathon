@@ -1,6 +1,6 @@
 import { updateWorkspace } from './layout.js?v=nav-20261025';
 import { getDemoAccount } from '../../assets/member-session.js';
-import { racPanel } from './rac.js?v=nav-20261025';
+import { racPanel } from './rac.js?v=facility-20261025';
 import { participantsChart } from './chart.js?v=nav-20261025';
 import { loadDashboard, existingPrograms } from './data.js?v=nav-20261025';
 const views = { 'org-1': { name: 'Org 1' }, 'org-2': { name: 'Org 2' }, tpw: { name: 'TPW View', admin: true } };

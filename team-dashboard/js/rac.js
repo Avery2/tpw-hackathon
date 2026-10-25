@@ -55,7 +55,7 @@ export function racPanel(programs) {
     if (reason) details.append(node('p', 'Credit starts at 52 course hours: 10 days for every 52 hours, up to 40 days for each completion.', 'rac-footnote'));
     card.append(details);
     const savings = node('article', undefined, 'rac-org savings-card');
-    savings.append(node('h4', 'Prison costs avoided, if every credit day were applied'));
+    savings.append(node('h4', 'Facility costs avoided, if every credit day were applied'));
     const money = node('strong', undefined, reason ? 'rac-empty' : 'rac-total');
     money.setAttribute('aria-live', 'polite');
     const currency = value => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });

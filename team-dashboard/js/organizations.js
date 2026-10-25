@@ -2,7 +2,7 @@ import { updateWorkspace } from './layout.js?v=nav-20261025';
 import { loadDashboard, existingPrograms } from './data.js?v=nav-20261025';
 import { participantsChart } from './chart.js?v=nav-20261025';
 import { programCards } from './cards.js?v=nav-20261025';
-import { racPanel } from './rac.js?v=nav-20261025';
+import { racPanel } from './rac.js?v=facility-20261025';
 import { loadingSkeleton } from './loading.js?v=nav-20261025';
 const $ = selector => document.querySelector(selector);
 let directory = [], revision = 0, viewMode = 'cards', cardPage = 1;
