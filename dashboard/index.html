@@ -337,6 +337,10 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
     </section>
     <section id="profile-view" aria-labelledby="profile-heading" hidden>
       <div class="view-heading"><div><span class="account-label" id="view-type"></span><h2 id="profile-heading" tabindex="-1"></h2><p id="view-description"></p></div><a class="action switch" href="#">Switch view <span aria-hidden="true">↗</span></a></div>
+      <div id="dashboard-report" hidden style="margin: 0 0 28px; padding: 18px 22px; border-left: 4px solid var(--sage); background: #edf6ef;">
+        <a target="_blank" rel="noopener" style="font-weight: 700; text-underline-offset: 4px;">Annual report (PDF) ↗</a>
+        <small style="display: block; margin-top: 6px; color: #3e3e3e; font-size: 14px;"></small>
+      </div>
       <p id="dashboard-status" class="dashboard-status" role="status" hidden></p>
       <div class="program-results" id="view-sections" aria-live="polite"></div>
     </section>
@@ -345,5 +349,6 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 </main>
 <footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
 <script type="module" src="./js/main.js?v=sheet-20261025b"></script>
+<script type="module" src="../assets/dashboard-report-link.js"></script>
 </body>
 </html>
