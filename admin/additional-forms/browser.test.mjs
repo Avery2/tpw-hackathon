@@ -30,6 +30,11 @@ try{
    if(request.url===base+'/intake/backend.js'){
     await send('Fetch.fulfillRequest',{requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/javascript'}],body:Buffer.from('window.TPW_RECORDS_BACKEND_URL='+JSON.stringify(recordsEndpoint)+';').toString('base64')});return;
    }
+   if(request.url===base+'/intake/js/simple.js'){
+    // Stand in for a browser's cached, pre-migration GitHub module. The live
+    // entrypoint must request its versioned URL, never execute this old asset.
+    await send('Fetch.fulfillRequest',{requestId,responseCode:200,responseHeaders:[{name:'Content-Type',value:'text/javascript'},{name:'Cache-Control',value:'public, max-age=31536000, immutable'}],body:Buffer.from('window.__legacySessionHandlerLoaded=true;').toString('base64')});return;
+   }
    const isRecords=request.url===recordsEndpoint;
    if(request.method==='POST'){
     const envelope=JSON.parse(request.postData);
@@ -50,7 +55,7 @@ try{
  const evaluate=async expression=>{const r=await send('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error(JSON.stringify(r.exceptionDetails));return r.result.value;};
  const wait=async expression=>{for(let n=0;n<160;n++){if(await evaluate(expression))return;await sleep(100);}throw Error('Timed out: '+expression);};
  await send('Runtime.enable');await send('Page.enable');
- await send('Fetch.enable',{patterns:[{urlPattern:'https://script.google.com/macros/s/*',requestStage:'Request'},{urlPattern:base+'/intake/backend.js',requestStage:'Request'}]});
+ await send('Fetch.enable',{patterns:[{urlPattern:'https://script.google.com/macros/s/*',requestStage:'Request'},{urlPattern:base+'/intake/backend.js',requestStage:'Request'},{urlPattern:base+'/intake/js/simple.js',requestStage:'Request'}]});
  await send('Page.addScriptToEvaluateOnNewDocument',{source:`addEventListener('DOMContentLoaded',()=>{const style=document.createElement('style');style.textContent='*{animation:none!important;transition:none!important}';document.head.append(style);});`});
  async function open(width=1280){
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
@@ -85,10 +90,13 @@ try{
  await open();await fill('Retry preserves context');failNextPost=true;before=posts.length;await clickFinish();await wait(`document.querySelector('#program-feedback').textContent.includes('Couldn’t reach')`);await clickFinish();await success();assert.equal(posts.length,before+2);assert.equal(posts[before].payload.submissionId,posts[before+1].payload.submissionId);assert.equal(posts.at(-1).payload.programs[0].notes,'Retry preserves context');console.log('PASS network failure preserves notes and retry ID');
  await open();await evaluate(`const p=document.querySelector('#program-list > section');p.querySelector('[id$="-program-name"]').value='SYNTHETIC';p.querySelector('[id$="-scheduled-status"]').value='In Progress';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('textarea').value='x'.repeat(2001);p.querySelector('.continue-button').click();`);assert(await evaluate(`document.querySelector('#program-next').hidden`));console.log('PASS oversized optional context is rejected');
  await send('Page.navigate',{url:base+'/intake/simple.html'});await wait(`!!document.querySelector('iframe')?.contentDocument?.querySelector('#quarter-summary')?.textContent`);assert(await evaluate(`!document.querySelector('iframe').contentDocument.querySelector('#quarter-step')`));console.log('PASS embedded intake uses slim form');
+ // Seed the old unversioned URL before loading the updated Session page.
+ assert((await evaluate(`fetch('/intake/js/simple.js').then(r=>r.text())`)).includes('__legacySessionHandlerLoaded'));
  for(const width of [1280,390]){
   await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
   await send('Page.navigate',{url:base+'/intake/simple.html?record-test='+width+'#session'});
   await wait(`!!document.querySelector('#f-org')`);
+  assert(await evaluate(`!window.__legacySessionHandlerLoaded&&document.querySelector('script[src*="js/simple.js"]').src.includes('?v=sheets-20261025')`));
   assert(await evaluate(`!document.querySelector('[data-act=token]')&&!document.body.textContent.includes('separate GitHub ledger')`));
   await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-program').value='SYNTHETIC SESSION';document.querySelector('#f-facility').value=document.querySelector('#facilities option').value;document.querySelector('#f-session_date').value='2026-10-25';document.querySelector('#f-present_count').value='3';`);
   await evaluate(`window.tpwSession={token:'QUARTERLY_AUTH_MUST_NOT_LEAK'}`);
@@ -99,7 +107,7 @@ try{
   assert(await evaluate(`document.querySelector('.done').textContent.includes('Session records')&&document.querySelector('.done').textContent.includes('MOCK-RECORD-ONLY')`));
   if(width===1280){assert.equal(posts[before].payload.id,posts[before+1].payload.id);assert.equal(posts[before].payload.submitted_at,posts[before+1].payload.submitted_at);assert.equal(posts[before+1].payload.notes,'SYNTHETIC CORRECTION');}
   assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));
-  console.log('PASS Session saves to Sheets, confirms receipt, no GitHub choices; width:',width);
+  console.log('PASS stale GitHub module bypassed; Session saves to Sheets and confirms receipt; width:',width);
  }
  await send('Page.navigate',{url:base+'/intake/simple.html#followup'});await wait(`!!document.querySelector('#f-token')`);
  await evaluate(`document.querySelector('#f-org').value='SYNTHETIC TEST';document.querySelector('#f-token').value='M78';document.querySelector('#f-release_date').value='2026-08-01';document.querySelector('[name=status][value=new_conviction]').click();document.querySelector('#f-days').value='20';document.querySelector('[name=status][value=unknown]').click();document.querySelector('form').requestSubmit();`);
