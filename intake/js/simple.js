@@ -2,16 +2,18 @@
 // Everything else — cycles, join spine, validation rules — stays on the full
 // intake; this page exists for the twenty-second version.
 
-import { issueUrl, commitRecord } from './transport.js';
+import { submitRecord } from './sheets.js';
 
 const DATA = new URL('../../data/intake/', import.meta.url);
-const QUEUE = 'tpw.simple.queue.v1';
+// Keep confirmed Sheet receipts separate from the old GitHub queue.
+const QUEUE = 'tpw.simple.sheets.v1';
 
-const state = { forms: [], config: {}, facilities: [], orgs: [], committed: [], local: [] };
+const state = { forms: [], facilities: [], orgs: [], local: [] };
 let kind = 'session';
 let errors = {};
 let done = null;
 let multi = []; // facilities chosen in the current form
+const pendingRecords = new Map(); // retain identity through edits after an ambiguous save
 
 /* ------------------------------------------------------------------ utils */
 const esc = (s) =>
@@ -56,24 +58,16 @@ const saveLocal = (rows) => {
 
 /* ------------------------------------------------------------------- boot */
 async function boot() {
-  const [forms, config, facilities, orgs, records] = await Promise.all([
+  const [forms, facilities, orgs] = await Promise.all([
     getJSON('simple_forms.json', { forms: [] }),
-    getJSON('config.json', {}),
     getJSON('facilities.json', { facilities: [] }),
     getJSON('orgs/index.json', { orgs: [] }),
-    getJSON('records/index.json', { records: [] }),
   ]);
 
   state.forms = forms.forms || [];
-  state.config = config;
   state.facilities = (facilities.facilities || []).map((f) => f.name);
   state.orgs = orgs.orgs || [];
   state.local = loadLocal();
-
-  const names = (records.records || []).map((r) => r.file).filter(Boolean);
-  state.committed = (
-    await Promise.all(names.map((f) => getJSON(`records/${f}`, null)))
-  ).filter(Boolean);
 
   const visible = state.forms.filter((f) => !f.hidden);
   kind = (location.hash.replace(/^#\/?/, '') || DEMO_KIND).split('/')[0];
@@ -97,8 +91,8 @@ const current = () => state.forms.find((f) => f.kind === kind);
 
 /* ----------------------------------------------------------------- tabs */
 /**
- * Session uses the git ledger; the guided form appends quarterly submissions to
- * the master Google Sheet. The older Quarter form stays in the contract at
+ * Session and the guided form append to separate tabs in the same master
+ * Google Sheet. The older Quarter form stays in the contract at
  * #aggregate, but is not offered in the tab row.
  */
 const DEMO_KIND = 'demo';
@@ -133,7 +127,7 @@ function render() {
     return;
   }
   note(
-    'For TPW member organizations only — this is not a public form. Demo build: entries are saved to a GitHub repository, not sent to CDCR.'
+    'Demo build: entries append to TPW’s Google Sheet, not CDCR. Sign-in is not enabled yet; use synthetic test data only.'
   );
   app.innerHTML = done ? doneScreen() : formScreen(form);
 
@@ -197,21 +191,8 @@ function render() {
     a.href = URL.createObjectURL(blob);
     a.download = `${record.id}.json`;
     a.click();
-    remember(record);
-    finish(record, 'file');
-  });
-
-  app.querySelector('[data-act="token"]')?.addEventListener('click', () => {
-    const record = collect(form, el);
-    if (!record) return;
-    const token = prompt('Fine-grained access token with Contents: write on ' + state.config.repo);
-    if (!token) return;
-    commitRecord(record, state.config, token.trim())
-      .then((res) => {
-        remember(record);
-        finish(record, 'commit', res.url);
-      })
-      .catch((err) => toast(`Could not commit: ${err.message}`, 'bad'));
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    toast('Local JSON backup downloaded. This entry has not been filed.');
   });
 
   syncConditional(form);
@@ -231,6 +212,7 @@ function formScreen(form) {
   return `
     <h1>${esc(form.title)}</h1>
     <p class="lede">${esc(form.blurb)}</p>
+    ${rollsInto()}
     ${waysIn(form)}
     <form novalidate>
       ${form.fields
@@ -239,10 +221,10 @@ function formScreen(form) {
         .join('')}
       <button class="primary" type="submit">${esc(form.submit)}</button>
       <div class="alts">
-        <span>No GitHub account?</span>
-        <button type="button" data-act="download">Download the file</button>
-        <button type="button" data-act="token">Use an access token</button>
+        <span>No account needed for this demo.</span>
+        <button type="button" data-act="download">Download a local backup</button>
       </div>
+      <p class="help" id="save-status" role="status" aria-live="polite"></p>
     </form>
     ${footnote(form)}
     ${recent(form)}
@@ -473,6 +455,11 @@ function collect(form, el) {
   }
 
   for (const f of form.fields) {
+    if (f.hidden) continue;
+    if (f.show_if && !Object.entries(f.show_if).every(([key, want]) => values[key] === want)) {
+      delete values[f.key];
+      continue;
+    }
     if (f.type === 'integer' && values[f.key] !== '') values[f.key] = Number(values[f.key]);
   }
 
@@ -496,20 +483,37 @@ function collect(form, el) {
 }
 
 /* ---------------------------------------------------------------- publish */
-function submit(form, el) {
+async function submit(form, el) {
+  if (el.dataset.saving) return;
   const record = collect(form, el);
   if (!record) return;
-
-  const label = record.program || record.org || record.token || '';
-  const when = record.session_date || record.quarter || record.release_date || '';
-  const url = issueUrl(record, state.config, `[intake:${form.kind}] ${label}${when ? ` · ${when}` : ''}`);
-  if (url.length > 7000) {
-    toast('That payload is too large for an issue link — download the file instead.', 'bad');
-    return;
+  const pending = pendingRecords.get(form.kind);
+  if (pending) {
+    record.id = pending.id;
+    record.submitted_at = pending.submitted_at;
   }
-  remember(record);
-  window.open(url, '_blank', 'noopener');
-  finish(record, 'issue', url);
+  pendingRecords.set(form.kind, record);
+  el.dataset.saving = 'true';
+  const controls = [...el.querySelectorAll('input, select, textarea, button')];
+  controls.forEach((control) => { control.disabled = true; });
+  const button = el.querySelector('[type="submit"]');
+  const label = button.textContent;
+  button.textContent = 'Saving to Google Sheets…';
+  const status = el.querySelector('#save-status');
+  status.textContent = 'Saving to Google Sheets…';
+  try {
+    const receipt = await submitRecord(record);
+    pendingRecords.delete(form.kind);
+    remember({ ...record, receipt });
+    finish(record, receipt);
+  } catch (error) {
+    status.textContent = `Save not confirmed: ${error.message} Your answers are still here.`;
+    toast(status.textContent, 'bad');
+  } finally {
+    delete el.dataset.saving;
+    controls.forEach((control) => { control.disabled = false; });
+    button.textContent = label;
+  }
 }
 
 function remember(record) {
@@ -517,43 +521,47 @@ function remember(record) {
   saveLocal(state.local);
 }
 
-function finish(record, channel, url) {
-  done = { record, channel, url };
+function finish(record, receipt) {
+  done = { record, receipt };
   render();
 }
 
 function doneScreen() {
-  const { record, channel, url } = done;
-  const form = current();
-  const line =
-    channel === 'issue'
-      ? 'A GitHub tab opened with this entry. Submitting the issue is the last step.'
-      : channel === 'commit'
-      ? 'Committed to the repository. The ledger picks it up on the next rebuild.'
-      : 'Downloaded. Send the file, or attach it to a pull request.';
+  const { receipt } = done;
   return `
     <div class="done">
       <div class="mark">✓</div>
-      <h2>${esc(form.doneTitle || 'Logged')}</h2>
-      <p>${esc(line)}</p>
-      ${url ? `<p><a href="${esc(url)}" target="_blank" rel="noopener">Open it on GitHub →</a></p>` : ''}
+      <h2>Saved to Google Sheets</h2>
+      <p>Sheet tab: ${esc(receipt.tab)}<br>Receipt: ${esc(receipt.submissionId)}<br>Record: ${esc(receipt.recordId)}</p>
       <button class="primary" data-act="again" type="button">Add another</button>
-    </div>`;
+    </div>
+    ${rollsIntoDone()}`;
+}
+
+/** What a filing is for. Quiet, once, under the form — not a pitch. */
+function rollsInto() {
+  return `<p class="rolls">This entry is saved to TPW’s master Google Sheet for reporting.
+    It is not a submission to CDCR.</p>`;
+}
+
+function rollsIntoDone() {
+  return `<p class="rolls">Saved to the intake sheet. This does not yet update the
+    <a href="../index.html#report">report</a> or the historical rollup automatically.</p>`;
 }
 
 /* ----------------------------------------------------------------- recent */
 function recent(form) {
-  const rows = [...state.local, ...state.committed]
+  const rows = state.local
     .filter((r) => r.kind === form.kind)
     .sort((a, b) => String(b.submitted_at || '').localeCompare(String(a.submitted_at || '')))
     .slice(0, 5);
 
   if (!rows.length) {
-    return `<div class="recent"><h2>Recent</h2><div class="empty">Nothing yet. The first entry takes about twenty seconds.</div></div>`;
+    return `<div class="recent"><h2>Saved from this browser</h2><div class="empty">Nothing yet. The first entry takes about twenty seconds.</div></div>`;
   }
   return `
     <div class="recent">
-      <h2>Recent</h2>
+      <h2>Saved from this browser</h2>
       <ul>
         ${rows
           .map((r) => {

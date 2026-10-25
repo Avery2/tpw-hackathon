@@ -24,7 +24,10 @@ receiver to support it; the older deployed receiver has not been verified to do 
 
 ## Receiver compatibility
 
-The one-time [receiver update](receiver/README.md) saves context to the existing
+The working quarterly Apps Script project, source files, properties, endpoint and
+deployment stay unchanged for the additional-forms migration. The existing
+[receiver documentation](receiver/README.md) describes the quarterly baseline,
+not an instruction to add Session handling to it. That receiver saves context to the existing
 **Notes** column and automatically adds **Additional data (JSON)** to preserve
 future payload fields. It works with both historical row-builder contracts and
 maps columns by header, allowing insertion/reordering without shifting data. No
@@ -41,8 +44,13 @@ The comments remain available for retry after the receiver is upgraded.
   existing receiver's `ALLOW_UNSIGNED=true` test mode permits submissions and marks
   them unverified. This is not a production access-control setup. Use clearly
   labeled synthetic data only; never enter participant names or other personal data.
-- Only the guided form changes destination. Session/scanner, older Quarter,
-  follow-up and packet-profile routes retain their existing git-ledger paths.
+- Typed Sessions, both scanner paths, the older quick Quarter and follow-up forms
+  target a **separate standalone receiver and endpoint**, with approved tabs in this
+  **same workbook**. They require the new setup below, not a quarterly receiver update.
+  They do not open GitHub issues or accept GitHub tokens. Packet-profile upload
+  remains a legacy git-backed path; historical records are not deleted/migrated.
+- New quick records do not automatically feed the historical git-derived report
+  rollup. The receipt confirms a Sheet append, not report/dashboard inclusion.
 - No browser-side Firebase second write is made. The dashboard still reads Firebase;
   it needs the receiver's optional server-side copy to display new submissions.
   The live receiver confirmed a Sheet append but did not report a dashboard-copy
@@ -51,6 +59,30 @@ The comments remain available for retry after the receiver is upgraded.
   `E5B8D98C`, for an explicitly synthetic test. The private sheet was not independently
   read from the coding session. No new backend or authentication deployment was made.
 
-Tomorrow's auth integration must update the existing Google deployment and connect
-its sign-in client before turning `ALLOW_UNSIGNED` off. Do not turn the flag off
-while this unsigned frontend is the only submission path.
+## Separate receiver for additional forms
+
+Deploy `admin/additional-forms/Code.gs` and generated `Config.gs` in a **new standalone
+Apps Script project**. Give it its own `SPREADSHEET_ID` Script Property pointing to
+the master workbook linked above, plus `ALLOW_UNSIGNED=true` for **synthetic demo
+submissions only**. This flag is not production authentication.
+
+Configure that project's new `/exec` URL in `intake/backend.js` as
+`window.TPW_RECORDS_BACKEND_URL`, now configured to the separate deployment. Leave this guided form's
+`backend.js`, existing URL and quarterly Google project untouched. Until configured,
+the additional forms cannot file; they must not use the quarterly URL as a fallback.
+
+`data/intake/additional_forms.json` configures the schema and approved destination
+tabs. Compile it and the source contracts (`simple_forms.json`, `facilities.json`,
+`sheets.json` under `data/intake/`) with:
+
+```bash
+python3 scripts/build_additional_forms.py
+```
+
+The output is `admin/additional-forms/Config.gs`; do not edit it by hand. See
+[the standalone receiver setup](../admin/additional-forms/README.md) for deployment.
+Neither project is deployed by changing these repository files.
+
+Future authentication work must be planned separately for each project. Do not
+change the working quarterly deployment as part of this migration, or disable
+unsigned mode before the corresponding sign-in path exists.

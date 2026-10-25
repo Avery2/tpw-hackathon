@@ -79,6 +79,15 @@
   .hint a { color:var(--accent-dark); font-weight:700; text-decoration:none; }
   .hint a:hover { text-decoration:underline; }
 
+  /* what this form feeds: one quiet line, above the choice and again after it */
+  .rolls {
+    font-size:13.5px; line-height:1.5; color:var(--muted);
+    margin:-14px 0 26px; padding-left:13px; border-left:2px solid var(--accent-soft);
+  }
+  .rolls a { color:var(--accent-dark); font-weight:700; text-decoration:none; }
+  .rolls a:hover { text-decoration:underline; }
+  .done + .rolls { margin:26px 0 0; }
+
   h1 {
     font-family:var(--display); font-weight:400; color:var(--ink);
     font-size:clamp(1.7rem, 6vw, 2.3rem); line-height:1.08; margin:0 0 8px;
@@ -213,7 +222,7 @@
   <nav class="tabs" id="tabs"></nav>
   <div id="app"><p class="lede">Loading…</p></div>
 </div>
-<footer class="site-foot"><span id="bar-note">Internal prototype, demo build &mdash; entries are saved to a GitHub repository, not sent to CDCR.</span></footer>
+<footer class="site-foot"><span id="bar-note">Internal prototype, demo build &mdash; entries save to TPW’s Google Sheet, not CDCR. Use synthetic test data only.</span></footer>
 <script type="module" src="js/simple.js"></script>
 </body>
 </html>

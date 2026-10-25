@@ -100,7 +100,7 @@ scripts/      validators, issue ingester, reindexer, rollup, profile deriver
 docs/         TPW + CDCR source documents
 data/         snapshots of the Collective Impact form
 site/         local mirror of thetpw.org (offline copy, for reference and extension)
-admin/        optional Google-side tools (Apps Script receiver, steward console) — inert, not wired in; see admin/README.md
+admin/        Google-side tools; additional-forms/ is the separate quick-record receiver (see below)
 ```
 
 ## The intake
@@ -108,8 +108,14 @@ admin/        optional Google-side tools (Apps Script receiver, steward console)
 **Live:** <https://www.averychan.site/tpw-hackathon/intake/simple.html> · `/intake/` redirects here.
 
 The default **Quarterly totals** tab appends guided quarterly submissions to the master
-Google Sheet through the existing Apps Script receiver. **Session** continues to
-use the separate git ledger. There is no client-side Firebase second write;
+Google Sheet through the existing Apps Script receiver. **That working quarterly
+project, its source files, deployment and endpoint remain unchanged.** **Session**,
+both scanner paths and the older quick Quarter/follow-up forms instead target a
+[new, standalone receiver](admin/additional-forms/README.md), with its own endpoint
+and separate approved tabs in the same workbook. Its new endpoint is configured
+in `intake/backend.js`; a live synthetic Session and same-ID retry returned the
+same confirmed receipt. The Session frontend uses this separate endpoint.
+There is no client-side Firebase second write;
 `dashboard/` still reads Firebase and needs the receiver's server-side copy enabled
 to show new filings. **Members Login** opens **Log data** immediately, with
 **Overview** as a secondary link. There is no login screen or workspace sidebar;
@@ -118,8 +124,10 @@ remain visible throughout. Real sign-in is deferred: demo access is **not
 authentication** and does not protect private data. Use synthetic demo data only.
 See `form-demo/README.md` and `dashboard/README.md`.
 
-Four small pages, no build step, no server, no account. The browser holds the arithmetic;
-GitHub holds the data.
+Four small pages, no build step or application server. The browser holds the
+arithmetic; the separate additional-forms Apps Script receiver appends quick records
+to private Google Sheet tabs once configured. No account is required in unsigned demo mode (synthetic data only).
+Packet-profile upload is still a legacy GitHub-backed route.
 
 | Page | What it is |
 |---|---|
@@ -136,8 +144,10 @@ the report needs is per-person attendance. `docs/standard-input.md` is the curre
 ### The quarterly standard
 
 The standard is one submission per organization per quarter, built from whichever of these the
-organization can actually sustain. All three land in the same ledger; `docs/standard-input.md`
-is the contract.
+organization can actually sustain. All three now target the same Google workbook
+in separate tabs; `docs/standard-input.md` describes the historical rollup contract.
+The report/rollup still reads historical git records: new Sheet rows are not yet
+included automatically.
 
 | Path | Who it is for | Produces |
 |---|---|---|
@@ -172,9 +182,37 @@ never holds one. That is the whole mechanism. The earlier HMAC-of-CDCR-number sc
 more clever and less usable: it required a number organizations do not have and a key they
 would have to keep.
 
-### Storage: git is the database
+### Storage: private master Google Sheet
 
-Every entry becomes one file plus one commit.
+There are **two independent Apps Script projects and endpoints**, not an upgrade
+to the quarterly receiver:
+
+- **Guided quarterly form:** keeps `form-demo/backend.js` and the existing project,
+  source files, Script Properties and deployment exactly as the working baseline.
+- **Additional forms:** deploy `admin/additional-forms/Code.gs` and its generated
+  `Config.gs` in a new standalone Apps Script project. Give that project its own
+  `SPREADSHEET_ID` property pointing to the **same master workbook**, and
+  `ALLOW_UNSIGNED=true` for **synthetic demo data only**. Set the new `/exec` URL in
+  `intake/backend.js` as `window.TPW_RECORDS_BACKEND_URL` (now configured). Do not
+  reuse or replace the quarterly endpoint, or copy these files into its project.
+
+`data/intake/additional_forms.json` declares the additional-form schema and approved
+tabs. Run `python3 scripts/build_additional_forms.py` to compile it, together with
+`simple_forms.json`, `facilities.json` and `sheets.json`, into the standalone
+receiver's `Config.gs`; do not hand-edit generated configuration. See
+[additional receiver setup](admin/additional-forms/README.md).
+
+Typed Sessions, roster scans and photo-counted Sessions share the new receiver's
+Session tab; quick aggregates and follow-ups use their own approved tabs. A confirmed
+receipt is required before success; unchanged retries reuse their record ID. JSON
+download is only a local backup, not a filing. Until the new endpoint is configured,
+these forms must not fall back to the quarterly receiver or GitHub.
+
+### Historical GitHub ledger (retained, no new quick-form writes)
+
+The old files and scripts remain for historical reports and packet profiles. They
+are not a second destination or fallback for new Session/Quarter/follow-up entries.
+Historically every entry became one file plus one commit:
 
 ```
 data/intake/records/session/<id>.json      one session sheet, per-person attendance
@@ -185,7 +223,7 @@ data/intake/orgs/index.json                derived: orgs, programs, sites
 data/intake/simple_forms.json              the quick forms' contract
 ```
 
-Three ways in, all of them GitHub:
+The former quick-record routes (retired from those forms; still used by packet profiles):
 
 | Route | Needs | What happens |
 |---|---|---|
@@ -193,7 +231,9 @@ Three ways in, all of them GitHub:
 | **Access token** | a fine-grained PAT with `contents:write`, kept in the browser | two Contents-API commits: the record, then the manifest |
 | **JSON file** | nothing | download the exact file that would have been committed |
 
-Nothing is transmitted until the submitter picks a route.
+New quick-form submit buttons send directly to Sheets, with no GitHub account,
+issue or token. The old issue workflow remains available for historical/packet
+maintenance; it is not part of the Session submission path.
 
 ### Run it
 
