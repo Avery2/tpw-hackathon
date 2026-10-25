@@ -45,7 +45,8 @@ unchanged.
 `assets/member-session.js` stores only a demo account key in sessionStorage, not
 credentials or form answers. Demo access is **not authentication** and does not
 protect private data. Direct intake links work without a demo session. Old
-Programs/check-in routes and `/members/` bookmarks return to logging. Embedded
+Programs routes and `/members/` bookmarks return to logging. The separate check-in
+page is gone: the guided form itself now starts from the organization's last report. Embedded
 guided forms omit duplicate website chrome and resize inside the parent;
 printable rosters retain their letter-sized geometry without website chrome.
 
@@ -56,5 +57,5 @@ fixtures and seed scripts remain available. These records are not a summary of
 new Google Sheet filings. No seed script runs on a visit, no Firebase security
 rules are changed, and no new Sheet-to-Firebase sync is introduced. Data
 shows the separate Google Sheet directly, under its existing permissions.
-Legacy Programs/check-in helpers remain in the directory, with their old page
-routes redirecting to logging as before.
+The legacy Programs helper remains in the directory, with its old page route
+redirecting to logging as before.

@@ -3,6 +3,7 @@
 // intake; this page exists for the twenty-second version.
 
 import { submitRecord } from './sheets.js';
+import { getDemoAccount } from '../../assets/member-session.js';
 
 const DATA = new URL('../../data/intake/', import.meta.url);
 // Keep confirmed Sheet receipts separate from the old GitHub queue.
@@ -200,11 +201,14 @@ function render() {
 
 /** The quarterly form stays embedded and resizes with each step.
  * Its own header/footer are hidden; the parent page provides navigation.
+ * The member's demo account goes with it, so the form can start from last quarter's report.
  */
 function demoPanel() {
+  const account = new URLSearchParams(location.search).get('account') || getDemoAccount();
+  const src = `../team-form/?embed=1${account ? `&account=${encodeURIComponent(account)}` : ''}`;
   return `
     <div class="demo-panel">
-      <iframe src="../team-form/?embed=1" title="Quarterly totals form" loading="lazy"></iframe>
+      <iframe src="${esc(src)}" title="Quarterly totals form" loading="lazy"></iframe>
     </div>`;
 }
 

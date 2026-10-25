@@ -443,39 +443,41 @@
   body.embed .form-field select { padding-right: 48px; }
 
 .report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
-.checkin-banner { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
+.prefill-note { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
+/* Carrying forward, the numbers are the job: on narrow screens show the program before the prisons summary. */
+@media (max-width: 800px) { .prefill-mode .program-sidebar { order: 2; } }
 
-.checkin-mode #facilities-step > .step-label,
-.checkin-mode #facilities-step > .organization-summary,
-.checkin-mode #facilities-step .yard-choices,
-.checkin-mode #facilities-step #facility-help,
-.checkin-mode #facilities-step h2:not(#facilities-question) { display: none; }
-.checkin-mode #facility-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media(max-width: 850px) { .checkin-mode #facility-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media(max-width: 500px) { .checkin-mode #facility-cards { grid-template-columns: 1fr; } }
+.prefill-mode #facilities-step > .step-label,
+.prefill-mode #facilities-step > .organization-summary,
+.prefill-mode #facilities-step .yard-choices,
+.prefill-mode #facilities-step #facility-help,
+.prefill-mode #facilities-step h2:not(#facilities-question) { display: none; }
+.prefill-mode #facility-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media(max-width: 850px) { .prefill-mode #facility-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(max-width: 500px) { .prefill-mode #facility-cards { grid-template-columns: 1fr; } }
 
-.checkin-mode #facility-cards .facility-card { display: flex; flex-direction: column; }
-.checkin-mode .prison-card-header { justify-content: center; text-align: center; }
-.checkin-mode .prison-card-header .choose { text-align: center; padding: 24px 16px; }
-.checkin-mode .prison-card-actions { margin-top: auto; display: grid; gap: 8px; padding: 0 16px 16px; }
-.checkin-mode .prison-card-actions button { border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; padding: 8px 12px; font-size: 14px; font-weight: 700; width: 100%; cursor: pointer; }
-.checkin-mode .prison-card-actions button.remove { color: #8b3934; font-size: 14px; align-self: auto; }
-.checkin-mode #facilities-step .facility-card.editing .yard-choices { display: grid; }
+.prefill-mode #facility-cards .facility-card { display: flex; flex-direction: column; }
+.prefill-mode .prison-card-header { justify-content: center; text-align: center; }
+.prefill-mode .prison-card-header .choose { text-align: center; padding: 24px 16px; }
+.prefill-mode .prison-card-actions { margin-top: auto; display: grid; gap: 8px; padding: 0 16px 16px; }
+.prefill-mode .prison-card-actions button { border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; padding: 8px 12px; font-size: 14px; font-weight: 700; width: 100%; cursor: pointer; }
+.prefill-mode .prison-card-actions button.remove { color: #8b3934; font-size: 14px; align-self: auto; }
+.prefill-mode #facilities-step .facility-card.editing .yard-choices { display: grid; }
 
-.checkin-mode .prison-card-header { flex-direction: column; align-items: center; padding-bottom: 20px; }
-.checkin-mode .prison-card-header .choose { flex: none; padding-bottom: 8px; }
+.prefill-mode .prison-card-header { flex-direction: column; align-items: center; padding-bottom: 20px; }
+.prefill-mode .prison-card-header .choose { flex: none; padding-bottom: 8px; }
 .prison-card-program-count { font-size: 14px; color: #666; }
 
 /* Share title and count row heights across each row of facility cards. */
-.checkin-mode #facility-cards .facility-card { display: grid; grid-template-rows: subgrid; grid-row: span 3; gap: 0; }
-.checkin-mode #facility-cards .prison-card-header { display: contents; }
-.checkin-mode #facility-cards .prison-card-header .choose { display: flex; justify-content: center; align-items: center; text-align: center; padding: 24px 16px 8px; }
-.checkin-mode #facility-cards .prison-card-program-count { text-align: center; padding: 0 16px 20px; }
-.checkin-mode #facility-cards .prison-card-actions { align-self: end; margin-top: 0; }
-.checkin-mode #facility-cards .facility-card.editing { grid-template-rows: auto auto auto auto; grid-row: span 3; }
-.checkin-mode #facility-cards .facility-card.editing .prison-card-program-count { grid-row: 2; }
-.checkin-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
-.checkin-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
+.prefill-mode #facility-cards .facility-card { display: grid; grid-template-rows: subgrid; grid-row: span 3; gap: 0; }
+.prefill-mode #facility-cards .prison-card-header { display: contents; }
+.prefill-mode #facility-cards .prison-card-header .choose { display: flex; justify-content: center; align-items: center; text-align: center; padding: 24px 16px 8px; }
+.prefill-mode #facility-cards .prison-card-program-count { text-align: center; padding: 0 16px 20px; }
+.prefill-mode #facility-cards .prison-card-actions { align-self: end; margin-top: 0; }
+.prefill-mode #facility-cards .facility-card.editing { grid-template-rows: auto auto auto auto; grid-row: span 3; }
+.prefill-mode #facility-cards .facility-card.editing .prison-card-program-count { grid-row: 2; }
+.prefill-mode #facility-cards .facility-card.editing .yard-choices { grid-row: 3; }
+.prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
 <script type="module" src="../assets/site-shell.js"></script>
@@ -748,7 +750,7 @@ const continuePrograms = document.querySelector('#continue-programs');
 const programList = document.querySelector('#program-list');
 let programNumber = 0;
 const completedPrograms = [];
-let checkinContext = null;
+let lastQuarter = null;
 const prisonDisclosureState = new Map();
 function createAssignmentRow(program, code, prison) {
   const row = document.createElement('div');
@@ -788,7 +790,9 @@ function syncAssignmentYards(program, row, code, prison) {
   const yards = row.querySelector('.program-yards');
   const checked = new Set([...yards.querySelectorAll('input:checked')].map(input => input.value));
   for (const node of [...yards.querySelectorAll('label, .yard-empty')]) node.remove();
-  const available = checkinContext && !prison.yards.size ? YARDS : YARDS.filter(name => prison.yards.has(name));
+  // Carrying forward from last quarter, a program can move to any yard at its prisons right here;
+  // completing it adds new yards to the prison (see completeProgram).
+  const available = lastQuarter ? YARDS : YARDS.filter(name => prison.yards.has(name));
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
@@ -810,11 +814,11 @@ function syncAssignmentYards(program, row, code, prison) {
 function refreshPrisons() {
   empty.hidden = prisons.size > 0;
   const missingYards = [...prisons.entries()].filter(([, prison]) => prison.yards.size === 0).map(([code]) => code);
-  continuePrograms.disabled = prisons.size === 0 || (!checkinContext && missingYards.length > 0);
+  continuePrograms.disabled = prisons.size === 0 || (!lastQuarter && missingYards.length > 0);
   // Say why the button is greyed out, not just that it is.
   document.querySelector('#continue-programs-help').textContent = prisons.size === 0
     ? 'Add at least one prison to continue.'
-    : !checkinContext && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
+    : !lastQuarter && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
   // A finished program can't keep pointing at a prison or yard that has since been removed.
   for (const program of completedPrograms) {
     program.assignments = program.assignments
@@ -875,16 +879,16 @@ picker.addEventListener('change', () => {
   const prison = { name, card, yards: selectedYards, color, colorBg };
   paintPrison(card, prison);
   card.append(header, yardGroup);
-  if (checkinContext) {
+  if (lastQuarter) {
     const count = document.createElement('span'); count.className = 'prison-card-program-count';
     count.textContent = '0 programs'; header.append(count);
     const actions = document.createElement('div'); actions.className = 'prison-card-actions';
-    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
-    edit.setAttribute('aria-label', `Edit ${name}`); edit.setAttribute('aria-expanded', 'false');
-    yardGroup.id = `checkin-yards-${code}`; edit.setAttribute('aria-controls', yardGroup.id);
+    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Change yards';
+    edit.setAttribute('aria-label', `Change yards at ${name}`); edit.setAttribute('aria-expanded', 'false');
+    yardGroup.id = `prefill-yards-${code}`; edit.setAttribute('aria-controls', yardGroup.id);
     edit.addEventListener('click', () => {
       const open = card.classList.toggle('editing');
-      edit.textContent = open ? 'Done' : 'Edit';
+      edit.textContent = open ? 'Done' : 'Change yards';
       edit.setAttribute('aria-expanded', String(open));
     });
     remove.textContent = 'Remove';
@@ -1108,7 +1112,7 @@ function completeProgram(program) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
     if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
-    if (checkinContext) {
+    if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
       for (const box of prison.card.querySelectorAll('.yard-choices input')) box.checked = prison.yards.has(box.value);
@@ -1136,9 +1140,33 @@ function completeProgram(program) {
   completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
   programList.replaceChildren();
   refreshPrisons();
+  const done = program.dataset.editIndex === undefined ? `${name} added.` : `${name} updated.`;
+  // Carrying forward from last quarter: go straight on to the next program still waiting for
+  // this quarter's numbers, rather than making them find its Edit button.
+  if (lastQuarter && reviewNext(done)) return;
   document.querySelector('#program-next').hidden = false;
   document.querySelector('#program-next-heading').focus();
-  feedback.textContent = program.dataset.editIndex === undefined ? `${name} added.` : `${name} updated.`;
+  feedback.textContent = lastQuarter ? `${done} All programs have this quarter’s numbers. Check the list, then submit.` : done;
+}
+
+// Opens the next carried-forward program that still needs this quarter's numbers. Returns
+// false when there are none left.
+function reviewNext(before = '') {
+  const index = completedPrograms.findIndex(program => program.needsReview);
+  if (index < 0) return false;
+  // Count only last quarter's programs that are still in the list (a member may remove some).
+  const carried = new Set(lastQuarter.programs.map(program => program.id));
+  const total = completedPrograms.filter(program => carried.has(program.id)).length;
+  const left = completedPrograms.filter(program => program.needsReview).length;
+  editProgram(index);
+  const card = programList.querySelector('.program-card');
+  card.querySelector('h3').textContent = `${total - left + 1} of ${total}: ${card.querySelector('[id$="-program-name"]').value}`;
+  const hint = document.createElement('p'); hint.className = 'form-hint';
+  hint.textContent = 'Last quarter’s prisons and yards are ticked. Add this quarter’s status, dates, course hours, and participants and completions for each yard.';
+  card.querySelector('.organization-summary').after(hint);
+  document.querySelector('#program-feedback').textContent = before;
+  card.querySelector('[id$="-scheduled-status"]').focus();
+  return true;
 }
 
 document.querySelector('#another-program').addEventListener('click', () => {
@@ -1202,7 +1230,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   const submission = {
     organization: organization.value.trim(),
     reportingPeriod: reportingPeriod(),
-    ...(checkinContext ? { orgId: checkinContext.orgId, previousSubmissionId: checkinContext.previousSubmissionId } : {}),
+    ...(lastQuarter ? { orgId: lastQuarter.orgId, previousSubmissionId: lastQuarter.previousSubmissionId } : {}),
     prisons: [...prisons].map(([code, prison]) => ({ code, name: prison.name, yards: [...prison.yards] })),
     programs: completedPrograms,
     submittedAt: new Date().toISOString()
@@ -1406,50 +1434,73 @@ function renderSubmission(submission) {
   }
 }
 
-async function loadCheckin() {
-  const orgId = new URLSearchParams(location.search).get('checkin');
-  if (!orgId) return;
-  const banner = document.createElement('div'); banner.className = 'checkin-banner'; banner.setAttribute('role', 'status');
-  banner.textContent = 'Loading your latest programs…'; form.prepend(banner);
-  const step = organizationStep;
-  step.hidden = true;
+// Filling the form in again every quarter is the burden TPW's members complain about, so when
+// the page knows which organization is filing (the member's demo account, passed in by Log
+// data as ?account=), start from what that organization reported last time: its prisons,
+// yards and program names carry forward, and only this quarter's numbers are asked again.
+// With no account, no earlier report, or ?blank=1, the form starts empty as before.
+async function prefillFromLastQuarter() {
+  const params = new URLSearchParams(location.search);
+  const orgId = params.get('account');
+  if (!orgId || orgId === 'tpw' || params.get('blank') === '1') return;
+  const note = document.createElement('div'); note.className = 'prefill-note'; note.setAttribute('role', 'status');
+  note.textContent = 'Loading what you reported last time…'; form.prepend(note);
+  organizationStep.hidden = true;
+  let draft;
   try {
-    const [{ loadDashboard }, { checkinDraft }] = await Promise.all([import('../team-dashboard/js/data.js'), import('../team-dashboard/js/checkin-data.js')]);
-    const draft = checkinDraft(await loadDashboard(orgId));
-    checkinContext = draft;
-    form.classList.add('checkin-mode');
-    organization.value = draft.organization;
-    organization.readOnly = true;
-    document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
-    document.querySelector('#organization-summary').textContent = draft.organization;
-    for (const prison of draft.prisons) {
-      if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
-      picker.value = prison.code; picker.dispatchEvent(new Event('change'));
-      const record = prisons.get(prison.code);
-      if (!record) continue;
-      for (const box of record.card.querySelectorAll('.yard-choices input')) {
-        box.checked = prison.yards.includes(box.value);
-        if (box.checked) box.dispatchEvent(new Event('change'));
-      }
-    }
-    completedPrograms.push(...draft.programs);
-    refreshPrisons();
-    document.querySelector('#program-next').hidden = !completedPrograms.length;
-    document.querySelector('#program-next-heading').textContent = 'Review your programs for this quarter';
-    facilitiesStep.hidden = false;
-    reportingPeriod();
-    document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
-    document.querySelector('#facility-help').textContent = '';
-    document.querySelector('#continue-programs').textContent = 'Continue →';
-    banner.remove();
-    document.querySelector('#facilities-question').focus();
+    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js'), import('./js/last-quarter.js')]);
+    draft = lastQuarterDraft(await loadDashboard(orgId));
   } catch (error) {
-    console.error('Check-in prefill failed:', error);
-    banner.textContent = 'Could not load your previous submission. Your existing data has not changed.';
-    const retry = document.createElement('button'); retry.type = 'button'; retry.className = 'continue-button'; retry.textContent = 'Try again'; retry.onclick = () => location.reload(); banner.append(retry);
+    // Never a dead end: say so, and let them fill the form in from scratch.
+    console.error('Last-quarter prefill failed:', error);
+    note.textContent = 'We couldn’t load what you reported last time, so this form starts blank.';
+    organizationStep.hidden = false;
+    return;
   }
+  organization.value = draft.organization;
+  organization.readOnly = true;
+  document.querySelector('#organization-summary').textContent = draft.organization;
+  document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
+  if (!draft.programs.length) {
+    // A first report: nothing to carry forward, but they needn't type their name.
+    note.remove();
+    facilitiesStep.hidden = false;
+    document.querySelector('#facilities-question').focus();
+    return;
+  }
+  lastQuarter = draft;
+  form.classList.add('prefill-mode');
+  for (const prison of draft.prisons) {
+    if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
+    picker.value = prison.code; picker.dispatchEvent(new Event('change'));
+    const record = prisons.get(prison.code);
+    if (!record) continue;
+    for (const box of record.card.querySelectorAll('.yard-choices input')) {
+      box.checked = prison.yards.includes(box.value);
+      if (box.checked) box.dispatchEvent(new Event('change'));
+    }
+  }
+  completedPrograms.push(...draft.programs);
+  refreshPrisons();
+  document.querySelector('#program-next-heading').textContent = 'Your programs this quarter';
+  reportingPeriod();
+  // The prisons screen is still there behind "Edit prisons", worded for this case.
+  document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+  document.querySelector('#facility-help').textContent = '';
+  document.querySelector('#continue-programs').textContent = 'Continue →';
+  // What changes every quarter is the numbers, not the prisons, so open straight on the first
+  // program's numbers.
+  form.classList.add('program-mode');
+  programsStep.hidden = false;
+  document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
+  document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a prison…"
+  note.textContent = `We’ve filled in your ${draft.prisons.length} ${draft.prisons.length === 1 ? 'prison' : 'prisons'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from your last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a prison, use Edit prisons. `;
+  const blank = document.createElement('a');
+  params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
+  note.append(blank);
+  reviewNext();
 }
-loadCheckin();
+prefillFromLastQuarter();
 </script>
 </body>
 </html>

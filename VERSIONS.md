@@ -4,7 +4,7 @@ This branch retains both implementations for comparison.
 
 | Route | Version | Data |
 |---|---|---|
-| `/dashboard/` | Original organization dashboard, Programs, Check in | Firebase |
+| `/dashboard/` | Original organization dashboard, Programs, Submissions (check-in removed; prefill is in `/team-form/`) | Firebase |
 | `/form-demo/` | Original guided form | Firebase |
 | `/team-dashboard/` | Team dashboard and Data view from main | Firebase dashboard; embedded Sheet Data page |
 | `/team-form/` | Team guided form from main | Google Apps Script / Google Sheet |

@@ -64,14 +64,12 @@ Keep the word exactly as it is, because it is a name or a quotation, never our o
 
 TPW is a California organization and writes American English: **program**, **organization**, **behavior**, **center**. "Programme" is on 0 of 39 pages. When you write for the repo, the app or the docs, use American spelling, even if you usually write British English.
 
-## 6. How we check ourselves (as of `main` at f1dfafa)
+## 6. How we check ourselves (as of `main` at 89052b9)
 
 - **No loaded words in our own writing.** The only hits for inmate, offender, prisoner and similar are inside web addresses and member organization names. Nothing to fix.
-- **British spellings in places members can see** (the code belongs to Avery and Yuki, so ask them first):
-  - `form-demo/index.html`: the optional notes label says "…about this programme?" and one error message says "programme-notes".
-  - `form-demo/receiver/Code.gs`: one message says "Additional programme data exceeds…" (two code comments do too, which don't matter).
-  - `form-demo/index.html`: the receipt says "Filed with TPW", and TPW's own verb is "submit".
-- **British spellings in documentation** (safe to edit): this folder's `AGENTS.md` and `other-ways-to-get-the-data.md`, plus `form-demo/README.md`, `NOTES-data-recon.md` (Avery's notes) and `report/build.py` (Avery's report code).
+- **Wording in the team's form and receiver.** The British spellings ("programme", "behaviour") and "Filed with TPW" were in `team-form/index.html` and `team-form/receiver/Code.gs`. They are fixed on branch `tpw-language-fixes`, which is waiting for Avery's go-ahead before it merges. After it merges, the receipt reads "Submitted to TPW".
+- **Yuki's original form** (`form-demo/index.html`) still says numbers are "filed under one name". It's Yuki's, so ask first.
+- **British spellings in documentation** (safe to edit): this folder's `other-ways-to-get-the-data.md`, plus `NOTES-data-recon.md` (Avery's notes) and `report/build.py` (Avery's report code).
 
 ## 7. To confirm with TPW
 

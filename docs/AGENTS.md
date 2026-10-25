@@ -15,6 +15,7 @@ This folder holds two kinds of thing: **source documents** that came from TPW, C
 | What public data exists, and what doesn't | `public-data-sources.md` |
 | What TPW says about itself publicly | `tpw-website-text/` |
 | **How TPW talks** about people in prison, programs and its mission, and which words to use or avoid (read before writing any text members or TPW will see) | `tpw-language.md` |
+| What each screen of the app looks like, step by step (made-up data) | `staff-guide-screenshots/` |
 | What the hackathon organisers told teams | `kickoff-briefing.md` |
 | What a filled grant application looks like | `right-4.0-application-example.md` |
 
