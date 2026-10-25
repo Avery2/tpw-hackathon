@@ -36,8 +36,8 @@ pages. Modified clicks still use the link's direct logging destination.
 The member pages keep the original TPW header/footer, a white background, and
 three quiet horizontal links: **Log data**, **Dashboard**, then **Data**. Forms use the site's
 normal gutters instead of a second narrow centered column. There is no outer
-workspace card, sidebar, avatar or account picker. The logging choices are
-**Quarterly totals** (first/default) and **Session**. After submission, a compact
+workspace card, sidebar, avatar or account picker. The only logging tab is
+**Quarterly totals** (the Session tab was removed on 25 Oct 2026). After submission, a compact
 receipt shows the organization, quarter and actual entered counts; mock savings
 estimates are removed. Existing transport, retry IDs and backend validation are
 unchanged.

@@ -108,15 +108,15 @@ function buildFormRows_(payload, filer, meta) {
       // Apostrophe forces literal text under USER_ENTERED, including =formula-like notes.
       result.rows[rowIndex++][notesColumn] = notes ? "'" + notes : '';
       var extra = formSnapshot_(normalized, program, site, filer);
-      if (extra.length > 20000) problems.push('Additional programme data exceeds 20,000 characters per row.');
+      if (extra.length > 20000) problems.push('Additional program data exceeds 20,000 characters per row.');
       result.snapshots.push(extra);
     });
   });
   return problems.length ? { errors: problems, rows: [] } : result;
 }
 
-// Capture structured programme data, not the HTTP envelope, tokens or uploaded files.
-// One snapshot per program/yard row avoids repeating every other programme/site.
+// Capture structured program data, not the HTTP envelope, tokens or uploaded files.
+// One snapshot per program/yard row avoids repeating every other program/site.
 function formSnapshot_(payload, program, site, filer) {
   var submission = Object.assign({}, payload, { organization: filer.organization });
   delete submission.programs;

@@ -512,7 +512,7 @@
             <label for="organization">Organization</label>
             <input id="organization" name="organization" type="text" autocomplete="organization" maxlength="120" placeholder="Start typing to pick a TPW member" list="member-list" aria-describedby="organization-help" required>
             <datalist id="member-list"></datalist>
-            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
+            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are submitted under one name. If it isn’t listed, type it in full.</p>
           </div>
           <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </section>
@@ -641,7 +641,7 @@
           <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
         </fieldset>
         <div class="form-field">
-          <label for="program-notes">Anything else you’d like to tell us about this programme? <span class="label-note">(optional)</span></label>
+          <label for="program-notes">Anything else you’d like to tell us about this program? <span class="label-note">(optional)</span></label>
           <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
           <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Please don’t include participant names or other identifying information.</p>
         </div>
@@ -706,7 +706,7 @@ organization.addEventListener('input', () => organization.setCustomValidity(''))
 document.querySelector('#edit-organization').addEventListener('click', () => {
   showStep(facilitiesStep, organizationStep, organization);
 });
-// Suggest TPW's member names so one organization isn't filed under several spellings.
+// Suggest TPW's member names so one organization isn't submitted under several spellings.
 // If the list can't load, the field still takes free text.
 fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
   const names = text.split(/\r?\n/).slice(1).map(line => {
@@ -1252,7 +1252,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
   submissionId ||= crypto.randomUUID();
   if (!backendUrl() && !window.google?.script?.run) {
-    // No back end set up: the demo behaviour, saved in this browser only.
+    // No back end set up: the demo behavior, saved in this browser only.
     try {
       localStorage.setItem('tpw-form-demo-submission', JSON.stringify(submission));
     } catch (error) {
@@ -1286,7 +1286,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     feedback.textContent = ((result && result.errors) || ['Something went wrong. Your entries are still here; please try again.']).join(' ');
     return;
   }
-  showDone(`Filed with TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
+  showDone(`Submitted to TPW: ${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, reference ${result.reference || result.submissionId}.`);
 });
 
 // The address in backend.js, if one is set.
@@ -1295,7 +1295,7 @@ function backendUrl() {
   return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || /^http:\/\/localhost:\d+\//.test(url) ? url : '';
 }
 // What the sheet writer needs, in plain field names. The organization is only a fallback
-// for the demo: once sign-in is connected, the server files under the signed-in organization.
+// for the demo: once sign-in is connected, the server records it under the signed-in organization.
 function toPayload(submission, submissionId) {
   return {
     submissionId,
@@ -1325,7 +1325,7 @@ async function sendToBackend(payload) {
       ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
       : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
     if (!capabilities.features?.programNotes) {
-      return { ok: false, errors: ['The receiver needs its programme-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
+      return { ok: false, errors: ['The receiver needs its program-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
     }
   }
   if (window.google?.script?.run) {

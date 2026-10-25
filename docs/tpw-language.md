@@ -64,11 +64,12 @@ Keep the word exactly as it is, because it is a name or a quotation, never our o
 
 TPW is a California organization and writes American English: **program**, **organization**, **behavior**, **center**. "Programme" is on 0 of 39 pages. When you write for the repo, the app or the docs, use American spelling, even if you usually write British English.
 
-## 6. How we check ourselves (as of `main` at 89052b9)
+## 6. How we check ourselves (as of `main` at 17c98e6)
 
 - **No loaded words in our own writing.** The only hits for inmate, offender, prisoner and similar are inside web addresses and member organization names. Nothing to fix.
-- **Wording in the team's form and receiver.** The British spellings ("programme", "behaviour") and "Filed with TPW" were in `team-form/index.html` and `team-form/receiver/Code.gs`. They are fixed on branch `tpw-language-fixes`, which is waiting for Avery's go-ahead before it merges. After it merges, the receipt reads "Submitted to TPW".
+- **The team's form and receiver follow this guide.** On 25 October 2026 the British spellings ("programme", "behaviour") and the receipt's "Filed with TPW" were changed in `team-form/index.html` and `team-form/receiver/Code.gs`. The receipt now reads "Submitted to TPW".
 - **Yuki's original form** (`form-demo/index.html`) still says numbers are "filed under one name". It's Yuki's, so ask first.
+- **Still using "file" or "filing":** a few READMEs and code comments (for example `team-form/README.md`) and `AGENTS.md`'s row for `team-dashboard/`. Safe to change when you're nearby.
 - **British spellings in documentation** (safe to edit): this folder's `other-ways-to-get-the-data.md`, plus `NOTES-data-recon.md` (Avery's notes) and `report/build.py` (Avery's report code).
 
 ## 7. To confirm with TPW

@@ -89,12 +89,14 @@ try {
       assert(await ev('document.querySelector("iframe").contentDocument.querySelector(".demo-form").getBoundingClientRect().width') >= frameWidth - 20);
       console.log('PASS original account drawer → Intake, keyboard close/focus, normal page gutters:', width, route);
     }
-    await click('#tabs a[href="#session"]'); await wait('!!document.querySelector("#f-org")');
-    if (width !== 1024) await screenshot(`wide-session-${width}`);
-    await ev('document.querySelector("#f-org").value="SYNTHETIC UNSUBMITTED DRAFT"');
+    // Quarterly totals is the only tab since the Session form was removed (25 Oct 2026).
+    assert.deepEqual(await ev('[...document.querySelectorAll("#tabs a")].map(n=>n.textContent)'), ['Quarterly totals']);
+    if (width !== 1024) await screenshot(`wide-log-data-${width}`);
+    const draft = 'document.querySelector("iframe").contentDocument.querySelector("#organization")';
+    await ev(`${draft}.value="SYNTHETIC UNSUBMITTED DRAFT"`);
     await click('.tpw-header .login'); await wait('!!document.querySelector(".tpw-account-drawer:modal")');
     await click('.tpw-account-close'); await wait('!document.querySelector(".tpw-account-drawer").open');
-    assert.equal(await ev('document.querySelector("#f-org").value'), 'SYNTHETIC UNSUBMITTED DRAFT');
+    assert.equal(await ev(`${draft}.value`), 'SYNTHETIC UNSUBMITTED DRAFT');
     if (width > 440) {
       await click('.tpw-header .login'); await wait('document.querySelector(".tpw-account-drawer").open');
       await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, x: 10, y: 100 });
@@ -106,7 +108,6 @@ try {
     assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    if (width >= 900) assert.equal(await ev('document.querySelector("[data-key=org]").getBoundingClientRect().top'), await ev('document.querySelector("[data-key=program]").getBoundingClientRect().top'));
     await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
@@ -137,15 +138,12 @@ try {
   assert(await ev('location.pathname.endsWith("/team-dashboard/")'));
   await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('!!document.querySelector(".rac-panel")'));
-  await go('/intake/sheet.html'); await wait('!!document.querySelector(".tpw-member-nav")');
-  await send('Emulation.setEmulatedMedia', { media: 'print' });
-  assert.equal(await ev('getComputedStyle(document.querySelector(".tpw-member-nav")).display'), 'none');
-  assert.equal(await ev('document.querySelector(".page").getBoundingClientRect().width'), 816);
-  assert.equal(await ev('getComputedStyle(document.querySelector(".page")).transform'), 'none');
+  // The printable roster, scanner and packet reader were removed (25 Oct 2026); old links land on Log data.
+  for (const page of ['sheet', 'scan', 'upload']) { await go(`/intake/${page}.html`); await wait('location.pathname.endsWith("/intake/simple.html")'); }
   assert(requests.some(url => /dashboard\/js\/main\.js/.test(url)));
   assert(!requests.some(url => /firestore\.googleapis\.com/.test(url)));
   assert.deepEqual(submissions, []); assert.deepEqual(exceptions, []);
-  console.log('PASS default and coalition dashboard routes, print geometry, no exceptions, zero live submissions.');
+  console.log('PASS default and coalition dashboard routes, removed pages redirect, no exceptions, zero live submissions.');
 } finally {
   socket?.close(); chrome.kill();
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else { chrome.once('exit', resolve); setTimeout(resolve, 3000); } });
