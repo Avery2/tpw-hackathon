@@ -62,6 +62,8 @@ body.embed .form-section { padding: 8px 0 24px; }
 body.embed .form-section > .shell { max-width: none; padding-inline: 0; }
 body.embed .form-section:has(.program-mode) > .shell { max-width: none; }
 body.embed .demo-form { max-width: none; margin: 0; }
+/* The form itself uses the whole page, but a name or facility box that wide is hard to use. */
+body.embed #organization, body.embed #facility { max-width: 640px; }
 @media (min-width: 900px) {
   .tpw-workspace .field[data-key="org"], .tpw-workspace .field[data-key="program"] { grid-column: span 1; }
 }

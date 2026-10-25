@@ -35,7 +35,7 @@ export function racPanel(programs) {
   }
   const heading = node('div', undefined, 'rac-heading');
   heading.append(node('h3', 'Credit days participants could have earned'), node('span', 'Upper limit', 'rac-label'));
-  section.append(heading, node('p', 'Assumes every program is approved for credit at its prison and every completion earns credit. Each person can earn at most 40 days a year across all programs, so the real number is probably lower.', 'rac-description'));
+  section.append(heading, node('p', 'Assumes every program is approved for credit at its facility and every completion earns credit. Each person can earn at most 40 days a year across all programs, so the real number is probably lower.', 'rac-description'));
   const cards = node('div', undefined, 'rac-orgs');
   for (const group of groups.values()) {
     const card = node('article', undefined, 'rac-org');
