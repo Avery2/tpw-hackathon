@@ -1,6 +1,6 @@
-import { existingPrograms } from './data.js';
-import { currentReportingPeriod } from '../../team-form/js/reporting-period.js';
-export function checkinDraft(data, now = new Date()) {
+import { existingPrograms } from '../../team-dashboard/js/data.js';
+import { currentReportingPeriod } from './reporting-period.js';
+export function lastQuarterDraft(data, now = new Date()) {
   const ordered = [...data.submissions].sort((a,b) => String(b.submittedAt || '').localeCompare(String(a.submittedAt || '')));
   const latest = ordered[0];
   const reportingPeriod = currentReportingPeriod(now);

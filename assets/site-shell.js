@@ -8,7 +8,7 @@ const embedded = new URLSearchParams(location.search).has('embed');
 const dashboard = route.startsWith('team-dashboard/');
 const intake = route.startsWith('intake/');
 const guided = route.startsWith('team-form/');
-let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
+let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : 'overview' : 'intake';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -134,7 +134,7 @@ function sizeForms() {
     };
     frame.addEventListener('load', resize); resize();
   };
-  const scan = () => document.querySelectorAll('.demo-panel iframe, #checkin-form').forEach(connect);
+  const scan = () => document.querySelectorAll('.demo-panel iframe').forEach(connect);
   scan(); new MutationObserver(scan).observe(document.body, {childList:true, subtree:true});
 }
 function mount() {

@@ -12,7 +12,7 @@ not a credential. This frontend deployment does not modify the Google project,
 its properties, permissions, or deployed script version.
 
 One row is filed per program × prison × yard. The current California quarter/year
-is inferred, not asked; check-in prefill also stays in the current quarter. Status
+is inferred, not asked; the last-quarter prefill (below) also stays in the current quarter. Status
 is **In Progress** or **Completed**, not Planned. Optional program context is
 limited to 2,000 characters, with a reminder not to include personal information.
 Participants and completions are entered separately for each yard, avoiding
@@ -21,6 +21,23 @@ success is shown only after the real receiver returns `ok: true`; its row count
 and reference are displayed. Errors leave the entries available for retry. The
 client reuses its submission ID on retry, but deduplication requires the deployed
 receiver to support it; the older deployed receiver has not been verified to do so.
+
+## Starting from last quarter
+
+Filling the form in again every quarter is the burden TPW's members complain about, so the
+form starts from the organization's last report when it knows who is filing. Log data passes
+the member's demo account to the embedded form as `?account=org-1`; the form then loads that
+organization's earlier submissions (`js/last-quarter.js`, reading the Firebase demo data),
+fills in its prisons, yards and program names, and asks only this quarter's dates and numbers.
+Participants and completions are never carried forward: they start at 0. It opens straight on
+the first program ("1 of 5: …"), because the numbers change every quarter and the prisons
+rarely do; finishing one opens the next. Each program can tick or untick any yard at its
+prisons as it goes; adding or removing a prison is under **Edit prisons**. Every carried-forward
+program is marked **Review for this quarter** until done, and submit is refused until all are,
+so last quarter's numbers are never sent again by accident. A note at the top says
+what was filled in and offers **Start blank instead** (`?blank=1`). With no account, the TPW
+view, no earlier report, or if loading fails, the form starts empty as before; a failure says
+so in plain words rather than stopping. There is no separate check-in page any more.
 
 ## Receiver compatibility
 

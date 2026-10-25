@@ -41,7 +41,7 @@
 .tpw-site .tpw-workspace .wrap, .tpw-site .tpw-workspace .controls { box-sizing: border-box; width: 100%; max-width: none; margin: 0; padding: 0 0 32px; }
 .tpw-site .wrap:has(.demo-panel) { max-width: none; }
 .tpw-site .demo-panel { margin: 0; width: 100%; }
-.tpw-site .demo-panel iframe, .tpw-site #checkin-form { display: block; width: 100%; min-height: 0; height: 640px; border: 0; background: #fff; }
+.tpw-site .demo-panel iframe { display: block; width: 100%; min-height: 0; height: 640px; border: 0; background: #fff; }
 .tpw-site .tpw-workspace .tabs { max-width: none; margin: 0 0 24px; }
 .tpw-site .tpw-workspace .tabs a { padding: 8px 0; margin-right: 22px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; color: #666; }
 .tpw-site .tpw-workspace .tabs a[aria-current] { border-bottom-color: #5d8d67; background: none; color: #42674b; font-weight: 700; }
