@@ -53,7 +53,7 @@ What we've built is a static site with no server, hosted on GitHub Pages at <htt
 
 ## Rules
 
-- **No personal data, ever.** This repo is public. Never commit participant names, CDCR numbers, dates of birth or anything else that identifies a person. The join uses an HMAC token made in the browser from an organization key. The key never leaves the browser and must never be committed.
+- **No personal data, ever.** This repo is public. Never commit participant names, CDCR numbers, full dates of birth or anything else that identifies a person. Participants are tracked by a short ID: first initial plus birth year, like `M78`, or an organization's own stable IDs. The facilitator writes it next to each name on the paper sheet, and the scanner never reads the name column, so only the ID reaches the Google Sheet. `docs/standard-input.md` has the full rules. The older HMAC tokens in `data/intake/schema.json`, `data/intake/demo/join.json` and `report/build.py` belong to the retired cycle form and the synthetic demo; don't build new work on them.
 - **Keep synthetic and real apart.** The participant spine and outcomes in `data/intake/demo/join.json` are made up. The activity figures from the Collective Impact sheet are real. Label synthetic numbers wherever they appear, and never present them as evidence of impact.
 - **Protect member organizations.** Members may fear retaliation from CDCR. Anything aimed at TPW or the public that shows numbers should show combined figures, not one organization's, unless TPW says otherwise. Cohorts under five are aggregated before release, per `schema.json`.
 - **Don't hand-edit derived files.** Manifests, the registry, the seed and the public CSVs are all rebuilt by scripts. Fix the input or the script, then rebuild.
