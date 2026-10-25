@@ -8,7 +8,8 @@ const embedded = new URLSearchParams(location.search).has('embed');
 const dashboard = route.startsWith('team-dashboard/');
 const intake = route.startsWith('intake/');
 const guided = route.startsWith('team-form/');
-let workspacePage = dashboard ? route.includes('raw-data.html') ? 'raw-data' : route.includes('programs.html') ? 'programs' : route.includes('checkin.html') ? 'checkin' : 'overview' : 'intake';
+const dashboardPages = [['raw-data.html', 'raw-data'], ['programs.html', 'programs'], ['organizations.html', 'organizations'], ['submission', 'submissions']];
+let workspacePage = dashboard ? (dashboardPages.find(([file]) => route.includes(file)) || [, 'overview'])[1] : 'intake';
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -106,6 +107,13 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   }
   nav.replaceChildren();
   const tabs = [['intake', 'Log data', demoEntryPath(key)], ['overview', 'Dashboard', key ? `team-dashboard/#${key}` : 'team-dashboard/']];
+  // Signed in, the pages of the dashboard workspace: this account's programs and submissions, and
+  // for the TPW staff view the list of organizations. Signed out there is nothing to show.
+  if (key) {
+    tabs.push(['programs', 'Programs', `team-dashboard/programs.html#${key}`]);
+    if (key === 'tpw') tabs.push(['organizations', 'Organizations', 'team-dashboard/organizations.html#tpw']);
+    tabs.push(['submissions', 'Submissions', `team-dashboard/submissions.html#${key}`]);
+  }
   // Signed in: that account's own annual report (memberMenu), a PDF in a new tab.
   const report = memberMenu(key).find(item => item.label === 'Annual report');
   if (report) tabs.push(['report', report.label, report.path, true]);

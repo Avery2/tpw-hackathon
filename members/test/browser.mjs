@@ -104,9 +104,9 @@ try {
       await click('.tpw-account-intake');
       await wait('location.pathname.endsWith("/intake/simple.html")&&!!document.querySelector("iframe")?.contentDocument?.querySelector("#organization")');
       // Data shows TPW's whole Google Sheet, so member accounts don't get the tab (25 Oct 2026).
-      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Annual report']);
+      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Submissions', 'Annual report']);
       // The top menu stays TPW's own when signed in; the member links are only in the bar below it.
-      assert(await ev('![...document.querySelectorAll(".tpw-header nav a")].some(a => /Log data|Dashboard|Annual report/.test(a.textContent))'));
+      assert(await ev('![...document.querySelectorAll(".tpw-header nav a")].some(a => /Log data|Dashboard|Programs|Organizations|Submissions|Annual report/.test(a.textContent))'));
       const left = await ev('document.querySelector(".tpw-header .logo").getBoundingClientRect().left');
       assert(Math.abs(await ev('document.querySelector("iframe").getBoundingClientRect().left') - left) < 2);
       const frameWidth = await ev('document.querySelector("iframe").getBoundingClientRect().width');
@@ -143,16 +143,31 @@ try {
     assert(await ev('!document.querySelector(".overview-sheet") && document.documentElement.scrollWidth<=innerWidth'));
     console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
     if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
-    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Annual report']);
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Submissions', 'Annual report']);
     assert.equal(await ev('document.querySelector(".tpw-member-nav a[target=_blank]").getAttribute("href").replace(/^.*\\/report\\//, "report/")'), 'report/organizations/org-1-annual-report-2026.pdf');
     // A member who opens Data directly lands on their own Dashboard instead.
     await go('/team-dashboard/raw-data.html#org-1');
     await wait('location.pathname.endsWith("/team-dashboard/") && location.hash === "#org-1" && !!document.querySelector(".participants-chart svg")');
     assert(await ev('!document.querySelector(".overview-sheet")'));
     console.log('PASS members see no Data tab; opening Data directly goes to their Dashboard:', width);
+    // Programs and Submissions are pages in the bar again (25 Oct 2026). A member sees only their own
+    // filings, and the Organizations directory is for the TPW view, so opening it goes to the Dashboard.
+    await click('.tpw-member-nav a[href*="programs.html"]');
+    await wait('document.querySelectorAll("#program-table-container tbody tr").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Programs"');
+    await click('.tpw-member-nav a[href*="submissions.html"]');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    assert(await ev('document.querySelector("#submission-tracker").hidden && !!document.querySelector("#view-submission-data")'));
+    await click('#view-submission-data');
+    await wait('document.querySelectorAll(".submission-data-card").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    await go('/team-dashboard/organizations.html#org-1');
+    await wait('location.pathname.endsWith("/team-dashboard/") && !!document.querySelector(".participants-chart svg")');
+    assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
+    console.log('PASS members: Programs and Submissions in the bar, no Organizations directory:', width);
     // The TPW staff view keeps the Data tab.
     await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".tpw-member-nav a[href*=\\"raw-data.html\\"]")');
-    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Annual report', 'Data']);
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Organizations', 'Submissions', 'Annual report', 'Data']);
     const beforeRaw = requests.length;
     await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet") && !!document.querySelector(".tpw-member-nav [aria-current]")');
     assert.equal(await ev('document.querySelector("h1").textContent'), 'Data');
@@ -165,6 +180,15 @@ try {
     assert(await ev('!document.querySelector("#profile-view,#impact-view,.impact-card")'));
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
     console.log('PASS separate Data Sheet embed and direct link, without dashboard modules:', width);
+    // The TPW view also has the Organizations directory and the quarterly submission tracking.
+    await click('.tpw-member-nav a[href*="organizations.html"]');
+    await wait('document.querySelectorAll(".org-card").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Organizations"');
+    await click('.tpw-member-nav a[href*="submissions.html"]');
+    await wait('!!document.querySelector(".tracker-quarter")');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    assert(await ev('document.querySelector(".submission-choices").hidden && document.documentElement.scrollWidth<=innerWidth'));
+    console.log('PASS TPW view: Organizations directory and submission tracking in the bar:', width);
     await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg")');
   }

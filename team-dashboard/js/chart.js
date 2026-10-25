@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js?v=sheet-20261025b';
+import { participantHistory } from './data.js?v=nav-20261025';
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {

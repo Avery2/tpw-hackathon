@@ -2,6 +2,14 @@
 
 # Dashboard, data and demo account entry
 
+**Programs, Organizations and Submissions** are pages again (restored 25 Oct 2026 from Yuki's earlier
+dashboard, now reading the Sheet). They are tabs in the member bar under the top menu, next to
+Log data, Dashboard, Annual report and Data. **Programs** (`programs.html`) lists every program.
+**Organizations** (`organizations.html`, TPW view only) lists the organizations and opens one
+organization's overview. **Submissions** (`submissions.html`) shows the quarterly submission tracking
+for the TPW view, and a link to **Your data** (`submission-data.html`), the filing history, for a
+member. An organization that opens Organizations directly is sent to its Dashboard.
+
 **Dashboard** (`team-dashboard/index.html`) preserves the original participant chart,
 program/prison/submission totals, RAC estimates and savings calculations. It
 loads the existing Firebase data modules, not the new Sheet filings; the page
