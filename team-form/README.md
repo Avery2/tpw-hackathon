@@ -13,7 +13,7 @@ its properties, permissions, or deployed script version.
 
 One row is filed per program × prison × yard. The current California quarter/year
 is inferred, not asked; check-in prefill also stays in the current quarter. Status
-is **In Progress** or **Completed**, not Planned. Optional programme context is
+is **In Progress** or **Completed**, not Planned. Optional program context is
 limited to 2,000 characters, with a reminder not to include personal information.
 Participants and completions are entered separately for each yard, avoiding
 duplicated program totals. Submission
