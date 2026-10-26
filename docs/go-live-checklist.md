@@ -12,8 +12,9 @@ One rule shapes all of them: assume nobody technical will watch the system day t
 
 **To do:**
 
-- Make TPW's own Sheet and Apps Script, in a shared TPW Google account rather than one person's (technical guide, section 5.9). Don't take over the demo account instead. Start with a fresh, empty Sheet: every row in today's Sheet is test data.
-- Once TPW's copy works, archive both web apps in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
+- **Make TPW's own copy of the Google Sheet.** Create it in a shared TPW Google account rather than one person's, and don't take over the demo account. Start with a fresh, empty Sheet rather than copying today's: every row in today's Sheet is test data, and the script adds the tab and headings itself on the first submission (technical guide, section 5.9, step 1). Then point the script at it with the `SPREADSHEET_ID` setting.
+- Make TPW's own Apps Script project in that same account (technical guide, section 5.9, steps 2 to 9).
+- Once TPW's copy works, archive the web app in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
 - Share the Sheet only with named TPW staff. Never use "Anyone with the link": it holds each organization's own numbers, and members may fear retaliation from CDCR if one organization's figures get out.
 - Publish the website from a GitHub repository (or other host) TPW controls (technical guide, section 8).
 - Check the **Data** page still shows the Sheet only to people it's shared with.

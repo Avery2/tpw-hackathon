@@ -368,7 +368,7 @@ Today's Sheet and Apps Script live in the hackathon's demo Google account, `tpwh
 9. **Check it.** Open the address in a browser: you should see `"service": "TPW guided form submissions"`. Add `?view=dashboard`: you should see `{"ok":true,"orgs":[],"submissions":[]}`.
 10. **Point the Data page at the new Sheet.** `team-dashboard/raw-data.html` shows the Sheet through Google's preview and links to it. Replace the old Sheet ID there (it appears twice). Share the Sheet only with the TPW staff who should see it; the Data page shows it only to people the Sheet is shared with.
 11. **Publish the site** (section 8), file one test submission, and check the rows appear in the Sheet.
-12. **Switch off the hackathon copy.** Sign in as the demo account and archive both of its web apps ([3.1](#31-the-accounts-it-runs-on-today)), so the old addresses stop taking submissions.
+12. **Switch off the hackathon copy.** Sign in as the demo account and archive its web app ([3.1](#31-the-accounts-it-runs-on-today)), so the old addresses stop taking submissions.
 
 If **Anyone** is missing from the **Who has access** list, the account is a Google Workspace account whose administrator has turned off sharing outside the organization. The administrator needs to allow it, or members without a TPW login can't submit.
 
@@ -379,7 +379,6 @@ Every place in the repository that names today's Sheet or script, to update when
 | `team-form/backend.js` | The web app address (used by the form and the dashboards) |
 | `team-dashboard/raw-data.html` | The Sheet's ID, twice |
 | `members/test/browser.mjs` | The Sheet's ID, in an expected value |
-| `intake/js/simple.js` | A link to the Sheet, in the older quick forms |
 | `data/intake/config.json`, `index.html`, `team-form/index.html` | Links to this repository and to the current website address |
 
 ### 5.10 Changing the script safely
