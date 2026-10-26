@@ -58,6 +58,8 @@ Dashboards, reports and anything TPW shares outside should add organizations tog
 
 **Now:** the script labels each filing with the quarter it arrives in (California time). If TPW asks members in October for July to September numbers, those rows are labelled Q4, not Q3.
 
+**What TPW's own Data Glossary says** (`docs/TPW Data Glossary Instructions.docx`, June 2026): "Submit data for your most recently completed program year." Its calculated Program Year column then puts each program in the year it started, not the year it was submitted. So there are three ways to label a submission: the quarter it arrives in (what the tool does now), the quarter before it, or the program's own start date (what the glossary does).
+
 **To do:** decide which TPW wants, and change the code to match if needed (technical guide, section 5.11). Tell members in the data request which months their numbers should cover.
 
 ## 8. (Done) The second Apps Script is gone
