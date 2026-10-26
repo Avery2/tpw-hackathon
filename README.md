@@ -1,5 +1,9 @@
 # TPW data collection tool
 
+> ## ⚠️ **BEFORE ANY REAL MEMBER DATA GOES IN, FINISH THE [GO-LIVE CHECKLIST](docs/go-live-checklist.md).**
+>
+> **This is a working prototype, not a finished product. It is not safe for real member numbers until every item on that list is done.**
+
 A form and dashboard for **Transformative Programming Works (TPW)**. Member organizations use the form each quarter to send TPW four numbers for every program they run in California state prisons: the program's name, how many people took part, the course hours, and how many people completed it. TPW staff see the combined totals on a dashboard.
 
 It was built at Hack for Social Impact 2026 (24–25 October 2026) and handed over to TPW as a working prototype.
