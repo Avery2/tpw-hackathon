@@ -3,6 +3,9 @@
   "owner": {
     "name": "Hack for Social Impact 2026 TPW team"
   },
+  "metadata": {
+    "description": "TPW skills for ChatGPT and Claude: answers about TPW members' submissions and the data collection tool, read from TPW's submissions Google Sheet."
+  },
   "plugins": [
     {
       "name": "tpw",

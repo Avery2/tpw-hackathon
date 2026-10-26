@@ -33,10 +33,17 @@ Write the way TPW writes:
 
 The submissions are in the Google Sheet called **TPW guided form submissions (App Script)**, on the tab **Submissions; comes from website form DO NOT RENAME**. One row is one program at one yard. Rows that share a Submission ID (the member's reference code) came from one submission.
 
-1. Use the Google Drive app to find that Sheet. If the person gave a link, use the link. If there is more than one Sheet with that name, ask which one.
-2. Get a downloaded copy of the whole Sheet as an Excel file (.xlsx), so you can run this skill's script on it. If you can only read the tab's contents, save that one tab as a .csv file with its heading row exactly as it is in the Sheet, and use that.
-3. Run the script that comes with this skill, `scripts/tpw_data.py`, with Python, on the downloaded file. It needs nothing installed.
-4. If Google Drive isn't connected, or can't find or open the Sheet, say: "I can't open TPW's submissions Sheet. Check Google Drive is connected in ChatGPT's Settings, under Plugins, signed in with a TPW Google account that can open the Sheet. Or open the Sheet yourself, choose File, then Download, then Microsoft Excel, and drop the file into this chat."
+1. **Find it** with your Google Drive connection (ChatGPT's Google Drive app, or a Google Drive connector), by searching for that exact name. If the person gave a link, use the link. Sheets with other names, such as test copies, are not it. If more than one Sheet has exactly that name, ask which one.
+2. **Download the whole Sheet as an Excel file.** With a Google Drive tool, ask for its content exported as `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
+3. **Give the script whatever came back, as it is.** Don't decode, convert or retype it: `scripts/tpw_data.py` works out what the file is. It reads:
+   - the .xlsx file itself;
+   - a Google Drive tool's reply that holds the file as encoded text (save the reply as a file, or, if your assistant already saved a large reply to a file, use that file);
+   - a Google Sheets tool's reply with the tab's values, saved as a .json file (read every row and all columns, A to T);
+   - the tab saved as a .csv file, with its heading row exactly as in the Sheet.
+4. **Run the script** from this skill's folder: `python3 scripts/tpw_data.py <command> <file>`. It needs only Python, nothing installed. `python3 scripts/tpw_data.py --help` lists the commands and options.
+5. **If you can't get the Sheet**, because Google Drive isn't connected or can't find or open it, say: "I can't open TPW's submissions Sheet. Check Google Drive is connected (in ChatGPT: Settings, then Plugins; in Claude: Settings, then Connectors), signed in with a TPW Google account that can open the Sheet. Or open the Sheet yourself, choose File, then Download, then Microsoft Excel, and drop the file into this chat."
+
+If the script says every submission is test data, that is the answer: say so in a sentence or two. There's no need to check it some other way.
 
 The script uses the same counting rules as the Dashboard page on TPW's website, so its numbers match. One difference: the Dashboard also adds sample numbers for two made-up organizations, Org 1 and Org 2, which come from the website itself, not from the Sheet.
 

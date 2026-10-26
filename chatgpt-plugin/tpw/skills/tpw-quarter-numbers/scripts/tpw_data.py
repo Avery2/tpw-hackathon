@@ -28,9 +28,12 @@ pretends it is another day, for testing.
 """
 
 import argparse
+import base64
+import binascii
 import csv
 import datetime as dt
 import difflib
+import io
 import json
 import math
 import re
@@ -154,18 +157,49 @@ def find_submission_rows(tabs):
 
 
 def load_rows(path):
+    """The submissions tab's rows, from whatever form the Sheet arrived in.
+
+    Looks at what's in the file, not its name, because assistants save downloads under all
+    sorts of names:
+
+    - an Excel workbook (.xlsx), however it was downloaded;
+    - a Google Drive tool's reply saved as text: JSON whose "content" is the file in base64;
+    - a Google Sheets tool's reply: JSON with "values", the tab's rows;
+    - a plain JSON list of rows (what the tests use, so the website's JavaScript and this
+      file read exactly the same input);
+    - the submissions tab saved as .csv.
+    """
     path = Path(path)
     if not path.exists():
         raise SheetError(f'There is no file at {path}.')
-    if path.suffix.lower() in ('.xlsx', '.xlsm'):
+    data = path.read_bytes()
+    if data[:2] == b'PK':
         return find_submission_rows(read_xlsx_tabs(path))
-    if path.suffix.lower() in ('.csv', '.txt'):
-        return find_submission_rows({path.stem: read_csv_rows(path)})
-    if path.suffix.lower() == '.json':
-        # The tab's values as a list of rows, the way the Sheets API returns them. Used by the
-        # tests, so the website's JavaScript and this file read exactly the same input.
-        return find_submission_rows({path.stem: json.loads(path.read_text(encoding='utf-8'))})
-    raise SheetError('Download the Sheet as an Excel file (.xlsx) or the submissions tab as .csv.')
+    stripped = data.lstrip()[:1]
+    if stripped in (b'{', b'['):
+        try:
+            parsed = json.loads(data.decode('utf-8-sig'))
+        except ValueError:
+            raise SheetError('This file looks like JSON but can’t be read. Download the Sheet again as an Excel file (.xlsx).')
+        return rows_from_json(parsed, path)
+    return find_submission_rows({path.stem: read_csv_rows(path)})
+
+
+def rows_from_json(parsed, path):
+    if isinstance(parsed, list):
+        return find_submission_rows({path.stem: parsed})
+    if isinstance(parsed, dict) and isinstance(parsed.get('values'), list):
+        return find_submission_rows({path.stem: parsed['values']})
+    if isinstance(parsed, dict) and isinstance(parsed.get('content'), str):
+        try:
+            content = base64.b64decode(parsed['content'], validate=False)
+        except (binascii.Error, ValueError):
+            raise SheetError('The downloaded file inside this reply can’t be decoded. Download the Sheet again as an Excel file (.xlsx).')
+        if content[:2] == b'PK':
+            return find_submission_rows(read_xlsx_tabs(io.BytesIO(content)))
+        text_content = content.decode('utf-8-sig', errors='replace')
+        return find_submission_rows({path.stem: list(csv.reader(text_content.splitlines()))})
+    raise SheetError('This JSON file isn’t a copy of the Sheet. Download the Sheet as an Excel file (.xlsx).')
 
 
 # ---------------------------------------------------------------- Dashboard.gs, in Python
@@ -546,6 +580,16 @@ def load(sheet, include_test):
 load.loose = []
 
 
+def only_test_data(kept, test, include_test):
+    """True (after saying so) when there's nothing real to work with."""
+    if kept or not test or include_test:
+        return False
+    print(f'Every submission in the Sheet ({len(test)}) is marked as test data (Yes under Test data), '
+          'so there is nothing real to work with yet. Run again with --include-test to see how the '
+          'answer would look using the test rows, and label every number in it as test data.')
+    return True
+
+
 def test_note(test, include_test):
     if not test:
         return ''
@@ -600,6 +644,8 @@ def summarize(programs, submissions_by_id):
 
 def cmd_missing(args):
     _, kept, test = load(args.sheet, args.include_test)
+    if only_test_data(kept, test, args.include_test):
+        return
     this = parse_quarter(args.quarter) if args.quarter else quarter_of_day(pacific_today(args.today))
     last = previous_quarter(this)
     members = load_members(args.members)
@@ -645,6 +691,8 @@ def cmd_missing(args):
 
 def cmd_totals(args):
     submissions, kept, test = load(args.sheet, args.include_test)
+    if only_test_data(kept, test, args.include_test):
+        return
     by_id = {item['id']: item for item in submissions}
     out = []
     if args.dashboard:
@@ -739,6 +787,8 @@ def facility_table(programs, by_id):
 
 def cmd_check(args):
     submissions, kept, test = load(args.sheet, args.include_test)
+    if only_test_data(kept, test, args.include_test):
+        return
     loose = load.loose
     members = load_members(args.members)
     member_keys = {name_key(member) for member in members}
@@ -927,6 +977,8 @@ def cmd_check(args):
 
 def cmd_member(args):
     submissions, kept, test = load(args.sheet, args.include_test)
+    if only_test_data(kept, test, args.include_test):
+        return
     by_id = {item['id']: item for item in submissions}
     names = sorted({item['organization'] for item in kept}, key=str.lower)
     asked = name_key(args.org)
@@ -1020,27 +1072,32 @@ def cmd_json(args):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(description='Answer TPW staff questions from the submissions Sheet.')
+    parser = argparse.ArgumentParser(description='Answer TPW staff questions from the submissions Sheet. '
+                                     'SHEET is the Sheet downloaded as .xlsx, the submissions tab as .csv, '
+                                     'or a Google Drive or Google Sheets tool reply saved as a file.')
     sub = parser.add_subparsers(dest='command', required=True)
 
-    def add(name, function, *extra):
-        command = sub.add_parser(name)
-        command.add_argument('sheet')
-        command.add_argument('--include-test', action='store_true')
-        command.add_argument('--today')
+    def add(name, function, summary, *extra):
+        command = sub.add_parser(name, help=summary, description=summary)
+        command.add_argument('sheet', help='the downloaded Sheet')
+        command.add_argument('--include-test', action='store_true', help='count rows marked Yes under Test data')
+        command.add_argument('--today', help='pretend today is YYYY-MM-DD (for testing)')
         for option in extra:
             option(command)
         command.set_defaults(run=function)
 
-    members = lambda command: command.add_argument('--members')
-    quarter = lambda command: command.add_argument('--quarter')
-    year = lambda command: command.add_argument('--year')
-    add('missing', cmd_missing, members, quarter)
-    add('totals', cmd_totals, quarter, year, lambda command: command.add_argument('--dashboard', action='store_true'))
-    add('check', cmd_check, members, lambda command: command.add_argument('--since'))
-    add('member', cmd_member, quarter, year, lambda command: command.add_argument('--org', required=True),
-        lambda command: command.add_argument('--all', action='store_true'))
-    add('json', cmd_json)
+    members = lambda command: command.add_argument('--members', help='a member list (.csv or .xlsx) instead of the bundled one')
+    quarter = lambda command: command.add_argument('--quarter', help='a quarter like 2026-Q3 instead of this quarter')
+    year = lambda command: command.add_argument('--year', help='a whole year, like 2026')
+    add('missing', cmd_missing, 'members with no submission this quarter or last quarter', members, quarter)
+    add('totals', cmd_totals, 'combined numbers for a quarter (default: this one) or a year', quarter, year,
+        lambda command: command.add_argument('--dashboard', action='store_true', help='count the way the website Dashboard does'))
+    add('check', cmd_check, 'problems the form can’t catch', members,
+        lambda command: command.add_argument('--since', help='only submissions on or after YYYY-MM-DD'))
+    add('member', cmd_member, 'one member’s own numbers (default: this year)', quarter, year,
+        lambda command: command.add_argument('--org', required=True, help='the organization, or part of its name'),
+        lambda command: command.add_argument('--all', action='store_true', help='everything it has submitted'))
+    add('json', cmd_json, 'the Dashboard’s view of the Sheet as JSON (for tests)')
     args = parser.parse_args(argv)
     try:
         args.run(args)

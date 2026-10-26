@@ -10,6 +10,7 @@ chatgpt-plugin/tests/parity.mjs checks the counting matches the website's own Ja
 These tests check each command's answers, and that Excel and CSV downloads read the same.
 """
 
+import base64
 import csv
 import datetime as dt
 import json
@@ -215,6 +216,42 @@ class Files(unittest.TestCase):
                 row[10] = f'{row[10]:,}' if isinstance(row[10], int) else row[10]
                 writer.writerow(row)
         self.assertEqual(run('totals', sheet=sheet), run('totals'))
+
+    def test_google_drive_reply_saved_as_a_file(self):
+        # What a Google Drive tool sends back: the .xlsx in base64, inside JSON, often saved as .txt.
+        book = self.dir / 'download.xlsx'
+        write_xlsx(book, {'Submissions; comes from website': self.rows})
+        reply = self.dir / 'drive-reply.txt'
+        reply.write_text(json.dumps({'content': base64.b64encode(book.read_bytes()).decode(), 'title': 'TPW guided form submissions (App Script)'}))
+        self.assertEqual(run('json', sheet=reply), run('json'))
+
+    def test_google_sheets_values_reply(self):
+        # What a Google Sheets tool sends back: every cell as the Sheet shows it, as text.
+        epoch = dt.date(1899, 12, 30)
+        shown = []
+        for number, row in enumerate(self.rows):
+            row = ['' if value is None else value for value in row]
+            if number:
+                for index in (5, 6):
+                    if isinstance(row[index], int):
+                        day = epoch + dt.timedelta(days=row[index])
+                        row[index] = f'{day.month}/{day.day}/{day.year}'
+                row = [str(value) for value in row]
+            shown.append(row)
+        reply = self.dir / 'sheets-reply.json'
+        reply.write_text(json.dumps({'range': "'Submissions; comes from website form DO NOT RENAME'!A1:T17", 'values': shown}))
+        self.assertEqual(run('totals', sheet=reply), run('totals'))
+
+    def test_only_test_data_says_so_first(self):
+        only_test = [self.rows[0]] + [row[:-1] + ['Yes'] for row in self.rows[1:]]
+        sheet = self.dir / 'all-test.json'
+        sheet.write_text(json.dumps(only_test))
+        for command in ('missing', 'totals', 'check'):
+            code, out = run(command, sheet=sheet)
+            self.assertEqual(code, 0, out)
+            self.assertTrue(out.startswith('Every submission in the Sheet (7) is marked as test data'), out)
+        code, out = run('member', '--org', 'Harbor', sheet=sheet)
+        self.assertTrue(out.startswith('Every submission in the Sheet'), out)
 
     def test_wrong_tab_says_which_to_use(self):
         sheet = self.dir / 'aggregates.csv'
