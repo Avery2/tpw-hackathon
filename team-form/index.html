@@ -1017,7 +1017,7 @@ function countStepper(label, kind) {
   const stepper = document.createElement('div'); stepper.className = 'stepper';
   const down = document.createElement('button'); down.type = 'button'; down.dataset.step = '-1'; down.textContent = '−';
   const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.step = '1';
-  input.inputMode = 'numeric'; input.value = '0'; input.dataset.kind = kind;
+  input.inputMode = 'numeric'; input.value = ''; input.required = true; input.placeholder = '0'; input.dataset.kind = kind;
   const up = document.createElement('button'); up.type = 'button'; up.dataset.step = '1'; up.textContent = '+';
   stepper.append(down, input, up); field.append(caption, stepper);
   return field;
@@ -1214,6 +1214,8 @@ function completeProgram(program) {
     const participants = row.querySelector('[data-kind="participants"]');
     const completed = row.querySelector('[data-kind="completed"]');
     for (const input of [participants, completed]) {
+      // Empty isn't 0: make them type a number, even 0, so "didn't say" never becomes "none".
+      if (input.value.trim() === '') { problem(input, `Enter ${input === participants ? 'participants enrolled' : 'completed'} for ${row.dataset.code} ${row.dataset.yard}. Type 0 if there were none.`); return; }
       if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
     }
     if (Number(completed.value) > Number(participants.value)) {
