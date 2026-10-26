@@ -51,7 +51,18 @@ try {
   });
   const ev = async expression => { const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw Error(r.exceptionDetails.exception?.description); return r.result.value; };
   const wait = async expression => { for (let n = 0; n < 150; n++) { if (await ev(expression)) return; await sleep(100); } throw Error('Timed out: ' + expression); };
-  const go = async route => { await send('Page.navigate', { url: base + route }); await wait('document.readyState === "complete"'); };
+  // Mark the old page first, then wait for a page without the mark: straight after Page.navigate the
+  // old page can still answer "complete", and the next step would then run against it mid-switch.
+  // A change after "#" keeps the same page (and its mark), so that counts once the address matches.
+  const go = async route => {
+    await ev('window.__tpwOldPage = true');
+    await send('Page.navigate', { url: base + route });
+    for (let n = 0; n < 150; n++) {
+      try { if (await ev('(!window.__tpwOldPage || location.href === ' + JSON.stringify(base + route) + ') && location.origin === ' + JSON.stringify(base) + ' && document.readyState === "complete"')) return; } catch {}
+      await sleep(100);
+    }
+    throw Error('Timed out loading ' + route);
+  };
   const click = async selector => {
     const point = await ev(`(()=>{const a=[...document.querySelectorAll(${JSON.stringify(selector)})].find(a=>{const r=a.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&getComputedStyle(a).visibility!=='hidden';});if(!a)return null;const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
     assert(point, 'Visible control required: ' + selector);
