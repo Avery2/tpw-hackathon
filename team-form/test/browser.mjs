@@ -144,7 +144,7 @@ try{
  assert.deepEqual(await evaluate(`[...document.querySelectorAll('.yard-choices input:checked')].map(box=>box.value)`),['A Yard','Yard 3']);
  assert.deepEqual(await evaluate(`[...document.querySelectorAll('#program-list .program-yards input:checked')].map(box=>box.value)`),['A Yard','Yard 3']);
  await evaluate(`(()=>{const p=document.querySelector('#program-list > section');p.querySelector('[id$="-scheduled-status"]').value='In Progress';p.querySelector('[id$="-start-date"]').value='2026-10-01';
-  for(const [yard,started] of [['A Yard',3],['Yard 3',2]])p.querySelector('.yard-number-row[data-yard="'+yard+'"] [data-kind=participants]').value=started;p.querySelector('.continue-button').click();})()`);
+  for(const [yard,started] of [['A Yard',3],['Yard 3',2]]){p.querySelector('.yard-number-row[data-yard="'+yard+'"] [data-kind=participants]').value=started;p.querySelector('.yard-number-row[data-yard="'+yard+'"] [data-kind=completed]').value=0;}p.querySelector('.continue-button').click();})()`);
  await wait(`!document.querySelector('#program-next').hidden`);await clickFinish();await success();
  assert.deepEqual(posts.at(-1).payload.programs[0].sites,[{facilityCode:'SQ',yard:'A Yard',participants:3,completed:0},{facilityCode:'SQ',yard:'Yard 3',participants:2,completed:0}]);
  dashboardStub='';console.log('PASS last quarter\'s typed-in yard carries forward listed, ticked and submitted');
