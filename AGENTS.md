@@ -26,7 +26,7 @@ Today the Sheet and both Apps Scripts belong to `tpwhackathondemodemo@gmail.com`
 | `team-form/js/` | `reporting-period.js` (the current quarter in California time) and `last-quarter.js` (last quarter's answers as a starting point). | Yes |
 | `team-form/receiver/` | **The Apps Script back end**, the master copy of every file in the live project: `Code.gs`, `Rows.gs`, `Sheet.gs`, `Dashboard.gs`, `Session.gs`, `appsscript.json`. Change and test here, then copy into Google and deploy a new version (technical guide, section 5.10). | Yes, carefully |
 | `team-form/test/` | Tests for the back end (Google faked), the quarter logic, the dashboard data and the form in a browser. | Yes |
-| `intake/simple.html`, `intake/js/simple.js` | "Log data": TPW's header with the form in a frame. Also holds two older quick forms (`#followup`, `#aggregate`) that nothing links to. | Yes |
+| `intake/simple.html`, `intake/js/simple.js` | "Log data": TPW's header with the form in a frame. | Yes |
 | `team-dashboard/` | Dashboard pages: Overview, Programs, Organizations (TPW staff), Submissions, Data (TPW staff; the Sheet through Google's preview). Logic in `team-dashboard/js/`. | Yes |
 | `assets/` | Shared code. `site-shell.js`: header, footer, member bar. `member-session.js`: the demo sign-in (not authentication). `account-drawer.js`: the account menu. `dashboard-source.js`: the one place dashboards and the form's prefill load data. `mirror-nav.js`: wiring for the offline copy of thetpw.org. | Yes |
 | `data/demo/dashboard-sample.json` | Made-up sample organizations (Org 1, Org 2), always badged as sample data. | Yes |
@@ -38,7 +38,7 @@ Today the Sheet and both Apps Scripts belong to `tpwhackathondemodemo@gmail.com`
 | `.github/workflows/tests.yml` | Runs every test on every push, to any branch. When you add a test file, add a step here. | Yes |
 | `docs/` | The technical guide, the go-live checklist and TPW's own source documents. See `docs/AGENTS.md`. | Yes |
 
-**Older parts, not used by the live tool:** `form-demo/` and `dashboard/` (forwarding pages only), `admin/additional-forms/` with `intake/backend.js` (a second Apps Script, still deployed, nothing links to it), `admin/sheetforms/` and `admin/steward/` (unused), the retired `intake/` pages, `data/intake/`, `scripts/intake_*.py`, `scripts/standard_rollup.py`, `scripts/build_additional_forms.py` and `.github/workflows/intake.yml`. Don't build new work on them. Technical guide, section 4, has the details.
+**Older parts, not used by the live tool:** `form-demo/` and `dashboard/` (forwarding pages only), `admin/sheetforms/` and `admin/steward/` (unused), the retired `intake/` pages, `data/intake/`, `scripts/intake_*.py`, `scripts/standard_rollup.py`, `scripts/build_additional_forms.py` and `.github/workflows/intake.yml`. Don't build new work on them. Technical guide, section 4, has the details.
 
 ## Rules
 

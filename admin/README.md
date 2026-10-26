@@ -1,20 +1,10 @@
 # admin/ — Google-side tools
 
-**Start with [`additional-forms/`](additional-forms/README.md)** for the separate
-Session/follow-up/future-form receiver. Its new endpoint is configured in
-`intake/backend.js`; it shares the master workbook, not the quarterly Apps Script
-project or deployment. Generate its schema configuration with
-`python3 scripts/build_additional_forms.py`. Its separate Google deployment is now
-configured for the Session frontend and has confirmed a synthetic Session
-save/retry.
-
 The two **older optional** web apps below (`sheetforms/` and `steward/`) remain
-additive and inert. The historical notes below apply to those two only, not the
-additional-forms receiver.
+additive and inert.
 
 | Path | What |
 |---|---|
-| `additional-forms/` | Current standalone receiver for Sessions, follow-ups and other approved forms; one separate endpoint, same private master workbook. |
 | `sheetforms/` | An older intake receiver: a member organization files a cycle from the browser with **no GitHub account and no Google account**, and the row lands in a spreadsheet the organization owns. |
 | `steward/` | A steward console: a per-organization view of the published JSON, gated on Google identity — `steward` sees org rows, `viewer` sees combined figures only. |
 

@@ -91,7 +91,6 @@ The tool was built in accounts the hackathon team made or already had. None of i
 |---|---|---|
 | The Google Sheet, "TPW guided form submissions (App Script)" | The demo account's Google Drive. Its ID is `1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0`. | The receiver's `SPREADSHEET_ID` setting (5.3) and `team-dashboard/raw-data.html` |
 | The Apps Script receiver ([section 5](#5-the-google-apps-script-back-end)) | <https://script.google.com>, signed in as the demo account. It was created on 24 October 2026 as "TPW guided form receiver (TEST)". | Its web app address, in `team-form/backend.js` |
-| The second Apps Script ([5.12](#512-the-second-apps-script-not-needed)), not needed | The same place, as "TPW additional forms". It writes to the same Sheet. | Its web app address, in `intake/backend.js` |
 
 What that means in practice:
 
@@ -137,7 +136,6 @@ The repository holds the live tool plus older experiments that are no longer use
 | Path | What it was |
 |---|---|
 | `form-demo/`, `dashboard/` | An earlier form and dashboard that stored data in Firebase. Their pages now only forward to `team-form/` and `team-dashboard/`. |
-| `admin/additional-forms/`, `intake/backend.js` | A second Apps Script for a follow-up form and an older quick quarterly form. Still deployed, but nothing on the site links to those forms. See [5.12](#512-the-second-apps-script-not-needed). |
 | `admin/sheetforms/`, `admin/steward/` | An earlier Apps Script receiver and a staff console. Nothing sends data to them. |
 | `intake/index.html`, `intake/sheet.html`, `intake/scan.html`, `intake/upload.html` | Retired pages (a printable roster, a sheet scanner, a document upload). They now forward to Log data. |
 | `data/intake/`, `scripts/intake_*.py`, `scripts/standard_rollup.py`, `scripts/build_additional_forms.py`, `.github/workflows/intake.yml` | An earlier design that stored each filing as a file in this repository. Kept for history; new submissions never go there. |
@@ -382,7 +380,6 @@ Every place in the repository that names today's Sheet or script, to update when
 | `team-dashboard/raw-data.html` | The Sheet's ID, twice |
 | `members/test/browser.mjs` | The Sheet's ID, in an expected value |
 | `intake/js/simple.js` | A link to the Sheet, in the older quick forms |
-| `intake/backend.js`, `admin/additional-forms/README.md` | The second Apps Script's address and the Sheet's ID (only if you keep that script) |
 | `data/intake/config.json`, `index.html`, `team-form/index.html` | Links to this repository and to the current website address |
 
 ### 5.10 Changing the script safely
@@ -429,11 +426,9 @@ Behaviour to know about:
 - **Google's limits.** Apps Script has daily and per-run limits (for example, how long one run can take and how many can run at once): <https://developers.google.com/apps-script/guides/services/quotas>. About 120 members filing once a quarter is far below them. The dashboard reads the whole tab on every page load, so if the tab ever grows to many tens of thousands of rows, loading will slow down.
 - **To remove a filing**, delete every row with its Submission ID. Deleting only some of its rows leaves the rest of the submission on the dashboard.
 
-### 5.12 The second Apps Script (not needed)
+### 5.12 The second Apps Script (removed)
 
-`admin/additional-forms/` is a separate Apps Script project with its own address (in `intake/backend.js`). It accepts a follow-up form and an older quick quarterly form, and writes them to tabs called **Follow-ups** and **Quarter records**. Its settings file `Config.gs` is generated from `data/intake/additional_forms.json` by `scripts/build_additional_forms.py`; don't edit it by hand.
-
-It is still deployed, but nothing on the site links to those two forms (they can only be reached by typing `intake/simple.html#followup` or `#aggregate`). Unless TPW wants a follow-up form, archive or delete that deployment in its own Apps Script project, and remove the folder. Its setup and design are in `admin/additional-forms/README.md`.
+There used to be a second Apps Script for a follow-up form and an older quick quarterly form. The follow-up form asked for a participant ID per person, which TPW doesn't want collected. On 26 October 2026 its deployment was archived and its code (`admin/additional-forms/`, `intake/backend.js`) removed; git history keeps it.
 
 ## 6. The Google Sheet
 

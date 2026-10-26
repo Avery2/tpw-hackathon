@@ -29,7 +29,7 @@ The full explanation, including how to set up TPW's own copy of the Sheet and sc
 | `docs/` | The technical guide, the go-live checklist and TPW's own documents |
 | `site/` | An offline copy of thetpw.org, used only so the demo looks like TPW's site |
 
-Older experiments (an earlier form and dashboard, a second Apps Script, and a filing system based on this repository) are still in the repository but not used. The technical guide, section 4, lists them.
+Older experiments (an earlier form and dashboard, and a filing system based on this repository) are still in the repository but not used. The technical guide, section 4, lists them.
 
 ## Run it on your computer
 

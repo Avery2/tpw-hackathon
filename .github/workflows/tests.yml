@@ -44,12 +44,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: python3 scripts/test_build_site.py
 
-      - name: Second Apps Script settings (Config.gs) builder
-        if: ${{ !cancelled() }}
-        run: |
-          python3 scripts/test_additional_forms.py
-          python3 scripts/build_additional_forms.py --check
-
       - name: Quarterly Apps Script, Google faked
         if: ${{ !cancelled() }}
         run: node team-form/test/receiver.cjs
@@ -69,14 +63,6 @@ jobs:
       - name: Dashboard tests catch planted bugs
         if: ${{ !cancelled() }}
         run: node team-form/test/dashboard-mutants.mjs
-
-      - name: Second Apps Script, Google faked
-        if: ${{ !cancelled() }}
-        run: node admin/additional-forms/test.cjs
-
-      - name: Code that sends records to the second Apps Script
-        if: ${{ !cancelled() }}
-        run: node admin/additional-forms/client.test.mjs
 
       - name: Demo sign-in and account menu
         if: ${{ !cancelled() }}
@@ -119,21 +105,6 @@ jobs:
           for attempt in 1 2; do
             status=0
             node team-form/test/browser.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
-            cat "$RUNNER_TEMP/browser.log"
-            [ "$status" -eq 0 ] && exit 0
-            grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"
-            echo "Chrome didn't start in time, so trying once more."
-          done
-          exit 1
-
-      - name: Log data and its other forms in a browser
-        if: ${{ !cancelled() }}
-        env:
-          CHROME_BIN: /usr/bin/google-chrome
-        run: |
-          for attempt in 1 2; do
-            status=0
-            node admin/additional-forms/browser.test.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
             cat "$RUNNER_TEMP/browser.log"
             [ "$status" -eq 0 ] && exit 0
             grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"

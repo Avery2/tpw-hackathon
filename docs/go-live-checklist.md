@@ -60,11 +60,9 @@ Dashboards, reports and anything TPW shares outside should add organizations tog
 
 **To do:** decide which TPW wants, and change the code to match if needed (technical guide, section 5.11). Tell members in the data request which months their numbers should cover.
 
-## 8. Switch off the second Apps Script
+## 8. (Done) The second Apps Script is gone
 
-**Now:** a second Apps Script (`admin/additional-forms/`, address in `intake/backend.js`) still accepts a follow-up form and an older quarterly form that nothing on the site links to, also without sign-in.
-
-**To do:** unless TPW wants a follow-up form, archive that deployment in its Apps Script project and remove its folder and forms (technical guide, section 5.12).
+On 26 October 2026 the hackathon team switched off the second Apps Script (the one for a follow-up form that asked for a participant ID per person) and removed its code. Nothing to do.
 
 ## 9. Check the contact address and embed it in thetpw.org
 
