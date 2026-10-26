@@ -81,3 +81,18 @@ On 26 October 2026 the hackathon team switched off the second Apps Script (the o
 - The $59 a day rate ("LAO marginal cost, $21,534/year ÷ 365") hasn't been checked against its source. The $59 is also typed into the label separately from the rate used in the sum, so changing one won't change the other.
 
 **To do:** before any of these figures goes to funders or legislators, decide with TPW whether to keep them. If yes, ask members which programs are credit-approved, apply the cap per person (or say clearly it can't be), check the cost rate, and use one value for both the label and the sum.
+
+## 11. Stop submissions double-counting or wiping each other
+
+These all come from how the form and dashboard match a new submission to an old one. Fix them before real numbers go in, or the dashboard totals will be wrong.
+
+- **A program entered on a blank form counts twice.** Each blank-form entry gets a new program ID, and the dashboard keys programs by ID (`team-dashboard/js/data.js`, `existingPrograms`). TPW staff always start blank, so anything staff enter for a member is counted on top of what the member already submitted. **To do:** match programs by organization, program name and start date as well as ID, or let staff pick the existing program.
+- **Clicking through the pre-filled form wipes a member's numbers.** Pre-fill sets participants and completions to 0, and the newest submission for a program replaces the older one. Submitting without typing new numbers turns that organization's totals to 0. This happened live to the sample Org 1. **To do:** start those boxes empty and require an answer, or warn before submitting zeros.
+- **Nothing stops a second submission in the same quarter.** Pre-fill takes the latest submission without checking its quarter (`team-form/js/last-quarter.js`). **To do:** if this quarter is already submitted, say so and offer to update it instead.
+- **There's no way to correct a submission.** Submitting again adds rows. The only fix is deleting every row with that Submission ID in the Sheet. **To do:** decide with TPW how corrections should work (for example, a new submission that replaces an earlier one by ID), and tell members.
+
+## 12. Make "who hasn't submitted" include members who never have
+
+**Now:** the submissions tracker on the TPW staff view only knows organizations that have submitted at least once, because the script builds its organization list from submissions (`team-form/receiver/Dashboard.gs`, `dashboardView_`). A member who never submits never appears, and those are the members TPW most needs to chase.
+
+**To do:** give the tracker TPW's full member list (for example a Members tab in the Sheet, which real sign-in needs anyway) and compare against that.
