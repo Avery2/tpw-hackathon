@@ -1119,7 +1119,7 @@ function addProgram(focus = true, saved = null, editIndex) {
       }
     }
   }
-  if (focus) program.querySelector('input').focus({ preventScroll: openingForm });
+  if (focus && !openingForm) program.querySelector('input').focus();
 }
 continuePrograms.addEventListener('click', () => {
   if (continuePrograms.disabled || transitioning) return;
@@ -1255,7 +1255,7 @@ function reviewNext(before = '') {
   hint.textContent = 'Last quarter’s facilities, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
   card.querySelector('.organization-summary').after(hint);
   document.querySelector('#program-feedback').textContent = before;
-  card.querySelector('[id$="-scheduled-status"]').focus({ preventScroll: openingForm });
+  if (!openingForm) card.querySelector('[id$="-scheduled-status"]').focus();
   return true;
 }
 
@@ -1631,8 +1631,10 @@ async function prefillFromLastQuarter() {
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);
-  // Focus the first program's status, but leave the page where it is: on a phone, scrolling down to
-  // it would push the header and the note above off the top of the screen as the page opens.
+  // Don't move focus into the form as it opens. Even with preventScroll, Log data grows the form's
+  // frame to fit as it loads, and Chrome then scrolls the whole page down to keep the focused box in
+  // view, pushing the header and the note above off a phone's screen. The note is role="status", so
+  // screen readers still hear it.
   openingForm = true;
   reviewNext();
   openingForm = false;

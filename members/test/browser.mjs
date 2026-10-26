@@ -39,10 +39,14 @@ try {
     if (m.method === 'Fetch.requestPaused') {
       const { requestId, request } = m.params;
       const address = new URL(request.url);
-      if (request.url.startsWith('https://script.google.com/') && request.method === 'GET' && address.searchParams.get('view') === 'dashboard') await send('Fetch.fulfillRequest', { requestId, ...json(sheetFixture) });
-      else if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
-      else if (address.pathname.endsWith('/data/demo/dashboard-sample.json')) await send('Fetch.fulfillRequest', { requestId, ...json(sampleFixture) });
-      else await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
+      // If the page moves on before we answer, Chrome drops the request and says
+      // "Invalid InterceptionId". That's harmless, so ignore it instead of crashing.
+      const reply = send;
+      const send2 = (method, params) => reply(method, params).catch(error => { if (!/Invalid InterceptionId/.test(error.message)) throw error; });
+      if (request.url.startsWith('https://script.google.com/') && request.method === 'GET' && address.searchParams.get('view') === 'dashboard') await send2('Fetch.fulfillRequest', { requestId, ...json(sheetFixture) });
+      else if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send2('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
+      else if (address.pathname.endsWith('/data/demo/dashboard-sample.json')) await send2('Fetch.fulfillRequest', { requestId, ...json(sampleFixture) });
+      else await send2('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
     }
   });
   const ev = async expression => { const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw Error(r.exceptionDetails.exception?.description); return r.result.value; };

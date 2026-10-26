@@ -577,7 +577,7 @@ and then, in a second terminal:
 node team-form/test/browser.mjs
 ```
 
-They catch every request to Google and answer it themselves, so they never write to a real Sheet. On Linux or Windows, set `CHROME_BIN` to Chrome's location. `.github/workflows/tests.yml` lists every test GitHub runs, including the tests for the older parts. `members/test/browser.mjs` is left out there until it's fixed.
+They catch every request to Google and answer it themselves, so they never write to a real Sheet. On Linux or Windows, set `CHROME_BIN` to Chrome's location. `.github/workflows/tests.yml` lists every test GitHub runs, including the tests for the older parts. `members/test/browser.mjs` runs against the built site (`scripts/build_site.py`) on port 8091; GitHub builds it first.
 
 `receiver.cjs` also checks the script against two older versions of `Rows.gs` kept on the branches `email-code-signin` and `sheet-firebase`. A full `git clone` includes them. From a shallow clone, fetch those branches first.
 
