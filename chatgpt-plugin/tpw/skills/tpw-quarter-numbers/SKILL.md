@@ -16,7 +16,7 @@ Read `reference/rules.md` first and follow it. It covers how to answer, TPW's wo
    | --- | --- |
    | This quarter (the default) | `python3 scripts/tpw_data.py totals <file>` |
    | A particular quarter | `python3 scripts/tpw_data.py totals <file> --quarter 2026-Q3` |
-   | A whole year, quarter by quarter and added up | `python3 scripts/tpw_data.py totals <file> --year 2026` |
+   | A whole year, quarter by quarter and as a whole | `python3 scripts/tpw_data.py totals <file> --year 2026` |
    | What the website's Dashboard shows | `python3 scripts/tpw_data.py totals <file> --dashboard` |
 
 3. Give the person the numbers in a short list, then one or two plain sentences on what they mean. Keep the script's caveats where they matter:
