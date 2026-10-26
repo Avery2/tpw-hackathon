@@ -70,3 +70,14 @@ On 26 October 2026 the hackathon team switched off the second Apps Script (the o
 
 - When something goes wrong that a member can't fix, the form tells them to email `membership@thetpw.org`. Confirm that's the right address, or change `TPW_CONTACT_EMAIL` in `team-form/index.html`.
 - Show the form on a member page of thetpw.org (technical guide, section 8), and remove the offline copy of thetpw.org (`site/`) once that's done.
+
+## 10. Fix the credit-day and cost figures before anyone outside TPW sees them
+
+**Now:** the Dashboard's "credit days participants could have earned" and "facility costs avoided" figures (`team-dashboard/js/rac.js`) overclaim. They're labelled "upper limit", but the math hasn't changed:
+
+- They assume every program is approved to earn Rehabilitative Achievement Credits. The form doesn't ask.
+- They apply the 40-day yearly cap per program, not per person, so someone in two programs can count for up to 80 days.
+- They count enrollments, not people, so the same person in two programs counts twice.
+- The $59 a day rate ("LAO marginal cost, $21,534/year ÷ 365") hasn't been checked against its source. The $59 is also typed into the label separately from the rate used in the sum, so changing one won't change the other.
+
+**To do:** before any of these figures goes to funders or legislators, decide with TPW whether to keep them. If yes, ask members which programs are credit-approved, apply the cap per person (or say clearly it can't be), check the cost rate, and use one value for both the label and the sum.
