@@ -15,6 +15,8 @@ How it fits together:
 
 It's a prototype: sign-in is a demo, not security. `docs/go-live-checklist.md` lists what must change before real member data goes in.
 
+Today the Sheet and both Apps Scripts belong to `tpwhackathondemodemo@gmail.com`, a demo Google account the hackathon team made, not to TPW. An agent can't reach them: a person signed in to that account copies code in and deploys. Don't confuse it with the website's one-click "demo accounts" (Org 1, Org 2, TPW staff), which are only labels in the browser. Technical guide, section 3.1, lists every account the tool runs on.
+
 ## Map
 
 | Path | What it is | Edit it? |

@@ -26,7 +26,7 @@ The tool has two halves:
 - **A form** ("Log data"), where a member enters those numbers. The second time a member files, the form fills in their prisons, yards and programs from last time, so they only type the new numbers.
 - **A dashboard**, where TPW staff (and each member, for their own organization) see the totals, a chart over time, and estimates of sentence-reduction credit days.
 
-Every submission is stored as rows in one Google Sheet that TPW owns. There is no other database.
+Every submission is stored as rows in one Google Sheet. There is no other database. Today that Sheet is in a demo Google account the hackathon team made (see [3.1](#31-the-accounts-it-runs-on-today)). Before real use, TPW makes its own copy in its own account ([5.9](#59-setting-up-tpws-own-copy-from-scratch)).
 
 ## 2. The whole system on one page
 
@@ -39,7 +39,7 @@ flowchart LR
   subgraph Host["Static web host (GitHub Pages today)"]
     Files["HTML, CSS, JavaScript,<br/>sample data JSON"]
   end
-  subgraph Google["Google, inside TPW's account"]
+  subgraph Google["Google: the hackathon's demo account today, TPW's own account once moved"]
     Script["Apps Script web app<br/>team-form/receiver/*.gs"]
     Sheet[("Google Sheet<br/>one tab of submissions")]
   end
@@ -73,13 +73,39 @@ What happens when someone opens the dashboard:
 | Website | Plain HTML, CSS and JavaScript modules. No framework, no build step, no npm packages. | This repository |
 | Hosting | GitHub Pages, published by a GitHub Actions workflow on every push to `main` | `.github/workflows/pages.yml` |
 | Back end | One Google Apps Script project, published as a web app | `team-form/receiver/` (source), Google's Apps Script editor (live copy) |
-| Database | One tab of one Google Sheet | TPW's Google Drive |
+| Database | One tab of one Google Sheet | The Google Drive of the account that owns it: the hackathon's demo account today (3.1) |
 | Helper scripts | Python 3, standard library only | `scripts/` |
 | Tests | Node.js 22 (no packages), Python 3, and headless Chrome for the browser tests | `team-form/test/`, `members/test/`, `admin/*/test*`, `scripts/test_*.py` |
 
 There is no server you run, no database server, no paid service, and no API keys or passwords anywhere in the repository. The two web addresses in the code (the Apps Script address and the Sheet's address) are public settings, not secrets: the Sheet itself is only open to the Google accounts it is shared with.
 
 The project was kept this simple on purpose. TPW has a small staff and no developer on hand day to day, so every moving part is something Google or GitHub runs and keeps running.
+
+### 3.1 The accounts it runs on today
+
+The tool was built in accounts the hackathon team made or already had. None of it is in a TPW account yet. Moving it is item 1 on the [go-live checklist](go-live-checklist.md).
+
+**The demo Google account, `tpwhackathondemodemo@gmail.com`.** The team made this free Gmail account during the hackathon, so the back end wouldn't run inside anyone's personal or work account. It owns the whole Google side:
+
+| What | Where to find it | What in the code points at it |
+|---|---|---|
+| The Google Sheet, "TPW guided form submissions (App Script)" | The demo account's Google Drive. Its ID is `1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0`. | The receiver's `SPREADSHEET_ID` setting (5.3) and `team-dashboard/raw-data.html` |
+| The Apps Script receiver ([section 5](#5-the-google-apps-script-back-end)) | <https://script.google.com>, signed in as the demo account. It was created on 24 October 2026 as "TPW guided form receiver (TEST)". | Its web app address, in `team-form/backend.js` |
+| The second Apps Script ([5.12](#512-the-second-apps-script-not-needed)), not needed | The same place, as "TPW additional forms". It writes to the same Sheet. | Its web app address, in `intake/backend.js` |
+
+What that means in practice:
+
+- **Both web apps run as the demo account.** That's how they can write to a Sheet members can't open (5.1). It also means that if the demo account is deleted, or Google suspends it, submissions and the dashboards stop working at once.
+- **Who can open the Sheet:** the demo account, plus six hackathon team members' Google accounts as editors. It isn't shared by link ("Restricted"). Checked on 25 October 2026.
+- **Who can sign in to the demo account:** Thomas Manandhar-Richardson of Vegan Hacktivists made it, and its sign-in was shared within the hackathon team. The password isn't in this repository and never should be. Ask him for access while you move things over.
+- **Don't adopt the demo account as TPW's.** Its sign-in went round a hackathon team, so start fresh in a TPW account instead (5.9).
+- **Switch the old addresses off afterwards.** Once TPW's copy is live and `team-form/backend.js` points at it, sign in as the demo account and archive both web apps: **Deploy** → **Manage deployments** → select the web app → **Archive**. Until then, the old addresses keep accepting submissions from anyone and keep answering the dashboard feed (go-live checklist, items 3 and 4).
+
+**Don't confuse it with the website's "demo accounts".** Org 1, Org 2 and TPW staff, picked under **Members Login**, aren't Google accounts or any other kind of account. They're labels the browser keeps ([7.4](#74-shared-code-and-the-demo-sign-in)).
+
+**The code and the web address.** The repository is `Avery2/tpw-hackathon`, in a hackathon team member's personal GitHub account. The site is published at averychan.site, that team member's own web address ([section 8](#8-hosting-and-publishing)).
+
+**An old Firebase project.** The earlier form and dashboard (`form-demo/` and `dashboard/`, section 4) saved submissions to Firebase, a Google database service, in a project called `tpw-hackathon` that belongs to another team member. The live tool doesn't use it. It still holds old test submissions, so ask the hackathon team to delete it.
 
 ## 4. Which folders matter
 
@@ -329,7 +355,7 @@ TPW's own website sign-in (Squarespace's member areas) can't be used for this on
 
 ### 5.9 Setting up TPW's own copy from scratch
 
-Today's Sheet and Apps Script live in an account from the hackathon. TPW should make its own. This takes about 15 minutes.
+Today's Sheet and Apps Script live in the hackathon's demo Google account, `tpwhackathondemodemo@gmail.com` ([3.1](#31-the-accounts-it-runs-on-today)). TPW should make its own rather than take that account over. This takes about 15 minutes.
 
 **Which account:** use a shared TPW account (for example, a data@ or admin@ address), not one person's. The web app runs as the account that deploys it, so if that person leaves and their account is closed, the form stops working.
 
@@ -344,6 +370,7 @@ Today's Sheet and Apps Script live in an account from the hackathon. TPW should 
 9. **Check it.** Open the address in a browser: you should see `"service": "TPW guided form submissions"`. Add `?view=dashboard`: you should see `{"ok":true,"orgs":[],"submissions":[]}`.
 10. **Point the Data page at the new Sheet.** `team-dashboard/raw-data.html` shows the Sheet through Google's preview and links to it. Replace the old Sheet ID there (it appears twice). Share the Sheet only with the TPW staff who should see it; the Data page shows it only to people the Sheet is shared with.
 11. **Publish the site** (section 8), file one test submission, and check the rows appear in the Sheet.
+12. **Switch off the hackathon copy.** Sign in as the demo account and archive both of its web apps ([3.1](#31-the-accounts-it-runs-on-today)), so the old addresses stop taking submissions.
 
 If **Anyone** is missing from the **Who has access** list, the account is a Google Workspace account whose administrator has turned off sharing outside the organization. The administrator needs to allow it, or members without a TPW login can't submit.
 
@@ -484,7 +511,7 @@ Things worth knowing in the code:
 ### 7.4 Shared code and the demo sign-in
 
 - `assets/site-shell.js` draws TPW's header and footer on every page, plus the member bar under the header (Log data, Dashboard, Programs, Organizations, Submissions, Data, Annual report, depending on the account).
-- `assets/member-session.js` is the demo sign-in. It keeps the chosen demo account (`org-1`, `org-2` or `tpw`) in the browser's session storage under the key `tpw.member.demo.v1`, and also reads it from `?account=` or the `#org-1` part of dashboard addresses. **It is not security**: anyone can change the address. Replace it with real sign-in (section 5.8).
+- `assets/member-session.js` is the demo sign-in. It keeps the chosen demo account (`org-1`, `org-2` or `tpw`; these are labels, not Google accounts) in the browser's session storage under the key `tpw.member.demo.v1`, and also reads it from `?account=` or the `#org-1` part of dashboard addresses. **It is not security**: anyone can change the address. Replace it with real sign-in (section 5.8).
 - `assets/account-drawer.js` is a copy of the account menu on thetpw.org, with one added entry for the data tool.
 - `assets/mirror-nav.js` makes the "Members Login" link in the offline copy of thetpw.org (`site/`) open that menu. `scripts/build_site.py` adds it to the published copy only.
 

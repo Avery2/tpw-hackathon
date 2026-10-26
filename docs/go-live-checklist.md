@@ -8,11 +8,12 @@ One rule shapes all of them: assume nobody technical will watch the system day t
 
 ## 1. Move the Sheet, the script and the website into TPW's own accounts
 
-**Now:** the Google Sheet and the Apps Script that writes to it live in an account from the hackathon, and the website is published from a hackathon team member's GitHub account and web address (averychan.site).
+**Now:** the Google Sheet and both Apps Scripts live in a demo Google account the hackathon team made, `tpwhackathondemodemo@gmail.com`. Its sign-in was shared within the team. The website is published from a hackathon team member's GitHub account and web address (averychan.site). Technical guide, section 3.1, lists every account and who to ask for access.
 
 **To do:**
 
-- Make TPW's own Sheet and Apps Script, in a shared TPW Google account rather than one person's (technical guide, section 5.9). Start with a fresh, empty Sheet: every row in today's Sheet is test data.
+- Make TPW's own Sheet and Apps Script, in a shared TPW Google account rather than one person's (technical guide, section 5.9). Don't take over the demo account instead. Start with a fresh, empty Sheet: every row in today's Sheet is test data.
+- Once TPW's copy works, archive both web apps in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
 - Share the Sheet only with named TPW staff. Never use "Anyone with the link": it holds each organization's own numbers, and members may fear retaliation from CDCR if one organization's figures get out.
 - Publish the website from a GitHub repository (or other host) TPW controls (technical guide, section 8).
 - Check the **Data** page still shows the Sheet only to people it's shared with.

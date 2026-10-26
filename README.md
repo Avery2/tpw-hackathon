@@ -10,7 +10,7 @@ It was built at Hack for Social Impact 2026 (24–25 October 2026) and handed ov
 ## How it works, in short
 
 - **The website** is plain HTML, CSS and JavaScript, with no framework, no build step and no packages to install. It's published as static files (GitHub Pages today).
-- **Submissions** go from the browser to a small **Google Apps Script** web app, which checks them and appends one row per program per yard to a **Google Sheet** that TPW owns.
+- **Submissions** go from the browser to a small **Google Apps Script** web app, which checks them and appends one row per program per yard to a **Google Sheet**. Today the Sheet and script belong to a demo Google account the hackathon team made (`tpwhackathondemodemo@gmail.com`), not to TPW. Moving them into TPW's own account is the first item on the go-live checklist.
 - **The dashboard** reads the same Sheet back through the same Apps Script.
 
 There's no server to run, no database besides the Sheet, and no API keys or passwords in the code.
