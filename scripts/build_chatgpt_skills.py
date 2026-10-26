@@ -53,7 +53,7 @@ CONTENTS = {
     'tpw-check-submissions': {**DATA_FILES, **MEMBERS},
     'tpw-member-summary': {**DATA_FILES, **MEMBERS},
     'tpw-tool-help': {
-        'reference/rules.md': lambda: (SOURCE / 'rules.md').read_bytes(),
+        **DATA_FILES,
         'reference/tool-guide.md': lambda: (SOURCE / 'tool-guide.md').read_bytes(),
         'reference/data-glossary.md': lambda: glossary_markdown(),
         'reference/after-the-demo.md': lambda: (ROOT / 'docs/after-the-demo.md').read_bytes(),

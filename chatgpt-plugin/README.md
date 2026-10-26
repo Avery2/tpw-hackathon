@@ -8,7 +8,7 @@ Five ChatGPT skills for TPW staff. A skill is a saved set of instructions, with 
 | `tpw-quarter-numbers` | "What are this quarter's numbers?" or "Give me 2026's totals." |
 | `tpw-check-submissions` | "Check this week's submissions." |
 | `tpw-member-summary` | "Make Riverbend a summary of what they reported this year." |
-| `tpw-tool-help` | "A member says the form told them the sheet is busy. What do I tell them?" |
+| `tpw-tool-help` | "A member says the form told them the sheet is busy. What do I tell them?" or "Find submission 56F98641." |
 
 Status on 25 October 2026: built and tested against the website's own code and a copy of the real Sheet, but not yet tried inside a real ChatGPT account. Every row in the Sheet is still test data, so the numbers skills will say there is nothing real to count until members submit.
 

@@ -28,7 +28,13 @@ Read these before answering. They describe the tool as it was on 25 October 2026
 
 ## Looking something up in the Sheet
 
-If the person gives a reference code and asks about that submission, you may open the submissions Sheet with the Google Drive app (see "Getting the Sheet" in `reference/rules.md`) and find the rows with that code in the Submission ID column. Only read. Never change anything in the Sheet.
+If the person gives a reference code (the 8 letters and numbers on a member's receipt) and asks about that submission, get the submissions Sheet (see "Getting the Sheet" in `reference/rules.md`) and run:
+
+```
+python3 scripts/tpw_data.py lookup <downloaded file> --reference 56F98641
+```
+
+It shows who submitted it, when (in California time), the quarter, whether it is test data, and every row it added. If the code isn't in the Sheet, it says what to do next. Only read. Never change anything in the Sheet.
 
 ## Things to get right
 

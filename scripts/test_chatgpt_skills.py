@@ -198,6 +198,22 @@ class Member(unittest.TestCase):
         self.assertIn('- Completed: 19', out)
 
 
+class Lookup(unittest.TestCase):
+    def test_finds_a_submission_by_its_reference_code(self):
+        code, out = run('lookup', '--reference', 's3000003')
+        self.assertEqual(code, 0, out)
+        self.assertIn('# Submission S3000003', out)
+        self.assertIn('Organization: Sample Reading Circle', out)
+        self.assertIn('Submitted: October 22, 2026 at 11:00 AM PDT', out)
+        self.assertIn('| 10 | Writing Lab |', out)
+        self.assertIn('submitted again later: S4000004', out)
+
+    def test_unknown_code_says_what_to_do(self):
+        code, out = run('lookup', '--reference', 'S300000X')
+        self.assertEqual(code, 2)
+        self.assertIn('Close codes in the Sheet: S3000003', out)
+
+
 class Files(unittest.TestCase):
     def setUp(self):
         self.rows = json.loads(FIXTURE.read_text())

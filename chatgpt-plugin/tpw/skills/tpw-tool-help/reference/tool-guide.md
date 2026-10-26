@@ -257,3 +257,5 @@ TPW has four other ChatGPT skills that read the Sheet (they never change it):
 - **This quarter's numbers:** members' combined numbers for a quarter or a year, counted the same way as the Dashboard.
 - **Check the submissions:** problems the form can't catch, with what to ask the member.
 - **A member's own numbers:** a half-page summary a member can use with its funders.
+
+This help skill can also look up one submission by the reference code on a member's receipt: who sent it, when, and every row it added.

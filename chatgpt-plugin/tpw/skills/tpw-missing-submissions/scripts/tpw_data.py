@@ -19,6 +19,7 @@ on the same rows and fails if they disagree.
     python3 tpw_data.py totals  SHEET [--quarter 2026-Q4 | --year 2026 | --dashboard]
     python3 tpw_data.py check   SHEET [--members FILE] [--since 2026-10-01]
     python3 tpw_data.py member  SHEET --org NAME [--quarter 2026-Q4 | --year 2026 | --all]
+    python3 tpw_data.py lookup  SHEET --reference 56F98641
     python3 tpw_data.py json    SHEET          (the Dashboard's view of the Sheet, for tests)
 
 SHEET is the workbook downloaded as .xlsx (the submissions tab is found by its headings, so the
@@ -1087,6 +1088,65 @@ def cmd_member(args):
     print('\n'.join(out).rstrip())
 
 
+def california_time(iso_moment):
+    """A UTC timestamp as California time, for people who think in Pacific time."""
+    try:
+        when = dt.datetime.fromisoformat(iso_moment.replace('Z', '+00:00'))
+    except (ValueError, AttributeError):
+        return iso_moment or 'unknown'
+    try:
+        from zoneinfo import ZoneInfo
+        local = when.astimezone(ZoneInfo('America/Los_Angeles'))
+        return local.strftime('%B %-d, %Y at %-I:%M %p ') + local.tzname()
+    except Exception:
+        return when.strftime('%B %-d, %Y at %H:%M UTC')
+
+
+def cmd_lookup(args):
+    """One submission, found by the reference code on the member's receipt."""
+    rows = load_rows(args.sheet)
+    submissions, _ = read_sheet(rows)
+    code = text(args.reference).upper().strip('#')
+    found = [item for item in submissions if item['id'].upper() == code]
+    if not found:
+        near = difflib.get_close_matches(code, [item['id'].upper() for item in submissions], n=3, cutoff=0.75)
+        message = (f'No submission with the reference code {code} is in the Sheet. Reference codes are 8 letters and '
+                   'numbers, from the receipt the member saw after submitting. If it was submitted in the last few '
+                   'minutes, try again shortly; if it still isn’t there after five minutes, send the code and the time '
+                   'to TPW’s technical person.')
+        if near:
+            message += ' Close codes in the Sheet: ' + ', '.join(near) + '.'
+        raise SheetError(message)
+    submission = found[0]
+    quarter = submission_quarter(submission)
+    signed = 'yes' if any(row['signedIn'] == 'Yes' for row in submission['rows']) else 'no'
+    out = [f'# Submission {submission["id"]}', '',
+           f'- Organization: {submission["organization"] or "(blank)"}',
+           f'- Submitted: {california_time(submission["submittedAt"])}',
+           f'- Quarter: {quarter_label(quarter) if quarter else "not recorded"}',
+           f'- Test data: {"yes" if submission["testData"] else "no"}',
+           f'- Signed in: {signed}',
+           f'- Rows in the Sheet: {len(submission["rows"])} (rows {", ".join(str(row["row"]) for row in submission["rows"])})',
+           f'- Programs: {len(submission["programs"])}', '']
+    detail = []
+    for program in submission['programs']:
+        key = program.get('id') or program['name'].lower()
+        for row in submission['rows']:
+            if row['programKey'] == key:
+                detail.append((row['row'], program['name'], program['status'] or '—',
+                               f'{program["startDate"] or "?"} to {program["endDate"] or "?"}',
+                               row['facility'] or row['code'], row['yard'] or '—', fmt(program['courseHours']),
+                               fmt(row['participants']), fmt(row['completed']), row['notes'] or ''))
+    out.append(table(['Row', 'Program', 'Status', 'Dates', 'Facility', 'Yard', 'Course hours', 'Participants',
+                      'Completed', 'Notes'], detail))
+    later = [item for item in submissions if item['submittedAt'] > submission['submittedAt']
+             and name_key(item['organization']) == name_key(submission['organization'])]
+    if later:
+        out += ['', f'The same organization submitted again later: {", ".join(item["id"] for item in later)}. '
+                'A later submission adds rows; it doesn’t replace this one.']
+    print('\n'.join(out))
+
+
 def cmd_json(args):
     submissions = submissions_from_rows(load_rows(args.sheet))
     public = [{key: value for key, value in item.items() if key != 'rows'} for item in submissions]
@@ -1121,6 +1181,8 @@ def main(argv=None):
     add('member', cmd_member, 'one member’s own numbers (default: this year)', quarter, year,
         lambda command: command.add_argument('--org', required=True, help='the organization, or part of its name'),
         lambda command: command.add_argument('--all', action='store_true', help='everything it has submitted'))
+    add('lookup', cmd_lookup, 'one submission, by the reference code on the member’s receipt',
+        lambda command: command.add_argument('--reference', required=True, help='the 8-character reference code'))
     add('json', cmd_json, 'the Dashboard’s view of the Sheet as JSON (for tests)')
     args = parser.parse_args(argv)
     try:
