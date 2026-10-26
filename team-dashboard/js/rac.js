@@ -12,10 +12,11 @@ export function estimatedSavings(days, dailyRate = 59) {
 }
 
 // Why an organization's estimate is 0, in plain words, so its cards don't just say "0 days" and "$0".
-// Blank figures reach the dashboard as 0, so 0 hours and 0 completions means nothing usable was submitted.
+// Blank cells in the sheet arrive marked unreported, so they're never mistaken for a real 0.
 export function noCreditReason(programs) {
   const results = programs.map(estimateRac);
   if (results.some(result => result.days > 0)) return '';
+  if (programs.some(program => program.unreported)) return 'Some numbers not reported';
   if (results.every(result => !result.hours && !result.completed)) return 'No data submitted';
   if (results.every(result => !result.completed)) return 'No completions submitted yet';
   return 'No completions yet in programs of 52+ course hours';

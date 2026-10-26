@@ -12,8 +12,9 @@ One rule shapes all of them: assume nobody technical will watch the system day t
 
 **To do:**
 
-- Make TPW's own Sheet and Apps Script, in a shared TPW Google account rather than one person's (technical guide, section 5.9). Don't take over the demo account instead. Start with a fresh, empty Sheet: every row in today's Sheet is test data.
-- Once TPW's copy works, archive both web apps in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
+- **Make TPW's own copy of the Google Sheet.** Create it in a shared TPW Google account rather than one person's, and don't take over the demo account. Start with a fresh, empty Sheet rather than copying today's: every row in today's Sheet is test data, and the script adds the tab and headings itself on the first submission (technical guide, section 5.9, step 1). Then point the script at it with the `SPREADSHEET_ID` setting.
+- Make TPW's own Apps Script project in that same account (technical guide, section 5.9, steps 2 to 9).
+- Once TPW's copy works, archive the web app in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
 - Share the Sheet only with named TPW staff. Never use "Anyone with the link": it holds each organization's own numbers, and members may fear retaliation from CDCR if one organization's figures get out.
 - Publish the website from a GitHub repository (or other host) TPW controls (technical guide, section 8).
 - Check the **Data** page still shows the Sheet only to people it's shared with.
@@ -70,3 +71,29 @@ On 26 October 2026 the hackathon team switched off the second Apps Script (the o
 
 - When something goes wrong that a member can't fix, the form tells them to email `membership@thetpw.org`. Confirm that's the right address, or change `TPW_CONTACT_EMAIL` in `team-form/index.html`.
 - Show the form on a member page of thetpw.org (technical guide, section 8), and remove the offline copy of thetpw.org (`site/`) once that's done.
+
+## 10. Fix the credit-day and cost figures before anyone outside TPW sees them
+
+**Now:** the Dashboard's "credit days participants could have earned" and "facility costs avoided" figures (`team-dashboard/js/rac.js`) overclaim. They're labelled "upper limit", but the math hasn't changed:
+
+- They assume every program is approved to earn Rehabilitative Achievement Credits. The form doesn't ask.
+- They apply the 40-day yearly cap per program, not per person, so someone in two programs can count for up to 80 days.
+- They count enrollments, not people, so the same person in two programs counts twice.
+- The $59 a day rate ("LAO marginal cost, $21,534/year ÷ 365") hasn't been checked against its source. The $59 is also typed into the label separately from the rate used in the sum, so changing one won't change the other.
+
+**To do:** before any of these figures goes to funders or legislators, decide with TPW whether to keep them. If yes, ask members which programs are credit-approved, apply the cap per person (or say clearly it can't be), check the cost rate, and use one value for both the label and the sum.
+
+## 11. Stop submissions double-counting or wiping each other
+
+These all come from how the form and dashboard match a new submission to an old one. Fix them before real numbers go in, or the dashboard totals will be wrong.
+
+- **A program entered on a blank form counts twice.** Each blank-form entry gets a new program ID, and the dashboard keys programs by ID (`team-dashboard/js/data.js`, `existingPrograms`). TPW staff always start blank, so anything staff enter for a member is counted on top of what the member already submitted. **To do:** match programs by organization, program name and start date as well as ID, or let staff pick the existing program.
+- **Clicking through the pre-filled form wipes a member's numbers.** Pre-fill sets participants and completions to 0, and the newest submission for a program replaces the older one. Submitting without typing new numbers turns that organization's totals to 0. This happened live to the sample Org 1. **To do:** start those boxes empty and require an answer, or warn before submitting zeros.
+- **Nothing stops a second submission in the same quarter.** Pre-fill takes the latest submission without checking its quarter (`team-form/js/last-quarter.js`). **To do:** if this quarter is already submitted, say so and offer to update it instead.
+- **There's no way to correct a submission.** Submitting again adds rows. The only fix is deleting every row with that Submission ID in the Sheet. **To do:** decide with TPW how corrections should work (for example, a new submission that replaces an earlier one by ID), and tell members.
+
+## 12. Make "who hasn't submitted" include members who never have
+
+**Now:** the submissions tracker on the TPW staff view only knows organizations that have submitted at least once, because the script builds its organization list from submissions (`team-form/receiver/Dashboard.gs`, `dashboardView_`). A member who never submits never appears, and those are the members TPW most needs to chase.
+
+**To do:** give the tracker TPW's full member list (for example a Members tab in the Sheet, which real sign-in needs anyway) and compare against that.
