@@ -1110,10 +1110,17 @@ def cmd_lookup(args):
     found = [item for item in submissions if item['id'].upper() == code]
     if not found:
         near = difflib.get_close_matches(code, [item['id'].upper() for item in submissions], n=3, cutoff=0.75)
-        message = (f'No submission with the reference code {code} is in the Sheet. Reference codes are 8 letters and '
-                   'numbers, from the receipt the member saw after submitting. If it was submitted in the last few '
-                   'minutes, try again shortly; if it still isn’t there after five minutes, send the code and the time '
-                   'to TPW’s technical person.')
+        message = f'No submission with the reference code {code} is in the Sheet.'
+        if not re.fullmatch(r'[0-9A-F]{8}', code):
+            # The receiver makes codes from the start of a random ID: 8 characters, 0-9 and A-F only.
+            message += (' It also can’t be a code the form gave out: codes are always 8 characters, using only the '
+                        'digits 0 to 9 and the letters A to F. The member may have misread it (O for 0, Z for 2, S for 5), '
+                        'or may be reading a different number. Ask for a photo or copy of the receipt.')
+        else:
+            message += (' Reference codes come from the receipt the member saw after submitting; with no receipt, '
+                        'nothing was saved. If it was submitted in the last few minutes, try again shortly. If it still '
+                        'isn’t there after five minutes, send the code and the time to TPW’s technical person.')
+        message += (' To see everything one organization has submitted, run the member command with its name.')
         if near:
             message += ' Close codes in the Sheet: ' + ', '.join(near) + '.'
         raise SheetError(message)

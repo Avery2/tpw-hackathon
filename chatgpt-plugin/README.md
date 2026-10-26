@@ -10,7 +10,19 @@ Five ChatGPT skills for TPW staff. A skill is a saved set of instructions, with 
 | `tpw-member-summary` | "Make Riverbend a summary of what they reported this year." |
 | `tpw-tool-help` | "A member says the form told them the sheet is busy. What do I tell them?" or "Find submission 56F98641." |
 
-Status on 25 October 2026: built and tested against the website's own code and a copy of the real Sheet, but not yet tried inside a real ChatGPT account. Every row in the Sheet is still test data, so the numbers skills will say there is nothing real to count until members submit.
+Status on 25 October 2026: built and tested against the website's own code and a copy of the real Sheet. Installed as a Claude Code plugin and tried with 25 questions in fresh Claude sessions, which read the real Sheet through Google Drive and gave correct answers (the fixes those tests led to are in the branch history). Not yet tried inside a real ChatGPT account. Every row in the Sheet is still test data, so the numbers skills say there is nothing real to count until members submit.
+
+To install it in Claude Code from a copy of this repo:
+
+```bash
+claude plugin marketplace add "$PWD/chatgpt-plugin"
+```
+
+```bash
+claude plugin install tpw@tpw-plugins
+```
+
+After changing the skills, run `claude plugin marketplace update tpw-plugins`, then uninstall and install the plugin again, so Claude picks up the new copy.
 
 ## Installing them
 

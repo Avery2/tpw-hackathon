@@ -2,7 +2,7 @@
 
 Working draft, 25 October 2026. A list of ChatGPT skills Ken Hartman (or any TPW staff member) could install to make day-to-day TPW work easier, built around the data collection tool from the hackathon. Everything is numbered so it can be cut by number.
 
-**Built on 25 October 2026**, in `chatgpt-plugin/` (see its README): candidate 2 cut down to just the list of members who haven't submitted this quarter or last quarter, candidates 3, 5 and 7, and a fifth skill that answers any question about the tool in plain words. They read the submissions Sheet but not yet TPW Database: the member list comes from `data/public/tpw-members.csv`, the same list the form suggests. None has been tried inside a real ChatGPT account yet.
+**Built on 25 October 2026**, in `chatgpt-plugin/` (see its README): candidate 2 cut down to just the list of members who haven't submitted this quarter or last quarter, candidates 3, 5 and 7, and a fifth skill that answers any question about the tool in plain words. They read the submissions Sheet but not yet TPW Database: the member list comes from `data/public/tpw-members.csv`, the same list the form suggests. On 25 October 2026 they were installed in Claude Code and tested with real questions against the real Sheet. None has been tried inside a real ChatGPT account yet.
 
 A ChatGPT skill is a saved folder of instructions, reference files and, if needed, a small script. Once it is installed, ChatGPT uses it on its own whenever a request matches ([OpenAI Help Center](https://help.openai.com/en/articles/20001066-skills-in-chatgpt)). Every skill here reads TPW's live Google Sheets and works from this repository's own code and data, so its answers match what the website shows. Items 17 to 23 explain how.
 
