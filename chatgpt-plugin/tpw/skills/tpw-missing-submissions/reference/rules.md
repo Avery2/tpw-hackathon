@@ -33,7 +33,7 @@ Write the way TPW writes:
 
 The submissions are in the Google Sheet called **TPW guided form submissions (App Script)**, on the tab **Submissions; comes from website form DO NOT RENAME**. One row is one program at one yard. Rows that share a Submission ID (the member's reference code) came from one submission.
 
-1. **Find it** with your Google Drive connection (ChatGPT's Google Drive app, or a Google Drive connector), by searching for that exact name. If the person gave a link, use the link. Sheets with other names, such as test copies, are not it. If more than one Sheet has exactly that name, ask which one.
+1. **Find it** with your Google Drive connection (ChatGPT's Google Drive app, or a Google Drive connector), by searching for that exact name. Claude's Google Drive connector wants the search written as `title = 'TPW guided form submissions (App Script)'`. If the person gave a link, use the link. Sheets with other names, such as test copies, are not it. If more than one Sheet has exactly that name, ask which one.
 2. **Download the whole Sheet as an Excel file.** With a Google Drive tool, ask for its content exported as `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`.
 3. **Give the script whatever came back, as it is.** Don't decode, convert or retype it: `scripts/tpw_data.py` works out what the file is. It reads:
    - the .xlsx file itself;
@@ -43,7 +43,7 @@ The submissions are in the Google Sheet called **TPW guided form submissions (Ap
 4. **Run the script** from this skill's folder: `python3 scripts/tpw_data.py <command> <file>`. It needs only Python, nothing installed. `python3 scripts/tpw_data.py --help` lists the commands and options.
 5. **If you can't get the Sheet**, because Google Drive isn't connected or can't find or open it, say: "I can't open TPW's submissions Sheet. Check Google Drive is connected (in ChatGPT: Settings, then Plugins; in Claude: Settings, then Connectors), signed in with a TPW Google account that can open the Sheet. Or open the Sheet yourself, choose File, then Download, then Microsoft Excel, and drop the file into this chat."
 
-If the script says every submission is test data, that is the answer: say so in a sentence or two. There's no need to check it some other way.
+Trust what the script prints. It already applies the website's rules, leaves out test data and names the rows, reference codes and organizations involved, so there's no need to open or re-check the file yourself unless the person asks about a particular row. If the script says every submission is test data, that is the answer: say so in a sentence or two.
 
 The script uses the same counting rules as the Dashboard page on TPW's website, so its numbers match. One difference: the Dashboard also adds sample numbers for two made-up organizations, Org 1 and Org 2, which come from the website itself, not from the Sheet.
 
