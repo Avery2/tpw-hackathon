@@ -20,7 +20,7 @@ Read `reference/rules.md` first and follow it. It covers how to answer, TPW's wo
    | What the website's Dashboard shows | `python3 scripts/tpw_data.py totals <file> --dashboard` |
 
 3. Give the person the numbers in a short list, then one or two plain sentences on what they mean. Keep the script's caveats where they matter:
-   - Participants are enrollments. Someone in two programs counts twice, and a program reported in two quarters counts its participants twice in a yearly total. Completions are the safer number for a year.
+   - Participants are enrollments: someone in two different programs counts twice. Each run of a program counts once, even if the member reported it in more than one quarter or submitted it twice.
    - Credit days and facility costs avoided are upper limits, never results.
    - The facility table is for TPW's own use. A facility with only one member shows that member's numbers.
 
@@ -31,7 +31,8 @@ Read `reference/rules.md` first and follow it. It covers how to answer, TPW's wo
 So you can answer "where does this come from?":
 
 - Each submission can include many programs, at many facilities and yards. A program's participants and completions are its yards added up.
-- When a member updates a program, the latest submission for that program counts and earlier ones don't, so nothing is counted twice within a quarter.
+- Each run of a program (TPW's Data Glossary calls it a program cycle: the same organization, program name and start date) counts once, with its latest numbers. A member that reports the same run again, in a later quarter or by submitting again on a blank form, isn't counted twice. A new run, with a new start date, counts on its own. For a year, each run is counted once across the whole year, so the year can be less than its quarters added together.
+- This is where these numbers can differ from the website's Dashboard. The Dashboard counts a resubmission on a blank form twice, and adds made-up sample organizations. `--dashboard` gives the Dashboard's own count.
 - Participant hours are course hours per participant times completions, the same as the Sheet's own "CALC" column.
 - Credit days: 10 days for every 52 course hours, at most 40, for each completion. Facility costs avoided: credit days times $59 a day, the Legislative Analyst's Office marginal cost of $21,534 a year divided by 365. CDCR's rules for these credits: https://www.cdcr.ca.gov/proposition57/
 - Rows marked Yes in the Test data column are left out.

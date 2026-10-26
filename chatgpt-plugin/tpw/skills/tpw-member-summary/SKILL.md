@@ -26,6 +26,7 @@ This is the "something back" TPW gives members for submitting: a clear account o
    - A short table of its programs (name, facilities, participants, completed, hours delivered).
    - One line on where the numbers come from: "From the numbers [organization] submitted to TPW for [period]."
    - Plain caveats only where they apply: participants are enrollments, so someone in two programs counts twice. A program still In Progress may not have its completions yet.
+   - Use the script's "Added up" figures as they are. It already counts each run of a program once, with its latest numbers, even when the member reported it in more than one quarter. Don't add up the quarter tables yourself.
 
 4. Offer it as a document they can download, and a short covering note from TPW to the member, if the person wants one.
 

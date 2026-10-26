@@ -233,7 +233,7 @@ As of 25 October 2026 the tool runs on hackathon demo accounts with sign-in off.
 
 **Why does a member's July to September report say Q4?** The form labels a submission with the quarter it was sent in. If the numbers are for the quarter before, count them there when you add things up.
 
-**Why are the Dashboard's numbers different from mine?** The Dashboard adds sample organizations and test rows, counts each program's latest numbers from any quarter, and counts someone in two programs twice. The "this quarter's numbers" skill gives counts for one quarter, without test rows.
+**Why are the Dashboard's numbers different from mine?** The Dashboard adds sample organizations and test rows, counts each program's latest numbers from any quarter, counts a program twice if a member submits it again on a blank form, and counts someone in two programs twice. The "this quarter's numbers" skill counts one quarter (or a year) without test rows, and counts each run of a program once.
 
 **Can a member correct a mistake?** They submit again with the right numbers, and TPW ignores the old reference code (section 7).
 

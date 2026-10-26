@@ -49,9 +49,9 @@ MEMBERS = {'reference/tpw-members.csv': lambda: (ROOT / 'data/public/tpw-members
 # What goes into each skill, besides its own SKILL.md.
 CONTENTS = {
     'tpw-missing-submissions': {**DATA_FILES, **MEMBERS},
-    'tpw-quarter-numbers': dict(DATA_FILES),
+    'tpw-quarter-numbers': {**DATA_FILES, **MEMBERS},
     'tpw-check-submissions': {**DATA_FILES, **MEMBERS},
-    'tpw-member-summary': dict(DATA_FILES),
+    'tpw-member-summary': {**DATA_FILES, **MEMBERS},
     'tpw-tool-help': {
         'reference/rules.md': lambda: (SOURCE / 'rules.md').read_bytes(),
         'reference/tool-guide.md': lambda: (SOURCE / 'tool-guide.md').read_bytes(),

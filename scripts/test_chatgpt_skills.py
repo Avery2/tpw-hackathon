@@ -79,9 +79,10 @@ class Totals(unittest.TestCase):
         code, out = run('totals')
         self.assertEqual(code, 0, out)
         self.assertIn('combined numbers for 2026 Q4', out)
-        for line in ['Programs: 6', 'Facilities: 3', 'Participants: 78', 'Completions: 32',
-                     '(course hours × completions): 2,952', 'upper limit: 460', 'upper limit: $27,140',
-                     'Left out 1 test submission']:
+        # Sample Reading Circle sent Writing Lab twice (same start date): counted once.
+        for line in ['Programs: 5', 'Facilities: 3', 'Participants: 74', 'Completions: 28',
+                     '(course hours × completions): 2,744', 'upper limit: 420', 'upper limit: $24,780',
+                     'Left out 1 test submission', 'Each run of a program']:
             self.assertIn(line, out)
 
     def test_a_named_quarter(self):
@@ -96,7 +97,10 @@ class Totals(unittest.TestCase):
         code, out = run('totals', '--year', '2026')
         self.assertEqual(code, 0, out)
         self.assertIn('No submissions for 2026 Q1.', out)
-        self.assertIn('Participants reported, added across quarters: 123', out)
+        # Mural Workshop and Drum Circle were reported in Q3 and Q4: counted once, with Q4's numbers.
+        year = out[out.index('## 2026 as a whole'):]
+        self.assertIn('Participants: 98', year)
+        self.assertIn('Completions: 38', year)
 
     def test_dashboard_way_counts_each_programs_latest_numbers(self):
         code, out = run('totals', '--dashboard')
@@ -105,7 +109,7 @@ class Totals(unittest.TestCase):
 
     def test_test_rows_on_request(self):
         code, out = run('totals', '--include-test')
-        self.assertIn('Participants: 177', out)
+        self.assertIn('Participants: 173', out)
         self.assertIn('Includes 1 test submission', out)
 
 
@@ -182,6 +186,15 @@ class Member(unittest.TestCase):
     def test_one_quarter(self):
         code, out = run('member', '--org', 'Harbor Light Arts', '--quarter', '2026-Q4')
         self.assertIn('- Participants: 65', out)
+        self.assertIn('- Completed: 19', out)
+
+    def test_a_year_counts_each_run_once(self):
+        # Q3 and Q4 both report Mural Workshop and Drum Circle (same start dates): Q4's numbers count.
+        # Poetry Circle restarted on a new date in Q4, so both runs count.
+        code, out = run('member', '--org', 'Harbor Light Arts')
+        self.assertIn('## 2026 Q3', out)
+        self.assertIn('## 2026 Q4', out)
+        self.assertIn('- Participants: 77', out)
         self.assertIn('- Completed: 19', out)
 
 

@@ -616,6 +616,38 @@ def latest_by_program_in(submissions, quarter):
     return existing_programs([item for item in submissions if submission_quarter(item) == quarter])
 
 
+def program_cycles(submissions):
+    """Each program cycle once, with its latest numbers.
+
+    TPW's Data Glossary calls one run of one program a "program cycle". Here a cycle is the same
+    organization, the same program name and the same start date. When a member reports a cycle
+    again, in a later quarter or by submitting again on a blank form, its latest numbers replace
+    the earlier ones, so its participants aren't counted twice. A new run of the program, with
+    a new start date, counts on its own. (The Dashboard's rule, existing_programs, keys on the
+    program's ID instead, which counts a resubmission on a blank form twice and keeps only the
+    newest run of a program that repeats.)
+    """
+    latest = {}
+    ordered = sorted(submissions, key=lambda item: (str(item.get('submittedAt') or ''), str(item['id'])))
+    for submission in ordered:
+        for program in submission['programs']:
+            key = (name_key(submission['organization']), program['name'].strip().lower(), program['startDate'])
+            entry = dict(program)
+            entry.update({'organization': submission['organization'], 'orgId': submission.get('orgId'),
+                          'submittedAt': submission.get('submittedAt'), 'submissionId': submission['id'],
+                          'testData': submission.get('testData', False)})
+            latest[key] = entry
+    return sorted(latest.values(), key=lambda program: (program['organization'].lower(), program['name'].lower()))
+
+
+def cycles_in(submissions, quarters):
+    return program_cycles([item for item in submissions if submission_quarter(item) in quarters])
+
+
+CYCLE_RULE = ('Each run of a program (the same organization, program and start date) counts once, with its '
+              'latest numbers, even if the member reported it more than once.')
+
+
 def program_sites(program, submissions_by_id):
     """The yards behind a program, from the submission that last reported it."""
     submission = submissions_by_id[program['submissionId']]
@@ -709,33 +741,25 @@ def cmd_totals(args):
         else:
             quarters = [parse_quarter(args.quarter) if args.quarter else quarter_of_day(pacific_today(args.today))]
         title = f'{args.year}' if args.year else quarter_label(quarters[0])
-        out += [f'# TPW members’ combined numbers for {title}', '']
-        grand = None
+        out += [f'# TPW members’ combined numbers for {title}', '', CYCLE_RULE, '']
         for quarter in quarters:
             inside = [item for item in kept if submission_quarter(item) == quarter]
-            programs = existing_programs(inside)
-            totals = summarize(programs, by_id)
+            programs = cycles_in(inside, [quarter])
             if len(quarters) > 1:
                 out += [f'## {quarter_label(quarter)}', '']
             if not programs:
                 out += [f'No submissions for {quarter_label(quarter)}.', '']
                 continue
-            out += totals_block(totals, len(inside))
+            out += totals_block(summarize(programs, by_id), len(inside))
             out += facility_table(programs, by_id)
-            if grand is None:
-                grand = {key: 0 for key in totals}
-            for key in ('participants', 'completed', 'hours', 'days'):
-                grand[key] += totals[key]
-        if len(quarters) > 1 and grand:
-            out += ['## The year added up', '',
-                    f'- Participants reported, added across quarters: {fmt(grand["participants"])}',
-                    f'- Completions: {fmt(grand["completed"])}',
-                    f'- Participant hours (course hours × completions): {fmt(grand["hours"])}',
-                    f'- Credit days participants could have earned, upper limit: {fmt(grand["days"])}',
-                    f'- Facility costs avoided if every one of those days were applied, upper limit: ${fmt(grand["days"] * DAILY_RATE)}',
-                    '',
-                    'A program reported in two quarters counts its participants twice, so the participants '
-                    'figure is a count of enrollments, not of different people. Completions are the safer yearly number.', '']
+        if len(quarters) > 1:
+            inside = [item for item in kept if submission_quarter(item) in quarters]
+            programs = cycles_in(inside, quarters)
+            if programs:
+                out += [f'## {args.year} as a whole', '',
+                        'A run reported in more than one quarter counts once here, with its latest numbers, '
+                        'so the year can be less than the quarters added together.', '']
+                out += totals_block(summarize(programs, by_id), len(inside))
     note = test_note(test, args.include_test)
     if note:
         out += [note, '']
@@ -1017,11 +1041,10 @@ def cmd_member(args):
     out = [f'# {display}: what it reported for {title}', '']
     if matched_note:
         out += [matched_note, '']
-    grand = {'participants': 0, 'completed': 0, 'hours': 0}
     facilities = {}
     shown = 0
     for quarter in quarters:
-        programs = latest_by_program_in(own, quarter)
+        programs = cycles_in(own, [quarter])
         if not programs:
             continue
         shown += 1
@@ -1039,23 +1062,24 @@ def cmd_member(args):
                          fmt(program['courseHours']), fmt(program['participants']),
                          fmt(program['participantsCompleted']),
                          fmt(program['courseHours'] * program['participantsCompleted'])))
-            grand['participants'] += program['participants']
-            grand['completed'] += program['participantsCompleted']
-            grand['hours'] += program['courseHours'] * program['participantsCompleted']
         out += [table(['Program', 'Status', 'Dates', 'Facilities', 'Course hours', 'Participants', 'Completed',
                        'Participant hours'], rows), '']
     if not shown:
         out.append(f'No submissions from {display} for {title}.')
     else:
+        grand = {'participants': 0, 'completed': 0, 'hours': 0}
+        for program in cycles_in(own, quarters):
+            grand['participants'] += program['participants']
+            grand['completed'] += program['participantsCompleted']
+            grand['hours'] += program['courseHours'] * program['participantsCompleted']
         rate = grand['completed'] / grand['participants'] * 100 if grand['participants'] else None
         out += ['## Added up', '',
                 f'- Participants: {fmt(grand["participants"])}',
                 f'- Completed: {fmt(grand["completed"])}' + (f' ({rate:.0f}%)' if rate is not None else ''),
                 f'- Hours of programming delivered (course hours × completions): {fmt(grand["hours"])}',
                 f'- Facilities reached: {len(facilities)} ({"; ".join(sorted(facilities.values()))})', '']
-        if shown > 1:
-            out += ['A program reported in more than one quarter counts its participants each time, '
-                    'so participants are enrollments, not different people.', '']
+        out += [CYCLE_RULE + ' So a program reported in two quarters is counted once in this total. '
+                'Someone in two different programs still counts twice.', '']
     out.append('Only for this organization. Don’t send it to anyone else.')
     own_test = [item for item in test if name_key(item['organization']) == wanted]
     if own_test:
