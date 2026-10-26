@@ -1386,8 +1386,12 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   } catch (error) {
     console.error('Submission failed:', error);
     // An unreadable reply (say, a Google sign-in page) isn't a connection problem.
-    showWithContact(feedback, error instanceof SyntaxError
-      ? 'TPW’s form service sent back something unexpected, so we can’t tell if this was saved. Your entries are still here; please try again.'
+    // If this page's own site still answers, the member's connection is fine and TPW's form
+    // service is the problem (for example its Google account was signed out, which the
+    // browser reports as a failed request, not an unreadable reply).
+    const online = error instanceof SyntaxError || await fetch(location.href, { method: 'HEAD', cache: 'no-store' }).then(() => true, () => false);
+    showWithContact(feedback, online
+      ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
     return;
   } finally {
