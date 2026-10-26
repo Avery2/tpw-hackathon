@@ -410,7 +410,7 @@ What the script accepts (and the form checks the same things first, so members s
 | Program name | Required, up to 120 characters |
 | Status | **In Progress** or **Completed**. `Rows.gs` also knows **Planned**, but `Code.gs` refuses it. |
 | Start date | Needed for In Progress and Completed. A real date, years 2000 to 2099. |
-| End date | Needed for Completed. Not before the start date. |
+| End date | Needed for Completed. Not before the start date. May be in the future: this is on purpose, because a member may report a program as Completed before its last session has run. Don't add a "no future dates" check. |
 | Course hours | A number from 0 to 5,000 |
 | Prison | One of the 31 codes in `FACILITIES` in `Rows.gs` |
 | Yard | Any name up to 40 characters. The same prison and yard can't appear twice in one program (ignoring case). |
