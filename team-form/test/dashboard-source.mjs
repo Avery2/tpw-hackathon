@@ -27,7 +27,7 @@ globalThis.fetch = async (url) => {
   return new Response(JSON.stringify(reply), { headers: { 'Content-Type': 'application/json' } });
 };
 
-const { loadDashboard } = await import('../../assets/dashboard-source.js');
+const { loadDashboard } = await import('../../assets/dashboard-source.js?v=neon-demo-1');
 const teamDashboardData = await import('../../team-dashboard/js/data.js');
 const { lastQuarterDraft } = await import('../js/last-quarter.js');
 

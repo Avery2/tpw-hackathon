@@ -6,6 +6,8 @@
 // carry synthetic: true, so pages show a Sample data badge; so do sheet rows marked Yes in its
 // Test data column. Real submissions only ever come from the sheet.
 
+import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=neon-review-2';
+
 const SAMPLE = new URL('../data/demo/dashboard-sample.json', import.meta.url);
 const BACKEND = new URL('../team-form/backend.js', import.meta.url);
 
@@ -48,6 +50,19 @@ async function readSheet(org) {
 }
 
 export async function loadDashboard(orgId) {
+  // Read backend.js first: the local demo server supplies an explicit opt-in override.
+  await receiverUrl();
+  if (neonDemoUrl()) {
+    mountDemoExports();
+    const data = await neonRequest({ orgId });
+    const orgs = Array.isArray(data.orgs) ? data.orgs : [];
+    const org = orgId ? orgs.find(profile => profile.id === orgId) : null;
+    if (orgId && !org) throw new Error('Organization profile was not found.');
+    const submissions = (Array.isArray(data.submissions) ? data.submissions : [])
+      .filter(record => !orgId || record.orgId === orgId)
+      .map(record => ({ ...record, synthetic: true })); // This opt-in database contains demo data only.
+    return { org, orgs: orgId ? [org] : orgs, submissions };
+  }
   const sample = await readSample();
   if (!orgId) {
     const sheet = await readSheet(null);

@@ -45,6 +45,18 @@ python3 -m http.server 8080
 
 Then open <http://localhost:8080/>. Submitting from a local copy still writes to the live Google Sheet; the technical guide, section 9, says how to avoid that, and how to run the tests.
 
+## Local Neon prototype
+
+An opt-in local version can read and write the isolated `avery-neon-connection` database branch, with CSV/JSON downloads for Google Sheets. It does **not** change the published Sheet-backed demo or write to the existing Google Sheet.
+
+With Node 22+, `psql` and the signed-in Neon CLI installed:
+
+```bash
+node server/start-demo.mjs
+```
+
+Open <http://127.0.0.1:8830/intake/simple.html?account=org-1> or <http://127.0.0.1:8830/team-dashboard/#tpw>. Use made-up data only: demo accounts are not authentication, and the server must stay on loopback without a public tunnel. See [`server/README.md`](server/README.md) for behavior, tests and limitations, and [`docs/google-sheets-options.md`](docs/google-sheets-options.md) for the export/sync research.
+
 ## Working on it with an AI coding agent
 
 Start the agent in this folder. It will read [`AGENTS.md`](AGENTS.md), which has the rules and a map of the code, and points it at the technical guide.

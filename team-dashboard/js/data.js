@@ -1,5 +1,5 @@
 // Submissions come from TPW's Google Sheet (see assets/dashboard-source.js); Firebase is retired.
-export { loadDashboard } from '../../assets/dashboard-source.js';
+export { loadDashboard } from '../../assets/dashboard-source.js?v=neon-demo-1';
 
 // Latest submission for each program wins; historical updates are not added twice.
 export function existingPrograms(submissions) {

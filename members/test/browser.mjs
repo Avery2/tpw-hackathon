@@ -152,7 +152,8 @@ try {
     await go('/team-dashboard/#org-1');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
-    assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
+    assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
+    assert(!await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
     assert.deepEqual(await ev('[...document.querySelectorAll(".program-stats strong")].map(n=>n.textContent)'), ['1', '1', '1']);
     assert.equal(await ev('document.querySelector(".chart-latest").textContent'), '5 participants');
     assert.deepEqual(await ev('[...document.querySelectorAll(".rac-total")].map(n=>n.textContent)'), ['40', '$2,360']);

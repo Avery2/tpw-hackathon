@@ -4,7 +4,7 @@ import posixpath
 import unittest
 from pathlib import Path
 
-from build_site import ROOT, build, wire_mirror
+from build_site import ROOT, build, wire_mirror, public_source
 
 
 class MirrorBuildTests(unittest.TestCase):
@@ -25,6 +25,12 @@ class MirrorBuildTests(unittest.TestCase):
     def test_missing_head_fails_explicitly(self):
         with self.assertRaises(ValueError):
             wire_mirror('<body>not a complete page</body>', 'site/example.html')
+
+    def test_local_backend_and_private_settings_are_not_published(self):
+        for path in ['server/index.mjs', 'server/data.html', 'work/example.json', '.env', '.env.local', '.neon', '.neon/settings.json', '.github/workflows/tests.yml', 'assets/.env.local']:
+            self.assertFalse(public_source(path), path)
+        for path in ['assets/neon-demo-client.js', 'team-form/index.html', 'site/ourstory/index.html']:
+            self.assertTrue(public_source(path), path)
 
     def test_cannot_write_into_source(self):
         for path in [ROOT, ROOT / '_site']:

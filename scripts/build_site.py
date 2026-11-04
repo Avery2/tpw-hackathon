@@ -31,6 +31,14 @@ def wire_mirror(html: str, path: str) -> str:
     return result
 
 
+def public_source(relative: str) -> bool:
+    """Local backend and private environment settings never belong on Pages."""
+    return not (
+        relative.startswith(('.github/', 'server/', 'work/', '.neon'))
+        or any(part == '.env' or part.startswith('.env.') for part in Path(relative).parts)
+    )
+
+
 def build(output: Path) -> int:
     output = output.resolve()
     if output == ROOT or ROOT in output.parents:
@@ -44,7 +52,7 @@ def build(output: Path) -> int:
         if not item:
             continue
         relative = os.fsdecode(item)
-        if relative.startswith('.github/'):
+        if not public_source(relative):
             continue
         source, target = ROOT / relative, output / relative
         if source.is_symlink():

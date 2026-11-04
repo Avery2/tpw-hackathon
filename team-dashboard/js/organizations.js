@@ -1,5 +1,5 @@
 import { updateWorkspace } from './layout.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=tip-20261025';
+import { loadDashboard, existingPrograms } from './data.js?v=neon-demo-1';
 import { participantsChart } from './chart.js?v=tip-20261025';
 import { programCards } from './cards.js?v=tip-20261025';
 import { racPanel } from './rac.js?v=facility-20261025';

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data · TPW local demo</title>
+<link rel="stylesheet" href="../assets/site-shell.css">
+<style>
+main { max-width: 1100px; margin: 40px auto; padding: 0 24px; min-height: 45vh; }
+#neon-demo-exports { display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin:24px 0; }
+button { font:inherit; padding:10px 16px; cursor:pointer; }
+</style>
+<script type="module" src="../assets/site-shell.js?v=neon-demo-1"></script>
+</head>
+<body>
+<main>
+<section class="dashboard-heading">
+<h1>Data</h1>
+<p>This local demo reads Neon, not the hackathon Google Sheet. Use made-up data only.</p>
+<p id="data-status" role="status">Loading…</p>
+</section>
+<p>Downloads include submission history, not just the latest numbers. CSV opens in Google Sheets; JSON preserves the structured records. Older records without per-yard counts are marked in the CSV rather than filled with guessed numbers.</p>
+<p>To open the CSV in Google Sheets: create a separate spreadsheet, choose <strong>File → Import → Upload</strong>, and turn off <strong>Convert text to numbers, dates, and formulas</strong>. Changes to that copy do not update the app.</p>
+</main>
+<script type="module">
+import { loadDashboard } from '../assets/dashboard-source.js?v=neon-demo-1';
+const status = document.querySelector('#data-status');
+try {
+  const data = await loadDashboard();
+  status.textContent = `${data.orgs.length} organizations · ${data.submissions.length} historical submissions. Sample data only.`;
+} catch (error) { status.textContent = error.message; }
+</script>
+</body>
+</html>

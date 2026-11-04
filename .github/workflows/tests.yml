@@ -56,6 +56,16 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test team-form/test/dashboard-source.mjs
 
+      - name: Local Neon API and transport (fake database)
+        if: ${{ !cancelled() }}
+        run: node --test server/test.mjs team-form/test/neon-client.mjs
+
+      - name: Local Neon form, recovery and exports in a browser (fake database)
+        if: ${{ !cancelled() }}
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node server/browser.mjs
+
       - name: Dashboard tests catch planted bugs
         if: ${{ !cancelled() }}
         run: node team-form/test/dashboard-mutants.mjs

@@ -1,6 +1,6 @@
 import { updateWorkspace } from './layout.js?v=tip-20261025';
 import { programCards } from './cards.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=tip-20261025';
+import { loadDashboard, existingPrograms } from './data.js?v=neon-demo-1';
 const $ = selector => document.querySelector(selector);
 const views = { 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' };
 const columns = [

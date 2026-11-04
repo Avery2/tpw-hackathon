@@ -489,7 +489,7 @@
 .prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js"></script>
+<script type="module" src="../assets/site-shell.js?v=neon-demo-1"></script>
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -670,9 +670,10 @@
   </div>
 </footer>
 
-<script src="backend.js"></script>
+<script src="backend.js?v=neon-demo-1"></script>
 <script type="module">
 import { currentReportingPeriod } from './js/reporting-period.js';
+import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=neon-review-2';
 // Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
 // not "your".
 const staffView = new URLSearchParams(location.search).get('account') === 'tpw';
@@ -1349,7 +1350,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   const showDone = (receipt) => {
     document.querySelector('#program-next').hidden = true;
     feedback.textContent = '';
-    renderSubmission(submission);
+    renderSubmission(localAttempt?.submission || submission);
     const note = document.querySelector('#submission-receipt');
     note.textContent = receipt || 'Saved in this browser only. This demo doesn’t send your answers anywhere yet.';
     note.hidden = false;
@@ -1361,8 +1362,22 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
   // A new ID once the entries change: otherwise the receiver could answer a corrected retry
   // with the first attempt's receipt and quietly drop the correction.
+  if (neonDemoUrl()) {
+    try { Object.assign(submission, memberSubmissionIdentity()); }
+    catch (error) { feedback.textContent = `${error.message} Your answers are still here. No submission was sent.`; return; }
+  }
   const payloadNow = JSON.stringify(toPayload(submission, ''));
   if (!submissionId || payloadNow !== submittedPayload) { submissionId = crypto.randomUUID(); submittedPayload = payloadNow; }
+  let localAttempt;
+  if (neonDemoUrl()) {
+    try {
+      localAttempt = prepareAttempt(toPayload(submission, submissionId), submission);
+      submissionId = localAttempt.payload.submissionId;
+    } catch (error) {
+      feedback.textContent = `${error.message} Your entries are still here. No new submission was sent.`;
+      return;
+    }
+  }
   if (!backendUrl() && !window.google?.script?.run) {
     // No back end set up: the demo behavior, saved in this browser only.
     try {
@@ -1383,15 +1398,29 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   programsStep.setAttribute('aria-busy', 'true');
   let result;
   try {
-    result = await sendToBackend(toPayload(submission, submissionId));
+    result = localAttempt?.receipt || await sendToBackend(localAttempt?.payload || toPayload(submission, submissionId));
   } catch (error) {
     console.error('Submission failed:', error);
     // An unreadable reply (say, a Google sign-in page) isn't a connection problem.
     // If this page's own site still answers, the member's connection is fine and TPW's form
     // service is the problem (for example its Google account was signed out, which the
     // browser reports as a failed request, not an unreadable reply).
-    const online = error instanceof SyntaxError || await fetch(location.href, { method: 'HEAD', cache: 'no-store' }).then(() => true, () => false);
-    showWithContact(feedback, online
+    if (localAttempt) {
+      try {
+        if (releaseRejectedAttempt(error)) {
+          submissionId = undefined; submittedPayload = '';
+          showWithContact(feedback, `${error.message} Nothing was saved. Your answers are still here; correct them and submit again.`);
+          return;
+        }
+      } catch {
+        showWithContact(feedback, `${error.message} Nothing was saved, but the browser could not release the saved attempt. Your answers are still here; allow browser storage before trying again.`);
+        return;
+      }
+    }
+    const online = !neonDemoUrl() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
+    showWithContact(feedback, neonDemoUrl()
+      ? `${error.message} The local demo could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
+      : online
       ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
     return;
@@ -1408,13 +1437,20 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     return;
   }
   const rows = Number.isInteger(result.rows) ? `${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, ` : '';
-  showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.`);
+  let receiptWarning = '';
+  if (localAttempt) {
+    try { confirmAttempt(result); }
+    catch {
+      receiptWarning = ' The save is confirmed, but this browser could not store its receipt. Keep this reference. Your original attempt is still retained; retrying it will not create another submission.';
+    }
+  }
+  showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.${receiptWarning}`);
 });
 
 // The address in backend.js, if one is set.
 function backendUrl() {
   const url = (window.TPW_BACKEND_URL || '').trim();
-  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || /^http:\/\/localhost:\d+\//.test(url) ? url : '';
+  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || neonDemoUrl() ? url : '';
 }
 // What the sheet writer needs, in plain field names. The organization is only a fallback
 // for the demo: once sign-in is connected, the server records it under the signed-in organization.
@@ -1440,12 +1476,13 @@ function toPayload(submission, submissionId) {
 // Sent as plain text so the browser doesn't ask Google's server for permission first;
 // Apps Script reads the body either way.
 async function sendToBackend(payload) {
+  if (neonDemoUrl()) return neonRequest({ payload });
   const token = window.tpwSession?.token || '';
   // Older receivers ignore notes. Refuse rather than silently discard them.
   if (payload.programs.some(program => program.notes)) {
     const capabilities = window.google?.script?.run
       ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
-      : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
+      : await boundedFetch(backendUrl(), { cache: 'no-store' }, 20000, response => response.json());
     if (!capabilities.features?.programNotes) {
       return { ok: false, errors: ['The receiver needs its program-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
     }
@@ -1453,15 +1490,23 @@ async function sendToBackend(payload) {
   if (window.google?.script?.run) {
     return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
   }
-  return fetch(backendUrl(), {
+  return boundedFetch(backendUrl(), {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
     body: JSON.stringify({ token, payload })
-  }).then(response => response.json());
+  }, 20000, response => response.json());
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = (staffView ? 'Submitting sends these answers to TPW.' : 'Submitting sends your answers to TPW.');
+if (backendUrl()) document.querySelector('#where-it-goes').textContent = neonDemoUrl()
+  ? 'Local Neon demo only: use made-up counts, not real member data. Demo accounts are not real sign-in. Completed answers are saved in this browser when you submit; unfinished edits are not autosaved.'
+  : (staffView ? 'Submitting sends these answers to TPW.' : 'Submitting sends your answers to TPW.');
 
-document.querySelector('#start-over').addEventListener('click', () => location.reload());
+document.querySelector('#start-over').addEventListener('click', () => {
+  if (neonDemoUrl()) {
+    try { clearAttempt(); }
+    catch { document.querySelector('#submission-receipt').textContent = 'Could not clear the saved demo attempt. Please allow browser storage and try again.'; return; }
+  }
+  location.reload();
+});
 
 function programValue(program, key) {
   const entry = Object.entries(program.values).find(([name]) => name.endsWith(`[${key}]`));
@@ -1570,7 +1615,7 @@ async function prefillFromLastQuarter() {
   organizationStep.hidden = true;
   let draft;
   try {
-    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=sheet-20261025b'), import('./js/last-quarter.js')]);
+    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=neon-demo-1'), import('./js/last-quarter.js')]);
     draft = lastQuarterDraft(await loadDashboard(orgId));
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.
@@ -1645,7 +1690,57 @@ async function prefillFromLastQuarter() {
   reviewNext();
   openingForm = false;
 }
-prefillFromLastQuarter();
+// Only completed, explicitly submitted attempts are persisted in local demo mode.
+// Unsubmitted editor inputs are deliberately NOT autosaved; the live flow is unchanged.
+function recoverLocalAttempt() {
+  if (!neonDemoUrl()) return false;
+  let attempt;
+  try { attempt = readAttempt(); }
+  catch (error) {
+    const note = document.createElement('p'); note.setAttribute('role', 'alert');
+    note.textContent = `${error.message} Local demo recovery is unavailable; no new submission will be sent unless storage works.`;
+    form.prepend(note); return true;
+  }
+  if (!attempt) return false;
+  const saved = attempt.submission;
+  organization.value = saved.organization;
+  document.querySelector('#organization-summary').textContent = saved.organization;
+  for (const prison of saved.prisons) {
+    if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
+    picker.value = prison.code; picker.dispatchEvent(new Event('change'));
+    const record = prisons.get(prison.code);
+    if (!record) continue;
+    for (const yard of prison.yards) if (!findYard(record, yard)) record.addYard(yard);
+    for (const box of record.card.querySelectorAll('.yard-choices input[type="checkbox"]')) {
+      box.checked = prison.yards.includes(box.value);
+      box.dispatchEvent(new Event('change'));
+    }
+  }
+  if (saved.orgId) lastQuarter = { orgId: saved.orgId, previousSubmissionId: saved.previousSubmissionId || '', programs: [] };
+  completedPrograms.push(...saved.programs);
+  submissionId = attempt.payload.submissionId; submittedPayload = attempt.canonical;
+  refreshPrisons();
+  document.querySelector('#program-next').hidden = false;
+  organizationStep.hidden = true; facilitiesStep.hidden = true; programsStep.hidden = false;
+  form.classList.add('program-mode');
+  const note = document.createElement('p'); note.setAttribute('role', 'status');
+  note.textContent = attempt.receipt
+    ? 'Recovered your saved demo submission. This copy stays here until you choose Log more data.'
+    : 'Recovered the completed answers from your last demo save attempt. Retry unchanged answers to confirm its receipt without creating another submission. Inputs not included in that attempt were not saved.';
+  form.prepend(note);
+  if (attempt.receipt) {
+    renderSubmission(saved);
+    document.querySelector('#program-next').hidden = true;
+    programsStep.classList.add('submitted');
+    document.querySelector('#submission-result').hidden = false;
+    document.querySelector('#edit-prisons').hidden = true;
+    const receipt = document.querySelector('#submission-receipt');
+    receipt.textContent = `Submitted to TPW: reference ${attempt.receipt.reference || attempt.receipt.submissionId}.`;
+    receipt.hidden = false;
+  }
+  return true;
+}
+if (!recoverLocalAttempt()) prefillFromLastQuarter();
 </script>
 </body>
 </html>
