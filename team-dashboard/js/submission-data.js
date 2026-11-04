@@ -1,6 +1,6 @@
 import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
 import { updateWorkspace } from './layout.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=neon-demo-1';
+import { loadDashboard, existingPrograms } from './data.js?v=neon-ship-1';
 import { loadingSkeleton } from './loading.js?v=tip-20261025';
 const $ = selector => document.querySelector(selector);
 let records = [], mode = 'cards', revision = 0, loaded = false;

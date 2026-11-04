@@ -58,7 +58,7 @@ jobs:
 
       - name: Local Neon API and transport (fake database)
         if: ${{ !cancelled() }}
-        run: node --test server/test.mjs team-form/test/neon-client.mjs
+        run: node --test server/test.mjs team-form/test/neon-client.mjs team-form/test/dashboard-exports.mjs
 
       - name: Local Neon form, recovery and exports in a browser (fake database)
         if: ${{ !cancelled() }}

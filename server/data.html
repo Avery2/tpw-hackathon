@@ -20,10 +20,10 @@ button { font:inherit; padding:10px 16px; cursor:pointer; }
 <p id="data-status" role="status">Loading…</p>
 </section>
 <p>Downloads include submission history, not just the latest numbers. CSV opens in Google Sheets; JSON preserves the structured records. Older records without per-yard counts are marked in the CSV rather than filled with guessed numbers.</p>
-<p>To open the CSV in Google Sheets: create a separate spreadsheet, choose <strong>File → Import → Upload</strong>, and turn off <strong>Convert text to numbers, dates, and formulas</strong>. Changes to that copy do not update the app.</p>
+<p>To open the CSV in Google Sheets: <a href="https://sheets.new" target="_blank" rel="noopener noreferrer">create a separate spreadsheet</a>, choose <strong>File → Import → Upload</strong>, and turn off <strong>Convert text to numbers, dates, and formulas</strong>. Changes to that copy do not update the app.</p>
 </main>
 <script type="module">
-import { loadDashboard } from '../assets/dashboard-source.js?v=neon-demo-1';
+import { loadDashboard } from '../assets/dashboard-source.js?v=neon-ship-1';
 const status = document.querySelector('#data-status');
 try {
   const data = await loadDashboard();

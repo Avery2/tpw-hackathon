@@ -159,7 +159,10 @@ try {
     assert.deepEqual(await ev('[...document.querySelectorAll(".rac-total")].map(n=>n.textContent)'), ['40', '$2,360']);
     assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Dashboard');
     assert(await ev('!document.querySelector(".overview-sheet") && document.documentElement.scrollWidth<=innerWidth'));
-    console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
+    assert.equal(await ev('document.querySelector("#dashboard-exports a").href'), 'https://sheets.new/');
+    assert.deepEqual(await ev('[...document.querySelectorAll("#dashboard-exports button")].map(b => b.textContent)'), ['Export program history (CSV)', 'Export JSON']);
+    assert(await ev('document.querySelector("#dashboard-exports").textContent.includes("not a sync")'));
+    console.log('PASS dashboard retained without technical flavor text; history exports and sheets.new link:', width);
     if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
     assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Submissions', 'Annual report']);
     assert.equal(await ev('document.querySelector(".tpw-member-nav a[target=_blank]").getAttribute("href").replace(/^.*\\/report\\//, "report/")'), 'report/organizations/org-1-annual-report-2026.pdf');

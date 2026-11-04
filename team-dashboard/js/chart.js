@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js?v=neon-demo-1';
+import { participantHistory } from './data.js?v=neon-ship-1';
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {

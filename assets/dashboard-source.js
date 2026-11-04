@@ -6,7 +6,8 @@
 // carry synthetic: true, so pages show a Sample data badge; so do sheet rows marked Yes in its
 // Test data column. Real submissions only ever come from the sheet.
 
-import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=neon-review-2';
+import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=neon-ship-1';
+import { mountDashboardExports } from './dashboard-exports.js?v=sheets-export-1';
 
 const SAMPLE = new URL('../data/demo/dashboard-sample.json', import.meta.url);
 const BACKEND = new URL('../team-form/backend.js', import.meta.url);
@@ -75,7 +76,9 @@ export async function loadDashboard(orgId) {
       const matching = orgs.filter(org => org.id && org.name === record.organization);
       return { ...record, orgId: matching.length === 1 ? matching[0].id : null };
     });
-    return { org: null, orgs, submissions };
+    const data = { org: null, orgs, submissions };
+    mountDashboardExports(data, orgId);
+    return data;
   }
   const org = sample.orgs.find(profile => profile.id === orgId);
   if (!org) throw new Error('Organization profile was not found.');
@@ -83,5 +86,7 @@ export async function loadDashboard(orgId) {
   // An organization's own filings: by ID, or by name for filings made before IDs existed.
   const own = record => (record.orgId ? record.orgId === orgId : record.organization === org.name);
   const submissions = [...sample.submissions.filter(own), ...sheet.submissions.filter(own)].map(record => ({ ...record, orgId }));
-  return { org, orgs: [org], submissions };
+  const data = { org, orgs: [org], submissions };
+  mountDashboardExports(data, orgId);
+  return data;
 }

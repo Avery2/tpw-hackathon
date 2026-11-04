@@ -1,5 +1,6 @@
 // Local-only prototype transport. Demo account labels are NOT authentication.
 import { getDemoAccount } from './member-session.js';
+import { appendSheetsLink } from './dashboard-exports.js?v=sheets-export-1';
 
 export function neonDemoUrl() {
   try {
@@ -126,7 +127,7 @@ export function mountDemoExports() {
   if (!neonDemoUrl() || typeof document === 'undefined' || !window.location.pathname.includes('/team-dashboard/')) return;
   const heading = document.querySelector('.dashboard-heading');
   if (!heading || document.querySelector('#neon-demo-exports')) return;
-  const container = document.createElement('div'); container.id = 'neon-demo-exports';
+  const container = document.createElement('div'); container.id = 'neon-demo-exports'; container.className = 'tpw-data-exports';
   container.setAttribute('aria-label', 'Local demo data exports');
   const label = document.createElement('span'); label.textContent = 'Local demo (not real sign-in) · ';
   const status = document.createElement('span'); status.setAttribute('role', 'status');
@@ -151,5 +152,6 @@ export function mountDemoExports() {
     });
     container.append(button);
   }
-  container.append(status); heading.append(container);
+  appendSheetsLink(container);
+  container.append(status); (heading.querySelector('.shell') || heading).append(container);
 }

@@ -45,6 +45,12 @@ python3 -m http.server 8080
 
 Then open <http://localhost:8080/>. Submitting from a local copy still writes to the live Google Sheet; the technical guide, section 9, says how to avoid that, and how to run the tests.
 
+## Spreadsheet downloads
+
+The dashboard offers a **program-history CSV** and a JSON download of the displayed view, plus a **New Google Sheet** shortcut (`sheets.new`). Import the CSV using **File → Import → Upload**, with formula conversion disabled. These are dated copies, not synchronized Sheets. The CSV contains program totals across yards and includes historical filings; don't add repeated filings together as if they were distinct programs. The local Neon path also offers its detailed per-yard export where that detail is available.
+
+These controls do not add authentication to the existing demo. Real organization data still requires server-side access controls before launch.
+
 ## Local Neon prototype
 
 An opt-in local version can read and write the isolated `avery-neon-connection` database branch, with CSV/JSON downloads for Google Sheets. It does **not** change the published Sheet-backed demo or write to the existing Google Sheet.

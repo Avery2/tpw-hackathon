@@ -1,4 +1,4 @@
-import { loadDashboard } from './data.js?v=neon-demo-1';
+import { loadDashboard } from './data.js?v=neon-ship-1';
 import { loadingSkeleton } from './loading.js?v=tip-20261025';
 import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
 let revision = 0;
