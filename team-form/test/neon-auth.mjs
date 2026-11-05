@@ -300,13 +300,13 @@ test('header and body stalls are both bounded, even if fetch ignores abort', asy
 test('auth page has local assets, masked password, fixed destinations, no role picker or JWT paste', async () => {
   const html = await readFile(new URL('../../neon/index.html', import.meta.url), 'utf8');
   const js = await readFile(new URL('../../neon/auth-page.js', import.meta.url), 'utf8');
-  assert.match(html, /Synthetic sandbox/);
+  assert.match(html, /Test site · synthetic data only/);
   assert.match(html, /id="password"[^>]*type="password"/);
   assert.match(html, /id="destinations"[^>]*hidden/);
-  assert.match(html, /Sheets demo labels are not authenticated/);
+  assert.match(html, /id="sheets-link"[^>]*backend=sheet/);
   assert.doesNotMatch(html, /<select|site-shell|cdn\.|<script[^>]*https?:/i);
   assert.doesNotMatch(js, /searchParams\.get\(['"](?:next|redirectTo)/);
-  assert.match(js, /Account created, no organization access assigned yet/);
+  assert.match(js, /Access pending\. Share your user ID with TPW/);
   assert.match(js, /navigator\.clipboard\.writeText/);
   assert.match(js, /disableNeonMode\(\)/);
   assert.match(js, /showError\(error\)/);

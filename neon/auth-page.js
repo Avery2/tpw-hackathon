@@ -47,10 +47,11 @@ function showSignedIn(session) {
 function showContext(context) {
   const assigned = context.isStaff || context.orgs.length > 0;
   $('access-message').textContent = context.isStaff
-    ? 'TPW staff access has been assigned to this account.'
-    : context.orgs.length > 0 ? 'You have access to the following sandbox organizations:'
-      : 'Account created, no organization access assigned yet.';
-  $('organizations').replaceChildren(...context.orgs.map(org => {
+    ? 'TPW staff · all organizations'
+    : context.orgs.length > 0 ? 'Your organization access:'
+      : 'Access pending. Share your user ID with TPW.';
+  $('organizations').hidden = context.isStaff || !context.orgs.length;
+  $('organizations').replaceChildren(...(context.isStaff ? [] : context.orgs).map(org => {
     const item = document.createElement('li');
     item.textContent = org.name;
     return item;
@@ -80,10 +81,11 @@ $('toggle-mode').addEventListener('click', () => {
   $('name').required = isSignUp;
   $('password').autocomplete = isSignUp ? 'new-password' : 'current-password';
   $('password').minLength = isSignUp ? 8 : 1;
-  $('password-help').textContent = isSignUp ? 'Choose a new password with at least 8 characters. Do not reuse another account’s password.' : 'Use your Neon sandbox account password.';
+  $('password-help').hidden = !isSignUp;
+  $('password-help').textContent = isSignUp ? 'At least 8 characters. Use a new password.' : '';
   $('form-title').textContent = isSignUp ? 'Create an account' : 'Sign in';
   $('submit').textContent = isSignUp ? 'Create account' : 'Sign in';
-  $('toggle-prompt').textContent = isSignUp ? 'Already have an account?' : 'New to this sandbox?';
+  $('toggle-prompt').textContent = isSignUp ? 'Already have an account?' : 'New here?';
   $('toggle-mode').textContent = isSignUp ? 'Sign in' : 'Create an account';
   (isSignUp ? $('name') : $('email')).focus();
 });
@@ -92,7 +94,7 @@ $('auth-form').addEventListener('submit', async event => {
   if (busy || !$('auth-form').reportValidity()) return;
   clearMessages();
   setBusy(true);
-  $('notice').textContent = isSignUp ? 'Creating your sandbox account…' : 'Signing in…';
+  $('notice').textContent = isSignUp ? 'Creating your account…' : 'Signing in…';
   try {
     const session = isSignUp
       ? await signUp($('name').value.trim(), $('email').value.trim(), $('password').value)
