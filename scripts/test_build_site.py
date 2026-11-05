@@ -11,7 +11,7 @@ class MirrorBuildTests(unittest.TestCase):
     def test_only_adds_bridge_before_original_scripts(self):
         html = '<!doctype html>\n<html><head><script>original()</script></head><body>TPW’s original page</body></html>'
         output = wire_mirror(html, 'site/ourstory/index.html')
-        tag = '\n<script src="../../assets/mirror-nav.js" data-tpw-mirror-nav></script>'
+        tag = '\n<script src="../../assets/mirror-nav.js?v=data-api-1" data-tpw-mirror-nav></script>'
         self.assertEqual(output.replace(tag, '', 1), html)
         self.assertLess(output.index('data-tpw-mirror-nav'), output.index('original()'))
         self.assertEqual(wire_mirror(output, 'site/ourstory/index.html'), output)
@@ -19,7 +19,7 @@ class MirrorBuildTests(unittest.TestCase):
     def test_relative_paths_at_every_mirror_depth(self):
         for path in ['site/index.html', 'site/ourstory/index.html', 'site/events/example/index.html']:
             relative = posixpath.relpath('assets/mirror-nav.js', posixpath.dirname(path))
-            self.assertIn(f'src="{relative}"', wire_mirror('<HEAD></HEAD>', path))
+            self.assertIn(f'src="{relative}?v=data-api-1"', wire_mirror('<HEAD></HEAD>', path))
             self.assertEqual(posixpath.normpath(posixpath.join(posixpath.dirname(path), relative)), 'assets/mirror-nav.js')
 
     def test_missing_head_fails_explicitly(self):
@@ -27,7 +27,7 @@ class MirrorBuildTests(unittest.TestCase):
             wire_mirror('<body>not a complete page</body>', 'site/example.html')
 
     def test_local_backend_and_private_settings_are_not_published(self):
-        for path in ['server/index.mjs', 'server/data.html', 'work/example.json', '.env', '.env.local', '.neon', '.neon/settings.json', '.github/workflows/tests.yml', 'assets/.env.local']:
+        for path in ['server/index.mjs', 'server/data.html', 'database/admin.mjs', 'database/001_data_api.sql', 'work/example.json', '.env', '.env.local', '.neon', '.neon/settings.json', '.github/workflows/tests.yml', 'assets/.env.local']:
             self.assertFalse(public_source(path), path)
         for path in ['assets/neon-demo-client.js', 'team-form/index.html', 'site/ourstory/index.html']:
             self.assertTrue(public_source(path), path)

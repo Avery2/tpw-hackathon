@@ -1,9 +1,11 @@
 import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
-import { updateWorkspace } from './layout.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=neon-ship-1';
+import { updateWorkspace, resolveAccount, dashboardHref, showLoadError } from './layout.js?v=data-api-1';
+import { accountProfile } from '../../assets/member-session.js?v=data-api-1';
+import { isNeonMode } from '../../assets/neon-auth-client.js?v=data-api-1';
+import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
 import { loadingSkeleton } from './loading.js?v=tip-20261025';
 const $ = selector => document.querySelector(selector);
-let records = [], mode = 'cards', revision = 0, loaded = false;
+let records = [], mode = 'cards', revision = 0, loaded = false, admin = false;
 const n = value => Math.max(0, Number(value) || 0);
 const fmt = value => n(value).toLocaleString(undefined,{maximumFractionDigits:2});
 function node(tag,text,className) { const el=document.createElement(tag); if(text!==undefined)el.textContent=text; if(className)el.className=className; return el; }
@@ -59,7 +61,7 @@ function render() {
   for(const record of filtered) {
     const p=period(record), m=metrics(record),card=node('article',undefined,'submission-data-card');
     const header=node('header');const title=node('div');title.append(node('h3',p.quarter ? `Q${p.quarter} ${p.year}` : 'Submission'),node('span',`Last updated ${dateText(record.submittedAt)}`,'submission-date'));
-    if(location.hash === '#tpw') title.append(node('div',record.organization || 'Organization'));
+    if(admin) title.append(node('div',record.organization || 'Organization'));
     header.append(title);card.append(header);
     const stats=node('div',undefined,'submission-card-metrics');
     for(const [label,value] of [['Participants',m.participants],['Completed',m.completed],['Hours completed',m.hours]]){const part=node('div');part.append(node('strong',fmt(value)),node('span',label));stats.append(part);}card.append(stats);
@@ -78,20 +80,24 @@ function renderTable(container, records) {
   table.append(body);wrap.append(table);container.append(wrap);
 }
 async function load() {
-  const token=++revision,account=location.hash.slice(1);
-  if(!['org-1','org-2','tpw'].includes(account)){location.replace('./');return;}
-  const tracker = $('#submission-tracker'); tracker.hidden = account !== 'tpw'; tracker.replaceChildren();
-  updateWorkspace(account,'submissions');$('#submission-back').href=`./submissions.html#${account}`;
+  const token=++revision;
+  loaded=false;
+  try {
+  const account=await resolveAccount(); if(token!==revision)return;
+  const profile=accountProfile(account);
+  if(!profile){if(isNeonMode())updateWorkspace(account,'submissions');else location.replace('./');return;}
+  admin=Boolean(profile.admin);
+  const tracker = $('#submission-tracker'); tracker.hidden = !admin; tracker.replaceChildren();
+  updateWorkspace(account,'submissions');$('#submission-back').href=dashboardHref('./submissions.html',account);
   loaded=false;$('#submission-summary').replaceChildren();$('#submission-status').textContent='Loading submissions…';
   $('#submission-results').setAttribute('aria-busy','true');$('#submission-results').replaceChildren(loadingSkeleton(mode==='table'?'table':'cards'));
-  try {
-    const data=await loadDashboard(account==='tpw'?null:account);if(token!==revision)return;
-    if (account === 'tpw') renderSubmissionTracker(tracker, data);
+    const data=await loadDashboard(admin?null:account);if(token!==revision)return;
+    if (admin) renderSubmissionTracker(tracker, data);
     records=quarterlyRecords(data.submissions);
     $('#filter-year').replaceChildren(new Option('All years',''));
     for(const year of [...new Set(records.map(r=>period(r).year).filter(Boolean))].sort((a,b)=>b-a))$('#filter-year').add(new Option(String(year),String(year)));
     loaded=true;render();
-  }catch(error){if(token!==revision)return;console.error('Submission load failed:',error);$('#submission-status').textContent='Could not load submissions.';const retry=node('button','Try again','action');retry.type='button';retry.onclick=load;$('#submission-results').replaceChildren(retry);}
+  }catch(error){if(token!==revision)return;console.error('Submission load failed:',error);$('#submission-summary').replaceChildren();$('#submission-tracker').replaceChildren();showLoadError($('#submission-status'),error,'Could not load submissions.');const retry=node('button','Try again','action');retry.type='button';retry.onclick=load;$('#submission-results').replaceChildren(retry);}
   finally{if(token===revision)$('#submission-results').removeAttribute('aria-busy');}
 }
 for(const id of ['date-from','date-to','filter-quarter','filter-year'])$('#'+id).addEventListener('change',render);

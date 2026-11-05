@@ -2,6 +2,8 @@
 
 This guide is for the developer taking the tool over, and for any AI coding agent working with them. It explains every part of the system, how the parts talk to each other, and how to set up, change and test each one. Read it top to bottom once. After that, use the headings to jump around.
 
+**Authenticated Neon sandbox:** `/neon/` now provides opt-in real sign-in and direct browser → Neon Data API → Postgres access on `avery-neon-connection`. Organization membership, staff access, validation and atomic retry receipts are enforced in the database. No hosted custom API is needed. Administrator setup, tests and limitations are in [`../database/README.md`](../database/README.md). The sections below describe the unchanged default Sheets demo, not this opt-in path.
+
 The tool is a working prototype, not yet ready for real member data. [`go-live-checklist.md`](go-live-checklist.md) lists what has to change before members submit real numbers. The short version: it has no real sign-in yet.
 
 ## Contents

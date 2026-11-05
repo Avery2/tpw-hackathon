@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Neon sandbox sign-in — TPW</title>
+  <link rel="stylesheet" href="auth.css?v=neon-auth-1">
+  <script type="module" src="auth-page.js?v=neon-auth-1"></script>
+</head>
+<body>
+  <div class="sandbox-banner"><strong>Synthetic sandbox</strong><span>Testing only. Do not enter real member or participant data.</span></div>
+  <header class="site-header">
+    <a href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works" width="190"></a>
+    <span>Member data tool · Neon sandbox</span>
+  </header>
+  <main>
+    <section class="introduction" aria-labelledby="page-title">
+      <p class="eyebrow">A separate test environment</p>
+      <h1 id="page-title">Sign in to the Neon sandbox</h1>
+      <p>This sandbox uses an email and password account, not the Sheets demo’s account labels. Organization access is assigned by an administrator, never chosen here.</p>
+      <p class="privacy-note">Use a test email you control. Do not enter participant names or other personal information. This prototype is not ready for real member data.</p>
+    </section>
+    <section class="auth-card" aria-label="Neon account">
+      <p id="loading" role="status">Checking your sign-in…</p>
+      <p id="error" class="error" role="alert" hidden></p>
+      <p id="notice" role="status" aria-live="polite"></p>
+      <div id="signed-out" hidden>
+        <h2 id="form-title">Sign in</h2>
+        <form id="auth-form" method="post" action="./">
+          <div id="name-field" hidden>
+            <label for="name">Account display name</label>
+            <input id="name" name="name" type="text" autocomplete="nickname" maxlength="100" disabled>
+          </div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="username" required maxlength="254" spellcheck="false" autocapitalize="none">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="128" aria-describedby="password-help">
+          <p id="password-help" class="field-help">Use your Neon sandbox account password.</p>
+          <button id="submit" type="submit">Sign in</button>
+        </form>
+        <p><span id="toggle-prompt">New to this sandbox?</span> <button id="toggle-mode" class="text-button" type="button">Create an account</button></p>
+      </div>
+      <div id="signed-in" hidden>
+        <h2>You’re signed in to Neon</h2>
+        <p id="identity"></p>
+        <p id="access-message"></p>
+        <ul id="organizations" aria-label="Permitted organizations"></ul>
+        <div class="user-id">
+          <label for="user-id">Your user ID</label>
+          <input id="user-id" type="text" readonly spellcheck="false" autocomplete="off">
+          <button id="copy-id" class="secondary" type="button">Copy user ID</button>
+          <p class="field-help">Share this ID with the sandbox database administrator to request organization access. It is an identifier, not a password.</p>
+        </div>
+        <div id="destinations" class="actions" hidden>
+          <a id="intake-link" class="button" href="../intake/simple.html?backend=neon">Log sandbox data</a>
+          <a id="dashboard-link" class="button secondary" href="../team-dashboard/?backend=neon">Open sandbox dashboard</a>
+        </div>
+        <div class="actions">
+          <button id="refresh-access" class="secondary" type="button">Refresh access</button>
+          <button id="sign-out" class="secondary" type="button">Sign out of Neon</button>
+        </div>
+      </div>
+      <noscript><p>JavaScript is required to sign in. No password has been sent. Enable JavaScript and reload this page.</p></noscript>
+    </section>
+    <aside class="cookie-note">
+      <h2>About sign-in cookies</h2>
+      <p>Neon uses secure sign-in cookies. Some browsers or privacy settings may block them across sites; sign-in may not work in every browser. If your session does not stay signed in, check cookie settings or try another browser. You will never need to paste a token or secret.</p>
+    </aside>
+    <p class="return-link"><a id="sheets-link" href="../intake/simple.html?backend=sheet">Return to the Sheets demo</a> <span>— switches off Neon mode. Sheets demo labels are not authenticated accounts.</span></p>
+  </main>
+  <footer>Transformative Programming Works · Sandbox only · Need help? <a href="mailto:membership@thetpw.org">Contact TPW</a></footer>
+</body>
+</html>

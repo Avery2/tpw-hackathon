@@ -1,6 +1,13 @@
 // Exports the dashboard's program-level history, not per-yard source records.
 // Demo selectors are not authentication. A real deployment needs server-scoped exports.
-import { getDemoAccount } from './member-session.js';
+import { getDemoAccount } from './member-session.js?v=data-api-1';
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+const exportIdentity = () => {
+  if (!isNeonMode()) return getDemoAccount();
+  const context = getCachedContext();
+  return context?.ok && context.userId
+    ? JSON.stringify([context.userId, context.isStaff, context.accountKey, (context.orgs || []).map(org => org.id).sort()]) : null;
+};
 
 export function csvCell(value) {
   if (value === null || value === undefined) value = '';
@@ -48,8 +55,11 @@ export function appendSheetsLink(container) {
 
 export function mountDashboardExports(data, requestedOrgId) {
   if (typeof document === 'undefined' || !location.pathname.includes('/team-dashboard/')) return;
-  const account = getDemoAccount();
-  if (!account || (account !== 'tpw' && account !== requestedOrgId)) return;
+  const account = getDemoAccount(), identity = exportIdentity();
+  if (isNeonMode()) {
+    const context = getCachedContext();
+    if (!identity || (!context.isStaff && (!context.orgs?.length || (requestedOrgId && !context.orgs.some(org => org.id === requestedOrgId))))) return;
+  } else if (!account || (account !== 'tpw' && account !== requestedOrgId)) return;
   const heading = document.querySelector('.dashboard-heading');
   if (!heading) return;
   document.querySelector('#dashboard-exports')?.remove();
@@ -60,7 +70,7 @@ export function mountDashboardExports(data, requestedOrgId) {
     const button = document.createElement('button'); button.type = 'button';
     button.textContent = format === 'csv' ? 'Export program history (CSV)' : 'Export JSON';
     button.addEventListener('click', () => {
-      if (getDemoAccount() !== account) { status.textContent = 'Your account changed. Reload this page before exporting.'; return; }
+      if (exportIdentity() !== identity) { status.textContent = 'Your account changed. Reload this page before exporting.'; return; }
       // Intersect with the displayed organization even if a response contains extra records.
       const submissions = data.submissions.filter(record => !requestedOrgId || record.orgId === requestedOrgId);
       const content = format === 'csv' ? programHistoryCsv(submissions) : JSON.stringify({
@@ -69,7 +79,7 @@ export function mountDashboardExports(data, requestedOrgId) {
       }, null, 2);
       const blob = new Blob([content], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
       const url = URL.createObjectURL(blob), link = document.createElement('a');
-      link.href = url; link.download = `tpw-program-history-${requestedOrgId || account}.${format}`;
+      link.href = url; link.download = `tpw-program-history-${requestedOrgId || account || 'organizations'}.${format}`;
       link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
       status.textContent = 'Downloaded a history snapshot. Repeated filings are not additive totals.';
     });

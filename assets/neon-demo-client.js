@@ -1,6 +1,8 @@
-// Local-only prototype transport. Demo account labels are NOT authentication.
-import { getDemoAccount } from './member-session.js';
-import { appendSheetsLink } from './dashboard-exports.js?v=sheets-export-1';
+// Local demo transport plus durable attempts shared with the authenticated Data API.
+// Demo labels never authorize Data API requests; PostgreSQL enforces membership.
+import { getDemoAccount } from './member-session.js?v=data-api-1';
+import { isNeonMode, getCachedContext, NeonRequestError as DataApiRequestError } from './neon-auth-client.js?v=data-api-1';
+import { appendSheetsLink } from './dashboard-exports.js?v=data-api-1';
 
 export function neonDemoUrl() {
   try {
@@ -23,6 +25,14 @@ export function demoAccount(orgId) {
 // Identity comes from the local demo account, never from whether prefill succeeded.
 // The server still checks the typed organization name against its own profile.
 export function memberSubmissionIdentity() {
+  if (isNeonMode()) {
+    const context = getCachedContext();
+    if (!context?.ok || !context.userId) throw new Error('Sign in to recover or submit these answers.');
+    if (context.isStaff || context.orgs?.length > 1) return {};
+    const organization = context.orgs?.find(org => org.id === context.accountKey);
+    if (!organization) throw new Error('Your account needs an assigned organization. Contact TPW.');
+    return { orgId: organization.id };
+  }
   if (!neonDemoUrl()) return {};
   const account = demoAccount();
   return ['org-1', 'org-2'].includes(account) ? { orgId: account } : {};
@@ -85,6 +95,11 @@ export async function neonRequest({ orgId, payload } = {}) {
 
 const PREFIX = 'tpw.neon.pending.v1:';
 function attemptKey() {
+  if (isNeonMode()) {
+    const context = getCachedContext();
+    if (!context?.ok || !context.userId || !context.accountKey) throw new Error('Sign in with your assigned account to recover these answers.');
+    return 'tpw.neon.pending.data-api.v1:' + encodeURIComponent(context.userId) + ':' + encodeURIComponent(context.accountKey);
+  }
   if (!neonDemoUrl()) throw new Error('The local demo is not enabled.');
   return PREFIX + demoAccount();
 }
@@ -116,7 +131,7 @@ export function confirmAttempt(receipt) {
 }
 export function clearAttempt() { localStorage.removeItem(attemptKey()); }
 export function releaseRejectedAttempt(error) {
-  if (!(error instanceof NeonRequestError) || !error.definitiveRejection) return false;
+  if (!(error instanceof NeonRequestError || error instanceof DataApiRequestError) || !error.definitiveRejection) return false;
   clearAttempt();
   return true;
 }

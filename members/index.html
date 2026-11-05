@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>Opening log — TPW</title>
 <script type="module">
-import { getDemoAccount, clearDemoAccount, demoEntryPath } from '../assets/member-session.js';
+import { getDemoAccount, clearDemoAccount, demoEntryPath } from '../assets/member-session.js?v=data-api-1';
 if (new URLSearchParams(location.search).has('signout')) {
   clearDemoAccount();
   location.replace('../?signout=1');

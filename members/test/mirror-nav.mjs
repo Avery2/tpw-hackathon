@@ -40,7 +40,7 @@ async function click(modifiers = {}, accountLink = true) {
 }
 assert.deepEqual(await click(), { stopped: true, prevented: true });
 assert.equal(opened, anchors[0]);
-assert.equal(imported, 'https://example.invalid/tpw-hackathon/assets/account-drawer.js');
+assert.equal(imported, 'https://example.invalid/tpw-hackathon/assets/account-drawer.js?v=data-api-1');
 for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
   assert.deepEqual(await click(modifiers), { stopped: true, prevented: false });
   assert.equal(opened, undefined); // Native new-tab behavior uses the corrected href.

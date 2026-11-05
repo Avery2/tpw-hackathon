@@ -489,7 +489,7 @@
 .prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=neon-demo-1"></script>
+<script type="module" src="../assets/site-shell.js?v=data-api-1"></script>
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -673,10 +673,18 @@
 <script src="backend.js?v=neon-demo-1"></script>
 <script type="module">
 import { currentReportingPeriod } from './js/reporting-period.js';
-import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=neon-ship-1';
+import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=data-api-1';
+let neonContext = null, neonAuthError = null;
+if (isNeonMode()) {
+  document.querySelector('#where-it-goes').textContent = 'Checking your sign-in and organization access…';
+  try { neonContext = await authStateReady(); }
+  catch (error) { neonAuthError = error; } // Keep the form and saved attempt; never use the demo identity.
+}
+const neonSubmissionMode = () => isNeonMode() || !!neonDemoUrl();
+import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=data-api-1';
 // Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
 // not "your".
-const staffView = new URLSearchParams(location.search).get('account') === 'tpw';
+const staffView = isNeonMode() ? neonContext?.isStaff === true : new URLSearchParams(location.search).get('account') === 'tpw';
 if (staffView) {
   for (const [selector, text] of [
     ['#organization-question', 'Which organization are you logging data for?'],
@@ -744,7 +752,7 @@ document.querySelector('#edit-organization').addEventListener('click', () => {
 });
 // Suggest TPW's member names so one organization isn't submitted under several spellings.
 // If the list can't load, the field still takes free text.
-fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
+if (!isNeonMode()) fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
   const names = text.split(/\r?\n/).slice(1).map(line => {
     const match = line.match(/^"((?:[^"]|"")*)"|^([^,]*)/);
     return match ? (match[1] ?? match[2]).replace(/""/g, '"').trim() : '';
@@ -1362,14 +1370,21 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
   // A new ID once the entries change: otherwise the receiver could answer a corrected retry
   // with the first attempt's receipt and quietly drop the correction.
-  if (neonDemoUrl()) {
-    try { Object.assign(submission, memberSubmissionIdentity()); }
-    catch (error) { feedback.textContent = `${error.message} Your answers are still here. No submission was sent.`; return; }
+  if (neonSubmissionMode()) {
+    try {
+      if (isNeonMode()) {
+        neonContext = await authStateReady();
+        const selected = neonContext.orgs?.filter(org => org.name === submission.organization);
+        if (selected?.length !== 1) throw new Error('Choose an existing organization assigned to your account, or contact TPW.');
+        submission.orgId = selected[0].id;
+      }
+      Object.assign(submission, memberSubmissionIdentity());
+    } catch (error) { feedback.textContent = `${error.message} Your answers are still here. No submission was sent.`; return; }
   }
   const payloadNow = JSON.stringify(toPayload(submission, ''));
   if (!submissionId || payloadNow !== submittedPayload) { submissionId = crypto.randomUUID(); submittedPayload = payloadNow; }
   let localAttempt;
-  if (neonDemoUrl()) {
+  if (neonSubmissionMode()) {
     try {
       localAttempt = prepareAttempt(toPayload(submission, submissionId), submission);
       submissionId = localAttempt.payload.submissionId;
@@ -1417,9 +1432,9 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
         return;
       }
     }
-    const online = !neonDemoUrl() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
-    showWithContact(feedback, neonDemoUrl()
-      ? `${error.message} The local demo could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
+    const online = !neonSubmissionMode() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
+    showWithContact(feedback, neonSubmissionMode()
+      ? `${error.message} ${isNeonMode() ? 'TPW' : 'The local demo'} could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
       : online
       ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
@@ -1449,6 +1464,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
 
 // The address in backend.js, if one is set.
 function backendUrl() {
+  if (isNeonMode()) return 'neon-data-api'; // Valid independently of the default Google address.
   const url = (window.TPW_BACKEND_URL || '').trim();
   return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || neonDemoUrl() ? url : '';
 }
@@ -1476,6 +1492,12 @@ function toPayload(submission, submissionId) {
 // Sent as plain text so the browser doesn't ask Google's server for permission first;
 // Apps Script reads the body either way.
 async function sendToBackend(payload) {
+  if (isNeonMode()) {
+    const expectedUser = neonContext?.userId;
+    const context = await authStateReady();
+    if (!expectedUser || context?.userId !== expectedUser) throw new Error('Your signed-in account changed. Sign back in to recover this attempt before retrying.');
+    return dataApiRequest('tpw_submit', { p_payload: payload });
+  }
   if (neonDemoUrl()) return neonRequest({ payload });
   const token = window.tpwSession?.token || '';
   // Older receivers ignore notes. Refuse rather than silently discard them.
@@ -1496,14 +1518,16 @@ async function sendToBackend(payload) {
     body: JSON.stringify({ token, payload })
   }, 20000, response => response.json());
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = neonDemoUrl()
+if (backendUrl()) document.querySelector('#where-it-goes').textContent = isNeonMode()
+  ? 'Submitting sends these answers to TPW using your signed-in organization. Completed answers are saved in this browser when you submit so a retry can recover its receipt; unfinished edits are not autosaved.'
+  : neonDemoUrl()
   ? 'Local Neon demo only: use made-up counts, not real member data. Demo accounts are not real sign-in. Completed answers are saved in this browser when you submit; unfinished edits are not autosaved.'
   : (staffView ? 'Submitting sends these answers to TPW.' : 'Submitting sends your answers to TPW.');
 
 document.querySelector('#start-over').addEventListener('click', () => {
-  if (neonDemoUrl()) {
+  if (neonSubmissionMode()) {
     try { clearAttempt(); }
-    catch { document.querySelector('#submission-receipt').textContent = 'Could not clear the saved demo attempt. Please allow browser storage and try again.'; return; }
+    catch { document.querySelector('#submission-receipt').textContent = 'Could not clear the saved submission attempt. Please allow browser storage and try again.'; return; }
   }
   location.reload();
 });
@@ -1608,7 +1632,7 @@ function renderSubmission(submission) {
 // With no account, no earlier report, or ?blank=1, the form starts empty as before.
 async function prefillFromLastQuarter() {
   const params = new URLSearchParams(location.search);
-  const orgId = params.get('account');
+  const orgId = isNeonMode() ? (!neonContext?.isStaff && neonContext?.orgs?.length === 1 ? neonContext.orgs[0].id : null) : params.get('account');
   if (!orgId || orgId === 'tpw' || params.get('blank') === '1') return;
   const note = document.createElement('div'); note.className = 'prefill-note'; note.setAttribute('role', 'status');
   note.textContent = staffView ? 'Loading what they reported last time…' : 'Loading what you reported last time…'; form.prepend(note);
@@ -1690,15 +1714,15 @@ async function prefillFromLastQuarter() {
   reviewNext();
   openingForm = false;
 }
-// Only completed, explicitly submitted attempts are persisted in local demo mode.
-// Unsubmitted editor inputs are deliberately NOT autosaved; the live flow is unchanged.
+// Only completed, explicitly submitted attempts are persisted in either Neon mode.
+// Unsubmitted editor inputs are deliberately NOT autosaved; the default Sheets flow is unchanged.
 function recoverLocalAttempt() {
-  if (!neonDemoUrl()) return false;
+  if (!neonSubmissionMode()) return false;
   let attempt;
   try { attempt = readAttempt(); }
   catch (error) {
     const note = document.createElement('p'); note.setAttribute('role', 'alert');
-    note.textContent = `${error.message} Local demo recovery is unavailable; no new submission will be sent unless storage works.`;
+    note.textContent = `${error.message} Submission recovery is unavailable; no new submission will be sent unless storage works.`;
     form.prepend(note); return true;
   }
   if (!attempt) return false;
@@ -1725,8 +1749,8 @@ function recoverLocalAttempt() {
   form.classList.add('program-mode');
   const note = document.createElement('p'); note.setAttribute('role', 'status');
   note.textContent = attempt.receipt
-    ? 'Recovered your saved demo submission. This copy stays here until you choose Log more data.'
-    : 'Recovered the completed answers from your last demo save attempt. Retry unchanged answers to confirm its receipt without creating another submission. Inputs not included in that attempt were not saved.';
+    ? 'Recovered your saved submission. This copy stays here until you choose Log more data.'
+    : 'Recovered the completed answers from your last save attempt. Retry unchanged answers to confirm its receipt without creating another submission. Inputs not included in that attempt were not saved.';
   form.prepend(note);
   if (attempt.receipt) {
     renderSubmission(saved);
@@ -1740,7 +1764,24 @@ function recoverLocalAttempt() {
   }
   return true;
 }
-if (!recoverLocalAttempt()) prefillFromLastQuarter();
+if (isNeonMode()) {
+  if (neonAuthError || !neonContext?.ok || !neonContext.userId || (!neonContext.isStaff && !neonContext.orgs?.length)) {
+    const note = document.createElement('p'); note.setAttribute('role', 'alert');
+    note.textContent = 'Sign in with an assigned organization account before submitting. Your saved attempt is still here. If you need access, contact TPW. ';
+    const signin = document.createElement('a'); signin.href = new URL('../neon/', import.meta.url).href;
+    signin.target = '_top'; signin.textContent = 'Sign in'; note.append(signin); form.prepend(note);
+  } else {
+    const profiles = neonContext.orgs || [];
+    document.querySelector('#member-list').replaceChildren(...profiles.map(profile => new Option(profile.name)));
+    if (!neonContext.isStaff && profiles.length === 1) {
+      // Identity is independent of historical data and ?blank=1.
+      organization.value = profiles[0].name;
+      organization.readOnly = true;
+      document.querySelector('#organization-summary').textContent = profiles[0].name;
+    }
+    if (!recoverLocalAttempt()) prefillFromLastQuarter();
+  }
+} else if (!recoverLocalAttempt()) prefillFromLastQuarter();
 </script>
 </body>
 </html>

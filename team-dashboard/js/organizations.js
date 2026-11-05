@@ -1,5 +1,6 @@
-import { updateWorkspace } from './layout.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=neon-ship-1';
+import { updateWorkspace, showLoadError } from './layout.js?v=data-api-1';
+import { authStateReady, isNeonMode } from '../../assets/neon-auth-client.js?v=data-api-1';
+import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
 import { participantsChart } from './chart.js?v=tip-20261025';
 import { programCards } from './cards.js?v=tip-20261025';
 import { racPanel } from './rac.js?v=facility-20261025';
@@ -21,7 +22,7 @@ function renderDirectory() {
  const start = (cardPage - 1) * pageSize;
  const visible = items.slice(start, start + pageSize);
  for(const {org,submissions,programs} of visible){
-  const card=node('a',undefined,'org-card');card.href=`./organizations.html?org=${encodeURIComponent(org.id)}#tpw`;
+  const card=node('a',undefined,'org-card');card.href=`./organizations.html?${isNeonMode()?'backend=neon&':''}org=${encodeURIComponent(org.id)}#tpw`;
   card.append(node('h3',org.name));const totals=stats(programs),metrics=node('div',undefined,'org-metrics');
   for(const [label,value] of [['Programs',totals.programs],['Facilities',totals.facilities],['Participants',totals.participants]]){const part=node('div');part.append(node('strong',fmt(value)),node('span',label));metrics.append(part);}card.append(metrics);
   const latest=submissions.map(s=>s.submittedAt).filter(Boolean).sort().at(-1);
@@ -48,7 +49,7 @@ function renderOrgTable(container, items) {
  const body=node('tbody');
  for(const {org,submissions,programs} of items){
   const totals=stats(programs),row=node('tr'),name=node('td'),link=node('a',org.name);
-  link.href=`./organizations.html?org=${encodeURIComponent(org.id)}#tpw`;name.append(link);row.append(name);
+  link.href=`./organizations.html?${isNeonMode()?'backend=neon&':''}org=${encodeURIComponent(org.id)}#tpw`;name.append(link);row.append(name);
   const latest=submissions.map(s=>s.submittedAt).filter(Boolean).sort().at(-1);
   for(const value of [fmt(totals.programs),fmt(totals.facilities),fmt(totals.participants),fmt(totals.hours),latest?new Date(latest).toLocaleDateString():'No submissions yet'])row.append(node('td',value));body.append(row);
  }
@@ -56,13 +57,17 @@ function renderOrgTable(container, items) {
 }
 async function load() {
  const token=++revision;
- if(location.hash!=='#tpw'){location.replace('./');return;}
+ const container=$('#org-results');
+ try {
+ if(isNeonMode()) {
+  const context=await authStateReady();if(token!==revision)return;
+  if(!context.isStaff){location.replace('./?backend=neon');return;}
+ } else if(location.hash!=='#tpw'){location.replace('./');return;}
  updateWorkspace('tpw','organizations');
  const id=new URLSearchParams(location.search).get('org');
  $('#org-view-toggle').hidden=Boolean(id);
  $('#org-search-label').hidden=Boolean(id);$('#org-back').hidden=!id;
- const container=$('#org-results');container.setAttribute('aria-busy','true');container.replaceChildren(loadingSkeleton('cards'));
- try {
+ container.setAttribute('aria-busy','true');container.replaceChildren(loadingSkeleton('cards'));
   const data=await loadDashboard(id||null);if(token!==revision)return;
   if(!id){
    directory=data.orgs.map(org=>{const submissions=data.submissions.filter(s=>s.orgId===org.id);return {org,submissions,programs:existingPrograms(submissions)};});
@@ -74,7 +79,7 @@ async function load() {
   for(const [label,value] of [['Programs',totals.programs],['Facilities',totals.facilities],['Participants',totals.participants],['Hours completed',totals.hours]]){const part=node('div');part.append(node('strong',fmt(value)),node('span',label));metrics.append(part);}
   container.append(metrics,participantsChart(data.submissions),racPanel(programs),node('h3','Programs'));
   container.append(programs.length?programCards(programs):node('p','No programs submitted yet.','table-empty'));
- }catch(error){if(token!==revision)return;console.error('Organization load failed:',error);$('#org-status').textContent='Could not load organization data.';const retry=node('button','Try again','action');retry.type='button';retry.onclick=load;container.replaceChildren(retry);}
+ }catch(error){if(token!==revision)return;console.error('Organization load failed:',error);directory=[];showLoadError($('#org-status'),error,'Could not load organization data.');const retry=node('button','Try again','action');retry.type='button';retry.onclick=load;container.replaceChildren(retry);}
  finally{if(token===revision)container.removeAttribute('aria-busy');}
 }
 for(const button of document.querySelectorAll('[data-org-view]'))button.addEventListener('click',()=>{

@@ -9,7 +9,8 @@ A form and dashboard for **Transformative Programming Works (TPW)**. Member orga
 It was built at Hack for Social Impact 2026 (24–25 October 2026) and handed over to TPW as a working prototype.
 
 - **Live demo:** <https://www.averychan.site/tpw-hackathon/> (use made-up numbers only)
-- **Status:** works end to end, but has no real sign-in yet. Read [`docs/go-live-checklist.md`](docs/go-live-checklist.md) before any member submits real numbers.
+- **Authenticated Neon sandbox:** <https://www.averychan.site/tpw-hackathon/neon/> — real email/password sign-in, database-enforced organization access, direct Data API saves and scoped downloads. Access requires administrator assignment; synthetic data only. See [`database/README.md`](database/README.md).
+- **Status:** the default Sheets demo still uses labels, not authentication. The opt-in Neon sandbox has real sign-in, but is not a production cutover. Read [`docs/go-live-checklist.md`](docs/go-live-checklist.md) before any member submits real numbers.
 
 ## How it works, in short
 

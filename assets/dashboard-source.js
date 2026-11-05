@@ -6,8 +6,25 @@
 // carry synthetic: true, so pages show a Sample data badge; so do sheet rows marked Yes in its
 // Test data column. Real submissions only ever come from the sheet.
 
-import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=neon-ship-1';
-import { mountDashboardExports } from './dashboard-exports.js?v=sheets-export-1';
+import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=data-api-1';
+import { mountDashboardExports } from './dashboard-exports.js?v=data-api-1';
+import { isNeonMode, authStateReady, dataApiRequest, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+
+let neonRevision = 0;
+const contextScope = context => JSON.stringify([context?.userId, context?.isStaff, context?.accountKey, (context?.orgs || []).map(org => org.id).sort()]);
+if (typeof window !== 'undefined') window.addEventListener?.('tpw:neon-change', () => {
+  if (typeof document !== 'undefined') document.querySelector('#dashboard-exports')?.remove();
+});
+
+function neonSignInLink() {
+  if (typeof document === 'undefined' || document.querySelector('#neon-dashboard-signin')) return;
+  const heading = document.querySelector('.dashboard-heading');
+  if (!heading) return;
+  const link = document.createElement('a'); link.id = 'neon-dashboard-signin';
+  link.href = new URL('../neon/', import.meta.url).href;
+  link.textContent = 'Sign in or check your organization access';
+  (heading.querySelector('.shell') || heading).append(link);
+}
 
 const SAMPLE = new URL('../data/demo/dashboard-sample.json', import.meta.url);
 const BACKEND = new URL('../team-form/backend.js', import.meta.url);
@@ -51,6 +68,38 @@ async function readSheet(org) {
 }
 
 export async function loadDashboard(orgId) {
+  // Authenticated mode is opt-in and fails closed: never read Google or mix in samples.
+  if (isNeonMode()) {
+    const revision = ++neonRevision;
+    if (typeof document !== 'undefined') document.querySelector('#dashboard-exports')?.remove();
+    let context;
+    try { context = await authStateReady(); }
+    catch (error) { neonSignInLink(); throw error; }
+    if (!context?.ok || !context.userId || (!context.isStaff && !context.orgs?.length)) {
+      neonSignInLink();
+      throw new Error('Please sign in with an assigned organization account, or contact TPW for access.');
+    }
+    if (orgId && !context.isStaff && !context.orgs.some(org => org.id === orgId)) {
+      throw new Error('Your signed-in account cannot view that organization.');
+    }
+    const scope = contextScope(context);
+    const reply = await dataApiRequest('tpw_dashboard', { p_org_id: orgId || null });
+    if (!isNeonMode() || scope !== contextScope(getCachedContext())) throw new Error('Your account changed. Please reload the dashboard.');
+    if (reply?.ok !== true) throw new Error((reply?.errors || ['TPW could not load the dashboard. Please try again.']).join(' '));
+    const orgs = (Array.isArray(reply.orgs) ? reply.orgs : [])
+      .filter(org => (!orgId || org.id === orgId) && (context.isStaff || context.orgs.some(own => own.id === org.id)));
+    const org = orgId ? orgs.find(profile => profile.id === orgId) : null;
+    if (orgId && !org) throw new Error('Organization profile was not found.');
+    const submissions = (Array.isArray(reply.submissions) ? reply.submissions : [])
+      .filter(record => orgs.some(profile => profile.id === record.orgId))
+      .map(record => ({ ...record, synthetic: record.testData === true || record.synthetic === true }));
+    const data = { org, orgs, submissions };
+    if (revision === neonRevision) {
+      if (typeof document !== 'undefined') document.querySelector('#neon-dashboard-signin')?.remove();
+      mountDashboardExports(data, orgId);
+    }
+    return data;
+  }
   // Read backend.js first: the local demo server supplies an explicit opt-in override.
   await receiverUrl();
   if (neonDemoUrl()) {

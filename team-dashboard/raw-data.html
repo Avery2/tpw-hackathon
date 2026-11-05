@@ -16,7 +16,7 @@
   .sheet-help { margin: 0 0 24px; color: #666; font-size: 14px; }
   .overview-sheet { display: block; width: 100%; height: 70vh; min-height: 420px; border: 0; background: #fff; }
 </style>
-<script type="module" src="../assets/site-shell.js"></script>
+<script type="module" src="../assets/site-shell.js?v=data-api-1"></script>
 </head>
 <body>
 <main class="dashboard-layout">
@@ -26,8 +26,17 @@
       <a href="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/edit?gid=0#gid=0" target="_blank" rel="noopener noreferrer">Open in Google Sheets ↗</a>
     </div>
     <p id="sheet-access" class="sheet-help">Google Sheet data, embedded. Existing Google permissions apply. If the preview doesn’t load or needs sign-in, use the link above.</p>
-    <iframe class="overview-sheet" title="TPW reporting data — Google Sheets" aria-describedby="sheet-access" src="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/preview?gid=0" loading="lazy"></iframe>
+    <iframe class="overview-sheet" title="TPW reporting data — Google Sheets" aria-describedby="sheet-access" data-sheet-src="https://docs.google.com/spreadsheets/d/1iUR7q0qnq3RLq33cwIZraRjJn0YWaY1PM0btTKMH7Q0/preview?gid=0" loading="lazy"></iframe>
   </div>
 </main>
+<script type="module">
+import { isNeonMode } from '../assets/neon-auth-client.js?v=data-api-1';
+const preview = document.querySelector('.overview-sheet');
+if (isNeonMode()) {
+  preview.remove();
+  document.querySelector('.sheet-heading a').hidden = true;
+  document.querySelector('#sheet-access').textContent = 'Opening your scoped Neon dashboard and downloads…';
+} else preview.src = preview.dataset.sheetSrc;
+</script>
 </body>
 </html>

@@ -1,8 +1,10 @@
-import { updateWorkspace } from './layout.js?v=tip-20261025';
+import { updateWorkspace, resolveAccount, dashboardHref, showLoadError } from './layout.js?v=data-api-1';
+import { accountProfile } from '../../assets/member-session.js?v=data-api-1';
+import { isNeonMode } from '../../assets/neon-auth-client.js?v=data-api-1';
 import { programCards } from './cards.js?v=tip-20261025';
-import { loadDashboard, existingPrograms } from './data.js?v=neon-ship-1';
+import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
 const $ = selector => document.querySelector(selector);
-const views = { 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' };
+let admin = false;
 const columns = [
   ['organization', 'Organization'], ['name', 'Program'], ['status', 'Status'],
   ['prison', 'Facility'], ['yards', 'Yards'], ['startDate', 'Start date'], ['endDate', 'End date'],
@@ -25,7 +27,7 @@ function render() {
   if (viewMode === 'cards') {
     const programs = [...new Set(filtered.map(row => row.program))];
     $('#program-count').textContent = `${programs.length} programs`;
-    container.append(programCards(programs, location.hash === '#tpw'));
+    container.append(programCards(programs, admin));
     return;
   }
   const wrap = node('div', undefined, 'table-wrap'); wrap.tabIndex = 0; wrap.setAttribute('role', 'region'); wrap.setAttribute('aria-label', 'Scrollable program register');
@@ -53,16 +55,19 @@ function render() {
 }
 async function load() {
   const token = ++revision;
-  const key = location.hash.slice(1);
-  if (!views[key]) { location.replace('./'); return; }
+  try {
+  const key = await resolveAccount();
+  if (token !== revision) return;
+  const profile = accountProfile(key);
+  if (!profile) { if (isNeonMode()) updateWorkspace(key, 'programs'); else location.replace('./'); return; }
+  admin = Boolean(profile.admin);
   updateWorkspace(key, 'programs');
-  $('#back-dashboard').href = `./#${key}`;
-  $('#program-scope').textContent = views[key];
+  $('#back-dashboard').href = dashboardHref('./', key);
+  $('#program-scope').textContent = profile.name;
   $('#program-count').textContent = 'Loading programs…';
   $('#program-table-container').setAttribute('aria-busy', 'true');
   $('#program-table-container').replaceChildren(); $('#program-search').disabled = true;
-  try {
-    const data = await loadDashboard(key === 'tpw' ? null : key);
+    const data = await loadDashboard(admin ? null : key);
     if (token !== revision) return;
     rows = existingPrograms(data.submissions).flatMap(program => {
       const assignments = program.assignments?.length ? program.assignments : [{}];
@@ -72,7 +77,9 @@ async function load() {
   } catch (error) {
     if (token !== revision) return;
     console.error('Program register load failed:', error);
-    $('#program-count').textContent = 'Could not load programs. Please try again.';
+    rows = []; $('#program-search').disabled = true;
+    $('#program-table-container').replaceChildren();
+    showLoadError($('#program-count'), error, 'Could not load programs. Please try again.');
     const retry = node('button', 'Try again', 'action switch'); retry.type = 'button'; retry.addEventListener('click', load); $('#program-table-container').append(retry);
   } finally { if (token === revision) $('#program-table-container').removeAttribute('aria-busy'); }
 }

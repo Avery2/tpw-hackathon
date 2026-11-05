@@ -5,7 +5,8 @@
 // person, which TPW asked us not to collect, and nothing else needed that script.
 // Old addresses such as #followup, #aggregate or #session now land here too.
 
-import { getDemoAccount } from '../../assets/member-session.js';
+import { getDemoAccount } from '../../assets/member-session.js?v=data-api-1';
+import { isNeonMode } from '../../assets/neon-auth-client.js?v=data-api-1';
 
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -16,7 +17,7 @@ const esc = (s) =>
  */
 function demoPanel() {
   const account = new URLSearchParams(location.search).get('account') || getDemoAccount();
-  const src = `../team-form/?embed=1${account ? `&account=${encodeURIComponent(account)}` : ''}`;
+  const src = `../team-form/?embed=1${isNeonMode() ? '&backend=neon' : account ? `&account=${encodeURIComponent(account)}` : ''}`;
   return `
     <div class="demo-panel">
       <iframe src="${esc(src)}" title="Quarterly totals form" loading="lazy"></iframe>
@@ -26,7 +27,9 @@ function demoPanel() {
 function render() {
   document.getElementById('tabs').innerHTML = '<a href="#" aria-current="page">Quarterly totals</a>';
   const note = document.getElementById('bar-note');
-  if (note) note.textContent = 'Demo build: guided submissions append to TPW’s Google Sheet, not CDCR. Sign-in is not enabled yet; use synthetic test data only.';
+  if (note) note.textContent = isNeonMode()
+    ? 'Neon sandbox: authenticated submissions save to the isolated test database, not Google Sheets or CDCR. Synthetic data only.'
+    : 'Demo build: guided submissions append to TPW’s Google Sheet, not CDCR. Sign-in is not enabled yet; use synthetic test data only.';
   document.getElementById('app').innerHTML = demoPanel();
 }
 

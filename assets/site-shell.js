@@ -1,5 +1,6 @@
-import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath, memberMenu } from './member-session.js';
-import { openAccountDrawer } from './account-drawer.js';
+import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath, memberMenu } from './member-session.js?v=data-api-1';
+import { openAccountDrawer } from './account-drawer.js?v=data-api-1';
+import { isNeonMode, authStateReady, signOut } from './neon-auth-client.js?v=data-api-1';
 
 const ROOT = new URL('../', import.meta.url);
 const url = path => new URL(path, ROOT).href;
@@ -21,6 +22,7 @@ function link(label, path, className) {
   const node = element('a', className, label); node.href = url(path); return node;
 }
 function activeAccount() {
+  if (isNeonMode()) return getDemoAccount();
   const params = new URLSearchParams(location.search);
   const explicit = dashboard ? location.hash.slice(1) : params.get('account');
   if (explicit && Object.hasOwn(demoAccounts, explicit)) setDemoAccount(explicit);
@@ -39,7 +41,7 @@ function mountHeader() {
   // The top menu is TPW's own on every page. Log data, Dashboard and Annual report live in the
   // member bar under it (updateMemberWorkspace), never up here (Richie, 25 Oct 2026).
   const account = activeAccount();
-  const member = link(account ? 'Account' : 'Members Login', demoEntryPath(account), 'login');
+  const member = link(account ? 'Account' : 'Members Login', isNeonMode() ? 'neon/' : demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
   member.addEventListener('click', event => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
@@ -50,11 +52,12 @@ function mountHeader() {
   // still says #org-1, and reading it then would sign the visitor straight back in.
   const refresh = () => {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
-    member.href = url(demoEntryPath());
+    member.href = url(isNeonMode() ? 'neon/' : demoEntryPath());
     // The Log data / Dashboard tabs too, or after Sign out they still carry ?account=org-1.
     if (document.querySelector('.tpw-member-nav')) updateMemberWorkspace(getDemoAccount());
   };
   window.addEventListener('tpw:member-change', refresh);
+  window.addEventListener('tpw:neon-change', refresh);
   window.addEventListener('hashchange', () => { activeAccount(); refresh(); });
   nav.append(member); header.append(logo, nav);
 }
@@ -88,16 +91,16 @@ function mountFooter() {
 // Google's sharing still decides who can open the Sheet.
 const seesData = account => account === 'tpw';
 function leaveDataForMembers() {
-  if (!route.includes('raw-data.html') || seesData(activeAccount())) return false;
+  if (!route.includes('raw-data.html') || (!isNeonMode() && seesData(activeAccount()))) return false;
   const account = getDemoAccount();
-  location.replace(url(`team-dashboard/${account ? `#${account}` : ''}`));
+  location.replace(url(`team-dashboard/${isNeonMode() ? '?backend=neon' : ''}${account ? `#${account}` : ''}`));
   return true;
 }
 // A small horizontal navigation, not a separate application shell.
 export function updateMemberWorkspace(account, page = workspacePage) {
   if (embedded) return;
   workspacePage = page;
-  if (Object.hasOwn(demoAccounts, account)) setDemoAccount(account);
+  if (!isNeonMode() && Object.hasOwn(demoAccounts, account)) setDemoAccount(account);
   const key = getDemoAccount(); // null when signed out: the tabs then carry no account
   document.querySelector('#dashboard-sidebar, #member-sidebar')?.remove();
   document.querySelector('.dashboard-layout, .tpw-workspace')?.classList.remove('choosing-account');
@@ -119,17 +122,21 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   // Signed in: that account's own annual report (memberMenu), a PDF in a new tab.
   const report = memberMenu(key).find(item => item.label === 'Annual report');
   if (report) tabs.push(['report', report.label, report.path, true]);
-  if (seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
+  if (!isNeonMode() && seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
   for (const [id, label, path, newTab] of tabs) {
     const anchor = link(label, path);
+    if (isNeonMode() && !newTab) {
+      const destination = new URL(anchor.href); destination.searchParams.set('backend', 'neon'); anchor.href = destination.href;
+    }
     if (newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.title = 'PDF · opens in a new tab'; }
     if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
   }
+  if (isNeonMode()) nav.append(element('span', 'tpw-prototype-note', 'Neon sandbox · synthetic data only'));
   const member = document.querySelector('.tpw-header .login');
   if (member) {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
-    member.href = url(demoEntryPath(key));
+    member.href = url(isNeonMode() ? 'neon/' : demoEntryPath(key));
   }
 }
 function mountIntakeWorkspace() {
@@ -167,7 +174,7 @@ function sizeForms() {
 }
 function mount() {
   if (embedded) return;
-  if (new URLSearchParams(location.search).has('signout')) clearDemoAccount();
+  if (!isNeonMode() && new URLSearchParams(location.search).has('signout')) clearDemoAccount();
   if (leaveDataForMembers()) return;
   document.body.classList.add('tpw-site');
   mountHeader(); mountFooter();
@@ -175,6 +182,11 @@ function mount() {
   if (intake || guided) mountIntakeWorkspace();
   if (dashboard) updateMemberWorkspace(activeAccount(), workspacePage);
   sizeForms();
+  if (isNeonMode()) {
+    // Mount chrome synchronously: dashboard controllers can call updateWorkspace immediately.
+    const ready = new URLSearchParams(location.search).has('signout') ? signOut() : authStateReady();
+    ready.catch(() => { /* Keep the real sign-in link; never fall back to a demo label. */ });
+  }
   window.addEventListener('hashchange', () => {
     if (dashboard && !leaveDataForMembers()) updateMemberWorkspace(activeAccount(), workspacePage);
   });

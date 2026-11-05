@@ -1,4 +1,5 @@
-import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js';
+import { isNeonMode, signOut } from './neon-auth-client.js?v=data-api-1';
+import { accountProfile, demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js?v=data-api-1';
 
 const root = new URL('../', import.meta.url);
 let dialog, entry, greetingName, signin, returnFocus, stylesReady;
@@ -41,7 +42,15 @@ function mount() {
   const body = element('div', 'tpw-account-body');
   const greeting = element('section', 'tpw-account-greeting');
   const signout = element('button', 'tpw-account-signout', 'Sign out'); signout.type = 'button';
-  signout.addEventListener('click', () => { clearDemoAccount(); forgetAccountInAddress(); changed(); dialog.close(); });
+  signout.addEventListener('click', async () => {
+    signout.disabled = true;
+    try {
+      if (isNeonMode()) await signOut();
+      clearDemoAccount(); forgetAccountInAddress(); changed(); dialog.close();
+    } catch {
+      document.querySelector('#tpw-account-preview').textContent = 'Sign-out could not be confirmed. Please try again before leaving this shared device.';
+    } finally { signout.disabled = false; }
+  });
   greetingName = element('h3', '', 'Hi, Member');
   greeting.append(greetingName, signout);
   body.append(greeting);
@@ -148,6 +157,11 @@ function signInAs(account) {
 }
 
 export async function openAccountDrawer(trigger) {
+  if (isNeonMode()) {
+    // The authenticated account page, never the demo identity selector.
+    location.assign(new URL('../neon/', import.meta.url).href);
+    return;
+  }
   if (!dialog) mount();
   await stylesReady;
   if (dialog.open || signin?.open) return;
@@ -160,7 +174,7 @@ export async function openAccountDrawer(trigger) {
     signin.querySelector('.tpw-signin-email').focus();
     return;
   }
-  greetingName.textContent = `Hi, ${DEMO_LABELS[getDemoAccount()] || demoAccounts[getDemoAccount()]}`;
+  greetingName.textContent = `Hi, ${accountProfile()?.name || DEMO_LABELS[getDemoAccount()] || demoAccounts[getDemoAccount()]}`;
   entry.href = new URL(demoEntryPath(), root).href;
   document.documentElement.classList.add('tpw-account-open');
   dialog.showModal();

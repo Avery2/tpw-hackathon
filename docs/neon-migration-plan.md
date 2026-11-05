@@ -1,6 +1,6 @@
 # Neon migration and Google Sheets access
 
-Status: proposed full migration plan. A first **local-only** Neon connection and CSV/JSON export milestone is implemented in [`../server/README.md`](../server/README.md), tested on an isolated child of `demo-neon`. This is not a production cutover: the published site, existing Apps Script and Google Sheet remain unchanged. Export/sync and nonprofit delivery research is summarized in [`google-sheets-options.md`](google-sheets-options.md).
+Status: an **authenticated, opt-in Neon Data API sandbox** is implemented and live-tested at `/neon/`, using only `avery-neon-connection`. Real Neon Auth sessions, database-administered membership, RLS, validated transactional save RPCs, durable retry receipts, dashboard/prefill and scoped CSV/JSON downloads work without a hosted custom API. See [`../database/README.md`](../database/README.md) for access, migration and test commands. The earlier local bridge remains a development tool only. `production`, `demo-neon`, the default Sheets path and the existing Google Sheet are unchanged. This is not a production cutover or Google Sheets synchronization. Export/sync research is summarized in [`google-sheets-options.md`](google-sheets-options.md).
 
 ## Goal
 
@@ -63,22 +63,22 @@ Coordinate with Nicolas before changing these tables. Locate the migrations/impo
 Existing form and dashboards
           |
           v
-Application API (server-side credentials, authorization, validation)
+Built-in Neon Data API (verified Neon Auth JWT)
           |
           v
-Neon transaction: submission + durable Sheet-sync job
+Postgres RLS + validation/save RPC: submission + durable receipt
           |
           +----> dashboard / prefill / CSV and JSON exports
           |
           v
-Retrying worker ----> TPW-controlled Google Sheet
+Optional later: transactional outbox + retrying Sheet projection
 ```
 
-The browser submits once. A successful API response means Neon committed the submission, not necessarily that Google has updated yet. The Sheet is an eventually consistent projection, with a visible last-successful-sync time and actionable failures for staff.
+The browser submits once. A successful RPC response means Neon committed the submission and durable receipt atomically. CSV/JSON copies can be imported into Google Sheets now; a maintained Sheet projection is not implemented.
 
-Do not put database credentials, Google service credentials or an all-organizations API token in browser JS. GitHub Pages cannot host this API; deploy it separately while leaving the frontend static. No Next.js rewrite is required. Choose the backend host with Nicolas before implementation; do not assume the Neon project's region supports every Neon service.
+Neon's native Data API provides the HTTPS database boundary. GitHub Pages continues to host the static frontend; no custom backend hosting, Neon Function, Node deployment, npm dependency or framework rewrite is required for this path. Authorization, validation, canonicalization and retry integrity live in versioned SQL. Browser exports encode only the dataset already authorized and allowlisted by the database.
 
-The repository currently requires dependency-free code. An API using a Postgres driver and Google API integration will need an explicitly agreed backend dependency/tooling exception; do not silently introduce a frontend framework or bundler.
+Do not put database credentials, Google service credentials or an all-organizations service token in browser JS. The browser receives only its own short-lived session JWT, held in memory. A later automatic Google projection would introduce a separately reviewed worker/credential boundary; choose that only if actually needed.
 
 ## Why not two browser writes?
 
@@ -165,7 +165,7 @@ A verified session identifies the user. Server-managed membership records identi
 - A requested organization filter may narrow access; it cannot broaden it.
 - Every read, submission lookup, correction, prefill and export uses the same authorization layer.
 - TPW staff can deliberately select an organization; record actor and target separately.
-- Org membership changes and revoked/expired sessions take effect server-side.
+- Organization membership changes take effect on every database request. Expired JWTs are rejected. Sign-out ends the browser cookie session but does not instantly revoke an already-issued JWT; treat its remaining lifetime as an explicit production consideration.
 - Use least-privilege database roles. If RLS is added as defense in depth, test with the actual runtime role; a database owner or BYPASSRLS role can bypass ordinary policies.
 - Private responses must not leak through shared caches, logs, export links or static files.
 
@@ -177,7 +177,7 @@ A fake-data demo can precede real sign-in integration. However, a public demo se
 
 Provide CSV in the same one-program-per-yard shape as today's Sheet, plus a lossless JSON export. An organization gets its own records; TPW can export all organizations or a selected subset. Include reporting-period and current-vs-history options with documented defaults.
 
-Generate exports server-side after authorization. Escape CSV correctly and prevent spreadsheet formula injection in untrusted text. Omit identity-provider/session data; include submitter emails only under an explicit staff-only policy. Use real zeroes, distinguish missing answers, and preserve dates and stable identifiers.
+Authorize and allowlist export datasets server-side; encoding CSV/JSON in the browser does not require a custom export server. Escape CSV correctly and prevent spreadsheet formula injection in untrusted text. Omit identity-provider/session data; include submitter emails only under an explicit staff-only policy. Use real zeroes, distinguish missing answers, and preserve dates and stable identifiers.
 
 CSV can be imported into Google Sheets immediately, with no Google OAuth integration. This is the smallest useful portability feature.
 
@@ -203,7 +203,7 @@ Ownership also means TPW-controlled Neon, hosting and Google accounts, named adm
 
 - Get Nicolas's existing migration/import/API code and inspect it before changing shared schema.
 - Confirm that the current demo contains only synthetic data, and whether Google edits need to flow back. Default: one-way exports, no Sheet-to-app editing.
-- Pick the API host and approved backend tooling; preserve the existing mirrored frontend.
+- Use the existing built-in Data API and versioned SQL RPCs; preserve the existing mirrored frontend. Only introduce another host if a verified later requirement needs one.
 - Work on a separate development branch derived from `demo-neon`, with synthetic fixtures only. Do not run migrations against `production` for this milestone.
 
 Deliverable: versioned schema/document contract, characterization fixtures, backend deployment approach and a small module-boundary refactor. Record current product assumptions (what each count means, required vs optional answers, correction scope and reporting period) as decisions to validate, not permanent truths.

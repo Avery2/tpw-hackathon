@@ -1,9 +1,8 @@
-import { updateWorkspace } from './layout.js?v=tip-20261025';
-import { getDemoAccount } from '../../assets/member-session.js';
+import { updateWorkspace, resolveAccount, showLoadError } from './layout.js?v=data-api-1';
+import { accountProfile } from '../../assets/member-session.js?v=data-api-1';
 import { racPanel } from './rac.js?v=facility-20261025';
 import { participantsChart } from './chart.js?v=neon-ship-1';
-import { loadDashboard, existingPrograms } from './data.js?v=neon-ship-1';
-const views = { 'org-1': { name: 'Org 1' }, 'org-2': { name: 'Org 2' }, tpw: { name: 'TPW View', admin: true } };
+import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
 let revision = 0;
 const $ = selector => document.querySelector(selector);
 function element(tag, className, text) {
@@ -37,7 +36,9 @@ function showSignedOut() {
 
 async function renderView(focus = false) {
   const token = ++revision;
-  const key = location.hash.slice(1) || getDemoAccount(); const view = views[key];
+  try {
+  const key = await resolveAccount(true); const view = accountProfile(key);
+  if (token !== revision) return;
   if (!key) { showSignedOut(); return; } // never fall back to Org 1
   updateWorkspace(key, 'overview');
   $('#profile-view').hidden = !view;
@@ -47,7 +48,6 @@ async function renderView(focus = false) {
   $('#dashboard-status').textContent = 'Loading programs…';
   $('#view-sections').replaceChildren(); $('#profile-view').setAttribute('aria-busy', 'true');
   if (focus) $('#profile-heading').focus();
-  try {
     const data = await loadDashboard(view.admin ? null : key);
     if (token !== revision) return;
     $('#profile-heading').textContent = data.org?.name || view.name;
@@ -56,7 +56,10 @@ async function renderView(focus = false) {
   } catch (error) {
     if (token !== revision) return;
     console.error('Dashboard load failed:', error);
-    $('#dashboard-status').textContent = 'Programs could not be loaded. Check your connection and try again.';
+    $('#profile-view').hidden = false;
+    $('#dashboard-status').hidden = false;
+    $('#view-sections').replaceChildren();
+    showLoadError($('#dashboard-status'), error, 'Programs could not be loaded. Check your connection and try again.');
     const retry = element('button', 'action switch', 'Try again'); retry.type = 'button'; retry.addEventListener('click', () => renderView()); $('#view-sections').append(retry);
   } finally { if (token === revision) $('#profile-view').removeAttribute('aria-busy'); }
 }

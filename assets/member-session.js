@@ -1,13 +1,32 @@
 // A demo view preference, NOT authentication or an authorization boundary.
 // Store only the fictional account key, never credentials or form contents.
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+
+// Profiles are a display convenience, not authority; RPCs enforce membership in PostgreSQL.
+export function accountProfile(account = getDemoAccount()) {
+  if (isNeonMode()) {
+    const context = getCachedContext();
+    if (!context?.ok || !context.userId) return null;
+    if (account === 'tpw') return context.isStaff ? { id: 'tpw', name: 'TPW View', admin: true } : null;
+    return context.orgs?.find(org => org.id === account) || null;
+  }
+  return Object.hasOwn(demoAccounts, account) ? { id: account, name: demoAccounts[account], admin: account === 'tpw' } : null;
+}
+
 export const demoAccounts = Object.freeze({ 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' });
 const KEY = 'tpw.member.demo.v1';
 let current = null;
+if (typeof window !== 'undefined') window.addEventListener?.('tpw:neon-change', () => { current = null; });
 export function getDemoAccount() {
+  if (isNeonMode()) {
+    const context = getCachedContext();
+    return context?.ok && context.userId ? context.accountKey : null;
+  }
   try { current = sessionStorage.getItem(KEY) || current; } catch { /* Storage may be disabled. */ }
   return Object.hasOwn(demoAccounts, current) ? current : null;
 }
 export function setDemoAccount(account) {
+  if (isNeonMode()) return false; // A demo selector must never establish authenticated identity.
   if (!Object.hasOwn(demoAccounts, account)) return false;
   current = account;
   try { sessionStorage.setItem(KEY, account); } catch { /* Links also carry the demo account. */ }
@@ -16,6 +35,7 @@ export function setDemoAccount(account) {
 // Direct destination used by the account drawer's Intake link and legacy entries.
 // Signed out, it carries no account: following a link must never sign anyone in as Org 1.
 export function demoEntryPath(account = getDemoAccount()) {
+  if (isNeonMode()) return 'intake/simple.html?backend=neon';
   return Object.hasOwn(demoAccounts, account) ? `intake/simple.html?account=${account}` : 'intake/simple.html';
 }
 // Links for a signed-in member; signed out there are none. assets/site-shell.js shows them in the
@@ -26,6 +46,10 @@ const REPORTS = Object.freeze({
   tpw: 'report/TPW-Collective-Impact-Report-2026.pdf'
 });
 export function memberMenu(account = getDemoAccount()) {
+  if (isNeonMode()) return accountProfile(account) ? [
+    { label: 'Log data', path: demoEntryPath(account) },
+    { label: 'Dashboard', path: `team-dashboard/?backend=neon#${encodeURIComponent(account)}` }
+  ] : [];
   if (!Object.hasOwn(demoAccounts, account)) return [];
   return [
     { label: 'Log data', path: demoEntryPath(account) },
