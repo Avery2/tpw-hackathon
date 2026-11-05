@@ -493,12 +493,13 @@ The current Sheet also has three tabs no code reads or writes any more: **Aggreg
 
 1. Names their organization (with TPW's member list as suggestions, from `data/public/tpw-members.csv`). Skipped when filling in from last quarter.
 2. Picks each prison and ticks the yards they work in there.
-3. Adds each program: name, status, dates, course hours, optional notes, and for each yard the participants enrolled and completed. The left-hand panel shows what's been added so far, including the program being filled in.
+3. Reviews programs in one continuous list, with one editor open at a time. Finishing a program collapses it to its name and entered totals, then opens and scrolls to the next row. Carried-forward details and optional context stay behind disclosures; the facilities overview is collapsed above the list.
 4. Reviews and presses **Finish and submit**.
 
 Things worth knowing in the code:
 
 - **Filling in from last quarter** (`prefillFromLastQuarter`): with a demo account in the address, it loads that organization's submissions through the dashboard feed, and `team-form/js/last-quarter.js` turns the latest one into a starting point. Prisons, yards, program names and course hours carry forward. Counts, dates and status don't, and each carried-forward program must be reviewed before submitting. `?blank=1` starts empty.
+- **Program navigation** (`renderAddedPrograms`, `parkOpenProgram`): all program names stay visible. Switching rows retains the actual editor DOM in memory, including partial answers, blank counts and validation state. Missing fields never advance the form. These unfinished drafts survive row switches, not reloads; only explicit Neon submission attempts have durable recovery.
 - **Retries** (`submissionId`): the browser makes one random ID per set of answers and reuses it on a retry, which the script uses to avoid filing twice (section 5.5, step 7).
 - **Errors**: problems a member can fix are shown as the script wrote them. Anything else is shown with TPW's contact email, which is set once, in `TPW_CONTACT_EMAIL` in the form's script (`membership@thetpw.org` today).
 - **With no address in `backend.js`**, the form saves the submission in the browser only and says so. That's the safe way to try the form without writing to any Sheet.

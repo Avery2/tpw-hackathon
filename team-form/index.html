@@ -290,9 +290,11 @@
   .yard-add input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
   .yard-add button { flex: none; border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; font-weight: 700; padding: 6px 16px; cursor: pointer; }
 
-  .demo-form.program-mode { max-width: 1200px; }
-  #programs-step { grid-template-columns: minmax(240px, .8fr) minmax(0, 1.4fr); align-items: start; gap: 36px; }
-  .program-sidebar { display: grid; gap: 20px; min-width: 0; }
+  .demo-form.program-mode { max-width: 860px; }
+  #programs-step { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 20px; }
+  .program-sidebar { min-width: 0; border-bottom: 1px solid #d4e2d6; padding-bottom: 12px; }
+  .program-sidebar > summary { cursor: pointer; font-size: 15px; color: var(--body); }
+  .program-sidebar > .organization-summary { margin-block: 16px; }
   .program-editor { display: grid; gap: 20px; min-width: 0; }
   #prison-summary { display: grid; gap: 16px; }
   #prison-summary > li { padding: 18px; }
@@ -302,19 +304,16 @@
   .summary-yard p { margin: 0; font-weight: 400; color: var(--body); font-size: 15px; }
   #prison-summary .summary-yard ul { padding-left: 18px; }
   #prison-summary .summary-yard li { border: 0; background: none; padding: 3px 0; font-weight: 500; }
-  @media (max-width: 800px) { #programs-step { grid-template-columns: 1fr; } }
-
-  /* Separate the overview from the active program editor. */
-  #programs-step { gap: 0; }
-  .program-sidebar { background: #f0f5f0; border: 1px solid #d4e2d6; border-radius: 14px; padding: 24px; margin-right: 30px; }
-  .program-editor { border-left: 2px solid #d4e2d6; padding-left: 30px; }
   .program-editor > .form-title { margin-bottom: 0; }
-  .program-editor .program-card { background: #fff; border: 1px solid #d8d8d8; box-shadow: 0 4px 18px rgba(0, 0, 0, .04); }
-  @media (max-width: 800px) {
-    #programs-step { gap: 30px; }
-    .program-sidebar { margin-right: 0; padding: 20px; }
-    .program-editor { border-left: 0; border-top: 2px solid #d4e2d6; padding-left: 0; padding-top: 30px; }
-  }
+  .program-editor .program-card { padding: 0; border: 0; background: transparent; }
+  .program-details, .program-context { font-size: 15px; }
+  .program-details > summary, .program-context > summary { cursor: pointer; color: var(--body); }
+  .program-details > div, .program-context > .form-field { margin-top: 16px; }
+  .program-card > .organization-summary { align-items: start; }
+  .program-card h3 { font-size: 22px; overflow-wrap: anywhere; }
+  .program-card h3:focus { outline: none; }
+  .program-card .continue-button { font-size: 16px; }
+  .program-card .organization-summary .program-remove { font-size: 13px; }
 
   #prison-summary summary { cursor: pointer; font-size: 20px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
   #prison-summary summary::marker { color: var(--prison, var(--sage)); }
@@ -396,11 +395,21 @@
     .count-row { grid-template-columns: 1fr; }
     .date-row { grid-template-columns: 1fr; }
   }
-  .added-programs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .added-programs li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; background: #fff; border: 1px solid #d4e2d6; border-radius: 10px; }
-  .added-programs .added-name { flex: 1 1 auto; font-weight: 700; overflow-wrap: anywhere; }
-  .added-programs .needs-prison { flex-basis: 100%; order: 3; margin: 0; font-size: 14px; color: #9a3412; }
-  .added-programs button { background: transparent; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+  /* One continuous list: finished programs shrink in place; the next opens below. */
+  .added-programs { list-style: none; counter-reset: program; margin: 0; padding: 0; border-block: 1px solid #d4e2d6; }
+  .added-programs > li { counter-increment: program; position: relative; min-width: 0; padding: 16px 12px 16px 44px; border-bottom: 1px solid #d4e2d6; }
+  .added-programs > li:last-child { border-bottom: 0; }
+  .added-programs > li::before { content: counter(program) "."; position: absolute; left: 12px; top: 18px; color: #687168; font-size: 14px; }
+  .added-programs > .is-open { padding-block: 20px; background: #f6f9f5; border-left: 3px solid var(--sage); scroll-margin-top: 80px; }
+  .added-programs > .is-open::before { top: 26px; }
+  .program-row { display: flex; align-items: start; gap: 12px; }
+  .program-toggle { flex: 1; min-width: 0; display: grid; gap: 4px; background: transparent; border: 0; padding: 0; font: inherit; text-align: left; cursor: pointer; }
+  .program-toggle .added-name { font-weight: 700; overflow-wrap: anywhere; }
+  .program-toggle .program-state { font-size: 13px; color: #687168; }
+  .program-toggle .is-ready { color: #386741; }
+  .program-remove { flex: none; background: transparent; border: 0; padding: 2px; font: inherit; font-size: 13px; color: #666; text-decoration: underline; cursor: pointer; }
+  .program-toggle:focus-visible, .program-remove:focus-visible { outline: 3px solid var(--sage); outline-offset: 4px; }
+  #program-feedback:empty { display: none; }
   .start-over { justify-self: start; }
   /* Headings get focus only so screen readers announce the new step; they don't need a focus box. */
   [tabindex="-1"]:focus { outline: none; }
@@ -451,8 +460,6 @@
 
 .report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 .prefill-note { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
-/* Carrying forward, the numbers are the job: on narrow screens show the program before the prisons summary. */
-@media (max-width: 800px) { .prefill-mode .program-sidebar { order: 2; } }
 
 .prefill-mode #facilities-step > .step-label,
 .prefill-mode #facilities-step > .organization-summary,
@@ -578,18 +585,19 @@
         <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <aside class="program-sidebar" aria-label="Facilities, yards, and completed programs">
+          <details class="program-sidebar">
+          <summary>Facilities &amp; yards</summary>
           <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
-          </aside>
+          </details>
           <div class="program-editor">
           <p class="step-label">Step 3 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
           <p class="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
-          <div id="program-list" class="question-step"></div>
+          <ol id="added-programs" class="added-programs" role="list" aria-label="Programs this quarter"></ol>
+          <div id="program-list" class="question-step" hidden></div>
           <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
-            <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
-            <ul id="added-programs" class="added-programs" aria-label="Programs added so far"></ul>
+            <h3 class="form-title" id="program-next-heading" tabindex="-1">Ready to submit</h3>
             <div class="next-actions">
               <button type="button" id="another-program" class="continue-button">+ Add another program</button>
               <button type="button" id="finish-form" class="continue-button">Finish and submit</button>
@@ -645,7 +653,7 @@
         </div>
         <fieldset class="yard-numbers">
           <legend>Participants at each yard</legend>
-          <p class="yard-hint">TPW counts each yard separately, so give the numbers for each yard where this program runs.</p>
+          <p class="yard-hint">Enter 0 if none.</p>
           <div class="yard-number-rows"></div>
           <p class="yard-hint yard-numbers-empty">Choose a facility and yard above first.</p>
         </fieldset>
@@ -808,9 +816,10 @@ const continuePrograms = document.querySelector('#continue-programs');
 const programList = document.querySelector('#program-list');
 let programNumber = 0;
 const completedPrograms = [];
-// A saved program that is open again for editing. It's out of completedPrograms while open, but the
-// left-hand panel still lists it, so its counts match "1 of 5".
+// The open editor stays in its position in the visible program list. Switching rows parks
+// the actual DOM, including incomplete/invalid inputs, rather than reconstructing answers.
 let openProgram = null;
+const parkedEditors = new Map();
 const panelPrograms = () => openProgram ? [...completedPrograms, openProgram] : completedPrograms;
 let lastQuarter = null;
 const prisonDisclosureState = new Map();
@@ -1077,10 +1086,21 @@ function syncYardNumbers(program) {
   program.querySelector('.yard-numbers-empty').hidden = wanted.length > 0;
 }
 function addProgram(focus = true, saved = null, editIndex) {
+  const parked = saved && parkedEditors.get(saved.id);
+  if (parked) {
+    parkedEditors.delete(saved.id);
+    parked.dataset.editIndex = editIndex;
+    openProgram = saved;
+    programList.replaceChildren(parked);
+    refreshPrisons();
+    if (focus && !openingForm) focusProgram(parked);
+    return;
+  }
   const number = ++programNumber;
   const program = document.createElement('section'); program.className = 'program-card question-step'; program.dataset.number = number;
+  program.dataset.programId = saved?.id || crypto.randomUUID();
   const top = document.createElement('div'); top.className = 'organization-summary';
-  const heading = document.createElement('h3'); heading.className = 'form-title'; heading.textContent = `Program ${completedPrograms.length + 1}`;
+  const heading = document.createElement('h3'); heading.className = 'form-title'; heading.tabIndex = -1; heading.textContent = saved?.name || 'New program';
   top.append(heading); program.append(top, document.querySelector('#program-fields').content.cloneNode(true));
   for (const field of program.querySelectorAll('input, select, textarea')) {
     const original = field.id; field.id = `program-${number}-${original}`;
@@ -1095,10 +1115,34 @@ function addProgram(focus = true, saved = null, editIndex) {
   program.querySelector('.form-field').after(fieldset);
   // Ticking or unticking a yard adds or removes its row of numbers.
   assignments.addEventListener('change', () => syncYardNumbers(program));
-  const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button'; complete.textContent = 'Complete program →';
+  // Carried-forward details don't need to take up the screen every time.
+  const details = document.createElement('details'); details.className = 'program-details'; details.open = !saved;
+  const summary = document.createElement('summary'); summary.textContent = 'Program details';
+  const fields = document.createElement('div'); fields.className = 'question-step';
+  const nameField = program.querySelector('.form-field');
+  const hours = program.querySelector('.count-row');
+  nameField.before(details); fields.append(nameField, fieldset, hours); details.append(summary, fields);
+  nameField.querySelector('input').addEventListener('input', event => { heading.textContent = event.target.value.trim() || 'New program'; });
+  const context = document.createElement('details'); context.className = 'program-context';
+  const contextTitle = document.createElement('summary'); contextTitle.textContent = 'Optional context';
+  const notesField = program.querySelector('textarea').closest('.form-field');
+  notesField.before(context); context.append(contextTitle, notesField);
+  const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'program-remove'; remove.textContent = 'Remove';
+  remove.setAttribute('aria-label', `Remove ${saved?.name || 'new program'}`);
+  remove.addEventListener('click', () => {
+    parkedEditors.delete(program.dataset.programId);
+    openProgram = null; programList.replaceChildren(); refreshPrisons();
+    if (!reviewNext()) {
+      document.querySelector('#program-next').hidden = !completedPrograms.length;
+      if (completedPrograms.length) focusProgramEnd(); else addProgram();
+    }
+  });
+  top.append(remove);
+  const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button';
   complete.addEventListener('click', () => completeProgram(program));
   program.append(complete);
   openProgram = editIndex === undefined ? null : saved;
+  if (editIndex !== undefined) program.dataset.editIndex = editIndex;
   programList.replaceChildren(program); refreshPrisons();
   // With only one prison there's nothing to choose, so tick it (its yard too, if it has just one).
   if (!saved && prisons.size === 1) {
@@ -1107,8 +1151,7 @@ function addProgram(focus = true, saved = null, editIndex) {
   }
   if (saved) {
     // Editing: put the saved answers back, then tick the prisons and yards it ran in.
-    heading.textContent = `Editing ${saved.name}`;
-    program.dataset.editIndex = editIndex;
+    heading.textContent = saved.name;
     if (saved.id) program.dataset.programId = saved.id;
     for (const input of program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')) {
       const key = input.name.slice(input.name.lastIndexOf('['));
@@ -1135,7 +1178,26 @@ function addProgram(focus = true, saved = null, editIndex) {
       }
     }
   }
-  if (focus && !openingForm) program.querySelector('input').focus();
+  if (focus && !openingForm) focusProgram(program);
+}
+// Focus the program's identity, not another identical empty status dropdown. Two frames
+// allow the embedded form's ResizeObserver to settle before scrolling the outer page.
+function focusProgram(program) {
+  program.querySelector('h3').focus({ preventScroll: true });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (program.isConnected && programList.firstElementChild === program) program.closest('li').scrollIntoView({
+      block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+    });
+  }));
+}
+function focusProgramEnd() {
+  const heading = document.querySelector('#program-next-heading');
+  heading.focus({ preventScroll: true });
+  requestAnimationFrame(() => heading.scrollIntoView({ block: 'nearest' }));
+}
+function revealProgramField(field) {
+  for (let details = field.closest('details'); details; details = details.parentElement.closest('details')) details.open = true;
+  field.reportValidity();
 }
 continuePrograms.addEventListener('click', () => {
   if (continuePrograms.disabled || transitioning) return;
@@ -1186,13 +1248,13 @@ function completeProgram(program) {
   const feedback = document.querySelector('#program-feedback');
   nameInput.setCustomValidity(name ? '' : 'Enter a program name.');
   nameInput.oninput = () => nameInput.setCustomValidity('');
-  if (!name) { nameInput.reportValidity(); return; }
+  if (!name) { revealProgramField(nameInput); return; }
   // Clear last time's date and number messages so a fixed field doesn't stay flagged.
   for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
   for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
   for (const field of program.querySelectorAll('input, select, textarea')) {
     // Say what's wrong now, so an earlier message (say, about dates) isn't left showing.
-    if (!field.checkValidity()) { feedback.textContent = field.validationMessage; field.reportValidity(); return; }
+    if (!field.checkValidity()) { feedback.textContent = field.validationMessage; revealProgramField(field); return; }
   }
   // Catch numbers and dates that can't be true before they reach the totals.
   const field = suffix => program.querySelector(`[id$="-${suffix}"]`);
@@ -1203,7 +1265,7 @@ function completeProgram(program) {
     input.setCustomValidity(message);
     input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
     input.addEventListener('change', () => input.setCustomValidity(''), { once: true });
-    input.reportValidity();
+    revealProgramField(input);
     feedback.textContent = message;
   };
   if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
@@ -1216,7 +1278,7 @@ function completeProgram(program) {
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; program.querySelector('.program-details').open = true; row.querySelector('.program-yards input')?.focus(); return; }
     if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1224,7 +1286,7 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.program-details').open = true; program.querySelector('.assignment-row input')?.focus(); return; }
   // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
   const counts = {};
   for (const row of program.querySelectorAll('.yard-number-row')) {
@@ -1233,7 +1295,7 @@ function completeProgram(program) {
     for (const input of [participants, completed]) {
       // Empty isn't 0: make them type a number, even 0, so "didn't say" never becomes "none".
       if (input.value.trim() === '') { problem(input, `Enter ${input === participants ? 'participants enrolled' : 'completed'} for ${row.dataset.code} ${row.dataset.yard}. Type 0 if there were none.`); return; }
-      if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
+      if (!input.checkValidity()) { revealProgramField(input); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
     }
     if (Number(completed.value) > Number(participants.value)) {
       problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants enrolled.`);
@@ -1248,32 +1310,19 @@ function completeProgram(program) {
   completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
   programList.replaceChildren();
   refreshPrisons();
-  const done = program.dataset.editIndex === undefined ? `${name} added.` : `${name} updated.`;
-  // Carrying forward from last quarter: go straight on to the next program still waiting for
-  // this quarter's numbers, rather than making them find its Edit button.
-  if (lastQuarter && reviewNext(done)) return;
+  // The finished row remains visible above the next expanded program.
+  if (reviewNext()) return;
   document.querySelector('#program-next').hidden = false;
-  document.querySelector('#program-next-heading').focus();
-  feedback.textContent = lastQuarter ? `${done} All programs have this quarter’s numbers. Check the list, then submit.` : done;
+  focusProgramEnd();
+  feedback.textContent = '';
 }
 
 // Opens the next carried-forward program that still needs this quarter's numbers. Returns
 // false when there are none left.
-function reviewNext(before = '') {
+function reviewNext() {
   const index = completedPrograms.findIndex(program => program.needsReview);
   if (index < 0) return false;
-  // Count only last quarter's programs that are still in the list (a member may remove some).
-  const carried = new Set(lastQuarter.programs.map(program => program.id));
-  const total = completedPrograms.filter(program => carried.has(program.id)).length;
-  const left = completedPrograms.filter(program => program.needsReview).length;
   editProgram(index);
-  const card = programList.querySelector('.program-card');
-  card.querySelector('h3').textContent = `${total - left + 1} of ${total}: ${card.querySelector('[id$="-program-name"]').value}`;
-  const hint = document.createElement('p'); hint.className = 'form-hint';
-  hint.textContent = 'Last quarter’s facilities, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
-  card.querySelector('.organization-summary').after(hint);
-  document.querySelector('#program-feedback').textContent = before;
-  if (!openingForm) card.querySelector('[id$="-scheduled-status"]').focus();
   return true;
 }
 
@@ -1282,44 +1331,89 @@ document.querySelector('#another-program').addEventListener('click', () => {
   document.querySelector('#program-feedback').textContent = '';
   addProgram();
 });
-// Finished programs stay editable: list them with Edit and Remove.
+// The editor lives inside the list, so finishing one row visibly opens the next.
+// Keep its DOM intact when refreshing the surrounding summaries.
 function renderAddedPrograms() {
   const list = document.querySelector('#added-programs');
+  const editor = programList.firstElementChild;
+  programList.remove();
   list.replaceChildren();
-  completedPrograms.forEach((program, index) => {
+  const rows = completedPrograms.map(program => ({ program }));
+  if (editor) rows.splice(editor.dataset.editIndex === undefined ? rows.length : Number(editor.dataset.editIndex), 0, { editor });
+  for (const row of rows) {
     const item = document.createElement('li');
-    const name = document.createElement('span'); name.className = 'added-name'; name.textContent = program.name;
-    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
-    edit.setAttribute('aria-label', `Edit ${program.name}`);
-    edit.addEventListener('click', () => editProgram(index));
-    const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
-    remove.setAttribute('aria-label', `Remove ${program.name}`);
-    remove.addEventListener('click', () => removeProgram(index));
-    item.append(name, edit, remove);
-    if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
-    if (!program.assignments.length) {
-      const warning = document.createElement('p'); warning.className = 'needs-prison';
-      warning.textContent = 'Its facilities or yards were removed. Edit it to choose new ones, or remove it.';
-      item.append(warning);
+    if (row.editor) {
+      item.className = 'is-open';
+      item.dataset.programId = editor.dataset.programId;
+      programList.hidden = false; item.append(programList);
+      editor.querySelector('.continue-button').textContent = completedPrograms.some(program => program.needsReview) ? 'Done · next program →' : 'Done with program';
+    } else {
+      const { program } = row;
+      item.dataset.programId = program.id;
+      const header = document.createElement('div'); header.className = 'program-row';
+      const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'program-toggle';
+      edit.setAttribute('aria-label', `Edit ${program.name}`); edit.setAttribute('aria-expanded', 'false');
+      const name = document.createElement('span'); name.className = 'added-name'; name.textContent = program.name;
+      const state = document.createElement('span'); state.className = 'program-state';
+      if (program.needsReview) state.textContent = parkedEditors.has(program.id) ? 'In progress' : 'Needs numbers';
+      else if (!program.assignments.length) state.textContent = 'Choose facilities & yards';
+      else {
+        state.classList.add('is-ready');
+        const counts = program.assignments.flatMap(({ code, yards }) => yards.map(yard => program.counts?.[`${code}|${yard}`]));
+        state.textContent = counts.length && counts.every(count => count && Number.isFinite(count.participants) && Number.isFinite(count.completed))
+          ? `✓ Ready · ${counts.reduce((sum, count) => sum + count.participants, 0)} enrolled · ${counts.reduce((sum, count) => sum + count.completed, 0)} completed`
+          : '✓ Ready';
+      }
+      edit.append(name, state);
+      edit.addEventListener('click', () => editProgram(completedPrograms.indexOf(program)));
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'program-remove'; remove.textContent = 'Remove';
+      remove.setAttribute('aria-label', `Remove ${program.name}`);
+      remove.addEventListener('click', () => removeProgram(completedPrograms.indexOf(program)));
+      header.append(edit, remove); item.append(header);
     }
     list.append(item);
-  });
+  }
+  if (!editor) { programList.hidden = true; list.after(programList); }
+}
+function parkOpenProgram() {
+  const editor = programList.firstElementChild;
+  if (!editor) return;
+  // Partial values, blank numbers and validation state remain on this same DOM.
+  const program = { ...openProgram, id: editor.dataset.programId,
+    name: editor.querySelector('[id$="-program-name"]').value.trim() || 'New program', needsReview: true,
+    assignments: [...editor.querySelectorAll('.assignment-row')].filter(row => row.querySelector(':scope > label input').checked)
+      .map(row => ({ code: row.dataset.code, yards: [...row.querySelectorAll('.program-yards input:checked')].map(box => box.value) })) };
+  const at = editor.dataset.editIndex === undefined ? completedPrograms.length : Number(editor.dataset.editIndex);
+  completedPrograms.splice(at, 0, program);
+  parkedEditors.set(program.id, editor);
+  programList.replaceChildren(); openProgram = null;
 }
 function editProgram(index) {
-  const [program] = completedPrograms.splice(index, 1);
+  const target = completedPrograms[index];
+  if (!target) return;
+  parkOpenProgram();
+  const at = completedPrograms.indexOf(target);
+  const [program] = completedPrograms.splice(at, 1);
   document.querySelector('#program-next').hidden = true;
   document.querySelector('#program-feedback').textContent = '';
-  addProgram(true, program, index);
+  addProgram(true, program, at);
 }
 function removeProgram(index) {
+  const rows = [...document.querySelector('#added-programs').children];
+  const rowIndex = rows.findIndex(row => row.dataset.programId === completedPrograms[index].id);
+  const restoreFocus = rows[rowIndex]?.contains(document.activeElement);
   const [program] = completedPrograms.splice(index, 1);
+  parkedEditors.delete(program.id);
+  const editor = programList.firstElementChild;
+  if (editor?.dataset.editIndex !== undefined && index < Number(editor.dataset.editIndex)) editor.dataset.editIndex--;
   refreshPrisons();
   document.querySelector('#program-feedback').textContent = `${program.name} removed.`;
-  if (!completedPrograms.length) {
-    document.querySelector('#program-next').hidden = true;
-    addProgram();
-  } else {
-    document.querySelector('#program-next-heading').focus();
+  if (!editor && !reviewNext()) {
+    document.querySelector('#program-next').hidden = !completedPrograms.length;
+    if (completedPrograms.length) focusProgramEnd(); else addProgram();
+  } else if (editor && restoreFocus) {
+    const row = document.querySelector('#added-programs').children[Math.min(rowIndex, rows.length - 2)];
+    row?.querySelector('.program-toggle, h3')?.focus();
   }
 }
 // Where members write when the form breaks in a way they can't fix. Change it here only.
@@ -1342,7 +1436,7 @@ let submissionId;
 let submittedPayload = '';
 let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
-  if (submitting) return;
+  if (submitting || programList.children.length) return;
   if (!completedPrograms.length) return;
   if (completedPrograms.some(program => program.needsReview)) {
     document.querySelector('#program-feedback').textContent = 'Edit and complete each carried-forward program for this quarter before submitting.'; return;
@@ -1700,7 +1794,7 @@ async function prefillFromLastQuarter() {
   }
   completedPrograms.push(...draft.programs);
   refreshPrisons();
-  document.querySelector('#program-next-heading').textContent = staffView ? 'Their programs this quarter' : 'Your programs this quarter';
+  document.querySelector('#program-next-heading').textContent = 'Ready to submit';
   reportingPeriod();
   // The prisons screen is still there behind "Edit prisons", worded for this case.
   document.querySelector('#facilities-question').textContent = staffView ? 'Have any of the facilities they operate in changed?' : 'Have any of the facilities you operate in changed?';
@@ -1712,8 +1806,7 @@ async function prefillFromLastQuarter() {
   programsStep.hidden = false;
   document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
   document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a facility…"
-  const their = staffView ? 'their' : 'your';
-  note.textContent = `We’ve filled in ${their} ${draft.prisons.length} ${draft.prisons.length === 1 ? 'facility' : 'facilities'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from ${their} last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a facility, use Edit facilities. `;
+  note.textContent = 'Programs carried forward. Update this quarter’s numbers. ';
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);

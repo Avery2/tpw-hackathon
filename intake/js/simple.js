@@ -20,7 +20,7 @@ const esc = (s) =>
 function demoPanel() {
   const account = new URLSearchParams(location.search).get('account') || getDemoAccount();
   const sheet = new URLSearchParams(location.search).get('backend') === 'sheet' ? '&backend=sheet' : '';
-  const src = `../team-form/?embed=1${sheet}${isNeonMode() ? '&backend=neon' : isSandboxMode() ? `&backend=demo&account=${encodeURIComponent(account || 'org-1')}` : account ? `&account=${encodeURIComponent(account)}` : ''}`;
+  const src = `../team-form/?embed=1&v=program-flow-1${sheet}${isNeonMode() ? '&backend=neon' : isSandboxMode() ? `&backend=demo&account=${encodeURIComponent(account || 'org-1')}` : account ? `&account=${encodeURIComponent(account)}` : ''}`;
   return `
     <div class="demo-panel">
       <iframe src="${esc(src)}" title="Quarterly totals form" loading="lazy"></iframe>

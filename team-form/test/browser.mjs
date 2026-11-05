@@ -2,7 +2,7 @@
 // to the real Google endpoint are intercepted by CDP: ZERO live writes/emails.
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
-import {mkdtemp,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,readFile,rm,writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 const base=process.env.LOCAL_FORM_URL||'http://127.0.0.1:8826';
@@ -148,6 +148,100 @@ try{
  await wait(`!document.querySelector('#program-next').hidden`);await clickFinish();await success();
  assert.deepEqual(posts.at(-1).payload.programs[0].sites,[{facilityCode:'SQ',yard:'A Yard',participants:3,completed:0},{facilityCode:'SQ',yard:'Yard 3',participants:2,completed:0}]);
  dashboardStub='';console.log('PASS last quarter\'s typed-in yard carries forward listed, ticked and submitted');
+ // Fifteen programs used to replace the same-looking editor, making completion look
+ // like a reset. Exercise the continuous list, partial edits and the actual parent frame.
+ const many=structuredClone(lastReport);
+ many.submissions[0].programs=Array.from({length:15},(_,i)=>({id:`carried-${i+1}`,name:`SYNTHETIC PROGRAM ${String(i+1).padStart(2,'0')}`,assignments:[{code:'SQ',yards:['A Yard']}],courseHours:10}));
+ dashboardStub=`const report=${JSON.stringify(many)};export async function loadDashboard(){return structuredClone(report);}
+  export function existingPrograms(submissions){return submissions.flatMap(s=>s.programs.map(p=>({...p,prisons:s.prisons})));}`;
+ await send('Emulation.setEmulatedMedia',{features:[{name:'prefers-reduced-motion',value:'reduce'}]});
+ for(const width of [1280,390]){
+  await send('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+  await send('Page.navigate',{url:base+'/intake/simple.html?account=synthetic-org&backend=sheet'});
+  const inForm=expression=>evaluate(`document.querySelector('iframe')?.contentWindow?.eval(${JSON.stringify(expression)})`);
+  const waitForm=async expression=>{for(let n=0;n<160;n++){if(await inForm(expression))return;await sleep(100);}throw Error('Timed out in embedded form: '+expression);};
+  await waitForm(`document.querySelectorAll('#added-programs > li').length===15&&!!document.querySelector('#program-list > section')`);
+  assert.equal(await inForm(`document.querySelector('.program-sidebar').open`),false);
+  assert.equal(await inForm(`document.querySelector('#program-list .program-details').open`),false);
+  assert.equal(await inForm(`document.querySelector('#program-list .program-context').open`),false);
+  const before=posts.length;
+  // Missing required fields must not change the current row, program or partial answers.
+  await inForm(`window.firstEditor=document.querySelector('#program-list > section');
+   firstEditor.querySelector('[id$="-scheduled-status"]').value='Completed';
+   firstEditor.querySelector('[id$="-start-date"]').value='2026-10-01';
+   firstEditor.querySelector('textarea').value='Keep this unfinished context';
+   firstEditor.querySelector('[data-kind=participants]').value='5';
+   firstEditor.querySelector('.continue-button').click();`);
+  assert(await inForm(`document.querySelector('#program-list > section')===firstEditor&&firstEditor.querySelector('[data-kind=participants]').value==='5'&&firstEditor.querySelector('[data-kind=completed]').value===''`));
+  assert.equal(await inForm(`document.querySelectorAll('.program-state.is-ready').length`),0);
+  assert.equal(posts.length,before);
+  // Choosing a different row must park the actual DOM, not discard an invalid draft.
+  await inForm(`document.querySelectorAll('#added-programs > li')[14].querySelector('.program-toggle').click();`);
+  assert.equal(await inForm(`document.querySelector('#added-programs > li .program-state').textContent`),'In progress');
+  await inForm(`document.querySelector('#added-programs > li .program-toggle').click();`);
+  assert(await inForm(`document.querySelector('#program-list > section')===firstEditor&&firstEditor.querySelector('textarea').value==='Keep this unfinished context'&&firstEditor.querySelector('[id$="-scheduled-status"]').value==='Completed'&&firstEditor.querySelector('[id$="-start-date"]').value==='2026-10-01'&&firstEditor.querySelector('[data-kind=participants]').value==='5'&&firstEditor.querySelector('[data-kind=completed]').value===''`));
+  await inForm(`firstEditor.querySelector('[id$="-end-date"]').value='2026-09-30';firstEditor.querySelector('[data-kind=completed]').value='6';firstEditor.querySelector('.continue-button').click();`);
+  assert(await inForm(`document.querySelector('#program-list > section')===firstEditor&&firstEditor.querySelector('[id$="-end-date"]').value==='2026-09-30'&&firstEditor.querySelector('[data-kind=completed]').value==='6'`));
+  await inForm(`firstEditor.querySelector('[id$="-end-date"]').value='2026-10-02';firstEditor.querySelector('.continue-button').click();`);
+  assert(await inForm(`document.querySelector('#program-list > section')===firstEditor&&firstEditor.querySelector('[data-kind=completed]').value==='6'&&firstEditor.querySelector('textarea').value==='Keep this unfinished context'`));
+  await inForm(`firstEditor.querySelector('[data-kind=completed]').value='4';firstEditor.querySelector('.continue-button').click();`);
+  await waitForm(`document.querySelector('#added-programs > li:nth-child(2)').classList.contains('is-open')`);
+  assert.equal(await inForm(`document.querySelector('.program-state.is-ready').textContent`),'✓ Ready · 5 enrolled · 4 completed');
+  assert.equal(await inForm(`document.querySelector('#added-programs > li .added-name').textContent`),'SYNTHETIC PROGRAM 01');
+  assert.equal(await inForm(`document.activeElement.textContent`),'SYNTHETIC PROGRAM 02');
+  // The first completed row remains above the new editor; the outer page scrolls too.
+  await sleep(200);
+  const headingTop=await evaluate(`document.querySelector('iframe').getBoundingClientRect().top+document.querySelector('iframe').contentDocument.querySelector('#program-list h3').getBoundingClientRect().top`);
+  assert(headingTop>=0&&headingTop<300,`Next program heading off screen: ${headingTop}`);
+  assert(await evaluate(`document.documentElement.scrollWidth<=innerWidth`));
+  assert(await inForm(`document.documentElement.scrollWidth<=innerWidth`));
+  if(process.env.TPW_FORM_SCREENSHOTS){
+   const shot=await send('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+   await writeFile(path.join(process.env.TPW_FORM_SCREENSHOTS,`tpw-program-flow-${width}.png`),Buffer.from(shot.data,'base64'));
+  }
+  // Reopening a completed row must also preserve the current program's partial inputs.
+  await inForm(`window.secondEditor=document.querySelector('#program-list > section');secondEditor.querySelector('textarea').value='Second unfinished context';document.querySelector('#added-programs > li .program-toggle').click();`);
+  assert.equal(await inForm(`document.querySelector('#program-list textarea').value`),'Keep this unfinished context');
+  await inForm(`document.querySelector('#program-list .continue-button').click();`);
+  assert(await inForm(`document.querySelector('#program-list > section')===secondEditor&&secondEditor.querySelector('textarea').value==='Second unfinished context'`));
+  for(let i=2;i<=15;i++){
+   await inForm(`(()=>{const p=document.querySelector('#program-list > section');p.querySelector('[id$="-scheduled-status"]').value='In Progress';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('[data-kind=participants]').value=${JSON.stringify(String(i))};p.querySelector('[data-kind=completed]').value='0';p.querySelector('.continue-button').click();})()`);
+  }
+  assert.equal(await inForm(`document.querySelectorAll('.program-state.is-ready').length`),15);
+  assert.equal(await inForm(`document.querySelector('#program-next').hidden`),false);
+  assert.equal(posts.length,before,'Completing individual programs must not submit');
+  await inForm(`document.querySelector('#finish-form').click()`);
+  await waitForm(`!document.querySelector('#submission-result').hidden`);
+  assert.equal(posts.length,before+1);
+  assert.equal(posts.at(-1).payload.programs.length,15);
+  assert.deepEqual(posts.at(-1).payload.programs.map(p=>p.id),many.submissions[0].programs.map(p=>p.id));
+  assert.equal(posts.at(-1).payload.programs[0].notes,'Keep this unfinished context');
+  assert.equal(posts.at(-1).payload.programs[1].notes,'Second unfinished context');
+  assert.deepEqual(posts.at(-1).payload.programs.map(p=>p.sites[0].participants),[5,...Array.from({length:14},(_,i)=>i+2)]);
+  console.log('PASS 15-program continuous list: missing fields and row switching preserve answers; next row scrolls into view; all programs submit once:',width);
+ }
+ // Removing a row before the open one must not change its identity or reorder it.
+ await send('Page.navigate',{url:base+'/team-form/?embed=1&account=synthetic-org&backend=sheet'});
+ await wait(`document.querySelectorAll('#added-programs > li').length===15&&!!document.querySelector('#program-list > section')`);
+ await evaluate(`document.querySelectorAll('#added-programs > li')[14].querySelector('.program-toggle').click();const remove=document.querySelectorAll('#added-programs > li')[1].querySelector('.program-remove');remove.focus();remove.click();`);
+ assert.equal(await evaluate(`document.activeElement.closest('li')?.dataset.programId`),'carried-3');
+ assert.equal(await evaluate(`document.querySelector('#added-programs > li:last-child').dataset.programId`),'carried-15');
+ assert.equal(await evaluate(`document.querySelector('#program-list > section').dataset.editIndex`),'13');
+ await evaluate(`document.querySelector('#program-list .program-remove').click();`);
+ assert.equal(await evaluate(`document.querySelector('#added-programs > li.is-open').dataset.programId`),'carried-1');
+ assert.equal(await evaluate(`document.querySelectorAll('#added-programs > li').length`),13);
+ await evaluate(`document.querySelector('#program-list .program-details').open=false;const name=document.querySelector('#program-list [id$="-program-name"]');name.value='';document.querySelector('#program-list .continue-button').click();`);
+ assert(await evaluate(`document.querySelector('#program-list .program-details').open&&document.activeElement.id.endsWith('-program-name')`));
+ // Ready totals must follow selected yards, not stale counts from a removed yard.
+ await evaluate(`(()=>{const p=document.querySelector('#program-list > section');p.querySelector('[id$="-program-name"]').value='SYNTHETIC PROGRAM 01';p.querySelector('.program-yards input[value="B Yard"]').click();p.querySelector('[id$="-scheduled-status"]').value='Completed';p.querySelector('[id$="-start-date"]').value='2026-10-01';p.querySelector('[id$="-end-date"]').value='2026-10-02';
+  for(const [yard,started,done] of [['A Yard',5,4],['B Yard',7,6]]){const row=p.querySelector('.yard-number-row[data-yard="'+yard+'"]');row.querySelector('[data-kind=participants]').value=started;row.querySelector('[data-kind=completed]').value=done;}p.querySelector('.continue-button').click();})()`);
+ assert.equal(await evaluate(`document.querySelector('.program-state.is-ready').textContent`),'✓ Ready · 12 enrolled · 10 completed');
+ await evaluate(`document.querySelector('.program-sidebar').open=true;document.querySelector('#edit-prisons').click();`);
+ await wait(`!document.querySelector('#facilities-step').hidden&&document.querySelector('#programs-step').hidden`);
+ await evaluate(`document.querySelector('#facility-cards .yard-choices input[value="B Yard"]').click();`);
+ assert.equal(await evaluate(`document.querySelector('.program-state.is-ready').textContent`),'✓ Ready · 5 enrolled · 4 completed');
+ console.log('PASS program removals retain ordering and keyboard focus; hidden invalid fields open; ready totals exclude removed yards');
+ dashboardStub='';
  await send('Page.navigate',{url:base+'/intake/simple.html'});await wait(`!!document.querySelector('iframe')?.contentDocument?.querySelector('#quarter-summary')?.textContent`);assert(await evaluate(`!document.querySelector('iframe').contentDocument.querySelector('#quarter-step')`));console.log('PASS embedded intake uses slim form');
  assert.deepEqual(exceptions,[]);console.log('PASS browser checks: zero unhandled exceptions, zero live Google requests');
 }finally{socket?.close();chrome.kill();await new Promise(resolve=>{if(chrome.exitCode!==null)resolve();else{chrome.once('exit',resolve);setTimeout(resolve,3000);}});await rm(profile,{recursive:true,force:true,maxRetries:3,retryDelay:200});}
