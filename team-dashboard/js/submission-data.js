@@ -1,8 +1,8 @@
 import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
-import { updateWorkspace, resolveAccount, dashboardHref, showLoadError } from './layout.js?v=data-api-1';
-import { accountProfile } from '../../assets/member-session.js?v=data-api-1';
-import { isNeonMode } from '../../assets/neon-auth-client.js?v=data-api-1';
-import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
+import { updateWorkspace, resolveAccount, dashboardHref, showLoadError } from './layout.js?v=sandbox-1';
+import { accountProfile } from '../../assets/member-session.js?v=sandbox-1';
+import { isNeonMode } from '../../assets/neon-auth-client.js?v=sandbox-1';
+import { loadDashboard, existingPrograms } from './data.js?v=sandbox-1';
 import { loadingSkeleton } from './loading.js?v=tip-20261025';
 const $ = selector => document.querySelector(selector);
 let records = [], mode = 'cards', revision = 0, loaded = false, admin = false;

@@ -59,7 +59,7 @@ jobs:
       - name: Neon Auth and Data API integration (offline)
         if: ${{ !cancelled() }}
         run: |
-          node --test team-form/test/neon-auth.mjs team-form/test/neon-integration.mjs team-form/test/neon-attempts.mjs team-form/test/neon-page.mjs
+          node --test team-form/test/neon-auth.mjs team-form/test/neon-integration.mjs team-form/test/neon-attempts.mjs team-form/test/neon-page.mjs team-form/test/neon-sandbox.mjs
           node database/test.mjs --static
 
       - name: Local Neon API and transport (fake database)

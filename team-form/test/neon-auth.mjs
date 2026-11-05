@@ -12,8 +12,8 @@ globalThis.sessionStorage = {
 };
 globalThis.localStorage = { getItem() { throw new Error('Auth must not use local storage'); }, setItem() { throw new Error('Auth must not use local storage'); } };
 globalThis.window = { location: { href: 'http://localhost:8826/tpw-hackathon/intake/simple.html' }, dispatchEvent(event) { events.push(event); } };
-const config = await import('../../assets/neon-config.js?v=data-api-1');
-const client = await import('../../assets/neon-auth-client.js?v=data-api-1');
+const config = await import('../../assets/neon-config.js?v=sandbox-1');
+const client = await import('../../assets/neon-auth-client.js?v=sandbox-1');
 let calls, cookieSession, handlers;
 const context = (userId = 'test-user') => ({ ok: true, userId, isStaff: false, orgs: [{ id: 'org-1', name: 'Synthetic organization' }], accountKey: 'org-1' });
 const session = (id = 'test-user', expiresAt = new Date(Date.now() + 3600000).toISOString()) => ({ user: { id, email: 'sandbox@example.test', name: 'Sandbox' }, session: { expiresAt, token: 'SESSION-TOKEN-DO-NOT-PERSIST' } });

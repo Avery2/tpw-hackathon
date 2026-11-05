@@ -3,7 +3,7 @@
 (() => {
   const root = new URL('../', document.currentScript.src);
   const selector = 'a.user-accounts-text-link, .customerAccountLoginDesktop a, .customerAccountLoginMobile a';
-  const drawerUrl = new URL('assets/account-drawer.js?v=data-api-1', root).href;
+  const drawerUrl = new URL('assets/account-drawer.js?v=sandbox-1', root).href;
   function account() {
     try {
       const key = sessionStorage.getItem('tpw.member.demo.v1');

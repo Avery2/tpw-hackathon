@@ -4,8 +4,8 @@
 import {
   NEON_AUTH_BASE_URL, NEON_DATA_API_URL, NEON_MODE_KEY, NEON_CONTEXT_KEY,
   NEON_SIGN_IN_HREF
-} from './neon-config.js?v=data-api-1';
-export { isNeonMode, NEON_AUTH_BASE_URL, NEON_DATA_API_URL, NEON_SIGN_IN_HREF } from './neon-config.js?v=data-api-1';
+} from './neon-config.js?v=sandbox-1';
+export { isNeonMode, NEON_AUTH_BASE_URL, NEON_DATA_API_URL, NEON_SIGN_IN_HREF } from './neon-config.js?v=sandbox-1';
 
 const ALLOWED_RPC = new Set(['tpw_context', 'tpw_dashboard', 'tpw_submit']);
 const DEMO_KEY = 'tpw.member.demo.v1';

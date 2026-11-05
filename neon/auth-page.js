@@ -1,7 +1,15 @@
 import {
   enableNeonMode, disableNeonMode, signIn, signUp, signOut,
   getSession, fetchContext, AuthRequiredError, AuthCookieError, NeonRequestError
-} from '../assets/neon-auth-client.js?v=data-api-1';
+} from '../assets/neon-auth-client.js?v=sandbox-1';
+
+import { isSandboxMode, enableSandboxMode } from '../assets/neon-config.js?v=sandbox-1';
+const sandboxEntry = isSandboxMode();
+if (sandboxEntry) {
+  enableSandboxMode();
+  document.querySelector('main')?.setAttribute('hidden', '');
+  window.location.replace(new URL('../intake/simple.html?backend=demo&account=org-1', window.location.href).href);
+}
 
 const $ = id => document.getElementById(id);
 let isSignUp = false;
@@ -171,4 +179,4 @@ async function start() {
     showError(error);
   } finally { $('loading').hidden = true; setBusy(false); }
 }
-start();
+if (!sandboxEntry) start();

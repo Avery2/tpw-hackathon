@@ -489,7 +489,7 @@
 .prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=data-api-1"></script>
+<script type="module" src="../assets/site-shell.js?v=sandbox-1"></script>
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -672,19 +672,26 @@
 
 <script src="backend.js?v=neon-demo-1"></script>
 <script type="module">
+import { isSandboxMode, enableSandboxMode } from '../assets/neon-config.js?v=sandbox-1';
+import { sandboxRequest } from '../assets/neon-sandbox-client.js?v=sandbox-1';
+import { getDemoAccount, setDemoAccount } from '../assets/member-session.js?v=sandbox-1';
+if (isSandboxMode()) {
+  enableSandboxMode();
+  setDemoAccount(new URLSearchParams(location.search).get('account'));
+}
 import { currentReportingPeriod } from './js/reporting-period.js';
-import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=data-api-1';
+import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=sandbox-1';
 let neonContext = null, neonAuthError = null;
 if (isNeonMode()) {
   document.querySelector('#where-it-goes').textContent = 'Checking your sign-in and organization access…';
   try { neonContext = await authStateReady(); }
   catch (error) { neonAuthError = error; } // Keep the form and saved attempt; never use the demo identity.
 }
-const neonSubmissionMode = () => isNeonMode() || !!neonDemoUrl();
-import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=data-api-1';
+const neonSubmissionMode = () => isSandboxMode() || isNeonMode() || !!neonDemoUrl();
+import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=sandbox-1';
 // Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
 // not "your".
-const staffView = isNeonMode() ? neonContext?.isStaff === true : new URLSearchParams(location.search).get('account') === 'tpw';
+const staffView = isNeonMode() ? neonContext?.isStaff === true : isSandboxMode() ? getDemoAccount() === 'tpw' : new URLSearchParams(location.search).get('account') === 'tpw';
 if (staffView) {
   for (const [selector, text] of [
     ['#organization-question', 'Which organization are you logging data for?'],
@@ -752,7 +759,7 @@ document.querySelector('#edit-organization').addEventListener('click', () => {
 });
 // Suggest TPW's member names so one organization isn't submitted under several spellings.
 // If the list can't load, the field still takes free text.
-if (!isNeonMode()) fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
+if (!isNeonMode() && !isSandboxMode()) fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
   const names = text.split(/\r?\n/).slice(1).map(line => {
     const match = line.match(/^"((?:[^"]|"")*)"|^([^,]*)/);
     return match ? (match[1] ?? match[2]).replace(/""/g, '"').trim() : '';
@@ -1434,7 +1441,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     }
     const online = !neonSubmissionMode() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
     showWithContact(feedback, neonSubmissionMode()
-      ? `${error.message} ${isNeonMode() ? 'TPW' : 'The local demo'} could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
+      ? `${error.message} ${isNeonMode() || isSandboxMode() ? 'TPW' : 'The local demo'} could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
       : online
       ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
@@ -1464,6 +1471,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
 
 // The address in backend.js, if one is set.
 function backendUrl() {
+  if (isSandboxMode()) return 'neon-sandbox-data-api';
   if (isNeonMode()) return 'neon-data-api'; // Valid independently of the default Google address.
   const url = (window.TPW_BACKEND_URL || '').trim();
   return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || neonDemoUrl() ? url : '';
@@ -1492,6 +1500,7 @@ function toPayload(submission, submissionId) {
 // Sent as plain text so the browser doesn't ask Google's server for permission first;
 // Apps Script reads the body either way.
 async function sendToBackend(payload) {
+  if (isSandboxMode()) return sandboxRequest('tpw_sandbox_submit', { p_payload: payload });
   if (isNeonMode()) {
     const expectedUser = neonContext?.userId;
     const context = await authStateReady();
@@ -1518,7 +1527,9 @@ async function sendToBackend(payload) {
     body: JSON.stringify({ token, payload })
   }, 20000, response => response.json());
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = isNeonMode()
+if (backendUrl()) document.querySelector('#where-it-goes').textContent = isSandboxMode()
+  ? 'Prototype · test data saves to Neon.'
+  : isNeonMode()
   ? 'Submitting sends these answers to TPW using your signed-in organization. Completed answers are saved in this browser when you submit so a retry can recover its receipt; unfinished edits are not autosaved.'
   : neonDemoUrl()
   ? 'Local Neon demo only: use made-up counts, not real member data. Demo accounts are not real sign-in. Completed answers are saved in this browser when you submit; unfinished edits are not autosaved.'
@@ -1632,7 +1643,7 @@ function renderSubmission(submission) {
 // With no account, no earlier report, or ?blank=1, the form starts empty as before.
 async function prefillFromLastQuarter() {
   const params = new URLSearchParams(location.search);
-  const orgId = isNeonMode() ? (!neonContext?.isStaff && neonContext?.orgs?.length === 1 ? neonContext.orgs[0].id : null) : params.get('account');
+  const orgId = isNeonMode() ? (!neonContext?.isStaff && neonContext?.orgs?.length === 1 ? neonContext.orgs[0].id : null) : isSandboxMode() ? getDemoAccount() : params.get('account');
   if (!orgId || orgId === 'tpw' || params.get('blank') === '1') return;
   const note = document.createElement('div'); note.className = 'prefill-note'; note.setAttribute('role', 'status');
   note.textContent = staffView ? 'Loading what they reported last time…' : 'Loading what you reported last time…'; form.prepend(note);
@@ -1768,7 +1779,7 @@ if (isNeonMode()) {
   if (neonAuthError || !neonContext?.ok || !neonContext.userId || (!neonContext.isStaff && !neonContext.orgs?.length)) {
     const note = document.createElement('p'); note.setAttribute('role', 'alert');
     note.textContent = 'Sign in with an assigned organization account before submitting. Your saved attempt is still here. If you need access, contact TPW. ';
-    const signin = document.createElement('a'); signin.href = new URL('../neon/', import.meta.url).href;
+    const signin = document.createElement('a'); signin.href = new URL('../neon/?backend=neon', import.meta.url).href;
     signin.target = '_top'; signin.textContent = 'Sign in'; note.append(signin); form.prepend(note);
   } else {
     const profiles = neonContext.orgs || [];
@@ -1781,6 +1792,15 @@ if (isNeonMode()) {
     }
     if (!recoverLocalAttempt()) prefillFromLastQuarter();
   }
+} else if (isSandboxMode()) {
+  document.querySelector('#member-list').replaceChildren(new Option('Org 1'), new Option('Org 2'));
+  document.querySelector('#organization-help').textContent = staffView ? 'Choose Org 1 or Org 2.' : 'Your fictional organization for this prototype.';
+  if (!staffView) {
+    organization.value = getDemoAccount() === 'org-2' ? 'Org 2' : 'Org 1';
+    organization.readOnly = true;
+    document.querySelector('#organization-summary').textContent = organization.value;
+  }
+  if (!recoverLocalAttempt()) prefillFromLastQuarter();
 } else if (!recoverLocalAttempt()) prefillFromLastQuarter();
 </script>
 </body>

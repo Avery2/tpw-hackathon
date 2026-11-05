@@ -94,9 +94,9 @@ try {
   await send('Page.navigate', { url: base + '/team-dashboard/?backend=neon#tpw' });
   await wait(`!!document.querySelector('#dashboard-exports button') && document.querySelector('#view-sections').textContent.includes('SYNTHETIC authenticated browser test')`);
   assert.equal(await ev(`document.querySelector('#profile-heading').textContent`), 'Org 1', 'Forged staff hash cannot change identity');
-  const exported = await ev(`import('/assets/neon-auth-client.js?v=data-api-1').then(m=>m.dataApiRequest('tpw_dashboard',{p_org_id:null}))`);
+  const exported = await ev(`import('/assets/neon-auth-client.js?v=sandbox-1').then(m=>m.dataApiRequest('tpw_dashboard',{p_org_id:null}))`);
   assert(exported.submissions.every(doc => doc.orgId === 'org-1'));
-  const csv = await ev(`import('/assets/dashboard-exports.js?v=data-api-1').then(m=>m.programHistoryCsv(${JSON.stringify(exported.submissions)}))`);
+  const csv = await ev(`import('/assets/dashboard-exports.js?v=sandbox-1').then(m=>m.programHistoryCsv(${JSON.stringify(exported.submissions)}))`);
   assert(csv.includes('SYNTHETIC authenticated browser test')); assert(!csv.includes('Org 2'));
   await send('Page.navigate', { url: base + '/intake/simple.html?backend=neon' });
   await wait(`document.querySelector('iframe')?.getAttribute('src')?.includes('backend=neon')`);
@@ -104,7 +104,7 @@ try {
   await wait(`document.querySelector('#signed-in') && !document.querySelector('#signed-in').hidden && !document.querySelector('#refresh-access').disabled`);
   await ev(`document.querySelector('#sign-out').click()`);
   await wait(`!document.querySelector('#signed-out').hidden`);
-  const noSession = await ev(`import('/assets/neon-auth-client.js?v=data-api-1').then(m=>m.getSession())`); assert.equal(noSession, null);
+  const noSession = await ev(`import('/assets/neon-auth-client.js?v=sandbox-1').then(m=>m.getSession())`); assert.equal(noSession, null);
   assert.deepEqual(externalRequests, [], 'Never contacts Google or an unrelated host');
   assert.deepEqual(badResources, [], 'Required static assets load'); assert.deepEqual(exceptions, []);
   console.log('PASS authenticated dashboard, forged URL denial, scoped exports, embedded form routing, real sign-out and no Google requests');

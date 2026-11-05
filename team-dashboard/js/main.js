@@ -1,8 +1,8 @@
-import { updateWorkspace, resolveAccount, showLoadError } from './layout.js?v=data-api-1';
-import { accountProfile } from '../../assets/member-session.js?v=data-api-1';
+import { updateWorkspace, resolveAccount, showLoadError } from './layout.js?v=sandbox-1';
+import { accountProfile } from '../../assets/member-session.js?v=sandbox-1';
 import { racPanel } from './rac.js?v=facility-20261025';
 import { participantsChart } from './chart.js?v=neon-ship-1';
-import { loadDashboard, existingPrograms } from './data.js?v=data-api-1';
+import { loadDashboard, existingPrograms } from './data.js?v=sandbox-1';
 let revision = 0;
 const $ = selector => document.querySelector(selector);
 function element(tag, className, text) {

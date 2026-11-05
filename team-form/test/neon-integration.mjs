@@ -20,9 +20,13 @@ export const neonRequest = () => { throw new Error('Unexpected local demo call')
 export const mountDemoExports = () => { throw new Error('Unexpected demo export'); };
 `);
 const exportsMock = moduleUrl(`export const mountDashboardExports = (...args) => globalThis.__integration.mounts.push(args);`);
+const configMock = moduleUrl(`export const isSandboxMode = () => globalThis.__integration.sandbox;`);
+const sandboxMock = moduleUrl(`export const sandboxRequest = (...args) => globalThis.__integration.guestRPC(...args);`);
 async function isolatedModule(url) {
   let source = await fs.readFile(url, 'utf8');
-  source = source.replace(/(['"])\.\/neon-auth-client\.js\?[^'"]+\1/g, JSON.stringify(authMock))
+  source = source.replace(/(['"])\.\/neon-config\.js\?[^'"]+\1/g, JSON.stringify(configMock))
+    .replace(/(['"])\.\/neon-sandbox-client\.js\?[^'"]+\1/g, JSON.stringify(sandboxMock))
+    .replace(/(['"])\.\/neon-auth-client\.js\?[^'"]+\1/g, JSON.stringify(authMock))
     .replace(/(['"])\.\/neon-demo-client\.js\?[^'"]+\1/g, JSON.stringify(demoMock))
     .replace(/(['"])\.\/dashboard-exports\.js\?[^'"]+\1/g, JSON.stringify(exportsMock))
     .replaceAll('import.meta.url', JSON.stringify(url.href));
@@ -44,7 +48,7 @@ let state;
 beforeEach(() => {
   values.clear();
   state = globalThis.__integration = {
-    mode: true, context: { ok: true, userId: 'user-a', isStaff: false, orgs: [org], accountKey: org.id },
+    sandbox: false, mode: true, context: { ok: true, userId: 'user-a', isStaff: false, orgs: [org], accountKey: org.id },
     mounts: [], calls: [], ready: 0,
     rpc: async (...args) => { state.calls.push(args); return { ok: true, orgs: [org], submissions: [submission] }; }
   };
@@ -132,10 +136,10 @@ test('default Sheets route retains sample merge and demo account behavior', asyn
   assert.ok(calls.some(url => url.pathname.endsWith('dashboard-sample.json')));
 });
 
-function formSend(context, authReady, rpc, mode = true) {
+function formSend(context, authReady, rpc, mode = true, sandbox = false) {
   const source = form.slice(form.indexOf('async function sendToBackend(payload) {'), form.indexOf('\nif (backendUrl())'));
-  return new Function('isNeonMode', 'neonContext', 'authStateReady', 'dataApiRequest', 'neonDemoUrl', 'neonRequest', 'window', 'boundedFetch', 'backendUrl', `return (${source});`)(
-    () => mode, context, authReady, rpc,
+  return new Function('isSandboxMode', 'sandboxRequest', 'isNeonMode', 'neonContext', 'authStateReady', 'dataApiRequest', 'neonDemoUrl', 'neonRequest', 'window', 'boundedFetch', 'backendUrl', `return (${source});`)(
+    () => sandbox, (...args) => state.guestRPC(...args), () => mode, context, authReady, rpc,
     () => null, () => { throw new Error('Unexpected demo request'); }, {},
     () => { throw new Error('Unexpected Google request/capability check'); }, () => window.TPW_BACKEND_URL
   );
@@ -159,4 +163,26 @@ test('form auth failure/account switch rejects before sending and leaves retry h
   assert.match(form, /neonSubmissionMode\(\)[\s\S]*prepareAttempt\(toPayload/);
   assert.match(form, /if \(isNeonMode\(\)\) return 'neon-data-api'/);
   assert.match(form, /Identity is independent of historical data and \?blank=1/);
+});
+
+test('account-free dashboard uses only fictional synthetic DB rows and never calls protected auth or Sheets', async () => {
+  state.sandbox = true; state.mode = false; session.clearDemoAccount();
+  state.guestRPC = async (...args) => { state.calls.push(args); return { ok: true,
+    orgs: [{ id: 'org-1', name: 'Org 1' }, { id: 'other', name: 'Excluded' }],
+    submissions: [{ id: 'sample', orgId: 'org-1', synthetic: true }, { id: 'not-synthetic', orgId: 'org-1' }, { id: 'other-org', orgId: 'other', synthetic: true }] }; };
+  const data = await loadDashboard('org-1');
+  assert.equal(state.ready, 0); assert.deepEqual(state.calls, [['tpw_sandbox_dashboard', { p_org_id: 'org-1' }]]);
+  assert.deepEqual(data.submissions.map(doc => doc.id), ['sample']); assert.deepEqual(state.mounts, [[data, 'org-1']]);
+  assert.equal(session.getDemoAccount(), 'org-1', 'A fresh prototype visitor needs no identity setup');
+  await assert.rejects(loadDashboard('other'), /Org 1 or Org 2/);
+});
+
+test('account-free form saves directly to DB, including notes, without any session or Google request', async () => {
+  const receipt = { ok: true, reference: 'sample-receipt', signedIn: false }, calls = [];
+  state.guestRPC = async (...args) => { calls.push(args); return receipt; };
+  const unexpected = async () => { throw Error('Auth must not run'); };
+  const payload = { programs: [{ notes: 'Synthetic program context' }] };
+  const send = formSend(null, unexpected, unexpected, false, true);
+  assert.equal(await send(payload), receipt);
+  assert.deepEqual(calls, [['tpw_sandbox_submit', { p_payload: payload }]]);
 });

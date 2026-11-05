@@ -1,8 +1,9 @@
 // Local demo transport plus durable attempts shared with the authenticated Data API.
 // Demo labels never authorize Data API requests; PostgreSQL enforces membership.
-import { getDemoAccount } from './member-session.js?v=data-api-1';
-import { isNeonMode, getCachedContext, NeonRequestError as DataApiRequestError } from './neon-auth-client.js?v=data-api-1';
-import { appendSheetsLink } from './dashboard-exports.js?v=data-api-1';
+import { isSandboxMode } from './neon-config.js?v=sandbox-1';
+import { getDemoAccount } from './member-session.js?v=sandbox-1';
+import { isNeonMode, getCachedContext, NeonRequestError as DataApiRequestError } from './neon-auth-client.js?v=sandbox-1';
+import { appendSheetsLink } from './dashboard-exports.js?v=sandbox-1';
 
 export function neonDemoUrl() {
   try {
@@ -33,7 +34,7 @@ export function memberSubmissionIdentity() {
     if (!organization) throw new Error('Your account needs an assigned organization. Contact TPW.');
     return { orgId: organization.id };
   }
-  if (!neonDemoUrl()) return {};
+  if (!isSandboxMode() && !neonDemoUrl()) return {};
   const account = demoAccount();
   return ['org-1', 'org-2'].includes(account) ? { orgId: account } : {};
 }
@@ -95,6 +96,7 @@ export async function neonRequest({ orgId, payload } = {}) {
 
 const PREFIX = 'tpw.neon.pending.v1:';
 function attemptKey() {
+  if (isSandboxMode()) return 'tpw.neon.pending.sandbox.v1:' + demoAccount();
   if (isNeonMode()) {
     const context = getCachedContext();
     if (!context?.ok || !context.userId || !context.accountKey) throw new Error('Sign in with your assigned account to recover these answers.');

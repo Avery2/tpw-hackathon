@@ -1,7 +1,7 @@
 // Exports the dashboard's program-level history, not per-yard source records.
 // Demo selectors are not authentication. A real deployment needs server-scoped exports.
-import { getDemoAccount } from './member-session.js?v=data-api-1';
-import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+import { getDemoAccount } from './member-session.js?v=sandbox-1';
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=sandbox-1';
 const exportIdentity = () => {
   if (!isNeonMode()) return getDemoAccount();
   const context = getCachedContext();

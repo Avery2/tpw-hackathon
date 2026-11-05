@@ -1,4 +1,4 @@
-import { participantHistory } from './data.js?v=data-api-1';
+import { participantHistory } from './data.js?v=sandbox-1';
 
 const NS = 'http://www.w3.org/2000/svg';
 function svgNode(tag, attrs = {}, text) {

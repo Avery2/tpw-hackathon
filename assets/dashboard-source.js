@@ -1,14 +1,12 @@
-// Where the dashboards and the form's last-quarter prefill get their data: TPW's Google Sheet,
-// read through the same Google script the form submits to (team-form/receiver/Dashboard.gs).
-// Firebase was retired on 25 Oct 2026.
-//
-// Made-up sample organizations (Org 1, Org 2) come from data/demo/dashboard-sample.json and
-// carry synthetic: true, so pages show a Sample data badge; so do sheet rows marked Yes in its
-// Test data column. Real submissions only ever come from the sheet.
+// Shared dashboard/prefill source. Published prototype: synthetic-only Neon RPCs,
+// no account required. Protected identity and explicit legacy Sheets modes stay
+// separate; an uncertain database request never falls back to another store.
 
-import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=data-api-1';
-import { mountDashboardExports } from './dashboard-exports.js?v=data-api-1';
-import { isNeonMode, authStateReady, dataApiRequest, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+import { isSandboxMode } from './neon-config.js?v=sandbox-1';
+import { sandboxRequest } from './neon-sandbox-client.js?v=sandbox-1';
+import { neonDemoUrl, neonRequest, mountDemoExports } from './neon-demo-client.js?v=sandbox-1';
+import { mountDashboardExports } from './dashboard-exports.js?v=sandbox-1';
+import { isNeonMode, authStateReady, dataApiRequest, getCachedContext } from './neon-auth-client.js?v=sandbox-1';
 
 let neonRevision = 0;
 const contextScope = context => JSON.stringify([context?.userId, context?.isStaff, context?.accountKey, (context?.orgs || []).map(org => org.id).sort()]);
@@ -21,7 +19,7 @@ function neonSignInLink() {
   const heading = document.querySelector('.dashboard-heading');
   if (!heading) return;
   const link = document.createElement('a'); link.id = 'neon-dashboard-signin';
-  link.href = new URL('../neon/', import.meta.url).href;
+  link.href = new URL('../neon/?backend=neon', import.meta.url).href;
   link.textContent = 'Sign in or check your organization access';
   (heading.querySelector('.shell') || heading).append(link);
 }
@@ -68,6 +66,24 @@ async function readSheet(org) {
 }
 
 export async function loadDashboard(orgId) {
+  if (isSandboxMode()) {
+    const revision = ++neonRevision;
+    if (typeof document !== 'undefined') document.querySelector('#dashboard-exports')?.remove();
+    if (orgId && !['org-1', 'org-2'].includes(orgId)) throw new Error('Choose Org 1 or Org 2 for this prototype.');
+    const reply = await sandboxRequest('tpw_sandbox_dashboard', { p_org_id: orgId || null });
+    if (!isSandboxMode()) throw new Error('The view changed. Please reload the dashboard.');
+    const orgs = (Array.isArray(reply.orgs) ? reply.orgs : [])
+      .filter(org => ['org-1', 'org-2'].includes(org.id) && (!orgId || org.id === orgId))
+      .map(org => ({ ...org, name: org.id === 'org-1' ? 'Org 1' : 'Org 2', synthetic: true }));
+    const org = orgId ? orgs.find(profile => profile.id === orgId) : null;
+    if (orgId && !org) throw new Error('Organization profile was not found. Please try again or contact TPW.');
+    const submissions = (Array.isArray(reply.submissions) ? reply.submissions : [])
+      .filter(record => orgs.some(profile => profile.id === record.orgId) && (record.synthetic === true || record.testData === true))
+      .map(record => ({ ...record, synthetic: true }));
+    const data = { org, orgs, submissions };
+    if (revision === neonRevision) mountDashboardExports(data, orgId);
+    return data;
+  }
   // Authenticated mode is opt-in and fails closed: never read Google or mix in samples.
   if (isNeonMode()) {
     const revision = ++neonRevision;

@@ -9,16 +9,17 @@ A form and dashboard for **Transformative Programming Works (TPW)**. Member orga
 It was built at Hack for Social Impact 2026 (24–25 October 2026) and handed over to TPW as a working prototype.
 
 - **Live demo:** <https://www.averychan.site/tpw-hackathon/> (use made-up numbers only)
-- **Authenticated Neon sandbox:** <https://www.averychan.site/tpw-hackathon/neon/> — real email/password sign-in, database-enforced organization access, direct Data API saves and scoped downloads. Access requires administrator assignment; synthetic data only. See [`database/README.md`](database/README.md).
-- **Status:** the default Sheets demo still uses labels, not authentication. The opt-in Neon sandbox has real sign-in, but is not a production cutover. Read [`docs/go-live-checklist.md`](docs/go-live-checklist.md) before any member submits real numbers.
+- **Log data—no account needed:** <https://www.averychan.site/tpw-hackathon/intake/simple.html?backend=demo&account=org-1>. The prototype saves to the isolated Neon database; its dashboard and downloads read those saved records. Only fictional Org 1/Org 2 test data is public. See [`database/README.md`](database/README.md).
+- **Status:** account-free database prototype, not a real-data rollout or a replacement for TPW’s existing sign-in. Read [`docs/go-live-checklist.md`](docs/go-live-checklist.md) before any member submits real numbers.
 
 ## How it works, in short
 
 - **The website** is plain HTML, CSS and JavaScript, with no framework, no build step and no packages to install. It's published as static files (GitHub Pages today).
-- **Submissions** go from the browser to a small **Google Apps Script** web app, which checks them and appends one row per program per yard to a **Google Sheet**. Today the Sheet and script belong to a demo Google account the hackathon team made (`tpwhackathondemodemo@gmail.com`), not to TPW. Moving them into TPW's own account is the first item on the go-live checklist.
-- **The dashboard** reads the same Sheet back through the same Apps Script.
+- **Submissions** go directly through Neon's built-in **Data API** to Postgres on `avery-neon-connection`. The database validates answers, fixes their synthetic status, and stores durable retry receipts. No email, account or sign-in cookie is required for the fictional prototype.
+- **The dashboard** and CSV/JSON downloads read those saved database records. Google Sheets imports remain available as copies, not synchronization.
+- **The old Sheets path** remains available explicitly with `?backend=sheet`; there is no automatic fallback to it. The existing Apps Script and Sheet were not modified.
 
-There's no server to run, no database besides the Sheet, and no API keys or passwords in the code.
+There's no custom backend server to host and no database passwords or service credentials in browser code.
 
 The full explanation, including how to set up TPW's own copy of the Sheet and script, is in **[`docs/technical-guide.md`](docs/technical-guide.md)**.
 

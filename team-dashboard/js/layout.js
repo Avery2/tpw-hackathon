@@ -1,7 +1,7 @@
 // Dashboard pages and intake share the same website chrome and member sidebar.
-import { updateMemberWorkspace } from '../../assets/site-shell.js?v=data-api-1';
-import { accountProfile, getDemoAccount, demoEntryPath } from '../../assets/member-session.js?v=data-api-1';
-import { authStateReady, isNeonMode, NEON_SIGN_IN_HREF } from '../../assets/neon-auth-client.js?v=data-api-1';
+import { updateMemberWorkspace } from '../../assets/site-shell.js?v=sandbox-1';
+import { accountProfile, getDemoAccount, demoEntryPath } from '../../assets/member-session.js?v=sandbox-1';
+import { authStateReady, isNeonMode, NEON_SIGN_IN_HREF } from '../../assets/neon-auth-client.js?v=sandbox-1';
 
 export async function resolveAccount(fallback = false) {
   if (isNeonMode()) {

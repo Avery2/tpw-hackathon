@@ -1,5 +1,5 @@
-import { isNeonMode, signOut } from './neon-auth-client.js?v=data-api-1';
-import { accountProfile, demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js?v=data-api-1';
+import { isNeonMode, signOut } from './neon-auth-client.js?v=sandbox-1';
+import { accountProfile, demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js?v=sandbox-1';
 
 const root = new URL('../', import.meta.url);
 let dialog, entry, greetingName, signin, returnFocus, stylesReady;
@@ -159,7 +159,7 @@ function signInAs(account) {
 export async function openAccountDrawer(trigger) {
   if (isNeonMode()) {
     // The authenticated account page, never the demo identity selector.
-    location.assign(new URL('../neon/', import.meta.url).href);
+    location.assign(new URL('../neon/?backend=neon', import.meta.url).href);
     return;
   }
   if (!dialog) mount();

@@ -11,7 +11,7 @@ class MirrorBuildTests(unittest.TestCase):
     def test_only_adds_bridge_before_original_scripts(self):
         html = '<!doctype html>\n<html><head><script>original()</script></head><body>TPW’s original page</body></html>'
         output = wire_mirror(html, 'site/ourstory/index.html')
-        tag = '\n<script src="../../assets/mirror-nav.js?v=data-api-1" data-tpw-mirror-nav></script>'
+        tag = '\n<script src="../../assets/mirror-nav.js?v=sandbox-1" data-tpw-mirror-nav></script>'
         self.assertEqual(output.replace(tag, '', 1), html)
         self.assertLess(output.index('data-tpw-mirror-nav'), output.index('original()'))
         self.assertEqual(wire_mirror(output, 'site/ourstory/index.html'), output)
@@ -19,7 +19,7 @@ class MirrorBuildTests(unittest.TestCase):
     def test_relative_paths_at_every_mirror_depth(self):
         for path in ['site/index.html', 'site/ourstory/index.html', 'site/events/example/index.html']:
             relative = posixpath.relpath('assets/mirror-nav.js', posixpath.dirname(path))
-            self.assertIn(f'src="{relative}?v=data-api-1"', wire_mirror('<HEAD></HEAD>', path))
+            self.assertIn(f'src="{relative}?v=sandbox-1"', wire_mirror('<HEAD></HEAD>', path))
             self.assertEqual(posixpath.normpath(posixpath.join(posixpath.dirname(path), relative)), 'assets/mirror-nav.js')
 
     def test_missing_head_fails_explicitly(self):

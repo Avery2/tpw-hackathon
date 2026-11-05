@@ -1,6 +1,8 @@
-import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath, memberMenu } from './member-session.js?v=data-api-1';
-import { openAccountDrawer } from './account-drawer.js?v=data-api-1';
-import { isNeonMode, authStateReady, signOut } from './neon-auth-client.js?v=data-api-1';
+import { isSandboxMode, enableSandboxMode } from './neon-config.js?v=sandbox-1';
+if (isSandboxMode()) enableSandboxMode();
+import { demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath, memberMenu } from './member-session.js?v=sandbox-1';
+import { openAccountDrawer } from './account-drawer.js?v=sandbox-1';
+import { isNeonMode, authStateReady, signOut } from './neon-auth-client.js?v=sandbox-1';
 
 const ROOT = new URL('../', import.meta.url);
 const url = path => new URL(path, ROOT).href;
@@ -41,18 +43,20 @@ function mountHeader() {
   // The top menu is TPW's own on every page. Log data, Dashboard and Annual report live in the
   // member bar under it (updateMemberWorkspace), never up here (Richie, 25 Oct 2026).
   const account = activeAccount();
-  const member = link(account ? 'Account' : 'Members Login', isNeonMode() ? 'neon/' : demoEntryPath(account), 'login');
+  const member = link(account ? 'Account' : 'Members Login', isNeonMode() ? 'neon/?backend=neon' : demoEntryPath(account), 'login');
   member.setAttribute('aria-haspopup', 'dialog');
   member.addEventListener('click', event => {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    event.preventDefault(); openAccountDrawer(member);
+    event.preventDefault();
+    if (isNeonMode()) location.assign(member.href);
+    else openAccountDrawer(member);
   });
   // Signing in or out, or switching account in the address (#org-1 → #tpw), updates the label.
   // Only an address change reads the account from the address: after Sign out, the address
   // still says #org-1, and reading it then would sign the visitor straight back in.
   const refresh = () => {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
-    member.href = url(isNeonMode() ? 'neon/' : demoEntryPath());
+    member.href = url(isNeonMode() ? 'neon/?backend=neon' : demoEntryPath());
     // The Log data / Dashboard tabs too, or after Sign out they still carry ?account=org-1.
     if (document.querySelector('.tpw-member-nav')) updateMemberWorkspace(getDemoAccount());
   };
@@ -91,9 +95,9 @@ function mountFooter() {
 // Google's sharing still decides who can open the Sheet.
 const seesData = account => account === 'tpw';
 function leaveDataForMembers() {
-  if (!route.includes('raw-data.html') || (!isNeonMode() && seesData(activeAccount()))) return false;
+  if (!route.includes('raw-data.html') || (!isNeonMode() && !isSandboxMode() && seesData(activeAccount()))) return false;
   const account = getDemoAccount();
-  location.replace(url(`team-dashboard/${isNeonMode() ? '?backend=neon' : ''}${account ? `#${account}` : ''}`));
+  location.replace(url(`team-dashboard/${isNeonMode() ? '?backend=neon' : isSandboxMode() ? '?backend=demo' : ''}${account ? `#${account}` : ''}`));
   return true;
 }
 // A small horizontal navigation, not a separate application shell.
@@ -122,21 +126,22 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   // Signed in: that account's own annual report (memberMenu), a PDF in a new tab.
   const report = memberMenu(key).find(item => item.label === 'Annual report');
   if (report) tabs.push(['report', report.label, report.path, true]);
-  if (!isNeonMode() && seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
+  if (!isNeonMode() && !isSandboxMode() && seesData(key)) tabs.push(['raw-data', 'Data', `team-dashboard/raw-data.html#${key}`]);
   for (const [id, label, path, newTab] of tabs) {
     const anchor = link(label, path);
-    if (isNeonMode() && !newTab) {
-      const destination = new URL(anchor.href); destination.searchParams.set('backend', 'neon'); anchor.href = destination.href;
+    if ((isNeonMode() || isSandboxMode()) && !newTab) {
+      const destination = new URL(anchor.href); destination.searchParams.set('backend', isSandboxMode() ? 'demo' : 'neon'); anchor.href = destination.href;
     }
     if (newTab) { anchor.target = '_blank'; anchor.rel = 'noopener'; anchor.title = 'PDF · opens in a new tab'; }
     if (page === id) anchor.setAttribute('aria-current', 'page');
     nav.append(anchor);
   }
+  if (isSandboxMode()) nav.append(element('span', 'tpw-prototype-note', 'DB prototype'));
   if (isNeonMode()) nav.append(element('span', 'tpw-prototype-note', 'Neon sandbox · synthetic data only'));
   const member = document.querySelector('.tpw-header .login');
   if (member) {
     member.textContent = getDemoAccount() ? 'Account' : 'Members Login';
-    member.href = url(isNeonMode() ? 'neon/' : demoEntryPath(key));
+    member.href = url(isNeonMode() ? 'neon/?backend=neon' : demoEntryPath(key));
   }
 }
 function mountIntakeWorkspace() {

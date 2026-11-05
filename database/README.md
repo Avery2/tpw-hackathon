@@ -1,10 +1,31 @@
-# Authenticated Neon Data API sandbox
+# Account-free Neon database prototype
 
-`001_data_api.sql` is applied and live-tested on **`avery-neon-connection` only**. `production` and `demo-neon` were not modified. The opt-in `/neon/` page signs in through Neon Auth, then the existing form, prefill, dashboard and downloads use the built-in Data API directly. No hosted custom API or Neon Function is involved. The default Sheets demo remains unchanged; it does not become authenticated simply because this sandbox exists.
+The published prototype stores form submissions in **`avery-neon-connection` only**, with **no email, account or sign-in requirement**. The dashboard, prefill and downloads read those saved records through the built-in Data API. `production`, `demo-neon`, TPW's existing authentication and the existing Google Sheet are unchanged. No custom API host or Neon Function is involved.
 
-## Open and assign access
+## Use the prototype
 
-1. Open <https://www.averychan.site/tpw-hackathon/neon/> and create a sandbox account or sign in.
+Open <https://www.averychan.site/tpw-hackathon/intake/simple.html?backend=demo&account=org-1>. `/neon/` forwards there too. Published pages default to this path even if an old protected-login preference remains in the browser. Local development opts in with `?backend=demo`. `?backend=sheet` explicitly selects the legacy Sheets path; uncertain database writes never fall back to Sheets.
+
+`002_public_sandbox.sql` exposes only `tpw_sandbox_dashboard` and `tpw_sandbox_submit` to Neon's anonymous JWT role. The browser obtains a short-lived anonymous token from `/token/anonymous`, without cookies or user creation, and keeps it only in memory. These RPCs are fixed server-side to **Org 1 and Org 2**. Reads require strict boolean `synthetic: true` or `testData: true`; writes force both flags. No other organizations, raw tables, identity records, membership administration or protected RPCs become public. Demo labels choose a fictional view, not permissions for real data.
+
+The authenticated path's ownership/RLS remains intact for a later rollout, but TPW's actual identity provider and integration must be confirmed before deciding how to connect it. This is not an Auth migration and cannot collect real member data.
+
+```bash
+# Operator only, CLI/host pinned to the isolated branch:
+node database/admin.mjs --apply-sandbox
+# Emergency disable; retains saved submissions and receipts:
+node database/admin.mjs --disable-sandbox
+# Explicit live browser verification; creates no accounts, retains one sample:
+TPW_LIVE_DATA_API_TEST=1 node database/sandbox-browser.mjs
+# Same verification against the published site:
+TPW_LIVE_DATA_API_TEST=1 TPW_LIVE_PAGES_TEST=1 node database/sandbox-browser.mjs
+```
+
+The public gate is disabled by default in SQL; only the explicit host-checked command enables it. New writes share a serialized global budget of 30/minute and 300/day. Existing exact retries remain recoverable at either cap. Validation, canonicalization and atomic receipt saving are shared with the protected path, not duplicated active implementations. After installing RPCs, the admin command calls the branch-pinned native `neon data-api refresh-schema` to persist the managed schema snapshot across scale-to-zero; SQL NOTIFY alone refreshes only currently running instances. Offline tests cover the gate, strict synthetic-only reads, raw/private/protected denials, fixed scope, invalid inputs, retry conflicts and concurrent quota enforcement. The live browser test verifies a real save, deliberately lost reply, reload/retry without duplication, dashboard and CSV/JSON, while blocking all sign-up/sign-in/session and Google calls.
+
+## Optional protected development path (not required for the prototype)
+
+1. Open <https://www.averychan.site/tpw-hackathon/neon/?backend=neon> only when specifically testing protected identity. No account is needed for the normal prototype.
 2. New accounts start with **no organization access**. Copy the displayed Auth user ID; a trusted administrator independently verifies the account and TPW-approved access before granting it.
 3. The following operator commands use the signed-in Neon CLI, pin the sandbox branch/project and verify the exact database host. Database credentials stay in the child process environment, never command arguments or browser code:
 
@@ -28,7 +49,7 @@ This remains a **made-up-data sandbox**: every new submission has `synthetic: tr
 3. Use PostgreSQL **17+ with ICU** (`pg_catalog.unicode` root collation) and built-in `sha256(bytea)`; no extension is installed. The root ICU collation avoids database-locale-dependent case checks. Check that `auth.user_id()` returns **text**, specifically the **verified JWT `sub`**, and that Data API uses `authenticated` for valid sessions and `anonymous` otherwise. Browser labels, demo accounts, account query parameters and emails are not authorization.
 4. Apply as the existing tables' trusted owner (or a trusted administrative role inheriting that owner). This role owns the new schema, private tables and SECURITY DEFINER RPCs; API roles must not inherit it, own these objects, be superusers or have BYPASSRLS. FORCE RLS on these existing tables is deliberately rejected. Do not later transfer RPC ownership to an API role.
 5. Audit existing exposed views and functions, inherited roles and grants. This migration secures these two tables and the TPW RPCs, not unrelated definer functions or owner-rights views. Remove unrelated bypass paths through a separately reviewed change before exposing the API. Keep `tpw_private` out of Data API's exposed schemas; do not grant API users SQL/admin credentials. Database `TEMP` access is not needed by the app; all functions explicitly place `pg_temp` last to prevent temporary-type shadowing.
-6. After Neon's broad/default Data API grants have been installed, apply **only `001_data_api.sql`** using the SQL editor, or a privately configured **direct/unpooled** administrative connection:
+6. After Neon's broad/default Data API grants have been installed, apply the migrations in order (`001_data_api.sql`, then `002_public_sandbox.sql`) using the SQL editor, or a privately configured **direct/unpooled** administrative connection:
 
    ```bash
    # ADMIN ONLY. Requires Neon CLI access; hard-pinned to this sandbox.
@@ -133,7 +154,7 @@ Data API surfaces SQL errors rather than the old `{ok:false}` envelope: `42501` 
 
 ## Privileges and tests
 
-Only authenticated users can execute the three RPCs and the two RLS boolean helpers. Every new function loses default PUBLIC execution. API roles cannot use the private schema, tables or helpers. Public table and column DML grants are revoked, including independent column ACLs. Authenticated direct SELECT is limited to organization `id/name` and submission `id/org_id/received_at`, under helper-based RLS; **neither `document` nor `profile` can be directly selected**. Restrictive SELECT guards constrain pre-existing broad permissive policies. No INSERT/UPDATE/DELETE privilege is granted on either table.
+Only authenticated users can execute the original three protected RPCs and the two RLS boolean helpers. The two separately named, gated sandbox RPCs are the explicit anonymous exception described above. Every new function loses default PUBLIC execution. API roles cannot use the private schema, tables or helpers. Public table and column DML grants are revoked, including independent column ACLs. Authenticated direct SELECT is limited to organization `id/name` and submission `id/org_id/received_at`, under helper-based RLS; **neither `document` nor `profile` can be directly selected**. Restrictive SELECT guards constrain pre-existing broad permissive policies. No INSERT/UPDATE/DELETE privilege is granted on either table.
 
 Offline static checks (Node only, no database):
 

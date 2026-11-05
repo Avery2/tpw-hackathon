@@ -2,7 +2,7 @@
 
 This guide is for the developer taking the tool over, and for any AI coding agent working with them. It explains every part of the system, how the parts talk to each other, and how to set up, change and test each one. Read it top to bottom once. After that, use the headings to jump around.
 
-**Authenticated Neon sandbox:** `/neon/` now provides opt-in real sign-in and direct browser → Neon Data API → Postgres access on `avery-neon-connection`. Organization membership, staff access, validation and atomic retry receipts are enforced in the database. No hosted custom API is needed. Administrator setup, tests and limitations are in [`../database/README.md`](../database/README.md). The sections below describe the unchanged default Sheets demo, not this opt-in path.
+**Current prototype:** the published form and dashboard now use browser → Neon Data API → Postgres on `avery-neon-connection`, **without an email/account requirement**. Only the two fictional organizations' explicitly synthetic records are exposed by narrow sandbox RPCs; real-data Auth/RLS paths remain protected. `/neon/` forwards into the form. TPW's existing sign-in is untouched and its eventual integration is undecided. Setup, recovery tests, public-scope limits and the kill switch are in [`../database/README.md`](../database/README.md). The detailed Sheets sections below describe the legacy path, still available explicitly with `?backend=sheet`.
 
 The tool is a working prototype, not yet ready for real member data. [`go-live-checklist.md`](go-live-checklist.md) lists what has to change before members submit real numbers. The short version: it has no real sign-in yet.
 

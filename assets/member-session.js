@@ -1,6 +1,7 @@
 // A demo view preference, NOT authentication or an authorization boundary.
 // Store only the fictional account key, never credentials or form contents.
-import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=data-api-1';
+import { isSandboxMode } from './neon-config.js?v=sandbox-1';
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=sandbox-1';
 
 // Profiles are a display convenience, not authority; RPCs enforce membership in PostgreSQL.
 export function accountProfile(account = getDemoAccount()) {
@@ -23,7 +24,7 @@ export function getDemoAccount() {
     return context?.ok && context.userId ? context.accountKey : null;
   }
   try { current = sessionStorage.getItem(KEY) || current; } catch { /* Storage may be disabled. */ }
-  return Object.hasOwn(demoAccounts, current) ? current : null;
+  return Object.hasOwn(demoAccounts, current) ? current : isSandboxMode() ? 'org-1' : null;
 }
 export function setDemoAccount(account) {
   if (isNeonMode()) return false; // A demo selector must never establish authenticated identity.
@@ -36,6 +37,7 @@ export function setDemoAccount(account) {
 // Signed out, it carries no account: following a link must never sign anyone in as Org 1.
 export function demoEntryPath(account = getDemoAccount()) {
   if (isNeonMode()) return 'intake/simple.html?backend=neon';
+  if (isSandboxMode()) return `intake/simple.html?backend=demo&account=${Object.hasOwn(demoAccounts, account) ? account : 'org-1'}`;
   return Object.hasOwn(demoAccounts, account) ? `intake/simple.html?account=${account}` : 'intake/simple.html';
 }
 // Links for a signed-in member; signed out there are none. assets/site-shell.js shows them in the
@@ -53,7 +55,7 @@ export function memberMenu(account = getDemoAccount()) {
   if (!Object.hasOwn(demoAccounts, account)) return [];
   return [
     { label: 'Log data', path: demoEntryPath(account) },
-    { label: 'Dashboard', path: `team-dashboard/#${account}` },
+    { label: 'Dashboard', path: `team-dashboard/${isSandboxMode() ? '?backend=demo' : ''}#${account}` },
     { label: 'Annual report', path: REPORTS[account], newTab: true }
   ];
 }

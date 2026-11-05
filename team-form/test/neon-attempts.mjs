@@ -4,7 +4,7 @@ const session = new Map(), persistent = new Map();
 const storage = map => ({ getItem: key => map.get(key) ?? null, setItem: (key, value) => map.set(key, String(value)), removeItem: key => map.delete(key) });
 globalThis.sessionStorage = storage(session); globalThis.localStorage = storage(persistent);
 globalThis.window = { location: { href: 'https://example.test/team-form/?backend=neon' }, addEventListener() {}, dispatchEvent() {} };
-const auth = await import('../../assets/neon-auth-client.js?v=data-api-1');
+const auth = await import('../../assets/neon-auth-client.js?v=sandbox-1');
 const client = await import('../../assets/neon-demo-client.js');
 const context = (userId = 'synthetic-user-a', org = 'sample-generic-org') => ({ ok: true, userId, isStaff: false, accountKey: org, orgs: [{ id: org, name: 'Synthetic organization' }] });
 beforeEach(() => { session.clear(); persistent.clear(); auth.setCachedContext(context()); });
