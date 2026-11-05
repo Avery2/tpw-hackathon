@@ -112,5 +112,5 @@ try {
 } finally {
   socket?.close(); chrome.kill('SIGTERM');
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else { chrome.once('exit', resolve); setTimeout(() => { chrome.kill('SIGKILL'); resolve(); }, 3000).unref(); } });
-  await rm(profile, { recursive: true, force: true }); server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
+  await rm(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 }); server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
 }

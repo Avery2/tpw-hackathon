@@ -150,6 +150,7 @@ try {
 } finally {
   socket?.close(); chrome.kill('SIGTERM');
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else { chrome.once('exit', resolve); setTimeout(() => { chrome.kill('SIGKILL'); resolve(); }, 3000).unref(); } });
-  await rm(profile, { recursive: true, force: true });
+  // Chromium children can finish cache writes just after the parent exits.
+  await rm(profile, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
   if (server) { server.closeAllConnections(); await new Promise(resolve => server.close(resolve)); }
 }
