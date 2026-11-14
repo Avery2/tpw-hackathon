@@ -308,28 +308,22 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 .view-toggle button { border: 0; background: transparent; color: #555; font: inherit; font-size: 15px; padding: 10px 18px; border-radius: 7px; cursor: pointer; }
 .view-toggle button[aria-pressed="true"] { background: #fff; color: #000; box-shadow: 0 1px 4px #0002; font-weight: 700; }
 </style>
-<link rel="stylesheet" href="./workspace.css?v=tip-20261025">
-<link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=sandbox-1"></script>
+<link rel="stylesheet" href="./workspace.css?v=20261025-chooser2">
+<link rel="stylesheet" href="./loading.css?v=1">
+<link rel="stylesheet" href="../assets/site-shell.css?v=snapshot-views-1">
+<script type="module" src="../assets/site-shell.js?v=history-download-1"></script>
 </head>
 <body>
 
-<header class="site-header">
-  <a class="logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
-  <nav aria-label="Main navigation">
-    <a href="../site/our-members/">Our Members</a>
-    <a href="../site/ourstory/">Our Story</a>
-    <a href="../site/ourwork/">Our Work</a>
-    <a href="../site/our-team/">Our Team</a>
-    <a class="login" href="../members/">Members Login</a>
-  </nav>
+<header class="workspace-topbar">
+  <a class="workspace-logo" href="./" aria-label="TPW dashboard"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
 </header>
 <main class="dashboard-layout choosing-account">
 <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Dashboard workspace" hidden>
 
   <div class="sidebar-account"><span class="sidebar-avatar" data-account-initials></span><div><strong data-account-name></strong><small data-account-type></small></div></div>
   <div><div class="sidebar-label">Workspace</div><nav aria-label="Dashboard navigation"></nav></div>
-  <div class="sidebar-bottom"><a href="./">Switch account</a><a href="../">← Back to website</a></div>
+  <div class="sidebar-bottom"><a href="./">Switch account</a></div>
 </aside>
 <div class="workspace-content">
 <section class="dashboard-heading"><div class="shell"><h1>Programs</h1><p>All your program details in one place.</p></div></section>
@@ -346,7 +340,6 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 </div>
 </div>
 </main>
-<footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/programs.js?v=sandbox-1"></script>
+<script type="module" src="./js/programs.js?v=register-pages-1"></script>
 </body>
 </html>

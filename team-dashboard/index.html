@@ -295,7 +295,6 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 .rac-org h4 { font-size: 18px; margin: 0 0 14px; }
 .rac-total { display: block; font-family: var(--display); font-weight: 400; font-size: 40px; line-height: 1.2; }
 .rac-unit { display: block; color: #666; font-size: 14px; margin: 6px 0 20px; }
-.rac-empty { display: block; font-size: 20px; line-height: 1.3; margin: 6px 0 20px; }
 .rac-org summary { cursor: pointer; font-size: 14px; font-weight: 700; }
 .rac-calculation { border-top: 1px solid #eee; margin-top: 14px; padding-top: 12px; display: grid; gap: 5px; font-size: 14px; }
 .rac-calculation span { color: #666; }
@@ -310,41 +309,42 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 .savings-source { font-size: 12px; color: #666; }
 @media(max-width: 650px) { .rac-pair { grid-template-columns: 1fr; } }
 </style>
-<link rel="stylesheet" href="./workspace.css?v=tip-20261025">
-<link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=sandbox-1"></script>
+<link rel="stylesheet" href="./workspace.css?v=side-by-side-impact-1">
+<link rel="stylesheet" href="./loading.css?v=1">
+<link rel="stylesheet" href="../assets/site-shell.css?v=snapshot-views-1">
+<script type="module" src="../assets/site-shell.js?v=history-download-1"></script>
 </head>
 <body>
 
-<header class="site-header">
-  <a class="logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
-  <nav aria-label="Main navigation">
-    <a href="../site/our-members/">Our Members</a>
-    <a href="../site/ourstory/">Our Story</a>
-    <a href="../site/ourwork/">Our Work</a>
-    <a href="../site/our-team/">Our Team</a>
-    <a class="login" href="../members/">Members Login</a>
-  </nav>
+<header class="workspace-topbar">
+  <a class="workspace-logo" href="./" aria-label="TPW dashboard"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
 </header>
 <main class="dashboard-layout choosing-account">
 <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Dashboard workspace" hidden>
 
   <div class="sidebar-account"><span class="sidebar-avatar" data-account-initials></span><div><strong data-account-name></strong><small data-account-type></small></div></div>
   <div><div class="sidebar-label">Workspace</div><nav aria-label="Dashboard navigation"></nav></div>
-  <div class="sidebar-bottom"><a href="./">Switch account</a><a href="../">← Back to website</a></div>
+  <div class="sidebar-bottom"><a href="./">Switch account</a></div>
 </aside>
 <div class="workspace-content">
-  <section class="dashboard-heading"><div class="shell"><h1>Dashboard</h1></div></section>
+  <section class="dashboard-heading"><div class="shell"><h1>Overview</h1></div></section>
   <div class="shell dashboard-content">
+    <section id="signin" aria-labelledby="signin-heading">
+      <div class="view-heading"><div><span class="account-label">Sign in</span><h2 id="signin-heading" tabindex="-1">Choose an account</h2><p>Continue to your dashboard.</p></div></div>
+      <div class="signin-grid">
+        <a class="signin-option" href="#org-1" aria-label="Sign in as Org 1"><span class="option-icon" aria-hidden="true">01</span><span>Org 1</span></a>
+        <a class="signin-option" href="#org-2" aria-label="Sign in as Org 2"><span class="option-icon org-two" aria-hidden="true">02</span><span>Org 2</span></a>
+        <a class="signin-option" href="#tpw" aria-label="Sign in to TPW View"><span class="option-icon tpw-icon" aria-hidden="true">TPW</span><span>TPW View</span></a>
+      </div>
+    </section>
     <section id="profile-view" aria-labelledby="profile-heading" hidden>
-      <h2 id="profile-heading" class="sr-only" tabindex="-1"></h2>
+      <div class="view-heading"><div><span class="account-label" id="view-type"></span><h2 id="profile-heading" tabindex="-1"></h2><p id="view-description"></p></div><a class="action switch" href="#">Switch view <span aria-hidden="true">↗</span></a></div>
       <p id="dashboard-status" class="dashboard-status" role="status" hidden></p>
       <div class="program-results" id="view-sections" aria-live="polite"></div>
     </section>
   </div>
 </div>
 </main>
-<footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/main.js?v=sandbox-1"></script>
+<script type="module" src="./js/main.js?v=overview-api-1"></script>
 </body>
 </html>

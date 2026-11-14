@@ -1,4 +1,4 @@
-/* Workspace chrome shared by every dashboard page. The website header stays above it. */
+/* Workspace chrome shared by every page of the standalone dashboard. */
 .dashboard-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); max-width: 1640px; width: 100%; margin: 0 auto; border-top: 1px solid #e4e7e0; background: #f7f8f5; min-height: 72vh; }
 .dashboard-sidebar { padding: 30px 20px; background: #fff; border-right: 1px solid #e4e7e0; display: flex; flex-direction: column; align-self: stretch; gap: 30px; }
 .sidebar-brand { font-family: var(--display); font-size: 17px; font-weight: 400; margin: 0; }
@@ -68,8 +68,32 @@
   .dashboard-sidebar { position: static; height: auto; overflow: visible; }
 }
 
-/* Restored with the Organizations and Submissions pages (25 Oct 2026): loading placeholders, the
-   quarterly submission tracker, and the drop-down arrows. Copied from the earlier dashboard's workspace.css. */
+/* The account chooser has no sidebar track or hidden navigation footprint. */
+main.dashboard-layout.choosing-account { display: block; }
+main.dashboard-layout.choosing-account > #dashboard-sidebar { display: none !important; height: 0; padding: 0; border: 0; }
+main.dashboard-layout.choosing-account > .workspace-content { width: 100%; }
+
+.chart-rate-latest { font-size: 17px; font-weight: 700; color: #aa741d; }
+.chart-legend { display: flex; flex-wrap: wrap; gap: 14px 24px; font-size: 13px; color: #666; margin: 14px 0; }
+.chart-legend span::before { content: ''; display: inline-block; width: 22px; vertical-align: middle; margin-right: 7px; border-top: 3px solid #5d8d67; }
+.chart-legend .legend-completion::before { border-top: 3px dashed #aa741d; }
+
+.chart-pills { display: inline-flex; gap: 4px; padding: 4px; border-radius: 999px; background: #f2f3f0; }
+.chart-pills button { border: 0; border-radius: 999px; background: transparent; color: #666; padding: 8px 13px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
+.chart-pills button[aria-pressed="true"] { background: #fff; color: #111; box-shadow: 0 1px 4px #0002; }
+.chart-current { display: block; font-size: 32px; margin-top: 18px; font-family: var(--display); font-weight: 400; }
+
+/* Switching metrics only changes values and the plotted series. */
+.participants-chart .chart-current { line-height: 1.2; min-height: 1.2em; font-variant-numeric: tabular-nums; }
+
+.chart-area-enter { transform-box: fill-box; transform-origin: center bottom; animation: chart-fill-rise 650ms cubic-bezier(.22,1,.36,1) both; }
+.chart-line-enter { animation: chart-line-appear 500ms ease-out both; }
+.chart-dot-enter { transform-box: fill-box; transform-origin: center; animation: chart-dot-appear 380ms cubic-bezier(.2,1.4,.4,1) both; }
+@keyframes chart-fill-rise { from { transform: scaleY(0); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+@keyframes chart-line-appear { from { opacity: 0; } to { opacity: 1; } }
+@keyframes chart-dot-appear { from { transform: scale(.2); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@media(prefers-reduced-motion: reduce) { .chart-area-enter, .chart-line-enter, .chart-dot-enter { animation: none; } }
+
 .sr-loading { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .skeleton-block { display: block; border-radius: 6px; background: linear-gradient(100deg, #e9ece6 25%, #f5f6f2 45%, #e9ece6 65%); background-size: 220% 100%; animation: skeleton-shimmer 1.6s ease-in-out infinite; }
 .skeleton-number { width: 72px; height: 36px; margin: 4px 0 12px; }
@@ -82,6 +106,22 @@
 .dashboard-skeleton .rac-pair { margin-top: 24px; }
 @keyframes skeleton-shimmer { from { background-position: 150% 0; } to { background-position: -100% 0; } }
 @media(prefers-reduced-motion: reduce) { .skeleton-block { animation: none; } }
+
+.dashboard-layout .dashboard-overview { grid-template-columns: minmax(260px, 1fr) minmax(0, 2.5fr); }
+.dashboard-layout .dashboard-overview .program-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
+.dashboard-layout .dashboard-overview .program-stat { padding: 16px; min-width: 0; }
+.dashboard-layout .dashboard-overview .program-stat strong { font-size: 28px; }
+.dashboard-layout .dashboard-overview .program-stat span { font-size: 13px; }
+@media(max-width: 1050px) {
+  .dashboard-layout .dashboard-overview { grid-template-columns: 1fr; }
+  .dashboard-layout .dashboard-overview .program-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.currency-reels { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.currency-reel { display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: baseline; }
+.currency-strip { display: flex; flex-direction: column; will-change: transform; }
+.currency-strip > span { display: block; height: 1em; min-height: 1em; line-height: 1; }
+.rolling-currency { line-height: 1.2; }
 
 .submission-tracker { margin: 28px 0 40px; }
 .submission-tracker h2 { font-size: 25px; margin: 0 0 8px; }
@@ -156,3 +196,38 @@
 @media (forced-colors: active) {
   .tracker-toolbar select, .submission-filters select { appearance: auto; background-image: none; }
 }
+
+/* Scale overview totals to their card width, including six-digit hour totals. */
+.dashboard-layout .dashboard-overview .program-stat { container-type: inline-size; }
+.dashboard-layout .dashboard-overview .program-stat strong { font-size: clamp(18px, 18cqi, 28px); line-height: 1.15; white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: -.025em; }
+.dashboard-layout .dashboard-overview .program-stat span { overflow-wrap: anywhere; }
+
+/* Shared RAC and savings cards, including organization drill-downs. */
+.rac-panel { background: #fff; border: 1px solid #e0e0e0; border-radius: 16px; padding: 26px; margin-bottom: 40px; }
+.rac-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rac-heading h3 { font-size: 24px; margin: 0; }
+.rac-label { background: #f3f3f3; padding: 4px 10px; border-radius: 999px; font-size: 12px; color: #555; }
+.rac-description, .rac-footnote { color: #666; font-size: 14px; }
+.rac-orgs { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); gap: 18px; margin: 22px 0; }
+.rac-org { border: 1px solid #e4e4e4; border-radius: 12px; padding: 22px; }
+.rac-org h4 { font-size: 18px; margin: 0 0 14px; }
+.rac-total { display: block; font-family: var(--display); font-weight: 400; font-size: 40px; line-height: 1.2; }
+.rac-unit { display: block; color: #666; font-size: 14px; margin: 6px 0 20px; }
+.rac-org summary { cursor: pointer; font-size: 14px; font-weight: 700; }
+.rac-calculation { border-top: 1px solid #eee; margin-top: 14px; padding-top: 12px; display: grid; gap: 5px; font-size: 14px; }
+.rac-calculation span { color: #666; }
+.rac-panel > a { font-size: 13px; color: #555; }
+.rac-orgs { grid-template-columns: 1fr; }
+.rac-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+.savings-rate { display: grid; gap: 8px; font-weight: 700; font-size: 14px; margin-top: 20px; }
+.savings-rate input { width: 150px; max-width: 100%; font: inherit; border: 1px solid #ccc; border-radius: 8px; padding: 10px 12px; background: #fff; }
+.savings-rate input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; }
+.savings-note { font-size: 13px; color: #666; margin: 16px 0 8px; }
+.savings-source { font-size: 12px; color: #666; }
+.rac-pair { grid-template-columns: 1fr; }
+@media(max-width:650px) { .rac-pair { grid-template-columns: 1fr; } }
+
+/* Keep the two impact totals side by side outside the mobile layout. */
+.dashboard-layout .rac-panel .rac-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.dashboard-layout .rac-panel .rac-org { min-width: 0; }
+@media (max-width: 650px) { .dashboard-layout .rac-panel .rac-pair { grid-template-columns: 1fr; } }

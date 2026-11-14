@@ -1,7 +1,8 @@
+import { demoApi } from './neon-api.js';
 // Exports the dashboard's program-level history, not per-yard source records.
 // Demo selectors are not authentication. A real deployment needs server-scoped exports.
-import { getDemoAccount } from './member-session.js?v=sandbox-1';
-import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=sandbox-1';
+import { getDemoAccount } from './member-session.js?v=reporting-1';
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=reporting-1';
 const exportIdentity = () => {
   if (!isNeonMode()) return getDemoAccount();
   const context = getCachedContext();
@@ -69,19 +70,31 @@ export function mountDashboardExports(data, requestedOrgId) {
   for (const format of ['csv', 'json']) {
     const button = document.createElement('button'); button.type = 'button';
     button.textContent = format === 'csv' ? 'Export program history (CSV)' : 'Export JSON';
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
       if (exportIdentity() !== identity) { status.textContent = 'Your account changed. Reload this page before exporting.'; return; }
-      // Intersect with the displayed organization even if a response contains extra records.
-      const submissions = data.submissions.filter(record => !requestedOrgId || record.orgId === requestedOrgId);
-      const content = format === 'csv' ? programHistoryCsv(submissions) : JSON.stringify({
-        coverage: 'Submission history, not latest-only; same records as this dashboard view.',
-        orgs: data.orgs, submissions
-      }, null, 2);
-      const blob = new Blob([content], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
-      const url = URL.createObjectURL(blob), link = document.createElement('a');
-      link.href = url; link.download = `tpw-program-history-${requestedOrgId || account || 'organizations'}.${format}`;
-      link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-      status.textContent = 'Downloaded a history snapshot. Repeated filings are not additive totals.';
+      button.disabled = true;
+      status.textContent = 'Preparing download…';
+      try {
+        const history = data ?? await demoApi(requestedOrgId
+          ? `dashboard?${new URLSearchParams({ org: requestedOrgId })}`
+          : 'dashboard');
+        if (exportIdentity() !== identity || !container.isConnected) return;
+        // Intersect with the displayed organization even if a response contains extra records.
+        const submissions = history.submissions.filter(record => !requestedOrgId || record.orgId === requestedOrgId);
+        const content = format === 'csv' ? programHistoryCsv(submissions) : JSON.stringify({
+          coverage: 'Submission history, not latest-only; all submissions in the selected organization scope.',
+          orgs: history.orgs, submissions
+        }, null, 2);
+        const blob = new Blob([content], { type: format === 'csv' ? 'text/csv;charset=utf-8' : 'application/json' });
+        const url = URL.createObjectURL(blob), link = document.createElement('a');
+        link.href = url; link.download = `tpw-program-history-${requestedOrgId || account || 'organizations'}.${format}`;
+        link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+        status.textContent = 'Downloaded a history snapshot. Repeated filings are not additive totals.';
+      } catch {
+        status.textContent = 'Could not download reporting data. Please try again.';
+      } finally {
+        button.disabled = false;
+      }
     });
     container.append(button);
   }

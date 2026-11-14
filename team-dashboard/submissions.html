@@ -325,47 +325,44 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--sage); outline-
 @media(prefers-reduced-motion:reduce) { .submission-choice { transition: none; } .submission-choice:hover { transform: none; } }
 .submission-choice { text-decoration: none; color: inherit; }
 </style>
-<link rel="stylesheet" href="./workspace.css?v=tip-20261025">
-<link rel="stylesheet" href="./loading.css">
-<link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=sandbox-1"></script>
+<link rel="stylesheet" href="./workspace.css?v=dropdown-spacing-1">
+<link rel="stylesheet" href="./loading.css?v=1">
+<link rel="stylesheet" href="../assets/site-shell.css?v=snapshot-views-1">
+<script type="module" src="../assets/site-shell.js?v=history-download-1"></script>
 </head>
 <body>
 
-<header class="site-header">
-  <a class="logo" href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
-  <nav aria-label="Main navigation">
-    <a href="../site/our-members/">Our Members</a>
-    <a href="../site/ourstory/">Our Story</a>
-    <a href="../site/ourwork/">Our Work</a>
-    <a href="../site/our-team/">Our Team</a>
-    <a class="login" href="../members/">Members Login</a>
-  </nav>
+<header class="workspace-topbar">
+  <a class="workspace-logo" href="./" aria-label="TPW dashboard"><img src="../assets/img/logo.png" alt="Transformative Programming Works"></a>
 </header>
 <main class="dashboard-layout choosing-account">
 <aside id="dashboard-sidebar" class="dashboard-sidebar" aria-label="Dashboard workspace" hidden>
 
   <div class="sidebar-account"><span class="sidebar-avatar" data-account-initials></span><div><strong data-account-name></strong><small data-account-type></small></div></div>
   <div><div class="sidebar-label">Workspace</div><nav aria-label="Dashboard navigation"></nav></div>
-  <div class="sidebar-bottom"><a href="./">Switch account</a><a href="../">← Back to website</a></div>
+  <div class="sidebar-bottom"><a href="./">Switch account</a></div>
 </aside>
 <div class="workspace-content">
 <section class="dashboard-heading"><div class="shell"><h1>Submissions</h1></div></section>
 <section id="submission-tracker" class="submission-tracker" aria-live="polite" hidden></section>
 <section class="submission-choices" aria-labelledby="submission-choice-heading">
-  <h2 id="submission-choice-heading">Your submissions</h2>
-  <p>Browse what has been submitted and the details of each program.</p>
+  <h2 id="submission-choice-heading">What would you like to do?</h2>
+  <p>Explore what you’ve submitted or turn it into a report.</p>
   <div class="submission-choice-grid">
     <a id="view-submission-data" class="submission-choice" href="./submission-data.html">
       <span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4zM4 10h16M10 4v16"/></svg></span>
       <strong>View your data</strong><span>Browse your submissions and program details.</span>
       <span class="choice-next" aria-hidden="true">Explore data →</span>
     </a>
+    <button type="button" class="submission-choice">
+      <span class="choice-icon report-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6"/></svg></span>
+      <strong>Generate a report</strong><span>Bring your program activity and impact together.</span>
+      <span class="choice-next" aria-hidden="true">Create report →</span>
+    </button>
   </div>
 </section>
 </div>
 </main>
-<footer class="shell">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</footer>
-<script type="module" src="./js/submissions-page.js?v=sandbox-1"></script>
+<script type="module" src="./js/submissions-page.js?v=register-pages-2"></script>
 </body>
 </html>

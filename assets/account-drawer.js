@@ -1,22 +1,9 @@
-import { isNeonMode, signOut } from './neon-auth-client.js?v=sandbox-1';
-import { accountProfile, demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js?v=sandbox-1';
+import { isNeonMode, signOut } from './neon-auth-client.js?v=reporting-1';
+import { accountProfile, demoAccounts, getDemoAccount, setDemoAccount, clearDemoAccount, demoEntryPath } from './member-session.js?v=reporting-1';
 
 const root = new URL('../', import.meta.url);
-let dialog, entry, greetingName, signin, returnFocus, stylesReady;
+let dialog, greetingName, signin, returnFocus, stylesReady;
 const changed = () => window.dispatchEvent(new Event('tpw:member-change'));
-// Signing out also takes the account out of the address (?account=org-1, or #org-1 on the
-// dashboard), or site-shell.js would read it back and sign the same account straight back in.
-function forgetAccountInAddress() {
-  const address = new URL(location.href);
-  address.searchParams.delete('account');
-  const hashWasAccount = Object.hasOwn(demoAccounts, address.hash.slice(1));
-  if (hashWasAccount) address.hash = '';
-  if (address.href === location.href) return;
-  history.replaceState(history.state, '', address);
-  // replaceState fires no hashchange, and the dashboard redraws on hashchange.
-  if (hashWasAccount) window.dispatchEvent(new HashChangeEvent('hashchange'));
-}
-
 function element(tag, className, text) {
   const node = document.createElement(tag);
   if (className) node.className = className;
@@ -26,13 +13,12 @@ function element(tag, className, text) {
 function mount() {
   const stylesheet = element('link');
   stylesheet.rel = 'stylesheet';
-  stylesheet.href = new URL('account-drawer.css', import.meta.url).href;
+  stylesheet.href = new URL('account-drawer.css?v=reporting-1', import.meta.url).href;
   stylesReady = new Promise(resolve => { stylesheet.onload = resolve; stylesheet.onerror = resolve; });
   document.head.append(stylesheet);
   dialog = element('dialog', 'tpw-account-drawer');
   dialog.id = 'tpw-account-drawer';
   dialog.setAttribute('aria-labelledby', 'tpw-account-title');
-  dialog.setAttribute('aria-describedby', 'tpw-account-preview');
   const header = element('header', 'tpw-account-header');
   const title = element('h2', '', 'Account'); title.id = 'tpw-account-title';
   const close = element('button', 'tpw-account-close', 'Close');
@@ -43,30 +29,24 @@ function mount() {
   const greeting = element('section', 'tpw-account-greeting');
   const signout = element('button', 'tpw-account-signout', 'Sign out'); signout.type = 'button';
   signout.addEventListener('click', async () => {
+    feedback.textContent = '';
     signout.disabled = true;
     try {
       if (isNeonMode()) await signOut();
-      clearDemoAccount(); forgetAccountInAddress(); changed(); dialog.close();
+      clearDemoAccount();
+      location.replace(new URL('dashboard/?entry=team', root));
     } catch {
-      document.querySelector('#tpw-account-preview').textContent = 'Sign-out could not be confirmed. Please try again before leaving this shared device.';
+      feedback.textContent = 'Sign-out could not be confirmed. Please try again before leaving this shared device.';
     } finally { signout.disabled = false; }
   });
   greetingName = element('h3', '', 'Hi, Member');
   greeting.append(greetingName, signout);
   body.append(greeting);
-  // A visual mock of the existing account sections, not connected account tools.
-  for (const [label, value] of [['Orders', 'No orders yet'], ['Payment Methods', 'No saved payments'], ['Address', 'No saved addresses'], ['Profile', 'Demo member']]) {
-    const section = element('section', 'tpw-account-row');
-    section.append(element('h3', '', label), element('p', '', value));
-    body.append(section);
-  }
-  entry = element('a', 'tpw-account-row tpw-account-intake');
-  const label = element('span', 'tpw-account-intake-label', 'Intake');
-  label.append(element('span', 'tpw-new-badge', 'New'));
-  entry.append(label, element('span', 'tpw-account-caption', 'Quarterly totals'));
-  const preview = element('p', 'tpw-account-preview', 'Demo account preview · no real sign-in');
-  preview.id = 'tpw-account-preview';
-  body.append(entry, preview);
+  const profile = element('section', 'tpw-account-row');
+  profile.append(element('h3', '', 'Profile'), element('p', '', 'Member'));
+  const feedback = element('p', 'tpw-account-preview');
+  feedback.setAttribute('role', 'alert');
+  body.append(profile, feedback);
   dialog.append(header, body); document.body.append(dialog);
   dialog.addEventListener('click', event => {
     const box = dialog.getBoundingClientRect();
@@ -107,7 +87,7 @@ function mountSignIn() {
   const links = element('p', 'tpw-signin-links');
   for (const label of ['Forgot Password?', 'Create account']) {
     const button = element('button', '', label); button.type = 'button';
-    button.addEventListener('click', () => { message.textContent = `${label.replace('?', '')} isn’t part of this demo. On TPW’s site it works as usual.`; });
+    button.addEventListener('click', () => { message.textContent = `${label.replace('?', '')} is available on TPW’s website.`; });
     links.append(button);
   }
   const demo = element('div', 'tpw-signin-demo');
@@ -117,7 +97,7 @@ function mountSignIn() {
     button.addEventListener('click', () => { email.value = DEMO_EMAILS[account]; signInAs(account); });
     demo.append(button);
   }
-  const note = element('p', 'tpw-account-preview', 'Demo of TPW’s sign-in · no password is asked for or checked');
+  const note = element('p', 'tpw-account-preview', 'No password is needed to select an account');
   form.append(title, email, password, submit, message, links);
   signin.append(close, form, demo, note);
   form.addEventListener('submit', event => {
@@ -127,7 +107,7 @@ function mountSignIn() {
     if (account) { signInAs(account); return; }
     message.textContent = typed
       ? 'This demo only has three accounts. Pick one below.'
-      : 'Enter your email, or pick a demo account below.';
+      : 'Enter your email, or choose an organization below.';
     email.focus();
   });
   signin.addEventListener('click', event => {
@@ -175,7 +155,6 @@ export async function openAccountDrawer(trigger) {
     return;
   }
   greetingName.textContent = `Hi, ${accountProfile()?.name || DEMO_LABELS[getDemoAccount()] || demoAccounts[getDemoAccount()]}`;
-  entry.href = new URL(demoEntryPath(), root).href;
   document.documentElement.classList.add('tpw-account-open');
   dialog.showModal();
 }

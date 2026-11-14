@@ -1,7 +1,7 @@
 // A demo view preference, NOT authentication or an authorization boundary.
 // Store only the fictional account key, never credentials or form contents.
-import { isSandboxMode } from './neon-config.js?v=sandbox-1';
-import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=sandbox-1';
+import { isSandboxMode } from './neon-config.js?v=reporting-1';
+import { isNeonMode, getCachedContext } from './neon-auth-client.js?v=reporting-1';
 
 // Profiles are a display convenience, not authority; RPCs enforce membership in PostgreSQL.
 export function accountProfile(account = getDemoAccount()) {

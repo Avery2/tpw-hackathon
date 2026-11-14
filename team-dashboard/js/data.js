@@ -1,5 +1,9 @@
-// Submissions come from TPW's Google Sheet (see assets/dashboard-source.js); Firebase is retired.
-export { loadDashboard } from '../../assets/dashboard-source.js?v=sandbox-1';
+import { estimateRac, estimatedSavings } from './rac.js';
+import { demoApi } from '../../assets/neon-api.js';
+
+export async function loadDashboard(orgId) {
+  return demoApi(`dashboard${orgId ? `?org=${encodeURIComponent(orgId)}` : ''}`);
+}
 
 // Latest submission for each program wins; historical updates are not added twice.
 export function existingPrograms(submissions) {
@@ -29,8 +33,11 @@ export function participantHistory(submissions) {
   const snapshots = [];
   for (const day of [...days.keys()].sort()) {
     snapshots.push(...days.get(day));
-    const total = existingPrograms(snapshots).reduce((sum, program) => sum + Math.max(0, Number(program.participants) || 0), 0);
-    history.push({ day, participants: total });
+    const programs = existingPrograms(snapshots);
+    const total = programs.reduce((sum, program) => sum + Math.max(0, Number(program.participants) || 0), 0);
+    const completed = programs.reduce((sum, program) => sum + Math.max(0, Number(program.participantsCompleted) || 0), 0);
+    const racDays = programs.reduce((sum, program) => sum + estimateRac(program).days, 0);
+    history.push({ day, participants: total, completed, completionRate: total > 0 ? completed / total * 100 : null, racDays, savings: estimatedSavings(racDays) });
   }
   return history;
 }

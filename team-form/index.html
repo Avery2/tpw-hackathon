@@ -278,6 +278,10 @@
   .prison-card-header { display: flex; align-items: flex-start; }
   .prison-card-header .choose { flex: 1; padding: 16px; font-weight: 700; }
   .yard-choices { margin: 0 16px 16px; padding: 4px 0 0; border: 0; display: grid; gap: 10px; }
+  .yard-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(140px, calc((100% - 10px) / 2))), 1fr)); }
+  .yard-choices > .yard-hint, .yard-choices > .yard-add { grid-column: 1 / -1; }
+  .yard-choices > label { min-width: 0; overflow-wrap: anywhere; }
+  .yard-choices > label input { flex-shrink: 0; }
   .yard-choices legend { font-weight: 700; padding: 0 0 8px; width: 100%; border-bottom: 2px solid var(--prison, #b8d2be); }
   .yard-hint { margin: 0; font-size: 15px; color: var(--body); }
   .yard-choices label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -290,10 +294,24 @@
   .yard-add input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
   .yard-add button { flex: none; border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; font-weight: 700; padding: 6px 16px; cursor: pointer; }
 
-  .demo-form.program-mode { max-width: 860px; }
+.quarter-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; border: 0; padding: 0; margin: 0; }
+.quarter-options label { cursor: pointer; position: relative; }
+.quarter-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.quarter-options span { display: grid; gap: 6px; border: 2px solid #ddd; border-radius: 12px; padding: 20px 10px; text-align: center; }
+.quarter-options strong { font-size: 24px; }
+.quarter-options small { color: #666; font-size: 14px; }
+.quarter-options input:checked + span { border-color: var(--sage); background: #edf6ef; }
+.quarter-options input:focus-visible + span { outline: 3px solid var(--sage); outline-offset: 4px; }
+#reporting-year { max-width: 180px; }
+@media (max-width: 540px) { .quarter-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+  .demo-form.program-mode { max-width: 1200px; }
   #programs-step { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 20px; }
-  .program-sidebar { min-width: 0; border-bottom: 1px solid #d4e2d6; padding-bottom: 12px; }
-  .program-sidebar > summary { cursor: pointer; font-size: 15px; color: var(--body); }
+  .program-sidebar { min-width: 0; padding: 20px; background: #f0f5f0; border: 1px solid #d4e2d6; border-radius: 14px; }
+  @media (min-width: 920px) {
+    #programs-step:not(.submitted) { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); gap: 30px; }
+    #programs-step:not(.submitted) > .program-editor { border-left: 2px solid #d4e2d6; padding-left: 30px; }
+  }
   .program-sidebar > .organization-summary { margin-block: 16px; }
   .program-editor { display: grid; gap: 20px; min-width: 0; }
   #prison-summary { display: grid; gap: 16px; }
@@ -305,10 +323,7 @@
   #prison-summary .summary-yard ul { padding-left: 18px; }
   #prison-summary .summary-yard li { border: 0; background: none; padding: 3px 0; font-weight: 500; }
   .program-editor > .form-title { margin-bottom: 0; }
-  .program-editor .program-card { padding: 0; border: 0; background: transparent; }
-  .program-details, .program-context { font-size: 15px; }
-  .program-details > summary, .program-context > summary { cursor: pointer; color: var(--body); }
-  .program-details > div, .program-context > .form-field { margin-top: 16px; }
+  .program-editor .program-card { background: #fff; border-color: #d8d8d8; box-shadow: 0 4px 18px rgba(0, 0, 0, .04); }
   .program-card > .organization-summary { align-items: start; }
   .program-card h3 { font-size: 22px; overflow-wrap: anywhere; }
   .program-card h3:focus { outline: none; }
@@ -329,17 +344,41 @@
   #programs-step.submitted { display: block; }
   .submitted .program-sidebar, .submitted .program-editor > :not(#submission-result) { display: none; }
   .submitted .program-editor { padding: 0; border: 0; }
-  #submission-result { border: 0; padding: 8px 0; background: transparent; text-align: left; gap: 18px; }
-  #submission-heading { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
-  .submission-context { margin: 0; color: #555; font-size: 17px; }
-  #submission-receipt { margin: 0; font-size: 14px; font-weight: 400; color: #666; overflow-wrap: anywhere; }
-  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid #e5e5e5; padding: 20px 0; }
-  .success-metric { display: grid; align-content: start; gap: 4px; }
-  .success-metric strong { font-size: 28px; font-weight: 700; line-height: 1.2; }
-  .success-metric span { font-size: 14px; color: #666; }
-  .report-note { font-size: 14px; color: var(--body); }
-  .full-report { text-align: left; padding-top: 4px; }
-  .full-report > summary { cursor: pointer; font-size: 16px; font-weight: 700; text-align: left; }
+  #submission-result { border: 0; padding: 20px 0; background: transparent; text-align: center; gap: 28px; }
+  .success-check { width: 104px; height: 104px; margin: 0 auto; border-radius: 50%; background: var(--green); color: #143c20; display: grid; place-items: center; font-size: 68px; line-height: 1; }
+  #submission-heading { font-size: clamp(2rem, 5vw, 3.5rem); }
+  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .success-metric { padding: 24px 16px; background: #f4f6f3; border-radius: 12px; display: grid; gap: 10px; }
+  .success-metric strong { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400; }
+  .success-metric span { font-size: 16px; }
+  .mock-impact { background: #fff7df; border-radius: 14px; padding: 28px; }
+  .mock-label { display: inline-block; background: var(--yellow); padding: 4px 12px; border-radius: 999px; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+  .mock-impact h3 { margin: 16px 0; font-size: 24px; }
+  .mock-impact .success-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mock-impact .success-metric { background: transparent; }
+  .mock-impact > p, .report-note { font-size: 15px; color: var(--body); }
+  .full-report { text-align: left; border-top: 1px solid #ddd; padding-top: 24px; }
+  .full-report > summary { cursor: pointer; font-size: 22px; font-weight: 700; text-align: center; }
+  .submission-context, #submission-receipt { margin: 0; color: #555; overflow-wrap: anywhere; }
+.currency-reels { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.currency-reel { display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: baseline; }
+.currency-strip { display: flex; flex-direction: column; will-change: transform; }
+.currency-strip > span { display: block; height: 1em; min-height: 1em; line-height: 1; }
+.rolling-currency { line-height: 1.2; }
+
+#mock-totals .success-metric strong { font-size: clamp(2.8rem, 6vw, 5rem); line-height: 1.15; }
+#mock-totals .success-metric > span { font-size: 18px; font-weight: 700; }
+.currency-strip > span { font-size: inherit; font-weight: inherit; }
+@media(max-width: 550px) { #mock-totals { grid-template-columns: 1fr; } }
+
+#mock-totals .success-metric strong { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.15; }
+#mock-totals .rolling-currency .currency-reels,
+#mock-totals .rolling-currency .currency-reel,
+#mock-totals .rolling-currency .currency-strip,
+#mock-totals .rolling-currency .currency-strip > span,
+#mock-totals .rolling-currency .currency-reels > span { font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit; }
+@media(max-width: 850px) { #mock-totals { grid-template-columns: 1fr; } }
+  #mock-totals .success-metric strong { overflow-wrap: anywhere; }
   .report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; align-items: start; }
   .report-prison { min-width: 0; overflow-wrap: anywhere; padding: 20px; border: 2px solid var(--prison); background: var(--prison-bg); border-radius: 12px; }
   .report-prison h3 { margin: 0 0 12px; font-size: 21px; line-height: 1.2; }
@@ -365,7 +404,7 @@
 
   .report-grid { gap: 24px; }
   .report-prison { padding: 0; border: 1px solid #e0e5df; border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,.05); }
-  .report-card-header { padding: 22px; background: var(--prison-bg); border-top: 5px solid var(--prison); }
+  .report-card-header { padding: 22px; background: var(--prison-bg); }
   .report-code { display: inline-block; color: var(--prison); font-size: 12px; font-weight: 800; letter-spacing: .1em; margin-bottom: 12px; }
   .report-prison .report-card-header h3 { font-size: 22px; line-height: 1.15; margin: 0 0 14px; }
   .report-program-count { font-size: 13px; font-weight: 700; color: var(--body); }
@@ -396,11 +435,12 @@
     .date-row { grid-template-columns: 1fr; }
   }
   /* One continuous list: finished programs shrink in place; the next opens below. */
-  .added-programs { list-style: none; counter-reset: program; margin: 0; padding: 0; border-block: 1px solid #d4e2d6; }
-  .added-programs > li { counter-increment: program; position: relative; min-width: 0; padding: 16px 12px 16px 44px; border-bottom: 1px solid #d4e2d6; }
-  .added-programs > li:last-child { border-bottom: 0; }
+  .added-programs { list-style: none; counter-reset: program; margin: 0; padding: 0; }
+  #program-next .added-programs { display: grid; gap: 8px; }
+  #program-next .added-programs > li { background: #fff; border: 1px solid #d4e2d6; border-radius: 10px; }
+  .added-programs > li { counter-increment: program; position: relative; min-width: 0; padding: 16px 12px 16px 44px; }
   .added-programs > li::before { content: counter(program) "."; position: absolute; left: 12px; top: 18px; color: #687168; font-size: 14px; }
-  .added-programs > .is-open { padding-block: 20px; background: #f6f9f5; border-left: 3px solid var(--sage); scroll-margin-top: 80px; }
+  .added-programs > .is-open { padding-block: 20px; scroll-margin-top: 80px; }
   .added-programs > .is-open::before { top: 26px; }
   .program-row { display: flex; align-items: start; gap: 12px; }
   .program-toggle { flex: 1; min-width: 0; display: grid; gap: 4px; background: transparent; border: 0; padding: 0; font: inherit; text-align: left; cursor: pointer; }
@@ -446,10 +486,10 @@
   body.embed .page-heading,
   body.embed footer { display: none; }
   /* Match the Session tab's column and field spacing; keep the program overview wide. */
-  body.embed .form-section { padding: 24px 0; background: #fff; }
+  body.embed .form-section { padding: 24px 0; background: transparent; }
   body.embed .form-section > .shell { max-width: 640px; padding-inline: 22px; }
   body.embed .form-section:has(.program-mode) > .shell { max-width: 1244px; }
-  body.embed .demo-form { padding: 0; border: 0; border-radius: 0; }
+  body.embed { background: transparent; }
   body.embed .form-field label { font-size: 13.5px; }
   body.embed .form-field > input,
   body.embed .form-field > select,
@@ -496,7 +536,7 @@
 .prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js?v=sandbox-1"></script>
+<script type="module" src="../assets/site-shell.js?v=reporting-5"></script>
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -528,13 +568,27 @@
             <label for="organization">Organization</label>
             <input id="organization" name="organization" type="text" autocomplete="organization" maxlength="120" placeholder="Start typing to pick a TPW member" list="member-list" aria-describedby="organization-help" required>
             <datalist id="member-list"></datalist>
-            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are submitted under one name. If it isn’t listed, type it in full.</p>
+            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
           </div>
           <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </section>
+        <section id="quarter-step" class="question-step" aria-labelledby="quarter-question" hidden>
+          <p class="step-label">Reporting period</p>
+          <h2 class="form-title" id="quarter-question" tabindex="-1">Which quarter are you reporting for?</h2>
+          <p class="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
+          <fieldset class="quarter-options">
+            <legend class="sr-only">Reporting quarter</legend>
+            <label><input type="radio" name="reporting_quarter" value="1"><span><strong>Q1</strong><small>Jan – Mar</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="2"><span><strong>Q2</strong><small>Apr – Jun</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="3"><span><strong>Q3</strong><small>Jul – Sep</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="4"><span><strong>Q4</strong><small>Oct – Dec</small></span></label>
+          </fieldset>
+          <div class="form-field"><label for="reporting-year">Year</label><input id="reporting-year" name="reporting_year" type="number" min="2000" max="2200" step="1" required></div>
+          <div class="next-actions"><button type="button" class="continue-button" id="quarter-continue">Continue →</button></div>
+        </section>
         <section id="facilities-step" class="question-step" aria-labelledby="facilities-question" hidden>
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
-          <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
+          <div class="organization-summary"><span>Reporting period: <strong id="quarter-summary"></strong></span></div>
           <p class="step-label">Step 2 · Facilities</p>
           <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
         <div class="facility-overview">
@@ -585,11 +639,10 @@
         <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <details class="program-sidebar">
-          <summary>Facilities &amp; yards</summary>
+          <aside class="program-sidebar" aria-label="Facilities and yards">
           <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
-          </details>
+          </aside>
           <div class="program-editor">
           <p class="step-label">Step 3 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
@@ -602,16 +655,22 @@
               <button type="button" id="another-program" class="continue-button">+ Add another program</button>
               <button type="button" id="finish-form" class="continue-button">Finish and submit</button>
             </div>
-            <p class="form-hint" id="where-it-goes">Demo submission saves to this browser only.</p>
           </section>
           <section id="submission-result" class="question-step" hidden>
-            <h2 class="form-title" id="submission-heading" tabindex="-1">Submission saved</h2>
+            <div class="success-check" aria-hidden="true">✓</div>
+            <h2 class="form-title" id="submission-heading" tabindex="-1">You’re all set!</h2>
             <p id="submission-context" class="submission-context"></p>
             <p id="submission-receipt" class="submit-status" role="status" hidden></p>
             <div id="submission-totals" class="success-totals"></div>
-            <button type="button" id="start-over" class="continue-button start-over">Log more data</button>
+            <button type="button" id="start-over" class="continue-button start-over">Start a new submission</button>
+            <section class="mock-impact" aria-labelledby="mock-impact-heading" hidden>
+              <span class="mock-label">Estimate</span>
+              <h3 id="mock-impact-heading">A glimpse of your impact</h3>
+              <div id="mock-totals" class="success-totals"></div>
+              <p>Estimated RAC days × $59 per day, using the same calculation as the dashboard.</p>
+            </section>
             <details class="full-report">
-              <summary>View submitted details</summary>
+              <summary>Expand full submission</summary>
               <p class="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-facility cards show assignments; totals are not allocated across facilities.</p>
               <div id="report-prisons" class="report-grid"></div>
             </details>
@@ -627,6 +686,7 @@
           <label for="scheduled-status">Schedule Status</label>
           <select id="scheduled-status" name="scheduled_status" required>
             <option value="" selected disabled>Select a status</option>
+            <option value="Planned">Planned</option>
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
@@ -653,15 +713,10 @@
         </div>
         <fieldset class="yard-numbers">
           <legend>Participants at each yard</legend>
-          <p class="yard-hint">Enter 0 if none.</p>
+          <p class="yard-hint">Blank counts are saved as 0.</p>
           <div class="yard-number-rows"></div>
           <p class="yard-hint yard-numbers-empty">Choose a facility and yard above first.</p>
         </fieldset>
-        <div class="form-field">
-          <label for="program-notes">Anything else you’d like to tell us about this program? <span class="label-note">(optional)</span></label>
-          <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
-          <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Don’t include anyone’s name, CDCR number or anything else that could identify a person.</p>
-        </div>
         </template>
         </section>
       </form>
@@ -672,31 +727,28 @@
   <div class="shell">
     <div class="logo"><img src="../assets/img/logo.png" alt="TPW"></div>
     <div class="cols">
-      <p class="note">Prototype for Hack for Social Impact 2026. TPW's logo belongs to them.</p>
-      <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
+            <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
     </div>
   </div>
 </footer>
 
-<script src="backend.js?v=neon-demo-1"></script>
 <script type="module">
-import { isSandboxMode, enableSandboxMode } from '../assets/neon-config.js?v=sandbox-1';
-import { sandboxRequest } from '../assets/neon-sandbox-client.js?v=sandbox-1';
-import { getDemoAccount, setDemoAccount } from '../assets/member-session.js?v=sandbox-1';
+import { isSandboxMode, enableSandboxMode } from '../assets/neon-config.js?v=reporting-1';
+import { saveTeamSubmission } from '../assets/team-submissions.js';
+import { getDemoAccount, setDemoAccount } from '../assets/member-session.js?v=reporting-1';
 if (isSandboxMode()) {
   enableSandboxMode();
   setDemoAccount(new URLSearchParams(location.search).get('account'));
 }
 import { currentReportingPeriod } from './js/reporting-period.js';
-import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=sandbox-1';
+import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=reporting-1';
 let neonContext = null, neonAuthError = null;
 if (isNeonMode()) {
-  document.querySelector('#where-it-goes').textContent = 'Checking your sign-in and organization access…';
   try { neonContext = await authStateReady(); }
   catch (error) { neonAuthError = error; } // Keep the form and saved attempt; never use the demo identity.
 }
 const neonSubmissionMode = () => isSandboxMode() || isNeonMode() || !!neonDemoUrl();
-import { neonDemoUrl, neonRequest, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=sandbox-1';
+import { neonDemoUrl, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=reporting-1';
 // Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
 // not "your".
 const staffView = isNeonMode() ? neonContext?.isStaff === true : isSandboxMode() ? getDemoAccount() === 'tpw' : new URLSearchParams(location.search).get('account') === 'tpw';
@@ -715,20 +767,28 @@ if (staffView) {
   // Each program card is copied from this template, so word it once here.
   const fields = document.querySelector('#program-fields')?.content;
   fields?.querySelector('#program-name')?.setAttribute('placeholder', 'Enter the program name');
-  const notesLabel = fields?.querySelector('label[for="program-notes"]');
-  if (notesLabel) notesLabel.firstChild.textContent = 'Anything else TPW should know about this program? ';
-  fields?.querySelector('#program-notes')?.setAttribute('placeholder', 'Any context about this program');
+
 }
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
 const organizationStep = document.querySelector('#organization-step');
 const facilitiesStep = document.querySelector('#facilities-step');
+const quarterStep = document.querySelector('#quarter-step');
+const reportingYear = document.querySelector('#reporting-year');
+function selectReportingPeriod(period) {
+  form.querySelector(`[name="reporting_quarter"][value="${period.quarter}"]`).checked = true;
+  reportingYear.value = period.year;
+  reportingPeriod();
+}
 function reportingPeriod() {
-  const period = currentReportingPeriod();
+  const period = {
+    quarter: Number(form.querySelector('[name="reporting_quarter"]:checked').value),
+    year: reportingYear.valueAsNumber
+  };
   document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
   return period;
 }
-reportingPeriod();
+selectReportingPeriod(currentReportingPeriod());
 let transitioning = false;
 let openingForm = false; // true only while the pre-filled form first opens: see prefillFromLastQuarter()
 async function showStep(from, to, focusTarget) {
@@ -759,7 +819,20 @@ form.addEventListener('submit', event => {
   organization.value = organization.value.trim();
   document.querySelector('#organization-summary').textContent = organization.value;
   reportingPeriod();
-  showStep(organizationStep, facilitiesStep, document.querySelector('#facilities-question'));
+  showStep(organizationStep, quarterStep, document.querySelector('#quarter-question'));
+});
+document.querySelector('#quarter-continue').addEventListener('click', async () => {
+  if (transitioning || !reportingYear.reportValidity()) return;
+  reportingPeriod();
+  if (!lastQuarter) {
+    await showStep(quarterStep, facilitiesStep, document.querySelector('#facilities-question'));
+    return;
+  }
+  form.classList.add('program-mode');
+  await showStep(quarterStep, programsStep, document.querySelector('#programs-question'));
+  openingForm = true;
+  reviewNext();
+  openingForm = false;
 });
 organization.addEventListener('input', () => organization.setCustomValidity(''));
 document.querySelector('#edit-organization').addEventListener('click', () => {
@@ -1043,7 +1116,7 @@ function countStepper(label, kind) {
   const stepper = document.createElement('div'); stepper.className = 'stepper';
   const down = document.createElement('button'); down.type = 'button'; down.dataset.step = '-1'; down.textContent = '−';
   const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.step = '1';
-  input.inputMode = 'numeric'; input.value = ''; input.required = true; input.placeholder = '0'; input.dataset.kind = kind;
+  input.inputMode = 'numeric'; input.value = ''; input.placeholder = '0'; input.dataset.kind = kind;
   const up = document.createElement('button'); up.type = 'button'; up.dataset.step = '1'; up.textContent = '+';
   stepper.append(down, input, up); field.append(caption, stepper);
   return field;
@@ -1115,18 +1188,11 @@ function addProgram(focus = true, saved = null, editIndex) {
   program.querySelector('.form-field').after(fieldset);
   // Ticking or unticking a yard adds or removes its row of numbers.
   assignments.addEventListener('change', () => syncYardNumbers(program));
-  // Carried-forward details don't need to take up the screen every time.
-  const details = document.createElement('details'); details.className = 'program-details'; details.open = !saved;
-  const summary = document.createElement('summary'); summary.textContent = 'Program details';
   const fields = document.createElement('div'); fields.className = 'question-step';
   const nameField = program.querySelector('.form-field');
   const hours = program.querySelector('.count-row');
-  nameField.before(details); fields.append(nameField, fieldset, hours); details.append(summary, fields);
+  nameField.before(fields); fields.append(nameField, fieldset, hours);
   nameField.querySelector('input').addEventListener('input', event => { heading.textContent = event.target.value.trim() || 'New program'; });
-  const context = document.createElement('details'); context.className = 'program-context';
-  const contextTitle = document.createElement('summary'); contextTitle.textContent = 'Optional context';
-  const notesField = program.querySelector('textarea').closest('.form-field');
-  notesField.before(context); context.append(contextTitle, notesField);
   const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'program-remove'; remove.textContent = 'Remove';
   remove.setAttribute('aria-label', `Remove ${saved?.name || 'new program'}`);
   remove.addEventListener('click', () => {
@@ -1268,9 +1334,7 @@ function completeProgram(program) {
     revealProgramField(input);
     feedback.textContent = message;
   };
-  if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
-  const notes = field('program-notes');
-  if (notes.value.length > 2000) { problem(notes, 'Use no more than 2,000 characters for the optional context.'); return; }
+  if (status !== 'Planned' && !start.value) { problem(start, 'Enter the date this program started.'); return; }
   if (status === 'Completed' && !end.value) { problem(end, 'Enter the date this program ended.'); return; }
   if (start.value && end.value && end.value < start.value) { problem(end, 'The end date is before the start date.'); return; }
   feedback.textContent = '';
@@ -1278,7 +1342,7 @@ function completeProgram(program) {
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; program.querySelector('.program-details').open = true; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
     if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1286,19 +1350,17 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.program-details').open = true; program.querySelector('.assignment-row input')?.focus(); return; }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
   // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
   const counts = {};
   for (const row of program.querySelectorAll('.yard-number-row')) {
     const participants = row.querySelector('[data-kind="participants"]');
     const completed = row.querySelector('[data-kind="completed"]');
     for (const input of [participants, completed]) {
-      // Empty isn't 0: make them type a number, even 0, so "didn't say" never becomes "none".
-      if (input.value.trim() === '') { problem(input, `Enter ${input === participants ? 'participants enrolled' : 'completed'} for ${row.dataset.code} ${row.dataset.yard}. Type 0 if there were none.`); return; }
       if (!input.checkValidity()) { revealProgramField(input); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
     }
     if (Number(completed.value) > Number(participants.value)) {
-      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants enrolled.`);
+      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${Number(participants.value)} participants enrolled.`);
       return;
     }
     counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
@@ -1373,7 +1435,13 @@ function renderAddedPrograms() {
     }
     list.append(item);
   }
-  if (!editor) { programList.hidden = true; list.after(programList); }
+  const ready = document.querySelector('#program-next');
+  if (editor) ready.before(list);
+  else {
+    document.querySelector('#program-next-heading').after(list);
+    programList.hidden = true;
+    ready.before(programList);
+  }
 }
 function parkOpenProgram() {
   const editor = programList.firstElementChild;
@@ -1436,7 +1504,7 @@ let submissionId;
 let submittedPayload = '';
 let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
-  if (submitting || programList.children.length) return;
+  if (submitting || programList.children.length || document.querySelector('#finish-form').disabled) return;
   if (!completedPrograms.length) return;
   if (completedPrograms.some(program => program.needsReview)) {
     document.querySelector('#program-feedback').textContent = 'Edit and complete each carried-forward program for this quarter before submitting.'; return;
@@ -1461,7 +1529,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     feedback.textContent = '';
     renderSubmission(localAttempt?.submission || submission);
     const note = document.querySelector('#submission-receipt');
-    note.textContent = receipt || 'Saved in this browser only. This demo doesn’t send your answers anywhere yet.';
+    note.textContent = receipt || 'Saved in this browser only.'
     note.hidden = false;
     programsStep.classList.add('submitted');
     document.querySelector('#submission-result').hidden = false;
@@ -1514,7 +1582,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   programsStep.setAttribute('aria-busy', 'true');
   let result;
   try {
-    result = localAttempt?.receipt || await sendToBackend(localAttempt?.payload || toPayload(submission, submissionId));
+    result = localAttempt?.receipt || await sendToBackend(localAttempt?.payload || toPayload(submission, submissionId), localAttempt?.submission || submission);
   } catch (error) {
     console.error('Submission failed:', error);
     // An unreadable reply (say, a Google sign-in page) isn't a connection problem.
@@ -1535,7 +1603,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     }
     const online = !neonSubmissionMode() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
     showWithContact(feedback, neonSubmissionMode()
-      ? `${error.message} ${isNeonMode() || isSandboxMode() ? 'TPW' : 'The local demo'} could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
+      ? `${error.message} Could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
       : online
       ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
@@ -1563,15 +1631,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.${receiptWarning}`);
 });
 
-// The address in backend.js, if one is set.
-function backendUrl() {
-  if (isSandboxMode()) return 'neon-sandbox-data-api';
-  if (isNeonMode()) return 'neon-data-api'; // Valid independently of the default Google address.
-  const url = (window.TPW_BACKEND_URL || '').trim();
-  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || neonDemoUrl() ? url : '';
-}
-// What the sheet writer needs, in plain field names. The organization is only a fallback
-// for the demo: once sign-in is connected, the server records it under the signed-in organization.
+function backendUrl() { return 'reporting-api'; }
 function toPayload(submission, submissionId) {
   return {
     submissionId,
@@ -1590,58 +1650,24 @@ function toPayload(submission, submissionId) {
     }))
   };
 }
-// Sign-in hands the page a pass as window.tpwSession = { token, organization, email }.
-// Sent as plain text so the browser doesn't ask Google's server for permission first;
-// Apps Script reads the body either way.
-async function sendToBackend(payload) {
-  if (isSandboxMode()) return sandboxRequest('tpw_sandbox_submit', { p_payload: payload });
-  if (isNeonMode()) {
-    const expectedUser = neonContext?.userId;
-    const context = await authStateReady();
-    if (!expectedUser || context?.userId !== expectedUser) throw new Error('Your signed-in account changed. Sign back in to recover this attempt before retrying.');
-    return dataApiRequest('tpw_submit', { p_payload: payload });
-  }
-  if (neonDemoUrl()) return neonRequest({ payload });
-  const token = window.tpwSession?.token || '';
-  // Older receivers ignore notes. Refuse rather than silently discard them.
-  if (payload.programs.some(program => program.notes)) {
-    const capabilities = window.google?.script?.run
-      ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
-      : await boundedFetch(backendUrl(), { cache: 'no-store' }, 20000, response => response.json());
-    if (!capabilities.features?.programNotes) {
-      return { ok: false, errors: ['The receiver needs its program-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
-    }
-  }
-  if (window.google?.script?.run) {
-    return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
-  }
-  return boundedFetch(backendUrl(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ token, payload })
-  }, 20000, response => response.json());
+async function sendToBackend(payload, draft) {
+  return saveTeamSubmission(payload, draft);
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = isSandboxMode()
-  ? 'Prototype · test data saves to Neon.'
-  : isNeonMode()
-  ? 'Submitting sends these answers to TPW using your signed-in organization. Completed answers are saved in this browser when you submit so a retry can recover its receipt; unfinished edits are not autosaved.'
-  : neonDemoUrl()
-  ? 'Local Neon demo only: use made-up counts, not real member data. Demo accounts are not real sign-in. Completed answers are saved in this browser when you submit; unfinished edits are not autosaved.'
-  : (staffView ? 'Submitting sends these answers to TPW.' : 'Submitting sends your answers to TPW.');
-
 document.querySelector('#start-over').addEventListener('click', () => {
-  if (neonSubmissionMode()) {
-    try { clearAttempt(); }
-    catch { document.querySelector('#submission-receipt').textContent = 'Could not clear the saved submission attempt. Please allow browser storage and try again.'; return; }
+  try { clearAttempt(); }
+  catch {
+    document.querySelector('#submission-receipt').textContent = 'Could not clear the saved submission attempt. Please allow browser storage and try again.';
+    return;
   }
-  location.reload();
+  const address = new URL(location.href);
+  address.searchParams.delete('blank');
+  location.replace(address.href);
 });
 
 function programValue(program, key) {
   const entry = Object.entries(program.values).find(([name]) => name.endsWith(`[${key}]`));
-  return entry ? entry[1] : '';
+  return entry?.[1] ?? '';
 }
-// Every prison and yard a program runs at, with that yard's numbers.
 function programSites(program) {
   return program.assignments.flatMap(assignment => assignment.yards.map(yard => {
     const count = program.counts?.[`${assignment.code}|${yard}`] || {};
@@ -1671,6 +1697,25 @@ function renderSubmission(submission) {
   metric(totalPanel, format(totals.participants), 'Participant enrollments');
   metric(totalPanel, format(totals.completed), 'Participants completed');
   metric(totalPanel, format(totals.delivered), 'Estimated completer-hours');
+  const racDays = submission.programs.reduce((sum, program) => {
+    const hours = Math.max(0, number(programValue(program, 'course_hours')));
+    const completed = programSites(program).reduce((total, site) => total + site.completed, 0);
+    return sum + Math.min(40, Math.floor(hours / 52) * 10) * completed;
+  }, 0);
+  const savings = racDays * 59;
+  const impact = document.querySelector('#mock-totals');
+  impact.replaceChildren();
+  impact.closest('.mock-impact').hidden = racDays <= 1;
+  if (racDays > 1) {
+    metric(impact, format(racDays), 'RAC credits estimate');
+    metric(impact, savings.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }), 'Total taxpayer savings');
+    const [creditsAmount, savingsAmount] = impact.querySelectorAll('strong');
+    import('../dashboard/js/rolling-number.js?v=form-success-1').then(({ rollNumber, rollCurrency }) => {
+      if (!creditsAmount.isConnected) return;
+      rollNumber(creditsAmount, racDays);
+      rollCurrency(savingsAmount, savings);
+    }).catch(console.error);
+  }
   document.querySelector('#submission-context').textContent = `${submission.organization} · Q${submission.reportingPeriod.quarter} ${submission.reportingPeriod.year}`;
   const report = document.querySelector('#report-prisons'); report.replaceChildren();
   for (const prison of submission.prisons) {
@@ -1744,7 +1789,7 @@ async function prefillFromLastQuarter() {
   organizationStep.hidden = true;
   let draft;
   try {
-    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=neon-ship-1'), import('./js/last-quarter.js')]);
+    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=reporting-1'), import('./js/last-quarter.js')]);
     draft = lastQuarterDraft(await loadDashboard(orgId));
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.
@@ -1760,8 +1805,8 @@ async function prefillFromLastQuarter() {
   if (!draft.programs.length) {
     // A first report: nothing to carry forward, but they needn't type their name.
     note.remove();
-    facilitiesStep.hidden = false;
-    document.querySelector('#facilities-question').focus();
+    quarterStep.hidden = false;
+    document.querySelector('#quarter-question').focus();
     return;
   }
   lastQuarter = draft;
@@ -1800,23 +1845,14 @@ async function prefillFromLastQuarter() {
   document.querySelector('#facilities-question').textContent = staffView ? 'Have any of the facilities they operate in changed?' : 'Have any of the facilities you operate in changed?';
   document.querySelector('#facility-help').textContent = '';
   document.querySelector('#continue-programs').textContent = 'Continue →';
-  // What changes every quarter is the numbers, not the facilities, so open straight on the first
-  // program's numbers.
-  form.classList.add('program-mode');
-  programsStep.hidden = false;
+  quarterStep.hidden = false;
   document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
   document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a facility…"
   note.textContent = 'Programs carried forward. Update this quarter’s numbers. ';
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);
-  // Don't move focus into the form as it opens. Even with preventScroll, Log data grows the form's
-  // frame to fit as it loads, and Chrome then scrolls the whole page down to keep the focused box in
-  // view, pushing the header and the note above off a phone's screen. The note is role="status", so
-  // screen readers still hear it.
-  openingForm = true;
-  reviewNext();
-  openingForm = false;
+
 }
 // Only completed, explicitly submitted attempts are persisted in either Neon mode.
 // Unsubmitted editor inputs are deliberately NOT autosaved; the default Sheets flow is unchanged.
@@ -1831,6 +1867,7 @@ function recoverLocalAttempt() {
   }
   if (!attempt) return false;
   const saved = attempt.submission;
+  selectReportingPeriod(saved.reportingPeriod);
   organization.value = saved.organization;
   document.querySelector('#organization-summary').textContent = saved.organization;
   for (const prison of saved.prisons) {
@@ -1853,7 +1890,7 @@ function recoverLocalAttempt() {
   form.classList.add('program-mode');
   const note = document.createElement('p'); note.setAttribute('role', 'status');
   note.textContent = attempt.receipt
-    ? 'Recovered your saved submission. This copy stays here until you choose Log more data.'
+    ? 'Recovered your saved submission. This copy stays here until you choose Start a new submission.'
     : 'Recovered the completed answers from your last save attempt. Retry unchanged answers to confirm its receipt without creating another submission. Inputs not included in that attempt were not saved.';
   form.prepend(note);
   if (attempt.receipt) {
@@ -1868,6 +1905,47 @@ function recoverLocalAttempt() {
   }
   return true;
 }
+async function offerSavedProgramsPreview() {
+  if (new URLSearchParams(location.search).get('blank') !== '1') return;
+  try {
+    const response = await fetch('../api/local-development');
+    if (!response.ok || (await response.json()).localDevelopment !== true) return;
+  } catch { return; }
+  if (organizationStep.hidden) return;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'continue-button';
+  button.textContent = 'Dev: Preview saved programs';
+  organizationStep.append(button);
+  button.addEventListener('click', () => {
+    if (organizationStep.hidden || transitioning) return;
+    organization.value ||= 'Org 1';
+    document.querySelector('#organization-summary').textContent = organization.value;
+    picker.value = 'CCI';
+    picker.dispatchEvent(new Event('change'));
+    const facility = prisons.get('CCI');
+    const yard = facility.options[0];
+    const checkbox = [...facility.card.querySelectorAll('.yard-choices input[type="checkbox"]')]
+      .find(input => input.value === yard);
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+    completedPrograms.push({
+      id: crypto.randomUUID(),
+      name: 'Sample program',
+      assignments: [{ code: 'CCI', yards: [yard] }],
+      values: { 'programs[1][program_name]': 'Sample program', 'programs[1][scheduled_status]': 'Planned', 'programs[1][course_hours]': '0' },
+      counts: { [`CCI|${yard}`]: { participants: 10, completed: 8 } }
+    });
+    document.querySelector('#finish-form').disabled = true;
+    form.classList.add('program-mode');
+    refreshPrisons();
+    document.querySelector('#program-next').hidden = false;
+    showStep(organizationStep, programsStep, document.querySelector('#program-next-heading'));
+    button.remove();
+  });
+}
+
 if (isNeonMode()) {
   if (neonAuthError || !neonContext?.ok || !neonContext.userId || (!neonContext.isStaff && !neonContext.orgs?.length)) {
     const note = document.createElement('p'); note.setAttribute('role', 'alert');
@@ -1887,7 +1965,6 @@ if (isNeonMode()) {
   }
 } else if (isSandboxMode()) {
   document.querySelector('#member-list').replaceChildren(new Option('Org 1'), new Option('Org 2'));
-  document.querySelector('#organization-help').textContent = staffView ? 'Choose Org 1 or Org 2.' : 'Your fictional organization for this prototype.';
   if (!staffView) {
     organization.value = getDemoAccount() === 'org-2' ? 'Org 2' : 'Org 1';
     organization.readOnly = true;
@@ -1895,6 +1972,7 @@ if (isNeonMode()) {
   }
   if (!recoverLocalAttempt()) prefillFromLastQuarter();
 } else if (!recoverLocalAttempt()) prefillFromLastQuarter();
+offerSavedProgramsPreview();
 </script>
 </body>
 </html>

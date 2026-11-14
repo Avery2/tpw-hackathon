@@ -1,31 +1,32 @@
-import { loadDashboard } from './data.js?v=sandbox-1';
-import { loadingSkeleton } from './loading.js?v=tip-20261025';
-import { renderSubmissionTracker } from './submission-tracker.js?v=tip-20261025';
+import { demoApi } from '../../assets/neon-api.js';
+import { loadingSkeleton } from './loading.js';
+import { renderSubmissionTracker } from './submission-tracker.js?v=paginated-1';
 let revision = 0;
-import { updateWorkspace, resolveAccount, dashboardHref, showLoadError } from './layout.js?v=sandbox-1';
-import { accountProfile } from '../../assets/member-session.js?v=sandbox-1';
-import { isNeonMode } from '../../assets/neon-auth-client.js?v=sandbox-1';
+import { updateWorkspace } from './workspace-adapter.js?v=history-download-1';
 async function render() {
   const token = ++revision;
-  const tracker = document.querySelector('#submission-tracker');
-  document.querySelector('.submission-choices').hidden = true;
-  try {
-  const account = await resolveAccount(); if (token !== revision) return;
-  const profile = accountProfile(account);
-  if (!profile) { if (isNeonMode()) updateWorkspace(account, 'submissions'); else location.replace('./'); return; }
-  const admin = Boolean(profile.admin);
+  const account = location.hash.slice(1);
+  if (!['org-1', 'org-2', 'tpw'].includes(account)) { location.replace('./'); return; }
   updateWorkspace(account, 'submissions');
-  document.querySelector('.submission-choices').hidden = admin;
-  document.querySelector('#view-submission-data').href = dashboardHref('./submission-data.html', account);
-  tracker.hidden = !admin;
-  if (!admin) return;
+  document.querySelector('.submission-choices').hidden = account === 'tpw';
+  document.querySelector('#view-submission-data').href = `./submission-data.html#${account}`;
+  const tracker = document.querySelector('#submission-tracker');
+  tracker.hidden = account !== 'tpw';
+  if (account !== 'tpw') return;
+  const history = document.createElement('a');
+  history.className = 'action switch';
+  history.href = `./submission-data.html#${account}`;
+  history.textContent = 'View submission history';
   tracker.setAttribute('aria-busy', 'true'); tracker.replaceChildren(loadingSkeleton('cards'));
-    const data = await loadDashboard(null);
-    if (token === revision) renderSubmissionTracker(tracker, data);
+  try {
+    const data = await demoApi('submission-tracking');
+    if (token === revision) {
+      renderSubmissionTracker(tracker, data);
+      tracker.prepend(history);
+    }
   } catch (error) {
     if (token !== revision) return;
-    tracker.hidden = false;
-    showLoadError(tracker, error, 'Could not load submission tracking. ');
+    tracker.textContent = 'Could not load submission tracking. ';
     const retry = document.createElement('button'); retry.type = 'button'; retry.textContent = 'Try again'; retry.onclick = render; tracker.append(retry);
   } finally { if (token === revision) tracker.removeAttribute('aria-busy'); }
 
