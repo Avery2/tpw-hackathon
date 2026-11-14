@@ -15,7 +15,7 @@
           "type": "text",
           "required": true,
           "datalist": "orgs",
-          "placeholder": "Defy Ventures",
+          "placeholder": "e.g. Defy Ventures",
           "help": "You are filing as this organization. Everything on this entry is attributed to it."
         },
         {
@@ -24,7 +24,7 @@
           "type": "text",
           "required": true,
           "datalist": "programs",
-          "placeholder": "Guiding Rage Into Power"
+          "placeholder": "e.g. Guiding Rage Into Power"
         },
         {
           "key": "facility",
@@ -125,7 +125,7 @@
           "type": "text",
           "required": true,
           "datalist": "orgs",
-          "placeholder": "Defy Ventures"
+          "placeholder": "e.g. Defy Ventures"
         },
         {
           "key": "program",
@@ -133,7 +133,7 @@
           "type": "text",
           "required": true,
           "datalist": "programs",
-          "placeholder": "CEO of Your New Life"
+          "placeholder": "e.g. CEO of Your New Life"
         },
         {
           "key": "facilities",
@@ -284,14 +284,14 @@
           "type": "text",
           "required": true,
           "datalist": "orgs",
-          "placeholder": "Defy Ventures"
+          "placeholder": "e.g. Defy Ventures"
         },
         {
           "key": "token",
           "label": "Participant ID",
           "type": "text",
           "required": true,
-          "placeholder": "M78 — first initial + birth year",
+          "placeholder": "e.g. M78 — first initial + birth year",
           "max": 12,
           "help": "The same ID that is on their session sheets."
         },

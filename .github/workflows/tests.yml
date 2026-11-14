@@ -8,10 +8,6 @@ name: Tests
 # cross, then the red step, to see which check and why. Every step runs even
 # if an earlier one fails, so you see all the failures at once.
 #
-# Left out on purpose: members/test/browser.mjs. It has failed since at least
-# commit 7a9ae50 (25 Oct 2026, 00:46), and still did after a35a1e6: it times
-# out waiting for the account menu to open. Add it as a step here once it
-# passes locally.
 
 on:
   push:
@@ -30,10 +26,9 @@ jobs:
     timeout-minutes: 15
     steps:
       # Full history, not just the latest commit: team-form/test/receiver.cjs
-      # reads two versions of apps-script/Rows.gs from older commits on the
-      # email-code-signin and sheet-firebase branches. (The newer one is the
-      # same as team-form/receiver/Rows.gs.) If those branches are deleted,
-      # that step fails.
+      # reads the older apps-script/Rows.gs from commit bb13e5d, kept only on the
+      # email-code-signin branch. Don't delete that branch, or that step fails.
+      # (The newer Rows.gs is read from team-form/receiver/Rows.gs.)
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -44,12 +39,6 @@ jobs:
       - name: Website build
         if: ${{ !cancelled() }}
         run: python3 scripts/test_build_site.py
-
-      - name: Second Apps Script settings (Config.gs) builder
-        if: ${{ !cancelled() }}
-        run: |
-          python3 scripts/test_additional_forms.py
-          python3 scripts/build_additional_forms.py --check
 
       - name: Quarterly Apps Script, Google faked
         if: ${{ !cancelled() }}
@@ -67,17 +56,25 @@ jobs:
         if: ${{ !cancelled() }}
         run: node --test team-form/test/dashboard-source.mjs
 
+      - name: Neon Auth and Data API integration (offline)
+        if: ${{ !cancelled() }}
+        run: |
+          node --test team-form/test/neon-auth.mjs team-form/test/neon-integration.mjs team-form/test/neon-attempts.mjs team-form/test/neon-page.mjs team-form/test/neon-sandbox.mjs
+          node database/test.mjs --static
+
+      - name: Local Neon API and transport (fake database)
+        if: ${{ !cancelled() }}
+        run: node --test server/test.mjs team-form/test/neon-client.mjs team-form/test/dashboard-exports.mjs
+
+      - name: Local Neon form, recovery and exports in a browser (fake database)
+        if: ${{ !cancelled() }}
+        env:
+          CHROME_BIN: /usr/bin/google-chrome
+        run: node server/browser.mjs
+
       - name: Dashboard tests catch planted bugs
         if: ${{ !cancelled() }}
         run: node team-form/test/dashboard-mutants.mjs
-
-      - name: Second Apps Script, Google faked
-        if: ${{ !cancelled() }}
-        run: node admin/additional-forms/test.cjs
-
-      - name: Code that sends records to the second Apps Script
-        if: ${{ !cancelled() }}
-        run: node admin/additional-forms/client.test.mjs
 
       - name: Demo sign-in and account menu
         if: ${{ !cancelled() }}
@@ -127,14 +124,20 @@ jobs:
           done
           exit 1
 
-      - name: Log data and its other forms in a browser
+      # The members test clicks through sign-in, the account menu, the member
+      # bar and the dashboards, so it needs the built site (scripts/build_site.py),
+      # not the raw files served above. It expects that on port 8091.
+      - name: Sign-in, account menu and member pages in a browser
         if: ${{ !cancelled() }}
         env:
           CHROME_BIN: /usr/bin/google-chrome
         run: |
+          python3 scripts/build_site.py --output "$RUNNER_TEMP/site" > /dev/null
+          python3 -m http.server 8091 --bind 127.0.0.1 --directory "$RUNNER_TEMP/site" > /dev/null 2>&1 &
+          for n in $(seq 1 50); do curl -sf http://127.0.0.1:8091/ > /dev/null && break; sleep 0.2; done
           for attempt in 1 2; do
             status=0
-            node admin/additional-forms/browser.test.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
+            node members/test/browser.mjs > "$RUNNER_TEMP/browser.log" 2>&1 || status=$?
             cat "$RUNNER_TEMP/browser.log"
             [ "$status" -eq 0 ] && exit 0
             grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"

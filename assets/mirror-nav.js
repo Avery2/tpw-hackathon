@@ -3,7 +3,7 @@
 (() => {
   const root = new URL('../', document.currentScript.src);
   const selector = 'a.user-accounts-text-link, .customerAccountLoginDesktop a, .customerAccountLoginMobile a';
-  const drawerUrl = new URL('assets/account-drawer.js', root).href;
+  const drawerUrl = new URL('assets/account-drawer.js?v=sandbox-1', root).href;
   function account() {
     try {
       const key = sessionStorage.getItem('tpw.member.demo.v1');
@@ -12,7 +12,8 @@
   }
   function destination() {
     const key = account();
-    return new URL(`intake/simple.html?account=${key || 'org-1'}`, root).href;
+    // Signed out, no account: a link must never sign anyone in as Org 1.
+    return new URL(key ? `intake/simple.html?account=${key}` : 'intake/simple.html', root).href;
   }
   function wire() {
     const href = destination();
@@ -22,6 +23,9 @@
       if (link.textContent !== label) link.textContent = label;
       link.setAttribute('aria-haspopup', 'dialog');
     });
+    // The logo goes to the site's home page, as it does on every other page.
+    const home = new URL('index.html', root).href;
+    document.querySelectorAll('.header-title-logo a, .header-title-text a').forEach(logo => { if (logo.href !== home) logo.href = home; });
   }
   // Capture on window before the saved Squarespace scripts register handlers.
   // Rewriting href alone is insufficient: their controller intercepts the click.

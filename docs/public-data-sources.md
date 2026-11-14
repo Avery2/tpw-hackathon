@@ -6,7 +6,7 @@ RIGHT 4.0 **Attachment A – Institution Locations & Populations** (RFA p. 12) a
 
 Short version: **who runs what, where** is public and machine-readable. **How many
 people, how many hours, at what capacity** is not — for the state's own grantees
-either. Which is the point of the hackathon problem.
+either.
 
 ---
 
@@ -153,7 +153,7 @@ the form wants per-cycle `Number of Participants` and `Participants Completed` �
 - **Grants.gov / grants.ca.gov**: opportunity metadata only (deadlines, purpose), no awards.
 - **California Rehabilitation Oversight Board 2024 report, Appendix D** (every credit-earning
   group by prison): exists, but it's from June 2024, the board has since been abolished, and
-  no newer version will come. Too old to use. See `crob-2024-credit-groups.md`.
+  no newer version will come. Too old to use.
 - **Org websites generally**: the four TPW members checked in depth (GRIP, Land Together,
   Ten Toes In, Enneagram Prison Project) publish mission + a headline number. None publish
   schedule, capacity, or per-facility hours. Prison Yoga + Meditation publishes neither

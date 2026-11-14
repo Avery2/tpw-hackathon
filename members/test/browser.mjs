@@ -39,15 +39,30 @@ try {
     if (m.method === 'Fetch.requestPaused') {
       const { requestId, request } = m.params;
       const address = new URL(request.url);
-      if (request.url.startsWith('https://script.google.com/') && request.method === 'GET' && address.searchParams.get('view') === 'dashboard') await send('Fetch.fulfillRequest', { requestId, ...json(sheetFixture) });
-      else if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
-      else if (address.pathname.endsWith('/data/demo/dashboard-sample.json')) await send('Fetch.fulfillRequest', { requestId, ...json(sampleFixture) });
-      else await send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
+      // If the page moves on before we answer, Chrome drops the request and says
+      // "Invalid InterceptionId". That's harmless, so ignore it instead of crashing.
+      const reply = send;
+      const send2 = (method, params) => reply(method, params).catch(error => { if (!/Invalid InterceptionId/.test(error.message)) throw error; });
+      if (request.url.startsWith('https://script.google.com/') && request.method === 'GET' && address.searchParams.get('view') === 'dashboard') await send2('Fetch.fulfillRequest', { requestId, ...json(sheetFixture) });
+      else if (request.url.startsWith('https://script.google.com/')) { submissions.push(request.url); await send2('Fetch.failRequest', { requestId, errorReason: 'BlockedByClient' }); }
+      else if (address.pathname.endsWith('/data/demo/dashboard-sample.json')) await send2('Fetch.fulfillRequest', { requestId, ...json(sampleFixture) });
+      else await send2('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html' }], body: Buffer.from('<!doctype html><title>Mock Sheet preview</title><p>Sheet preview intercepted for layout tests.</p>').toString('base64') });
     }
   });
   const ev = async expression => { const r = await send('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true }); if (r.exceptionDetails) throw Error(r.exceptionDetails.exception?.description); return r.result.value; };
   const wait = async expression => { for (let n = 0; n < 150; n++) { if (await ev(expression)) return; await sleep(100); } throw Error('Timed out: ' + expression); };
-  const go = async route => { await send('Page.navigate', { url: base + route }); await wait('document.readyState === "complete"'); };
+  // Mark the old page first, then wait for a page without the mark: straight after Page.navigate the
+  // old page can still answer "complete", and the next step would then run against it mid-switch.
+  // A change after "#" keeps the same page (and its mark), so that counts once the address matches.
+  const go = async route => {
+    await ev('window.__tpwOldPage = true');
+    await send('Page.navigate', { url: base + route });
+    for (let n = 0; n < 150; n++) {
+      try { if (await ev('(!window.__tpwOldPage || location.href === ' + JSON.stringify(base + route) + ') && location.origin === ' + JSON.stringify(base) + ' && document.readyState === "complete"')) return; } catch {}
+      await sleep(100);
+    }
+    throw Error('Timed out loading ' + route);
+  };
   const click = async selector => {
     const point = await ev(`(()=>{const a=[...document.querySelectorAll(${JSON.stringify(selector)})].find(a=>{const r=a.getBoundingClientRect();return r.width>0&&r.height>0&&r.left>=0&&r.top>=0&&r.right<=innerWidth&&r.bottom<=innerHeight&&getComputedStyle(a).visibility!=='hidden';});if(!a)return null;const r=a.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
     assert(point, 'Visible control required: ' + selector);
@@ -60,8 +75,13 @@ try {
   for (const width of [1512, 1024, 390]) {
     await send('Emulation.setDeviceMetricsOverride', { width, height: 950, deviceScaleFactor: 1, mobile: false });
     // Signed out, Members Login opens the copy of TPW's own sign-in box (25 Oct 2026), not the
-    // account drawer. No password is ever asked for; a demo account goes straight to Log data.
-    await go('/'); await ev('sessionStorage.clear()'); await go('/'); await wait('!!document.querySelector(".tpw-header .login")');
+    // account drawer. No password is ever asked for; from the front page a demo account goes to Log data.
+    await go('/'); await ev('sessionStorage.clear()');
+    // Signed out on a copied page, Members Login must carry no account, or a new tab would sign in as Org 1.
+    const mirrorLogin = 'a.user-accounts-text-link, .customerAccountLoginDesktop a, .customerAccountLoginMobile a';
+    await go('/site/ourstory/index.html'); await wait(`!!document.querySelector('${mirrorLogin}')?.href.includes('/intake/simple.html')`);
+    assert(await ev(`[...document.querySelectorAll('${mirrorLogin}')].every(a => !a.href.includes('account='))`), 'signed-out Members Login must not carry an account');
+    await go('/'); await wait('!!document.querySelector(".tpw-header .login")');
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     await click('.tpw-header .login'); await wait('!!document.querySelector(".tpw-signin:modal")');
     assert.equal(await ev('document.querySelector(".tpw-signin h2").textContent'), 'Welcome to TPW');
@@ -99,7 +119,9 @@ try {
       await click('.tpw-account-intake');
       await wait('location.pathname.endsWith("/intake/simple.html")&&!!document.querySelector("iframe")?.contentDocument?.querySelector("#organization")');
       // Data shows TPW's whole Google Sheet, so member accounts don't get the tab (25 Oct 2026).
-      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard']);
+      assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Submissions', 'Annual report']);
+      // The top menu stays TPW's own when signed in; the member links are only in the bar below it.
+      assert(await ev('![...document.querySelectorAll(".tpw-header nav a")].some(a => /Log data|Dashboard|Programs|Organizations|Submissions|Annual report/.test(a.textContent))'));
       const left = await ev('document.querySelector(".tpw-header .logo").getBoundingClientRect().left');
       assert(Math.abs(await ev('document.querySelector("iframe").getBoundingClientRect().left') - left) < 2);
       const frameWidth = await ev('document.querySelector("iframe").getBoundingClientRect().width');
@@ -125,28 +147,50 @@ try {
     assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
     assert.equal(await ev('document.querySelector(".tpw-header .login").textContent'), 'Members Login');
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
-    await click('.tpw-member-nav a[href*="team-dashboard/#"]');
+    // Sign out sticks: ?account=org-1 leaves the address and the tabs, or the page signs Org 1 back in.
+    assert(await ev('!location.search.includes("account=") && ![...document.querySelectorAll(".tpw-member-nav a")].some(a => /org-1/.test(a.href))'));
+    await go('/team-dashboard/#org-1');
     await wait('!!document.querySelector(".participants-chart svg") && !!document.querySelector(".rac-panel")');
     assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
-    assert(await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
+    assert.equal(await ev('document.querySelector(".dashboard-heading h1").textContent'), 'Dashboard');
+    assert(!await ev('document.querySelector(".dashboard-heading").textContent.includes("Live from TPW’s Google Sheet")'));
     assert.deepEqual(await ev('[...document.querySelectorAll(".program-stats strong")].map(n=>n.textContent)'), ['1', '1', '1']);
     assert.equal(await ev('document.querySelector(".chart-latest").textContent'), '5 participants');
     assert.deepEqual(await ev('[...document.querySelectorAll(".rac-total")].map(n=>n.textContent)'), ['40', '$2,360']);
     assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Dashboard');
     assert(await ev('!document.querySelector(".overview-sheet") && document.documentElement.scrollWidth<=innerWidth'));
-    console.log('PASS original dashboard chart, totals, RAC and savings retained, with source notice:', width);
+    assert.equal(await ev('document.querySelector("#dashboard-exports a").href'), 'https://sheets.new/');
+    assert.deepEqual(await ev('[...document.querySelectorAll("#dashboard-exports button")].map(b => b.textContent)'), ['Export program history (CSV)', 'Export JSON']);
+    assert(await ev('document.querySelector("#dashboard-exports").textContent.includes("not a sync")'));
+    console.log('PASS dashboard retained without technical flavor text; history exports and sheets.new link:', width);
     if (width !== 1024) await screenshot(`restored-dashboard-${width}`);
-    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard']);
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Submissions', 'Annual report']);
+    assert.equal(await ev('document.querySelector(".tpw-member-nav a[target=_blank]").getAttribute("href").replace(/^.*\\/report\\//, "report/")'), 'report/organizations/org-1-annual-report-2026.pdf');
     // A member who opens Data directly lands on their own Dashboard instead.
     await go('/team-dashboard/raw-data.html#org-1');
     await wait('location.pathname.endsWith("/team-dashboard/") && location.hash === "#org-1" && !!document.querySelector(".participants-chart svg")');
     assert(await ev('!document.querySelector(".overview-sheet")'));
     console.log('PASS members see no Data tab; opening Data directly goes to their Dashboard:', width);
+    // Programs and Submissions are pages in the bar again (25 Oct 2026). A member sees only their own
+    // filings, and the Organizations directory is for the TPW view, so opening it goes to the Dashboard.
+    await click('.tpw-member-nav a[href*="programs.html"]');
+    await wait('document.querySelectorAll("#program-table-container tbody tr").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Programs"');
+    await click('.tpw-member-nav a[href*="submissions.html"]');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    assert(await ev('document.querySelector("#submission-tracker").hidden && !!document.querySelector("#view-submission-data")'));
+    await click('#view-submission-data');
+    await wait('document.querySelectorAll(".submission-data-card").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    await go('/team-dashboard/organizations.html#org-1');
+    await wait('location.pathname.endsWith("/team-dashboard/") && !!document.querySelector(".participants-chart svg")');
+    assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
+    console.log('PASS members: Programs and Submissions in the bar, no Organizations directory:', width);
     // The TPW staff view keeps the Data tab.
     await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".tpw-member-nav a[href*=\\"raw-data.html\\"]")');
-    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Data']);
+    assert.deepEqual(await ev('[...document.querySelectorAll(".tpw-member-nav a")].map(n=>n.textContent)'), ['Log data', 'Dashboard', 'Programs', 'Organizations', 'Submissions', 'Annual report', 'Data']);
     const beforeRaw = requests.length;
-    await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet")');
+    await click('.tpw-member-nav a[href*="raw-data.html"]'); await wait('!!document.querySelector(".overview-sheet") && !!document.querySelector(".tpw-member-nav [aria-current]")');
     assert.equal(await ev('document.querySelector("h1").textContent'), 'Data');
     assert.equal(await ev('document.querySelector(".tpw-member-nav [aria-current]").textContent'), 'Data');
     assert(await ev('document.querySelector("#sheet-access").textContent.includes("Google Sheet data, embedded")'));
@@ -157,15 +201,38 @@ try {
     assert(await ev('!document.querySelector("#profile-view,#impact-view,.impact-card")'));
     assert(await ev('document.documentElement.scrollWidth<=innerWidth'));
     console.log('PASS separate Data Sheet embed and direct link, without dashboard modules:', width);
+    // The TPW view also has the Organizations directory and the quarterly submission tracking.
+    await click('.tpw-member-nav a[href*="organizations.html"]');
+    await wait('document.querySelectorAll(".org-card").length > 0');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Organizations"');
+    await click('.tpw-member-nav a[href*="submissions.html"]');
+    await wait('!!document.querySelector(".tracker-quarter")');
+    await wait('document.querySelector(".tpw-member-nav [aria-current]")?.textContent === "Submissions"');
+    assert(await ev('document.querySelector(".submission-choices").hidden && document.documentElement.scrollWidth<=innerWidth'));
+    console.log('PASS TPW view: Organizations directory and submission tracking in the bar:', width);
     await click('.tpw-member-nav a[href*="team-dashboard/#"]');
     await wait('!!document.querySelector(".participants-chart svg")');
   }
-  // Signed out, Data also sends people to the Dashboard.
+  // Signed out, Data also sends people to the Dashboard, which asks them to sign in: no
+  // organization's numbers, and nobody is quietly signed in as Org 1 (fixed 25 Oct 2026).
   await ev('sessionStorage.clear()'); await go('/team-dashboard/raw-data.html');
-  await wait('location.pathname.endsWith("/team-dashboard/") && !!document.querySelector(".participants-chart svg")');
+  await wait('location.pathname.endsWith("/team-dashboard/") && document.querySelector("#dashboard-status")?.textContent.includes("Sign in to see")');
   assert(await ev('!document.querySelector(".overview-sheet, .tpw-member-nav a[href*=raw-data]")'));
-  await go('/team-dashboard/'); await wait('!!document.querySelector(".participants-chart svg")');
-  assert(await ev('location.pathname.endsWith("/team-dashboard/")'));
+  await go('/team-dashboard/'); await wait('document.querySelector("#dashboard-status")?.textContent.includes("Sign in to see")');
+  assert(await ev('location.pathname.endsWith("/team-dashboard/") && !document.querySelector(".participants-chart svg, .rac-panel")'));
+  assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
+  assert(await ev('![...document.querySelectorAll(".tpw-member-nav a")].some(a => /org-1/.test(a.href))'));
+  await click('#view-sections button'); await wait('!!document.querySelector(".tpw-signin:modal")');
+  await go('/members/'); await wait('!!document.querySelector(".tpw-signin:modal")');
+  assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), null);
+  console.log('PASS signed out: Dashboard and members/ ask to sign in, never Org 1');
+  // Signing in on the Dashboard stays on the Dashboard (25 Oct 2026); from TPW's pages it goes to Log data (above).
+  await go('/team-dashboard/'); await wait('document.querySelector("#dashboard-status")?.textContent.includes("Sign in to see")');
+  await click('#view-sections button'); await wait('!!document.querySelector(".tpw-signin:modal")');
+  await click('.tpw-signin-demo button[data-account="tpw"]');
+  await wait('location.pathname.endsWith("/team-dashboard/") && location.hash === "#tpw" && !!document.querySelector(".participants-chart svg") && !document.querySelector(".tpw-signin:modal")');
+  assert.equal(await ev('sessionStorage.getItem("tpw.member.demo.v1")'), 'tpw');
+  console.log('PASS signing in on the Dashboard stays on the Dashboard');
   await go('/team-dashboard/#tpw'); await wait('!!document.querySelector(".participants-chart svg")');
   assert(await ev('!!document.querySelector(".rac-panel")'));
   // The printable roster, scanner and packet reader were removed (25 Oct 2026); old links land on Log data.

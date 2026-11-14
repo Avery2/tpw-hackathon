@@ -181,6 +181,16 @@ test('blank lines and lines staff typed by hand without a reference are skipped'
   assert.equal(submissions.length, 1);
 });
 
+test('a count cleared in the sheet reads as not reported, not as 0', () => {
+  const r = makeReceiver();
+  r.post(payload());
+  const [before] = r.get({ view: 'dashboard' }).submissions;
+  assert.equal(before.programs[0].unreported, undefined, 'a full submission is reported');
+  r.grid[1][r.grid[0].indexOf('Number of Participants')] = '';
+  const [after] = r.get({ view: 'dashboard' }).submissions;
+  assert.equal(after.programs[0].unreported, true);
+});
+
 test('columns are found by heading, so staff can add or move columns', () => {
   const r = makeReceiver();
   r.post(payload());

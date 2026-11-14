@@ -13,7 +13,8 @@ const context = {
   URL, sessionStorage: storage,
   document: {
     currentScript: { src: 'https://example.invalid/tpw-hackathon/assets/mirror-nav.js' },
-    body: {}, querySelectorAll: () => anchors,
+    // Only the account links are present: no captured logo or menu lists in this stand-in page.
+    body: {}, querySelectorAll: selector => (selector.includes('user-accounts-text-link') ? anchors : []),
     addEventListener: (type, fn) => documentHandlers.set(type, fn)
   },
   window: { addEventListener: (type, fn, capture) => { windowHandlers.set(type, fn); if (type === 'click') assert.equal(capture, true); } },
@@ -25,7 +26,7 @@ const source = await readFile(new URL('../../assets/mirror-nav.js', import.meta.
 assert.equal(source.split('import(drawerUrl)').length, 2);
 vm.runInNewContext(source.replace('import(drawerUrl)', 'loadDrawer(drawerUrl)'), context);
 documentHandlers.get('DOMContentLoaded')();
-assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html?account=org-1' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
+assert(anchors.every(a => a.href === 'https://example.invalid/tpw-hackathon/intake/simple.html' && a.textContent === 'Members Login' && a['aria-haspopup'] === 'dialog'));
 async function click(modifiers = {}, accountLink = true) {
   opened = imported = undefined;
   const result = { stopped: false, prevented: false };
@@ -39,7 +40,7 @@ async function click(modifiers = {}, accountLink = true) {
 }
 assert.deepEqual(await click(), { stopped: true, prevented: true });
 assert.equal(opened, anchors[0]);
-assert.equal(imported, 'https://example.invalid/tpw-hackathon/assets/account-drawer.js');
+assert.equal(imported, 'https://example.invalid/tpw-hackathon/assets/account-drawer.js?v=sandbox-1');
 for (const modifiers of [{ metaKey: true }, { ctrlKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }]) {
   assert.deepEqual(await click(modifiers), { stopped: true, prevented: false });
   assert.equal(opened, undefined); // Native new-tab behavior uses the corrected href.

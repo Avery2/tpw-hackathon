@@ -1,0 +1,99 @@
+# Before real members submit real numbers
+
+The tool works end to end today, but it was built as a demonstration with made-up data, and it takes shortcuts that aren't safe for real member data. Every item below needs doing before any member submits real numbers.
+
+They're in the order to do them. Each one says what's true now and what to change. [`technical-guide.md`](technical-guide.md) explains the parts named here.
+
+One rule shapes all of them: assume nobody technical will watch the system day to day. So each fix has to keep working on its own, and when something does break, it has to tell a non-technical person in plain words what happened and who to contact.
+
+## 1. Move the Sheet, the script and the website into TPW's own accounts
+
+**Now:** the Google Sheet and both Apps Scripts live in a demo Google account the hackathon team made, `tpwhackathondemodemo@gmail.com`. Its sign-in was shared within the team. The website is published from a hackathon team member's GitHub account and web address (averychan.site). Technical guide, section 3.1, lists every account and who to ask for access.
+
+**To do:**
+
+- **Make TPW's own copy of the Google Sheet.** Create it in a shared TPW Google account rather than one person's, and don't take over the demo account. Start with a fresh, empty Sheet rather than copying today's: every row in today's Sheet is test data, and the script adds the tab and headings itself on the first submission (technical guide, section 5.9, step 1). Then point the script at it with the `SPREADSHEET_ID` setting.
+- Make TPW's own Apps Script project in that same account (technical guide, section 5.9, steps 2 to 9).
+- Once TPW's copy works, archive the web app in the demo account, so the old addresses stop taking submissions (technical guide, section 3.1).
+- Share the Sheet only with named TPW staff. Never use "Anyone with the link": it holds each organization's own numbers, and members may fear retaliation from CDCR if one organization's figures get out.
+- Publish the website from a GitHub repository (or other host) TPW controls (technical guide, section 8).
+- Check the **Data** page still shows the Sheet only to people it's shared with.
+
+## 2. Build real sign-in
+
+**Now:** "Members Login" is a demo. One click signs you in as Org 1, Org 2 or TPW staff, with no password, and the page address alone decides which organization you are. Changing `org-1` to `org-2` in the address shows and files as Org 2. Pages marked "TPW staff only" just hide their links; the pages themselves are open.
+
+**To do:** finish the emailed-code sign-in that's already designed on the branch `email-code-signin`: a member types their email, gets a 6-digit code, and the script files their rows under the organization TPW has listed for that email, whatever the page says. The technical guide, section 5.8, lists what has to move across and what else changes with it. TPW's Squarespace member login can decide who sees a page, but it can't tell the script which organization someone belongs to, so it can't replace this on its own.
+
+## 3. Close the open dashboard feed
+
+**Now:** the script answers `?view=dashboard` for anyone who asks, with no sign-in, and returns every organization's name, programs and numbers. Its address is in the public website's code (`team-form/backend.js`), so anyone can read the numbers without access to the Sheet.
+
+**To do:** once sign-in works, make the feed return only the signed-in organization's own submissions, and everything only to TPW staff. Until then, don't let real data into the Sheet.
+
+## 4. Stop the Sheet accepting submissions from anyone
+
+**Now:** the script's `ALLOW_UNSIGNED` setting is `true`, so anyone on the internet can add rows under any organization's name.
+
+**To do:** once sign-in works, delete `ALLOW_UNSIGNED` from the script's **Project Settings** → **Script Properties**.
+
+## 5. Take out the demo and test data
+
+- Delete the `TEST_DATA` script setting, so new rows are no longer marked as test data.
+- Empty or delete `data/demo/dashboard-sample.json`, the made-up Org 1 and Org 2, and change the dashboards so an organization's view comes from its sign-in instead of that file (technical guide, sections 5.8 and 7.5).
+- Remove the one-click demo sign-in (`assets/member-session.js` and the account menu that uses it).
+- Replace the sample annual reports in `report/organizations/`.
+
+## 6. Keep anything public to combined figures
+
+Dashboards, reports and anything TPW shares outside should add organizations together, never show one organization's numbers, unless TPW decides otherwise.
+
+**Now:** this repository and the website are public, and some files name real member organizations with their own numbers:
+
+- `report/TPW-Collective-Impact-Report-2026.pdf` and `docs/TPW Collective Impact Report 2026.pdf` name two members and compare their completion rates side by side. The first is linked from the site as the TPW "Annual report".
+- `data/tpw-collective-impact.csv`, `data/tpw-collective-impact-form.xlsx` and `data/snapshots/` hold rows from TPW's earlier Collective Impact sheet, by organization.
+
+**To do:** make TPW's copy of the repository private, or take these files out. Taking a file out of a public repository doesn't remove it from the repository's history, so the simplest safe route is to start TPW's repository as a fresh copy of the current files, without the history. Share reports privately, for example as Google Drive files shared only with named staff.
+
+## 7. Decide which quarter a filing belongs to
+
+**Now:** the script labels each filing with the quarter it arrives in (California time). If TPW asks members in October for July to September numbers, those rows are labelled Q4, not Q3.
+
+**What TPW's own Data Glossary says** (`docs/TPW Data Glossary Instructions.docx`, June 2026): "Submit data for your most recently completed program year." Its calculated Program Year column then puts each program in the year it started, not the year it was submitted. So there are three ways to label a submission: the quarter it arrives in (what the tool does now), the quarter before it, or the program's own start date (what the glossary does).
+
+**To do:** decide which TPW wants, and change the code to match if needed (technical guide, section 5.11). Tell members in the data request which months their numbers should cover.
+
+## 8. (Done) The second Apps Script is gone
+
+On 26 October 2026 the hackathon team switched off the second Apps Script (the one for a follow-up form that asked for a participant ID per person) and removed its code. Nothing to do.
+
+## 9. Check the contact address and embed it in thetpw.org
+
+- When something goes wrong that a member can't fix, the form tells them to email `membership@thetpw.org`. Confirm that's the right address, or change `TPW_CONTACT_EMAIL` in `team-form/index.html`.
+- Show the form on a member page of thetpw.org (technical guide, section 8), and remove the offline copy of thetpw.org (`site/`) once that's done.
+
+## 10. Fix the credit-day and cost figures before anyone outside TPW sees them
+
+**Now:** the Dashboard's "credit days participants could have earned" and "facility costs avoided" figures (`team-dashboard/js/rac.js`) overclaim. They're labelled "upper limit", but the math hasn't changed:
+
+- They assume every program is approved to earn Rehabilitative Achievement Credits. The form doesn't ask.
+- They apply the 40-day yearly cap per program, not per person, so someone in two programs can count for up to 80 days.
+- They count enrollments, not people, so the same person in two programs counts twice.
+- The $59 a day rate ("LAO marginal cost, $21,534/year ÷ 365") hasn't been checked against its source. The $59 is also typed into the label separately from the rate used in the sum, so changing one won't change the other.
+
+**To do:** before any of these figures goes to funders or legislators, decide with TPW whether to keep them. If yes, ask members which programs are credit-approved, apply the cap per person (or say clearly it can't be), check the cost rate, and use one value for both the label and the sum.
+
+## 11. Stop submissions double-counting or wiping each other
+
+These all come from how the form and dashboard match a new submission to an old one. Fix them before real numbers go in, or the dashboard totals will be wrong.
+
+- **A program entered on a blank form counts twice.** Each blank-form entry gets a new program ID, and the dashboard keys programs by ID (`team-dashboard/js/data.js`, `existingPrograms`). TPW staff always start blank, so anything staff enter for a member is counted on top of what the member already submitted. **To do:** match programs by organization, program name and start date as well as ID, or let staff pick the existing program.
+- **Clicking through the pre-filled form wipes a member's numbers.** Pre-fill sets participants and completions to 0, and the newest submission for a program replaces the older one. Submitting without typing new numbers turns that organization's totals to 0. This happened live to the sample Org 1. **To do:** start those boxes empty and require an answer, or warn before submitting zeros.
+- **Nothing stops a second submission in the same quarter.** Pre-fill takes the latest submission without checking its quarter (`team-form/js/last-quarter.js`). **To do:** if this quarter is already submitted, say so and offer to update it instead.
+- **There's no way to correct a submission.** Submitting again adds rows. The only fix is deleting every row with that Submission ID in the Sheet. **To do:** decide with TPW how corrections should work (for example, a new submission that replaces an earlier one by ID), and tell members.
+
+## 12. Make "who hasn't submitted" include members who never have
+
+**Now:** the submissions tracker on the TPW staff view only knows organizations that have submitted at least once, because the script builds its organization list from submissions (`team-form/receiver/Dashboard.gs`, `dashboardView_`). A member who never submits never appears, and those are the members TPW most needs to chase.
+
+**To do:** give the tracker TPW's full member list (for example a Members tab in the Sheet, which real sign-in needs anyway) and compare against that.

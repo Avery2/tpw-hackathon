@@ -8,10 +8,11 @@ globalThis.sessionStorage = {
 };
 const session = await import('../../assets/member-session.js');
 assert.equal(session.getDemoAccount(), null);
-assert.equal(session.demoEntryPath(), 'intake/simple.html?account=org-1');
+// Signed out, the entry carries no account: a link must never sign anyone in as Org 1.
+assert.equal(session.demoEntryPath(), 'intake/simple.html');
 for (const invalid of ['', null, undefined, '__proto__', 'constructor', 'someone@example.invalid']) {
   assert.equal(session.setDemoAccount(invalid), false);
-  assert.equal(session.demoEntryPath(invalid), 'intake/simple.html?account=org-1');
+  assert.equal(session.demoEntryPath(invalid), 'intake/simple.html');
 }
 for (const account of Object.keys(session.demoAccounts)) {
   assert.equal(session.setDemoAccount(account), true);

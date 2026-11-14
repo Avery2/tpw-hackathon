@@ -24,11 +24,19 @@ def wire_mirror(html: str, path: str) -> str:
     if 'data-tpw-mirror-nav' in html:
         return html
     script = posixpath.relpath('assets/mirror-nav.js', posixpath.dirname(path))
-    tag = f'\n<script src="{script}" data-tpw-mirror-nav></script>'
+    tag = f'\n<script src="{script}?v=sandbox-1" data-tpw-mirror-nav></script>'
     result, count = re.subn(r'<head(?:\s[^>]*)?>', lambda match: match[0] + tag, html, count=1, flags=re.I)
     if count != 1:
         raise ValueError(f'Missing HTML head: {path}')
     return result
+
+
+def public_source(relative: str) -> bool:
+    """Local backend and private environment settings never belong on Pages."""
+    return not (
+        relative.startswith(('.github/', 'server/', 'database/', 'work/', '.neon'))
+        or any(part == '.env' or part.startswith('.env.') for part in Path(relative).parts)
+    )
 
 
 def build(output: Path) -> int:
@@ -44,7 +52,7 @@ def build(output: Path) -> int:
         if not item:
             continue
         relative = os.fsdecode(item)
-        if relative.startswith('.github/'):
+        if not public_source(relative):
             continue
         source, target = ROOT / relative, output / relative
         if source.is_symlink():

@@ -96,6 +96,8 @@ function dashboardData_(rows, filter) {
     }
     program.participants += dashboardCount_(cell(at.participants));
     program.participantsCompleted += dashboardCount_(cell(at.completed));
+    // A blank cell means "not reported", not 0: say so, so the dashboard doesn't show it as a real zero.
+    if ([at.participants, at.completed, at.hours].some(function (column) { return dashboardText_(cell(column)) === ''; })) program.unreported = true;
     var assignment = program.assignments.filter(function (item) { return item.code === code; })[0];
     if (!assignment) { assignment = { code: code, yards: [] }; program.assignments.push(assignment); }
     if (yard && assignment.yards.indexOf(yard) < 0) assignment.yards.push(yard);

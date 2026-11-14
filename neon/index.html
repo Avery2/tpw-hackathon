@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>TPW prototype</title>
+  <link rel="stylesheet" href="auth.css?v=sandbox-1">
+  <script type="module" src="auth-page.js?v=sandbox-1"></script>
+</head>
+<body>
+  <div class="sandbox-banner">Test site · synthetic data only</div>
+  <header class="site-header">
+    <a href="../" aria-label="TPW home"><img src="../assets/img/logo.png" alt="Transformative Programming Works" width="190"></a>
+  </header>
+  <main>
+    <section class="auth-card" aria-label="Member account">
+      <p id="loading" role="status">Opening prototype…</p>
+      <p id="error" class="error" role="alert" hidden></p>
+      <p id="notice" role="status" aria-live="polite"></p>
+      <div id="signed-out" hidden>
+        <h1 id="form-title">Sign in</h1>
+        <form id="auth-form" method="post" action="./">
+          <div id="name-field" hidden>
+            <label for="name">Display name</label>
+            <input id="name" name="name" type="text" autocomplete="nickname" maxlength="100" disabled>
+          </div>
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="username" required maxlength="254" spellcheck="false" autocapitalize="none">
+          <label for="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required maxlength="128" aria-describedby="password-help">
+          <p id="password-help" class="field-help" hidden></p>
+          <button id="submit" type="submit">Sign in</button>
+        </form>
+        <p class="account-toggle"><span id="toggle-prompt">New here?</span> <button id="toggle-mode" class="text-button" type="button">Create an account</button></p>
+      </div>
+      <div id="signed-in" hidden>
+        <h1>Your account</h1>
+        <p id="identity"></p>
+        <p id="access-message"></p>
+        <ul id="organizations" aria-label="Your organizations"></ul>
+        <div id="destinations" class="actions" hidden>
+          <a id="intake-link" class="button" href="../intake/simple.html?backend=neon">Log data</a>
+          <a id="dashboard-link" class="button secondary" href="../team-dashboard/?backend=neon">Dashboard</a>
+        </div>
+        <details class="user-id">
+          <summary>Account details</summary>
+          <label for="user-id">User ID</label>
+          <input id="user-id" type="text" readonly spellcheck="false" autocomplete="off">
+          <div class="actions">
+            <button id="copy-id" class="secondary" type="button">Copy user ID</button>
+            <button id="refresh-access" class="secondary" type="button">Refresh access</button>
+          </div>
+        </details>
+        <button id="sign-out" class="text-button sign-out" type="button">Sign out</button>
+      </div>
+      <noscript><p>Enable JavaScript to sign in.</p></noscript>
+    </section>
+    <details class="help-note">
+      <summary>Trouble signing in?</summary>
+      <p>Allow sign-in cookies or try another browser. For access, share your user ID with TPW.</p>
+    </details>
+    <p class="return-link"><a id="sheets-link" href="../intake/simple.html?backend=sheet">Back to Sheets demo</a></p>
+  </main>
+  <footer><a href="mailto:membership@thetpw.org">Contact TPW</a></footer>
+</body>
+</html>
