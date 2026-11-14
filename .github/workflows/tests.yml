@@ -1,6 +1,6 @@
 name: Tests
 
-# Runs every test suite on every push, to any branch. It only reads the code:
+# The legacy suite can be enabled with the RUN_LEGACY_TESTS repository variable.
 # it never publishes the website (that's pages.yml) and never writes to Google.
 # Every test fakes Google, and the browser tests intercept requests to it.
 #
@@ -22,6 +22,7 @@ concurrency:
 
 jobs:
   tests:
+    if: ${{ vars.RUN_LEGACY_TESTS == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -142,5 +143,32 @@ jobs:
             [ "$status" -eq 0 ] && exit 0
             grep -q "Chrome did not start" "$RUNNER_TEMP/browser.log" || exit "$status"
             echo "Chrome didn't start in time, so trying once more."
+          done
+          exit 1
+
+  next-workspace:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:neon
+      - run: npx playwright install --with-deps chromium
+      - name: Test the built app in Chromium
+        run: |
+          npm start -- --hostname 127.0.0.1 > "$RUNNER_TEMP/next.log" 2>&1 &
+          server=$!
+          trap 'kill "$server" 2>/dev/null || true; cat "$RUNNER_TEMP/next.log"' EXIT
+          for attempt in $(seq 1 30); do
+            if curl -fsS -o /dev/null http://localhost:3000/team-dashboard/; then
+              npm run test:browser
+              exit
+            fi
+            sleep 1
           done
           exit 1

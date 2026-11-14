@@ -4,7 +4,7 @@ import pg from 'pg';
 import {submissionDocument} from '../form-demo/js/submissions.js';
 import {existingPrograms} from '../dashboard/js/data.js';
 import {checkinDraft} from '../dashboard/js/checkin-data.js';
-const base='http://localhost:8788';
+const base=process.env.TPW_SMOKE_URL || 'http://localhost:8788';
 const id=randomUUID(),org='org-1';
 const db=new pg.Client({connectionString:process.env.DATABASE_URL_UNPOOLED});await db.connect();
 try{

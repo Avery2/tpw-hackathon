@@ -1802,11 +1802,20 @@ async function prefillFromLastQuarter() {
   organization.readOnly = true;
   document.querySelector('#organization-summary').textContent = draft.organization;
   document.querySelector('#organization-summary').closest('.organization-summary').hidden = true;
+  function applySelectedPeriod() {
+    const quarter = Number(params.get('quarter'));
+    const year = Number(params.get('year'));
+    if ([1, 2, 3, 4].includes(quarter) && Number.isInteger(year) && year >= 2000 && year <= 2200) {
+      selectReportingPeriod({ quarter, year });
+      document.querySelector('#quarter-continue').click();
+    }
+  }
   if (!draft.programs.length) {
     // A first report: nothing to carry forward, but they needn't type their name.
     note.remove();
     quarterStep.hidden = false;
-    document.querySelector('#quarter-question').focus();
+    applySelectedPeriod();
+    if (!transitioning) document.querySelector('#quarter-question').focus();
     return;
   }
   lastQuarter = draft;
@@ -1853,6 +1862,7 @@ async function prefillFromLastQuarter() {
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);
 
+  applySelectedPeriod();
 }
 // Only completed, explicitly submitted attempts are persisted in either Neon mode.
 // Unsubmitted editor inputs are deliberately NOT autosaved; the default Sheets flow is unchanged.

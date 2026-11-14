@@ -1,3 +1,4 @@
+import { NeonRequestError } from './neon-demo-client.js?v=reporting-1';
 import { demoApi } from './neon-api.js';
 
 export function toSubmissionDocument(payload, draft) {
@@ -41,7 +42,7 @@ export async function saveTeamSubmission(payload, draft) {
     if (result.id !== payload.submissionId) throw new Error('The database did not return a matching receipt.');
     return { ok: true, submissionId: result.id, reference: result.id };
   } catch (error) {
-    error.definitiveRejection = [400, 413].includes(error.status);
+    if ([400, 413].includes(error.status)) throw new NeonRequestError(error.message, error.status);
     throw error;
   }
 }

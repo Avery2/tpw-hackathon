@@ -1,4 +1,4 @@
-import { existingPrograms } from '../dashboard/js/data.js';
+import { existingPrograms } from '../dashboard/js/existing-programs.js';
 import { InputError } from './validation.js';
 
 const numeric = new Set(['courseHours', 'participants', 'participantsCompleted']);

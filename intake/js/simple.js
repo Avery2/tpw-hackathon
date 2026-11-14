@@ -28,8 +28,8 @@ function demoPanel() {
     </div>`;
 }
 
-function render() {
-  document.getElementById('app').innerHTML = demoPanel();
+export function mountLogData(root = document) {
+  root.querySelector('#app').innerHTML = demoPanel();
 }
 
-render();
+if (!document.body.hasAttribute('data-next-workspace')) mountLogData();
