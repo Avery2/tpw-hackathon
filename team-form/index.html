@@ -278,6 +278,10 @@
   .prison-card-header { display: flex; align-items: flex-start; }
   .prison-card-header .choose { flex: 1; padding: 16px; font-weight: 700; }
   .yard-choices { margin: 0 16px 16px; padding: 4px 0 0; border: 0; display: grid; gap: 10px; }
+  .yard-choices { grid-template-columns: repeat(auto-fit, minmax(min(100%, max(140px, calc((100% - 10px) / 2))), 1fr)); }
+  .yard-choices > .yard-hint, .yard-choices > .yard-add { grid-column: 1 / -1; }
+  .yard-choices > label { min-width: 0; overflow-wrap: anywhere; }
+  .yard-choices > label input { flex-shrink: 0; }
   .yard-choices legend { font-weight: 700; padding: 0 0 8px; width: 100%; border-bottom: 2px solid var(--prison, #b8d2be); }
   .yard-hint { margin: 0; font-size: 15px; color: var(--body); }
   .yard-choices label { display: flex; align-items: center; gap: 10px; cursor: pointer; }
@@ -290,9 +294,25 @@
   .yard-add input:focus-visible { outline: 3px solid var(--sage); outline-offset: 3px; border-color: var(--sage); }
   .yard-add button { flex: none; border: 1px solid #c4ccc1; border-radius: 7px; background: #fff; color: var(--ink); font: inherit; font-size: 15px; font-weight: 700; padding: 6px 16px; cursor: pointer; }
 
+.quarter-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; border: 0; padding: 0; margin: 0; }
+.quarter-options label { cursor: pointer; position: relative; }
+.quarter-options input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.quarter-options span { display: grid; gap: 6px; border: 2px solid #ddd; border-radius: 12px; padding: 20px 10px; text-align: center; }
+.quarter-options strong { font-size: 24px; }
+.quarter-options small { color: #666; font-size: 14px; }
+.quarter-options input:checked + span { border-color: var(--sage); background: #edf6ef; }
+.quarter-options input:focus-visible + span { outline: 3px solid var(--sage); outline-offset: 4px; }
+#reporting-year { max-width: 180px; }
+@media (max-width: 540px) { .quarter-options { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
   .demo-form.program-mode { max-width: 1200px; }
-  #programs-step { grid-template-columns: minmax(240px, .8fr) minmax(0, 1.4fr); align-items: start; gap: 36px; }
-  .program-sidebar { display: grid; gap: 20px; min-width: 0; }
+  #programs-step { grid-template-columns: minmax(0, 1fr); align-items: start; gap: 20px; }
+  .program-sidebar { min-width: 0; padding: 20px; background: #f0f5f0; border: 1px solid #d4e2d6; border-radius: 14px; }
+  @media (min-width: 920px) {
+    #programs-step:not(.submitted) { grid-template-columns: minmax(240px, 1fr) minmax(0, 2fr); gap: 30px; }
+    #programs-step:not(.submitted) > .program-editor { border-left: 2px solid #d4e2d6; padding-left: 30px; }
+  }
+  .program-sidebar > .organization-summary { margin-block: 16px; }
   .program-editor { display: grid; gap: 20px; min-width: 0; }
   #prison-summary { display: grid; gap: 16px; }
   #prison-summary > li { padding: 18px; }
@@ -302,19 +322,13 @@
   .summary-yard p { margin: 0; font-weight: 400; color: var(--body); font-size: 15px; }
   #prison-summary .summary-yard ul { padding-left: 18px; }
   #prison-summary .summary-yard li { border: 0; background: none; padding: 3px 0; font-weight: 500; }
-  @media (max-width: 800px) { #programs-step { grid-template-columns: 1fr; } }
-
-  /* Separate the overview from the active program editor. */
-  #programs-step { gap: 0; }
-  .program-sidebar { background: #f0f5f0; border: 1px solid #d4e2d6; border-radius: 14px; padding: 24px; margin-right: 30px; }
-  .program-editor { border-left: 2px solid #d4e2d6; padding-left: 30px; }
   .program-editor > .form-title { margin-bottom: 0; }
-  .program-editor .program-card { background: #fff; border: 1px solid #d8d8d8; box-shadow: 0 4px 18px rgba(0, 0, 0, .04); }
-  @media (max-width: 800px) {
-    #programs-step { gap: 30px; }
-    .program-sidebar { margin-right: 0; padding: 20px; }
-    .program-editor { border-left: 0; border-top: 2px solid #d4e2d6; padding-left: 0; padding-top: 30px; }
-  }
+  .program-editor .program-card { background: #fff; border-color: #d8d8d8; box-shadow: 0 4px 18px rgba(0, 0, 0, .04); }
+  .program-card > .organization-summary { align-items: start; }
+  .program-card h3 { font-size: 22px; overflow-wrap: anywhere; }
+  .program-card h3:focus { outline: none; }
+  .program-card .continue-button { font-size: 16px; }
+  .program-card .organization-summary .program-remove { font-size: 13px; }
 
   #prison-summary summary { cursor: pointer; font-size: 20px; font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
   #prison-summary summary::marker { color: var(--prison, var(--sage)); }
@@ -330,17 +344,41 @@
   #programs-step.submitted { display: block; }
   .submitted .program-sidebar, .submitted .program-editor > :not(#submission-result) { display: none; }
   .submitted .program-editor { padding: 0; border: 0; }
-  #submission-result { border: 0; padding: 8px 0; background: transparent; text-align: left; gap: 18px; }
-  #submission-heading { margin: 0; font-size: clamp(1.6rem, 3vw, 2.2rem); }
-  .submission-context { margin: 0; color: #555; font-size: 17px; }
-  #submission-receipt { margin: 0; font-size: 14px; font-weight: 400; color: #666; overflow-wrap: anywhere; }
-  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 24px; border-block: 1px solid #e5e5e5; padding: 20px 0; }
-  .success-metric { display: grid; align-content: start; gap: 4px; }
-  .success-metric strong { font-size: 28px; font-weight: 700; line-height: 1.2; }
-  .success-metric span { font-size: 14px; color: #666; }
-  .report-note { font-size: 14px; color: var(--body); }
-  .full-report { text-align: left; padding-top: 4px; }
-  .full-report > summary { cursor: pointer; font-size: 16px; font-weight: 700; text-align: left; }
+  #submission-result { border: 0; padding: 20px 0; background: transparent; text-align: center; gap: 28px; }
+  .success-check { width: 104px; height: 104px; margin: 0 auto; border-radius: 50%; background: var(--green); color: #143c20; display: grid; place-items: center; font-size: 68px; line-height: 1; }
+  #submission-heading { font-size: clamp(2rem, 5vw, 3.5rem); }
+  .success-totals { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+  .success-metric { padding: 24px 16px; background: #f4f6f3; border-radius: 12px; display: grid; gap: 10px; }
+  .success-metric strong { font-family: var(--display); font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400; }
+  .success-metric span { font-size: 16px; }
+  .mock-impact { background: #fff7df; border-radius: 14px; padding: 28px; }
+  .mock-label { display: inline-block; background: var(--yellow); padding: 4px 12px; border-radius: 999px; text-transform: uppercase; font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+  .mock-impact h3 { margin: 16px 0; font-size: 24px; }
+  .mock-impact .success-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .mock-impact .success-metric { background: transparent; }
+  .mock-impact > p, .report-note { font-size: 15px; color: var(--body); }
+  .full-report { text-align: left; border-top: 1px solid #ddd; padding-top: 24px; }
+  .full-report > summary { cursor: pointer; font-size: 22px; font-weight: 700; text-align: center; }
+  .submission-context, #submission-receipt { margin: 0; color: #555; overflow-wrap: anywhere; }
+.currency-reels { display: inline-flex; align-items: baseline; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.currency-reel { display: inline-block; height: 1em; overflow: hidden; line-height: 1; vertical-align: baseline; }
+.currency-strip { display: flex; flex-direction: column; will-change: transform; }
+.currency-strip > span { display: block; height: 1em; min-height: 1em; line-height: 1; }
+.rolling-currency { line-height: 1.2; }
+
+#mock-totals .success-metric strong { font-size: clamp(2.8rem, 6vw, 5rem); line-height: 1.15; }
+#mock-totals .success-metric > span { font-size: 18px; font-weight: 700; }
+.currency-strip > span { font-size: inherit; font-weight: inherit; }
+@media(max-width: 550px) { #mock-totals { grid-template-columns: 1fr; } }
+
+#mock-totals .success-metric strong { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.15; }
+#mock-totals .rolling-currency .currency-reels,
+#mock-totals .rolling-currency .currency-reel,
+#mock-totals .rolling-currency .currency-strip,
+#mock-totals .rolling-currency .currency-strip > span,
+#mock-totals .rolling-currency .currency-reels > span { font-size: inherit; font-family: inherit; font-weight: inherit; color: inherit; }
+@media(max-width: 850px) { #mock-totals { grid-template-columns: 1fr; } }
+  #mock-totals .success-metric strong { overflow-wrap: anywhere; }
   .report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-top: 24px; align-items: start; }
   .report-prison { min-width: 0; overflow-wrap: anywhere; padding: 20px; border: 2px solid var(--prison); background: var(--prison-bg); border-radius: 12px; }
   .report-prison h3 { margin: 0 0 12px; font-size: 21px; line-height: 1.2; }
@@ -366,7 +404,7 @@
 
   .report-grid { gap: 24px; }
   .report-prison { padding: 0; border: 1px solid #e0e5df; border-radius: 16px; background: #fff; overflow: hidden; box-shadow: 0 5px 20px rgba(0,0,0,.05); }
-  .report-card-header { padding: 22px; background: var(--prison-bg); border-top: 5px solid var(--prison); }
+  .report-card-header { padding: 22px; background: var(--prison-bg); }
   .report-code { display: inline-block; color: var(--prison); font-size: 12px; font-weight: 800; letter-spacing: .1em; margin-bottom: 12px; }
   .report-prison .report-card-header h3 { font-size: 22px; line-height: 1.15; margin: 0 0 14px; }
   .report-program-count { font-size: 13px; font-weight: 700; color: var(--body); }
@@ -396,11 +434,22 @@
     .count-row { grid-template-columns: 1fr; }
     .date-row { grid-template-columns: 1fr; }
   }
-  .added-programs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-  .added-programs li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; padding: 10px 14px; background: #fff; border: 1px solid #d4e2d6; border-radius: 10px; }
-  .added-programs .added-name { flex: 1 1 auto; font-weight: 700; overflow-wrap: anywhere; }
-  .added-programs .needs-prison { flex-basis: 100%; order: 3; margin: 0; font-size: 14px; color: #9a3412; }
-  .added-programs button { background: transparent; border: 0; padding: 0; font: inherit; text-decoration: underline; cursor: pointer; }
+  /* One continuous list: finished programs shrink in place; the next opens below. */
+  .added-programs { list-style: none; counter-reset: program; margin: 0; padding: 0; }
+  #program-next .added-programs { display: grid; gap: 8px; }
+  #program-next .added-programs > li { background: #fff; border: 1px solid #d4e2d6; border-radius: 10px; }
+  .added-programs > li { counter-increment: program; position: relative; min-width: 0; padding: 16px 12px 16px 44px; }
+  .added-programs > li::before { content: counter(program) "."; position: absolute; left: 12px; top: 18px; color: #687168; font-size: 14px; }
+  .added-programs > .is-open { padding-block: 20px; scroll-margin-top: 80px; }
+  .added-programs > .is-open::before { top: 26px; }
+  .program-row { display: flex; align-items: start; gap: 12px; }
+  .program-toggle { flex: 1; min-width: 0; display: grid; gap: 4px; background: transparent; border: 0; padding: 0; font: inherit; text-align: left; cursor: pointer; }
+  .program-toggle .added-name { font-weight: 700; overflow-wrap: anywhere; }
+  .program-toggle .program-state { font-size: 13px; color: #687168; }
+  .program-toggle .is-ready { color: #386741; }
+  .program-remove { flex: none; background: transparent; border: 0; padding: 2px; font: inherit; font-size: 13px; color: #666; text-decoration: underline; cursor: pointer; }
+  .program-toggle:focus-visible, .program-remove:focus-visible { outline: 3px solid var(--sage); outline-offset: 4px; }
+  #program-feedback:empty { display: none; }
   .start-over { justify-self: start; }
   /* Headings get focus only so screen readers announce the new step; they don't need a focus box. */
   [tabindex="-1"]:focus { outline: none; }
@@ -409,7 +458,7 @@
   .yard-numbers { margin: 0; padding: 16px; border: 1px solid #ddd; border-radius: 8px; min-width: 0; display: grid; gap: 12px; }
   .yard-numbers legend { font-weight: 700; padding: 0 6px; }
   .yard-number-rows { display: grid; gap: 10px; }
-  .yard-number-row { display: grid; grid-template-columns: minmax(90px, .8fr) 1fr 1fr; gap: 12px; align-items: end; padding: 10px 12px; border-left: 4px solid var(--prison, var(--sage)); background: var(--prison-bg, #f4f6f3); border-radius: 8px; }
+  .yard-number-row { display: grid; grid-template-columns: minmax(90px, .8fr) 1fr 1fr; gap: 12px; align-items: end; padding: 10px 12px; background: var(--prison-bg, #f4f6f3); border-radius: 8px; }
   .yard-number-place { font-weight: 700; align-self: center; }
   .yard-count { display: grid; gap: 6px; min-width: 0; }
   .yard-count-label { font-size: 14px; font-weight: 700; }
@@ -437,10 +486,10 @@
   body.embed .page-heading,
   body.embed footer { display: none; }
   /* Match the Session tab's column and field spacing; keep the program overview wide. */
-  body.embed .form-section { padding: 24px 0; background: #fff; }
+  body.embed .form-section { padding: 24px 0; background: transparent; }
   body.embed .form-section > .shell { max-width: 640px; padding-inline: 22px; }
   body.embed .form-section:has(.program-mode) > .shell { max-width: 1244px; }
-  body.embed .demo-form { padding: 0; border: 0; border-radius: 0; }
+  body.embed { background: transparent; }
   body.embed .form-field label { font-size: 13.5px; }
   body.embed .form-field > input,
   body.embed .form-field > select,
@@ -451,14 +500,14 @@
 
 .report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 .prefill-note { font-size: 15px; padding: 16px; background: #f5f5f5; border-radius: 10px; }
-/* Carrying forward, the numbers are the job: on narrow screens show the program before the prisons summary. */
-@media (max-width: 800px) { .prefill-mode .program-sidebar { order: 2; } }
 
 .prefill-mode #facilities-step > .step-label,
 .prefill-mode #facilities-step > .organization-summary,
 .prefill-mode #facilities-step .yard-choices,
 .prefill-mode #facilities-step #facility-help,
 .prefill-mode #facilities-step h2:not(#facilities-question) { display: none; }
+/* Starting blank, the "Your facilities" heading says it; the question stays for screen readers and focus. */
+#demo-form:not(.prefill-mode) #facilities-question { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .prefill-mode #facility-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 @media(max-width: 850px) { .prefill-mode #facility-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media(max-width: 500px) { .prefill-mode #facility-cards { grid-template-columns: 1fr; } }
@@ -487,7 +536,7 @@
 .prefill-mode #facility-cards .facility-card.editing .prison-card-actions { grid-row: 4; }
 </style>
 <link rel="stylesheet" href="../assets/site-shell.css">
-<script type="module" src="../assets/site-shell.js"></script>
+<script type="module" src="../assets/site-shell.js?v=reporting-5"></script>
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
@@ -519,26 +568,40 @@
             <label for="organization">Organization</label>
             <input id="organization" name="organization" type="text" autocomplete="organization" maxlength="120" placeholder="Start typing to pick a TPW member" list="member-list" aria-describedby="organization-help" required>
             <datalist id="member-list"></datalist>
-            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are submitted under one name. If it isn’t listed, type it in full.</p>
+            <p class="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
           </div>
           <button class="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
         </section>
+        <section id="quarter-step" class="question-step" aria-labelledby="quarter-question" hidden>
+          <p class="step-label">Reporting period</p>
+          <h2 class="form-title" id="quarter-question" tabindex="-1">Which quarter are you reporting for?</h2>
+          <p class="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
+          <fieldset class="quarter-options">
+            <legend class="sr-only">Reporting quarter</legend>
+            <label><input type="radio" name="reporting_quarter" value="1"><span><strong>Q1</strong><small>Jan – Mar</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="2"><span><strong>Q2</strong><small>Apr – Jun</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="3"><span><strong>Q3</strong><small>Jul – Sep</small></span></label>
+            <label><input type="radio" name="reporting_quarter" value="4"><span><strong>Q4</strong><small>Oct – Dec</small></span></label>
+          </fieldset>
+          <div class="form-field"><label for="reporting-year">Year</label><input id="reporting-year" name="reporting_year" type="number" min="2000" max="2200" step="1" required></div>
+          <div class="next-actions"><button type="button" class="continue-button" id="quarter-continue">Continue →</button></div>
+        </section>
         <section id="facilities-step" class="question-step" aria-labelledby="facilities-question" hidden>
           <div class="organization-summary"><span>Organization: <strong id="organization-summary"></strong></span><button id="edit-organization" type="button">Edit</button></div>
-          <div class="organization-summary"><span>Current reporting period: <strong id="quarter-summary"></strong></span></div>
+          <div class="organization-summary"><span>Reporting period: <strong id="quarter-summary"></strong></span></div>
           <p class="step-label">Step 2 · Facilities</p>
-          <h2 class="form-title" id="facilities-question" tabindex="-1">Which prisons do you operate in?</h2>
+          <h2 class="form-title" id="facilities-question" tabindex="-1">Which facilities do you operate in?</h2>
         <div class="facility-overview">
-          <h2 class="form-title">Your prisons</h2>
-          <p class="form-hint" id="facility-help">Select each prison where you operate, then check all the yards you work in at that prison.</p>
-          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected prisons"></div>
-          <p id="facility-empty" class="form-hint">No prisons selected yet.</p>
+          <h2 class="form-title" id="prisons-heading">Your facilities</h2>
+          <p class="form-hint" id="facility-help">Select each facility where you operate, then check all the yards you work in at that facility.</p>
+          <div id="facility-cards" class="facility-cards" role="group" aria-label="Selected facilities"></div>
+          <p id="facility-empty" class="form-hint">No facilities selected yet.</p>
           <p id="facility-announcement" class="sr-only" role="status"></p>
         </div>
         <div class="form-field">
-          <label for="facility">Add a prison</label>
+          <label for="facility">Add a facility</label>
           <select id="facility" aria-describedby="facility-help">
-            <option value="" selected disabled>Select a prison to add</option>
+            <option value="" selected disabled>Select a facility to add</option>
           <option value="ASP">Avenal State Prison (ASP)</option>
           <option value="CCI">California Correctional Institution (CCI)</option>
           <option value="CHCF">California Health Care Facility (CHCF), Stockton</option>
@@ -573,36 +636,42 @@
           </select>
         </div>
         <button type="button" id="continue-programs" class="continue-button" disabled aria-describedby="continue-programs-help">Continue to programs →</button>
-        <p id="continue-programs-help" class="yard-hint">Add at least one prison to continue.</p>
+        <p id="continue-programs-help" class="yard-hint">Add at least one facility to continue.</p>
         </section>
         <section id="programs-step" class="question-step" aria-labelledby="programs-question" hidden>
-          <aside class="program-sidebar" aria-label="Prisons, yards, and completed programs">
-          <div class="organization-summary"><span>Your prisons &amp; yards</span><button type="button" id="edit-prisons">Edit prisons</button></div>
+          <aside class="program-sidebar" aria-label="Facilities and yards">
+          <div class="organization-summary"><span>Your facilities &amp; yards</span><button type="button" id="edit-prisons">Edit facilities</button></div>
           <ul id="prison-summary" class="prison-summary"></ul>
           </aside>
           <div class="program-editor">
           <p class="step-label">Step 3 · Programs</p>
           <h2 id="programs-question" class="form-title" tabindex="-1">What programs do you run?</h2>
-          <p class="form-hint">Add each program, select a prison, then choose the yards where that program runs.</p>
-          <div id="program-list" class="question-step"></div>
+          <p class="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
+          <ol id="added-programs" class="added-programs" role="list" aria-label="Programs this quarter"></ol>
+          <div id="program-list" class="question-step" hidden></div>
           <section id="program-next" class="question-step" aria-labelledby="program-next-heading" hidden>
-            <h3 class="form-title" id="program-next-heading" tabindex="-1">Program added. What’s next?</h3>
-            <ul id="added-programs" class="added-programs" aria-label="Programs added so far"></ul>
+            <h3 class="form-title" id="program-next-heading" tabindex="-1">Ready to submit</h3>
             <div class="next-actions">
               <button type="button" id="another-program" class="continue-button">+ Add another program</button>
               <button type="button" id="finish-form" class="continue-button">Finish and submit</button>
             </div>
-            <p class="form-hint" id="where-it-goes">Demo submission saves to this browser only.</p>
           </section>
           <section id="submission-result" class="question-step" hidden>
-            <h2 class="form-title" id="submission-heading" tabindex="-1">Submission saved</h2>
+            <div class="success-check" aria-hidden="true">✓</div>
+            <h2 class="form-title" id="submission-heading" tabindex="-1">You’re all set!</h2>
             <p id="submission-context" class="submission-context"></p>
             <p id="submission-receipt" class="submit-status" role="status" hidden></p>
             <div id="submission-totals" class="success-totals"></div>
-            <button type="button" id="start-over" class="continue-button start-over">Log more data</button>
+            <button type="button" id="start-over" class="continue-button start-over">Start a new submission</button>
+            <section class="mock-impact" aria-labelledby="mock-impact-heading" hidden>
+              <span class="mock-label">Estimate</span>
+              <h3 id="mock-impact-heading">A glimpse of your impact</h3>
+              <div id="mock-totals" class="success-totals"></div>
+              <p>Estimated RAC days × $59 per day, using the same calculation as the dashboard.</p>
+            </section>
             <details class="full-report">
-              <summary>View submitted details</summary>
-              <p class="report-note">Program totals are counted once, even when a program serves multiple prisons. Participants are program enrollments, not unique people. Per-prison cards show assignments; totals are not allocated across prisons.</p>
+              <summary>Expand full submission</summary>
+              <p class="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-facility cards show assignments; totals are not allocated across facilities.</p>
               <div id="report-prisons" class="report-grid"></div>
             </details>
           </section>
@@ -617,6 +686,7 @@
           <label for="scheduled-status">Schedule Status</label>
           <select id="scheduled-status" name="scheduled_status" required>
             <option value="" selected disabled>Select a status</option>
+            <option value="Planned">Planned</option>
             <option value="In Progress">In Progress</option>
             <option value="Completed">Completed</option>
           </select>
@@ -643,15 +713,10 @@
         </div>
         <fieldset class="yard-numbers">
           <legend>Participants at each yard</legend>
-          <p class="yard-hint">TPW counts each yard separately, so give the numbers for each yard where this program runs.</p>
+          <p class="yard-hint">Blank counts are saved as 0.</p>
           <div class="yard-number-rows"></div>
-          <p class="yard-hint yard-numbers-empty">Choose a prison and yard above first.</p>
+          <p class="yard-hint yard-numbers-empty">Choose a facility and yard above first.</p>
         </fieldset>
-        <div class="form-field">
-          <label for="program-notes">Anything else you’d like to tell us about this program? <span class="label-note">(optional)</span></label>
-          <textarea id="program-notes" name="notes" rows="4" maxlength="2000" aria-describedby="program-notes-help" placeholder="Any context you’d like TPW to understand"></textarea>
-          <p id="program-notes-help" class="yard-hint">Up to 2,000 characters. Please don’t include participant names or other identifying information.</p>
-        </div>
         </template>
         </section>
       </form>
@@ -662,26 +727,70 @@
   <div class="shell">
     <div class="logo"><img src="../assets/img/logo.png" alt="TPW"></div>
     <div class="cols">
-      <p class="note">Unofficial hackathon demo built for Hack for Social Impact 2026. Not affiliated with Transformative Programming Works; their logo, photography, and copy belong to them and are used here to prototype in their design language.</p>
-      <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
+            <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
     </div>
   </div>
 </footer>
 
-<script src="backend.js"></script>
 <script type="module">
+import { isSandboxMode, enableSandboxMode } from '../assets/neon-config.js?v=reporting-1';
+import { saveTeamSubmission } from '../assets/team-submissions.js';
+import { getDemoAccount, setDemoAccount } from '../assets/member-session.js?v=reporting-1';
+if (isSandboxMode()) {
+  enableSandboxMode();
+  setDemoAccount(new URLSearchParams(location.search).get('account'));
+}
 import { currentReportingPeriod } from './js/reporting-period.js';
+import { isNeonMode, authStateReady, dataApiRequest } from '../assets/neon-auth-client.js?v=reporting-1';
+let neonContext = null, neonAuthError = null;
+if (isNeonMode()) {
+  try { neonContext = await authStateReady(); }
+  catch (error) { neonAuthError = error; } // Keep the form and saved attempt; never use the demo identity.
+}
+const neonSubmissionMode = () => isSandboxMode() || isNeonMode() || !!neonDemoUrl();
+import { neonDemoUrl, boundedFetch, memberSubmissionIdentity, releaseRejectedAttempt, readAttempt, prepareAttempt, confirmAttempt, clearAttempt } from '../assets/neon-demo-client.js?v=reporting-1';
+// Signed in as TPW staff, the form is filled in for a member organization, so it says "their",
+// not "your".
+const staffView = isNeonMode() ? neonContext?.isStaff === true : isSandboxMode() ? getDemoAccount() === 'tpw' : new URLSearchParams(location.search).get('account') === 'tpw';
+if (staffView) {
+  for (const [selector, text] of [
+    ['#organization-question', 'Which organization are you logging data for?'],
+    ['#organization-help', 'Pick the organization from the list so their numbers are submitted under one name. If it isn’t listed, type it in full.'],
+    ['#prisons-heading', 'Their facilities'],
+    ['#facility-help', 'Select each facility where they operate, then check all the yards they work in at that facility.'],
+    ['#facilities-question', 'Which facilities do they operate in?'],
+    ['#programs-question', 'What programs do they run?']
+  ]) for (const node of document.querySelectorAll(selector)) node.textContent = text;
+  // The label beside Edit facilities, not the organization line on each program card.
+  const sideLabel = document.querySelector('#edit-prisons')?.previousElementSibling;
+  if (sideLabel) sideLabel.textContent = 'Their facilities & yards';
+  // Each program card is copied from this template, so word it once here.
+  const fields = document.querySelector('#program-fields')?.content;
+  fields?.querySelector('#program-name')?.setAttribute('placeholder', 'Enter the program name');
+
+}
 const form = document.querySelector('#demo-form');
 const organization = document.querySelector('#organization');
 const organizationStep = document.querySelector('#organization-step');
 const facilitiesStep = document.querySelector('#facilities-step');
+const quarterStep = document.querySelector('#quarter-step');
+const reportingYear = document.querySelector('#reporting-year');
+function selectReportingPeriod(period) {
+  form.querySelector(`[name="reporting_quarter"][value="${period.quarter}"]`).checked = true;
+  reportingYear.value = period.year;
+  reportingPeriod();
+}
 function reportingPeriod() {
-  const period = currentReportingPeriod();
+  const period = {
+    quarter: Number(form.querySelector('[name="reporting_quarter"]:checked').value),
+    year: reportingYear.valueAsNumber
+  };
   document.querySelector('#quarter-summary').textContent = `Q${period.quarter} ${period.year}`;
   return period;
 }
-reportingPeriod();
+selectReportingPeriod(currentReportingPeriod());
 let transitioning = false;
+let openingForm = false; // true only while the pre-filled form first opens: see prefillFromLastQuarter()
 async function showStep(from, to, focusTarget) {
   if (transitioning) return;
   transitioning = true;
@@ -703,14 +812,27 @@ form.addEventListener('submit', event => {
   event.preventDefault();
   if (organizationStep.hidden || transitioning) return;
   if (!organization.value.trim()) {
-    organization.setCustomValidity('Enter your organization name.');
+    organization.setCustomValidity(staffView ? 'Enter the organization name.' : 'Enter your organization name.');
     organization.reportValidity();
     return;
   }
   organization.value = organization.value.trim();
   document.querySelector('#organization-summary').textContent = organization.value;
   reportingPeriod();
-  showStep(organizationStep, facilitiesStep, document.querySelector('#facilities-question'));
+  showStep(organizationStep, quarterStep, document.querySelector('#quarter-question'));
+});
+document.querySelector('#quarter-continue').addEventListener('click', async () => {
+  if (transitioning || !reportingYear.reportValidity()) return;
+  reportingPeriod();
+  if (!lastQuarter) {
+    await showStep(quarterStep, facilitiesStep, document.querySelector('#facilities-question'));
+    return;
+  }
+  form.classList.add('program-mode');
+  await showStep(quarterStep, programsStep, document.querySelector('#programs-question'));
+  openingForm = true;
+  reviewNext();
+  openingForm = false;
 });
 organization.addEventListener('input', () => organization.setCustomValidity(''));
 document.querySelector('#edit-organization').addEventListener('click', () => {
@@ -718,7 +840,7 @@ document.querySelector('#edit-organization').addEventListener('click', () => {
 });
 // Suggest TPW's member names so one organization isn't submitted under several spellings.
 // If the list can't load, the field still takes free text.
-fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
+if (!isNeonMode() && !isSandboxMode()) fetch('../data/public/tpw-members.csv').then(response => response.ok ? response.text() : '').then(text => {
   const names = text.split(/\r?\n/).slice(1).map(line => {
     const match = line.match(/^"((?:[^"]|"")*)"|^([^,]*)/);
     return match ? (match[1] ?? match[2]).replace(/""/g, '"').trim() : '';
@@ -767,6 +889,11 @@ const continuePrograms = document.querySelector('#continue-programs');
 const programList = document.querySelector('#program-list');
 let programNumber = 0;
 const completedPrograms = [];
+// The open editor stays in its position in the visible program list. Switching rows parks
+// the actual DOM, including incomplete/invalid inputs, rather than reconstructing answers.
+let openProgram = null;
+const parkedEditors = new Map();
+const panelPrograms = () => openProgram ? [...completedPrograms, openProgram] : completedPrograms;
 let lastQuarter = null;
 const prisonDisclosureState = new Map();
 function createAssignmentRow(program, code, prison) {
@@ -813,7 +940,7 @@ function syncAssignmentYards(program, row, code, prison) {
   if (!available.length) {
     const note = document.createElement('p');
     note.className = 'yard-hint yard-empty';
-    note.textContent = 'Choose yards for this prison in the previous step.';
+    note.textContent = 'Choose yards for this facility in the previous step.';
     yards.append(note);
     return;
   }
@@ -834,7 +961,7 @@ function refreshPrisons() {
   continuePrograms.disabled = prisons.size === 0 || (!lastQuarter && missingYards.length > 0);
   // Say why the button is greyed out, not just that it is.
   document.querySelector('#continue-programs-help').textContent = prisons.size === 0
-    ? 'Add at least one prison to continue.'
+    ? 'Add at least one facility to continue.'
     : !lastQuarter && missingYards.length ? `Choose at least one yard for: ${missingYards.join(', ')}.` : '';
   // A finished program can't keep pointing at a prison or yard that has since been removed.
   for (const program of completedPrograms) {
@@ -846,7 +973,7 @@ function refreshPrisons() {
   for (const [code, prison] of prisons) {
     const badge = prison.card.querySelector('.prison-card-program-count');
     if (badge) {
-      const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code)).length;
+      const count = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code)).length;
       badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
     }
   }
@@ -878,7 +1005,7 @@ picker.addEventListener('change', () => {
   remove.setAttribute('aria-label', `Remove ${name}`);
   const header = document.createElement('div'); header.className = 'prison-card-header'; header.append(title, remove);
   const yardGroup = document.createElement('fieldset'); yardGroup.className = 'yard-choices';
-  const legend = document.createElement('legend'); legend.textContent = 'Yards you operate in';
+  const legend = document.createElement('legend'); legend.textContent = staffView ? 'Yards they operate in' : 'Yards you operate in';
   const hint = document.createElement('p'); hint.className = 'yard-hint'; hint.textContent = 'Select all that apply.';
   yardGroup.append(legend, hint);
   const selectedYards = new Set();
@@ -956,7 +1083,7 @@ picker.addEventListener('change', () => {
     announcement.textContent = `${name} removed.`;
   });
   option.disabled = true; picker.value = ''; refreshPrisons();
-  announcement.textContent = `${name} added. ${prisons.size} prisons selected.`;
+  announcement.textContent = `${name} added. ${prisons.size} facilities selected.`;
 });
 // The − / + buttons beside a number box.
 function wireStepper(stepper) {
@@ -989,12 +1116,12 @@ function countStepper(label, kind) {
   const stepper = document.createElement('div'); stepper.className = 'stepper';
   const down = document.createElement('button'); down.type = 'button'; down.dataset.step = '-1'; down.textContent = '−';
   const input = document.createElement('input'); input.type = 'number'; input.min = '0'; input.step = '1';
-  input.inputMode = 'numeric'; input.value = '0'; input.dataset.kind = kind;
+  input.inputMode = 'numeric'; input.value = ''; input.placeholder = '0'; input.dataset.kind = kind;
   const up = document.createElement('button'); up.type = 'button'; up.dataset.step = '1'; up.textContent = '+';
   stepper.append(down, input, up); field.append(caption, stepper);
   return field;
 }
-// One row of Participants / Completed for every prison and yard the program is ticked for.
+// One row of Participants enrolled / Completed for every prison and yard the program is ticked for.
 // Rows that stay ticked keep what was typed in them.
 function syncYardNumbers(program) {
   const holder = program.querySelector('.yard-number-rows');
@@ -1014,9 +1141,9 @@ function syncYardNumbers(program) {
       row.dataset.code = code; row.dataset.yard = yard;
       const place = document.createElement('span'); place.className = 'yard-number-place';
       place.textContent = `${code} · ${yard}`;
-      const participants = countStepper('Participants', 'participants');
+      const participants = countStepper('Participants enrolled', 'participants');
       const completed = countStepper('Completed', 'completed');
-      for (const [field, what] of [[participants, 'participants'], [completed, 'participants completed']]) {
+      for (const [field, what] of [[participants, 'participants enrolled'], [completed, 'participants completed']]) {
         const [down, up] = field.querySelectorAll('button');
         down.setAttribute('aria-label', `Decrease ${what} at ${code} ${yard}`);
         up.setAttribute('aria-label', `Increase ${what} at ${code} ${yard}`);
@@ -1032,10 +1159,21 @@ function syncYardNumbers(program) {
   program.querySelector('.yard-numbers-empty').hidden = wanted.length > 0;
 }
 function addProgram(focus = true, saved = null, editIndex) {
+  const parked = saved && parkedEditors.get(saved.id);
+  if (parked) {
+    parkedEditors.delete(saved.id);
+    parked.dataset.editIndex = editIndex;
+    openProgram = saved;
+    programList.replaceChildren(parked);
+    refreshPrisons();
+    if (focus && !openingForm) focusProgram(parked);
+    return;
+  }
   const number = ++programNumber;
   const program = document.createElement('section'); program.className = 'program-card question-step'; program.dataset.number = number;
+  program.dataset.programId = saved?.id || crypto.randomUUID();
   const top = document.createElement('div'); top.className = 'organization-summary';
-  const heading = document.createElement('h3'); heading.className = 'form-title'; heading.textContent = `Program ${completedPrograms.length + 1}`;
+  const heading = document.createElement('h3'); heading.className = 'form-title'; heading.tabIndex = -1; heading.textContent = saved?.name || 'New program';
   top.append(heading); program.append(top, document.querySelector('#program-fields').content.cloneNode(true));
   for (const field of program.querySelectorAll('input, select, textarea')) {
     const original = field.id; field.id = `program-${number}-${original}`;
@@ -1044,15 +1182,33 @@ function addProgram(focus = true, saved = null, editIndex) {
   }
   for (const stepper of program.querySelectorAll('.stepper')) wireStepper(stepper);
   const fieldset = document.createElement('fieldset'); fieldset.className = 'prison-options';
-  const legend = document.createElement('legend'); legend.textContent = 'Which prisons does this program apply to?';
+  const legend = document.createElement('legend'); legend.textContent = 'Which facilities does this program apply to?';
   const assignments = document.createElement('div'); assignments.className = 'program-assignments';
   fieldset.append(legend, assignments);
   program.querySelector('.form-field').after(fieldset);
   // Ticking or unticking a yard adds or removes its row of numbers.
   assignments.addEventListener('change', () => syncYardNumbers(program));
-  const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button'; complete.textContent = 'Complete program →';
+  const fields = document.createElement('div'); fields.className = 'question-step';
+  const nameField = program.querySelector('.form-field');
+  const hours = program.querySelector('.count-row');
+  nameField.before(fields); fields.append(nameField, fieldset, hours);
+  nameField.querySelector('input').addEventListener('input', event => { heading.textContent = event.target.value.trim() || 'New program'; });
+  const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'program-remove'; remove.textContent = 'Remove';
+  remove.setAttribute('aria-label', `Remove ${saved?.name || 'new program'}`);
+  remove.addEventListener('click', () => {
+    parkedEditors.delete(program.dataset.programId);
+    openProgram = null; programList.replaceChildren(); refreshPrisons();
+    if (!reviewNext()) {
+      document.querySelector('#program-next').hidden = !completedPrograms.length;
+      if (completedPrograms.length) focusProgramEnd(); else addProgram();
+    }
+  });
+  top.append(remove);
+  const complete = document.createElement('button'); complete.type = 'button'; complete.className = 'continue-button';
   complete.addEventListener('click', () => completeProgram(program));
   program.append(complete);
+  openProgram = editIndex === undefined ? null : saved;
+  if (editIndex !== undefined) program.dataset.editIndex = editIndex;
   programList.replaceChildren(program); refreshPrisons();
   // With only one prison there's nothing to choose, so tick it (its yard too, if it has just one).
   if (!saved && prisons.size === 1) {
@@ -1061,8 +1217,7 @@ function addProgram(focus = true, saved = null, editIndex) {
   }
   if (saved) {
     // Editing: put the saved answers back, then tick the prisons and yards it ran in.
-    heading.textContent = `Editing ${saved.name}`;
-    program.dataset.editIndex = editIndex;
+    heading.textContent = saved.name;
     if (saved.id) program.dataset.programId = saved.id;
     for (const input of program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')) {
       const key = input.name.slice(input.name.lastIndexOf('['));
@@ -1089,7 +1244,26 @@ function addProgram(focus = true, saved = null, editIndex) {
       }
     }
   }
-  if (focus) program.querySelector('input').focus();
+  if (focus && !openingForm) focusProgram(program);
+}
+// Focus the program's identity, not another identical empty status dropdown. Two frames
+// allow the embedded form's ResizeObserver to settle before scrolling the outer page.
+function focusProgram(program) {
+  program.querySelector('h3').focus({ preventScroll: true });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    if (program.isConnected && programList.firstElementChild === program) program.closest('li').scrollIntoView({
+      block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+    });
+  }));
+}
+function focusProgramEnd() {
+  const heading = document.querySelector('#program-next-heading');
+  heading.focus({ preventScroll: true });
+  requestAnimationFrame(() => heading.scrollIntoView({ block: 'nearest' }));
+}
+function revealProgramField(field) {
+  for (let details = field.closest('details'); details; details = details.parentElement.closest('details')) details.open = true;
+  field.reportValidity();
 }
 continuePrograms.addEventListener('click', () => {
   if (continuePrograms.disabled || transitioning) return;
@@ -1112,7 +1286,7 @@ function renderProgramSummary() {
     });
     const title = document.createElement('summary');
     const prisonName = document.createElement('span'); prisonName.textContent = prison.name;
-    const count = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.some(yard => prison.yards.has(yard)))).length;
+    const count = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.some(yard => prison.yards.has(yard)))).length;
     const badge = document.createElement('span'); badge.className = 'program-count';
     badge.textContent = `${count} ${count === 1 ? 'program' : 'programs'}`;
     title.append(prisonName, document.createTextNode(' '), badge);
@@ -1120,10 +1294,12 @@ function renderProgramSummary() {
     for (const yard of prison.yards) {
       const block = document.createElement('div'); block.className = 'summary-yard';
       const name = document.createElement('h4'); name.textContent = yard; block.append(name);
-      const matches = completedPrograms.filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.includes(yard)));
+      const matches = panelPrograms().filter(program => program.assignments.some(assignment => assignment.code === code && assignment.yards.includes(yard)));
       const list = document.createElement('ul');
       for (const program of matches) {
-        const row = document.createElement('li'); row.textContent = program.name; list.append(row);
+        const row = document.createElement('li'); row.textContent = program.name;
+        if (program === openProgram) { row.className = 'summary-open'; row.append(' · filling in'); }
+        list.append(row);
       }
       if (matches.length) block.append(list);
       else { const note = document.createElement('p'); note.textContent = 'No programs added yet'; block.append(note); }
@@ -1138,13 +1314,13 @@ function completeProgram(program) {
   const feedback = document.querySelector('#program-feedback');
   nameInput.setCustomValidity(name ? '' : 'Enter a program name.');
   nameInput.oninput = () => nameInput.setCustomValidity('');
-  if (!name) { nameInput.reportValidity(); return; }
+  if (!name) { revealProgramField(nameInput); return; }
   // Clear last time's date and number messages so a fixed field doesn't stay flagged.
   for (const suffix of ['start-date', 'end-date']) program.querySelector(`[id$="-${suffix}"]`).setCustomValidity('');
   for (const input of program.querySelectorAll('.yard-number-row input')) input.setCustomValidity('');
   for (const field of program.querySelectorAll('input, select, textarea')) {
     // Say what's wrong now, so an earlier message (say, about dates) isn't left showing.
-    if (!field.checkValidity()) { feedback.textContent = field.validationMessage; field.reportValidity(); return; }
+    if (!field.checkValidity()) { feedback.textContent = field.validationMessage; revealProgramField(field); return; }
   }
   // Catch numbers and dates that can't be true before they reach the totals.
   const field = suffix => program.querySelector(`[id$="-${suffix}"]`);
@@ -1155,12 +1331,10 @@ function completeProgram(program) {
     input.setCustomValidity(message);
     input.addEventListener('input', () => input.setCustomValidity(''), { once: true });
     input.addEventListener('change', () => input.setCustomValidity(''), { once: true });
-    input.reportValidity();
+    revealProgramField(input);
     feedback.textContent = message;
   };
-  if (!start.value) { problem(start, 'Enter the date this program started.'); return; }
-  const notes = field('program-notes');
-  if (notes.value.length > 2000) { problem(notes, 'Use no more than 2,000 characters for the optional context.'); return; }
+  if (status !== 'Planned' && !start.value) { problem(start, 'Enter the date this program started.'); return; }
   if (status === 'Completed' && !end.value) { problem(end, 'Enter the date this program ended.'); return; }
   if (start.value && end.value && end.value < start.value) { problem(end, 'The end date is before the start date.'); return; }
   feedback.textContent = '';
@@ -1168,7 +1342,7 @@ function completeProgram(program) {
   for (const row of program.querySelectorAll('.assignment-row')) {
     if (!row.querySelector(':scope > label input').checked) continue;
     const yards = [...row.querySelectorAll('.program-yards input:checked')].map(input => input.value);
-    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected prison.'; row.querySelector('.program-yards input')?.focus(); return; }
+    if (!yards.length) { feedback.textContent = 'Choose at least one yard for each selected facility.'; row.querySelector('.program-yards input')?.focus(); return; }
     if (lastQuarter) {
       const prison = prisons.get(row.dataset.code);
       for (const yard of yards) prison.yards.add(yard);
@@ -1176,17 +1350,17 @@ function completeProgram(program) {
     }
     assignments.push({ code: row.dataset.code, yards });
   }
-  if (!assignments.length) { feedback.textContent = 'Choose at least one prison and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
+  if (!assignments.length) { feedback.textContent = 'Choose at least one facility and yard for this program.'; program.querySelector('.assignment-row input')?.focus(); return; }
   // Numbers are per yard, because each yard becomes its own row in TPW's sheet.
   const counts = {};
   for (const row of program.querySelectorAll('.yard-number-row')) {
     const participants = row.querySelector('[data-kind="participants"]');
     const completed = row.querySelector('[data-kind="completed"]');
     for (const input of [participants, completed]) {
-      if (!input.checkValidity()) { input.reportValidity(); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
+      if (!input.checkValidity()) { revealProgramField(input); feedback.textContent = `Use whole numbers for ${row.dataset.code} ${row.dataset.yard}.`; return; }
     }
     if (Number(completed.value) > Number(participants.value)) {
-      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${participants.value} participants who started.`);
+      problem(completed, `At ${row.dataset.code} ${row.dataset.yard}, completed can’t be more than the ${Number(participants.value)} participants enrolled.`);
       return;
     }
     counts[row.dataset.key] = { participants: Number(participants.value), completed: Number(completed.value) };
@@ -1194,35 +1368,23 @@ function completeProgram(program) {
   const values = Object.fromEntries([...program.querySelectorAll('.form-field input, .form-field select, .form-field textarea')].map(field => [field.name, field.value]));
   // An edited program goes back where it was in the list.
   const at = program.dataset.editIndex === undefined ? completedPrograms.length : Number(program.dataset.editIndex);
+  openProgram = null;
   completedPrograms.splice(at, 0, { id: program.dataset.programId || crypto.randomUUID(), name, assignments, values, counts });
   programList.replaceChildren();
   refreshPrisons();
-  const done = program.dataset.editIndex === undefined ? `${name} added.` : `${name} updated.`;
-  // Carrying forward from last quarter: go straight on to the next program still waiting for
-  // this quarter's numbers, rather than making them find its Edit button.
-  if (lastQuarter && reviewNext(done)) return;
+  // The finished row remains visible above the next expanded program.
+  if (reviewNext()) return;
   document.querySelector('#program-next').hidden = false;
-  document.querySelector('#program-next-heading').focus();
-  feedback.textContent = lastQuarter ? `${done} All programs have this quarter’s numbers. Check the list, then submit.` : done;
+  focusProgramEnd();
+  feedback.textContent = '';
 }
 
 // Opens the next carried-forward program that still needs this quarter's numbers. Returns
 // false when there are none left.
-function reviewNext(before = '') {
+function reviewNext() {
   const index = completedPrograms.findIndex(program => program.needsReview);
   if (index < 0) return false;
-  // Count only last quarter's programs that are still in the list (a member may remove some).
-  const carried = new Set(lastQuarter.programs.map(program => program.id));
-  const total = completedPrograms.filter(program => carried.has(program.id)).length;
-  const left = completedPrograms.filter(program => program.needsReview).length;
   editProgram(index);
-  const card = programList.querySelector('.program-card');
-  card.querySelector('h3').textContent = `${total - left + 1} of ${total}: ${card.querySelector('[id$="-program-name"]').value}`;
-  const hint = document.createElement('p'); hint.className = 'form-hint';
-  hint.textContent = 'Last quarter’s prisons, yards and course hours are filled in. Add this quarter’s status, dates, and participants and completions for each yard, and change the course hours if they’re different.';
-  card.querySelector('.organization-summary').after(hint);
-  document.querySelector('#program-feedback').textContent = before;
-  card.querySelector('[id$="-scheduled-status"]').focus();
   return true;
 }
 
@@ -1231,44 +1393,95 @@ document.querySelector('#another-program').addEventListener('click', () => {
   document.querySelector('#program-feedback').textContent = '';
   addProgram();
 });
-// Finished programs stay editable: list them with Edit and Remove.
+// The editor lives inside the list, so finishing one row visibly opens the next.
+// Keep its DOM intact when refreshing the surrounding summaries.
 function renderAddedPrograms() {
   const list = document.querySelector('#added-programs');
+  const editor = programList.firstElementChild;
+  programList.remove();
   list.replaceChildren();
-  completedPrograms.forEach((program, index) => {
+  const rows = completedPrograms.map(program => ({ program }));
+  if (editor) rows.splice(editor.dataset.editIndex === undefined ? rows.length : Number(editor.dataset.editIndex), 0, { editor });
+  for (const row of rows) {
     const item = document.createElement('li');
-    const name = document.createElement('span'); name.className = 'added-name'; name.textContent = program.name;
-    const edit = document.createElement('button'); edit.type = 'button'; edit.textContent = 'Edit';
-    edit.setAttribute('aria-label', `Edit ${program.name}`);
-    edit.addEventListener('click', () => editProgram(index));
-    const remove = document.createElement('button'); remove.type = 'button'; remove.textContent = 'Remove';
-    remove.setAttribute('aria-label', `Remove ${program.name}`);
-    remove.addEventListener('click', () => removeProgram(index));
-    item.append(name, edit, remove);
-    if (program.needsReview) { const review = document.createElement('span'); review.className = 'needs-prison'; review.textContent = 'Review for this quarter'; item.append(review); }
-    if (!program.assignments.length) {
-      const warning = document.createElement('p'); warning.className = 'needs-prison';
-      warning.textContent = 'Its prisons or yards were removed. Edit it to choose new ones, or remove it.';
-      item.append(warning);
+    if (row.editor) {
+      item.className = 'is-open';
+      item.dataset.programId = editor.dataset.programId;
+      programList.hidden = false; item.append(programList);
+      editor.querySelector('.continue-button').textContent = completedPrograms.some(program => program.needsReview) ? 'Done · next program →' : 'Done with program';
+    } else {
+      const { program } = row;
+      item.dataset.programId = program.id;
+      const header = document.createElement('div'); header.className = 'program-row';
+      const edit = document.createElement('button'); edit.type = 'button'; edit.className = 'program-toggle';
+      edit.setAttribute('aria-label', `Edit ${program.name}`); edit.setAttribute('aria-expanded', 'false');
+      const name = document.createElement('span'); name.className = 'added-name'; name.textContent = program.name;
+      const state = document.createElement('span'); state.className = 'program-state';
+      if (program.needsReview) state.textContent = parkedEditors.has(program.id) ? 'In progress' : 'Needs numbers';
+      else if (!program.assignments.length) state.textContent = 'Choose facilities & yards';
+      else {
+        state.classList.add('is-ready');
+        const counts = program.assignments.flatMap(({ code, yards }) => yards.map(yard => program.counts?.[`${code}|${yard}`]));
+        state.textContent = counts.length && counts.every(count => count && Number.isFinite(count.participants) && Number.isFinite(count.completed))
+          ? `✓ Ready · ${counts.reduce((sum, count) => sum + count.participants, 0)} enrolled · ${counts.reduce((sum, count) => sum + count.completed, 0)} completed`
+          : '✓ Ready';
+      }
+      edit.append(name, state);
+      edit.addEventListener('click', () => editProgram(completedPrograms.indexOf(program)));
+      const remove = document.createElement('button'); remove.type = 'button'; remove.className = 'program-remove'; remove.textContent = 'Remove';
+      remove.setAttribute('aria-label', `Remove ${program.name}`);
+      remove.addEventListener('click', () => removeProgram(completedPrograms.indexOf(program)));
+      header.append(edit, remove); item.append(header);
     }
     list.append(item);
-  });
+  }
+  const ready = document.querySelector('#program-next');
+  if (editor) ready.before(list);
+  else {
+    document.querySelector('#program-next-heading').after(list);
+    programList.hidden = true;
+    ready.before(programList);
+  }
+}
+function parkOpenProgram() {
+  const editor = programList.firstElementChild;
+  if (!editor) return;
+  // Partial values, blank numbers and validation state remain on this same DOM.
+  const program = { ...openProgram, id: editor.dataset.programId,
+    name: editor.querySelector('[id$="-program-name"]').value.trim() || 'New program', needsReview: true,
+    assignments: [...editor.querySelectorAll('.assignment-row')].filter(row => row.querySelector(':scope > label input').checked)
+      .map(row => ({ code: row.dataset.code, yards: [...row.querySelectorAll('.program-yards input:checked')].map(box => box.value) })) };
+  const at = editor.dataset.editIndex === undefined ? completedPrograms.length : Number(editor.dataset.editIndex);
+  completedPrograms.splice(at, 0, program);
+  parkedEditors.set(program.id, editor);
+  programList.replaceChildren(); openProgram = null;
 }
 function editProgram(index) {
-  const [program] = completedPrograms.splice(index, 1);
+  const target = completedPrograms[index];
+  if (!target) return;
+  parkOpenProgram();
+  const at = completedPrograms.indexOf(target);
+  const [program] = completedPrograms.splice(at, 1);
   document.querySelector('#program-next').hidden = true;
   document.querySelector('#program-feedback').textContent = '';
-  addProgram(true, program, index);
+  addProgram(true, program, at);
 }
 function removeProgram(index) {
+  const rows = [...document.querySelector('#added-programs').children];
+  const rowIndex = rows.findIndex(row => row.dataset.programId === completedPrograms[index].id);
+  const restoreFocus = rows[rowIndex]?.contains(document.activeElement);
   const [program] = completedPrograms.splice(index, 1);
+  parkedEditors.delete(program.id);
+  const editor = programList.firstElementChild;
+  if (editor?.dataset.editIndex !== undefined && index < Number(editor.dataset.editIndex)) editor.dataset.editIndex--;
   refreshPrisons();
   document.querySelector('#program-feedback').textContent = `${program.name} removed.`;
-  if (!completedPrograms.length) {
-    document.querySelector('#program-next').hidden = true;
-    addProgram();
-  } else {
-    document.querySelector('#program-next-heading').focus();
+  if (!editor && !reviewNext()) {
+    document.querySelector('#program-next').hidden = !completedPrograms.length;
+    if (completedPrograms.length) focusProgramEnd(); else addProgram();
+  } else if (editor && restoreFocus) {
+    const row = document.querySelector('#added-programs').children[Math.min(rowIndex, rows.length - 2)];
+    row?.querySelector('.program-toggle, h3')?.focus();
   }
 }
 // Where members write when the form breaks in a way they can't fix. Change it here only.
@@ -1291,14 +1504,14 @@ let submissionId;
 let submittedPayload = '';
 let submitting = false;
 document.querySelector('#finish-form').addEventListener('click', async () => {
-  if (submitting) return;
+  if (submitting || programList.children.length || document.querySelector('#finish-form').disabled) return;
   if (!completedPrograms.length) return;
   if (completedPrograms.some(program => program.needsReview)) {
     document.querySelector('#program-feedback').textContent = 'Edit and complete each carried-forward program for this quarter before submitting.'; return;
   }
   const orphaned = completedPrograms.filter(program => !program.assignments.length);
   if (orphaned.length) {
-    document.querySelector('#program-feedback').textContent = `Choose a prison and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
+    document.querySelector('#program-feedback').textContent = `Choose a facility and yard for ${orphaned.map(program => program.name).join(', ')}, or remove it, before you submit.`;
     return;
   }
   const submission = {
@@ -1314,9 +1527,9 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   const showDone = (receipt) => {
     document.querySelector('#program-next').hidden = true;
     feedback.textContent = '';
-    renderSubmission(submission);
+    renderSubmission(localAttempt?.submission || submission);
     const note = document.querySelector('#submission-receipt');
-    note.textContent = receipt || 'Saved in this browser only. This demo doesn’t send your answers anywhere yet.';
+    note.textContent = receipt || 'Saved in this browser only.'
     note.hidden = false;
     programsStep.classList.add('submitted');
     document.querySelector('#submission-result').hidden = false;
@@ -1326,8 +1539,29 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   // The same ID on every retry, so a reply lost on its way back can't file the quarter twice.
   // A new ID once the entries change: otherwise the receiver could answer a corrected retry
   // with the first attempt's receipt and quietly drop the correction.
+  if (neonSubmissionMode()) {
+    try {
+      if (isNeonMode()) {
+        neonContext = await authStateReady();
+        const selected = neonContext.orgs?.filter(org => org.name === submission.organization);
+        if (selected?.length !== 1) throw new Error('Choose an existing organization assigned to your account, or contact TPW.');
+        submission.orgId = selected[0].id;
+      }
+      Object.assign(submission, memberSubmissionIdentity());
+    } catch (error) { feedback.textContent = `${error.message} Your answers are still here. No submission was sent.`; return; }
+  }
   const payloadNow = JSON.stringify(toPayload(submission, ''));
   if (!submissionId || payloadNow !== submittedPayload) { submissionId = crypto.randomUUID(); submittedPayload = payloadNow; }
+  let localAttempt;
+  if (neonSubmissionMode()) {
+    try {
+      localAttempt = prepareAttempt(toPayload(submission, submissionId), submission);
+      submissionId = localAttempt.payload.submissionId;
+    } catch (error) {
+      feedback.textContent = `${error.message} Your entries are still here. No new submission was sent.`;
+      return;
+    }
+  }
   if (!backendUrl() && !window.google?.script?.run) {
     // No back end set up: the demo behavior, saved in this browser only.
     try {
@@ -1348,12 +1582,30 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   programsStep.setAttribute('aria-busy', 'true');
   let result;
   try {
-    result = await sendToBackend(toPayload(submission, submissionId));
+    result = localAttempt?.receipt || await sendToBackend(localAttempt?.payload || toPayload(submission, submissionId), localAttempt?.submission || submission);
   } catch (error) {
     console.error('Submission failed:', error);
     // An unreadable reply (say, a Google sign-in page) isn't a connection problem.
-    showWithContact(feedback, error instanceof SyntaxError
-      ? 'TPW’s form service sent back something unexpected, so we can’t tell if this was saved. Your entries are still here; please try again.'
+    // If this page's own site still answers, the member's connection is fine and TPW's form
+    // service is the problem (for example its Google account was signed out, which the
+    // browser reports as a failed request, not an unreadable reply).
+    if (localAttempt) {
+      try {
+        if (releaseRejectedAttempt(error)) {
+          submissionId = undefined; submittedPayload = '';
+          showWithContact(feedback, `${error.message} Nothing was saved. Your answers are still here; correct them and submit again.`);
+          return;
+        }
+      } catch {
+        showWithContact(feedback, `${error.message} Nothing was saved, but the browser could not release the saved attempt. Your answers are still here; allow browser storage before trying again.`);
+        return;
+      }
+    }
+    const online = !neonSubmissionMode() && (error instanceof SyntaxError || await boundedFetch(location.href, { method: 'HEAD', cache: 'no-store' }, 5000).then(() => true, () => false));
+    showWithContact(feedback, neonSubmissionMode()
+      ? `${error.message} Could not confirm this save. Your saved attempt and answers are still here; retry the same answers or reload to recover them. Do not start a new submission until this attempt has a receipt.`
+      : online
+      ? 'TPW’s form service isn’t working right now, so we can’t tell if this was saved. This isn’t a problem with your connection. Your entries are still here; please try again later.'
       : 'Couldn’t reach TPW. Check your connection; your entries are still here, so try again.');
     return;
   } finally {
@@ -1369,16 +1621,17 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
     return;
   }
   const rows = Number.isInteger(result.rows) ? `${result.rows} ${result.rows === 1 ? 'row' : 'rows'}, ` : '';
-  showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.`);
+  let receiptWarning = '';
+  if (localAttempt) {
+    try { confirmAttempt(result); }
+    catch {
+      receiptWarning = ' The save is confirmed, but this browser could not store its receipt. Keep this reference. Your original attempt is still retained; retrying it will not create another submission.';
+    }
+  }
+  showDone(`Submitted to TPW: ${rows}reference ${result.reference || result.submissionId}.${receiptWarning}`);
 });
 
-// The address in backend.js, if one is set.
-function backendUrl() {
-  const url = (window.TPW_BACKEND_URL || '').trim();
-  return /^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(url) || /^http:\/\/localhost:\d+\//.test(url) ? url : '';
-}
-// What the sheet writer needs, in plain field names. The organization is only a fallback
-// for the demo: once sign-in is connected, the server records it under the signed-in organization.
+function backendUrl() { return 'reporting-api'; }
 function toPayload(submission, submissionId) {
   return {
     submissionId,
@@ -1397,38 +1650,24 @@ function toPayload(submission, submissionId) {
     }))
   };
 }
-// Sign-in hands the page a pass as window.tpwSession = { token, organization, email }.
-// Sent as plain text so the browser doesn't ask Google's server for permission first;
-// Apps Script reads the body either way.
-async function sendToBackend(payload) {
-  const token = window.tpwSession?.token || '';
-  // Older receivers ignore notes. Refuse rather than silently discard them.
-  if (payload.programs.some(program => program.notes)) {
-    const capabilities = window.google?.script?.run
-      ? await new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).getFormCapabilities())
-      : await fetch(backendUrl(), { cache: 'no-store' }).then(response => response.json());
-    if (!capabilities.features?.programNotes) {
-      return { ok: false, errors: ['The receiver needs its program-notes update before this can be saved. Your answers are still here; please ask TPW to update the receiver, then retry.'] };
-    }
-  }
-  if (window.google?.script?.run) {
-    return new Promise((resolve, reject) => google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).submitForm(token, payload));
-  }
-  return fetch(backendUrl(), {
-    method: 'POST',
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ token, payload })
-  }).then(response => response.json());
+async function sendToBackend(payload, draft) {
+  return saveTeamSubmission(payload, draft);
 }
-if (backendUrl()) document.querySelector('#where-it-goes').textContent = 'Submitting sends your answers to TPW.';
-
-document.querySelector('#start-over').addEventListener('click', () => location.reload());
+document.querySelector('#start-over').addEventListener('click', () => {
+  try { clearAttempt(); }
+  catch {
+    document.querySelector('#submission-receipt').textContent = 'Could not clear the saved submission attempt. Please allow browser storage and try again.';
+    return;
+  }
+  const address = new URL(location.href);
+  address.searchParams.delete('blank');
+  location.replace(address.href);
+});
 
 function programValue(program, key) {
   const entry = Object.entries(program.values).find(([name]) => name.endsWith(`[${key}]`));
-  return entry ? entry[1] : '';
+  return entry?.[1] ?? '';
 }
-// Every prison and yard a program runs at, with that yard's numbers.
 function programSites(program) {
   return program.assignments.flatMap(assignment => assignment.yards.map(yard => {
     const count = program.counts?.[`${assignment.code}|${yard}`] || {};
@@ -1458,6 +1697,25 @@ function renderSubmission(submission) {
   metric(totalPanel, format(totals.participants), 'Participant enrollments');
   metric(totalPanel, format(totals.completed), 'Participants completed');
   metric(totalPanel, format(totals.delivered), 'Estimated completer-hours');
+  const racDays = submission.programs.reduce((sum, program) => {
+    const hours = Math.max(0, number(programValue(program, 'course_hours')));
+    const completed = programSites(program).reduce((total, site) => total + site.completed, 0);
+    return sum + Math.min(40, Math.floor(hours / 52) * 10) * completed;
+  }, 0);
+  const savings = racDays * 59;
+  const impact = document.querySelector('#mock-totals');
+  impact.replaceChildren();
+  impact.closest('.mock-impact').hidden = racDays <= 1;
+  if (racDays > 1) {
+    metric(impact, format(racDays), 'RAC credits estimate');
+    metric(impact, savings.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }), 'Total taxpayer savings');
+    const [creditsAmount, savingsAmount] = impact.querySelectorAll('strong');
+    import('../dashboard/js/rolling-number.js?v=form-success-1').then(({ rollNumber, rollCurrency }) => {
+      if (!creditsAmount.isConnected) return;
+      rollNumber(creditsAmount, racDays);
+      rollCurrency(savingsAmount, savings);
+    }).catch(console.error);
+  }
   document.querySelector('#submission-context').textContent = `${submission.organization} · Q${submission.reportingPeriod.quarter} ${submission.reportingPeriod.year}`;
   const report = document.querySelector('#report-prisons'); report.replaceChildren();
   for (const prison of submission.prisons) {
@@ -1485,7 +1743,7 @@ function renderSubmission(submission) {
       heading.append(name, status); block.append(heading);
       const here = programSites(program).filter(site => site.code === prison.code);
       const yards = document.createElement('p'); yards.className = 'report-program-yards';
-      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} started, ${site.completed} completed)`).join(', ')}`;
+      yards.textContent = `Yards · ${here.map(site => `${site.yard} (${site.participants} enrolled, ${site.completed} completed)`).join(', ')}`;
       block.append(yards);
       const dates = document.createElement('dl'); dates.className = 'report-dates';
       for (const [label, key] of [['Start date', 'start_date'], ['End date', 'end_date']]) {
@@ -1498,7 +1756,7 @@ function renderSubmission(submission) {
       block.append(dates);
       const metrics = document.createElement('dl'); metrics.className = 'report-program-metrics';
       const sum = kind => here.reduce((total, site) => total + site[kind], 0);
-      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants', sum('participants')], ['Completed', sum('completed')]]) {
+      for (const [label, value] of [['Course hours', number(programValue(program, 'course_hours'))], ['Participants enrolled', sum('participants')], ['Completed', sum('completed')]]) {
         const group = document.createElement('div'); const term = document.createElement('dt'); term.textContent = label;
         const amount = document.createElement('dd'); amount.textContent = format(value);
         group.append(amount, term); metrics.append(group);
@@ -1524,19 +1782,19 @@ function renderSubmission(submission) {
 // With no account, no earlier report, or ?blank=1, the form starts empty as before.
 async function prefillFromLastQuarter() {
   const params = new URLSearchParams(location.search);
-  const orgId = params.get('account');
+  const orgId = isNeonMode() ? (!neonContext?.isStaff && neonContext?.orgs?.length === 1 ? neonContext.orgs[0].id : null) : isSandboxMode() ? getDemoAccount() : params.get('account');
   if (!orgId || orgId === 'tpw' || params.get('blank') === '1') return;
   const note = document.createElement('div'); note.className = 'prefill-note'; note.setAttribute('role', 'status');
-  note.textContent = 'Loading what you reported last time…'; form.prepend(note);
+  note.textContent = staffView ? 'Loading what they reported last time…' : 'Loading what you reported last time…'; form.prepend(note);
   organizationStep.hidden = true;
   let draft;
   try {
-    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=sheet-20261025b'), import('./js/last-quarter.js')]);
+    const [{ loadDashboard }, { lastQuarterDraft }] = await Promise.all([import('../team-dashboard/js/data.js?v=reporting-1'), import('./js/last-quarter.js')]);
     draft = lastQuarterDraft(await loadDashboard(orgId));
   } catch (error) {
     // Never a dead end: say so, and let them fill the form in from scratch.
     console.error('Last-quarter prefill failed:', error);
-    showWithContact(note, 'We couldn’t load what you reported last time, so this form starts blank.', 'If your programs should be here, email');
+    showWithContact(note, staffView ? 'We couldn’t load what they reported last time, so this form starts blank.' : 'We couldn’t load what you reported last time, so this form starts blank.', staffView ? 'If their programs should be here, email' : 'If your programs should be here, email');
     organizationStep.hidden = false;
     return;
   }
@@ -1547,8 +1805,8 @@ async function prefillFromLastQuarter() {
   if (!draft.programs.length) {
     // A first report: nothing to carry forward, but they needn't type their name.
     note.remove();
-    facilitiesStep.hidden = false;
-    document.querySelector('#facilities-question').focus();
+    quarterStep.hidden = false;
+    document.querySelector('#quarter-question').focus();
     return;
   }
   lastQuarter = draft;
@@ -1581,25 +1839,140 @@ async function prefillFromLastQuarter() {
   }
   completedPrograms.push(...draft.programs);
   refreshPrisons();
-  document.querySelector('#program-next-heading').textContent = 'Your programs this quarter';
+  document.querySelector('#program-next-heading').textContent = 'Ready to submit';
   reportingPeriod();
   // The prisons screen is still there behind "Edit prisons", worded for this case.
-  document.querySelector('#facilities-question').textContent = 'Have any of the prisons you operate in changed?';
+  document.querySelector('#facilities-question').textContent = staffView ? 'Have any of the facilities they operate in changed?' : 'Have any of the facilities you operate in changed?';
   document.querySelector('#facility-help').textContent = '';
   document.querySelector('#continue-programs').textContent = 'Continue →';
-  // What changes every quarter is the numbers, not the prisons, so open straight on the first
-  // program's numbers.
-  form.classList.add('program-mode');
-  programsStep.hidden = false;
+  quarterStep.hidden = false;
   document.querySelector('#programs-question').textContent = 'This quarter’s numbers';
-  document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a prison…"
-  note.textContent = `We’ve filled in your ${draft.prisons.length} ${draft.prisons.length === 1 ? 'prison' : 'prisons'}, yards and ${draft.programs.length} ${draft.programs.length === 1 ? 'program' : 'programs'} from your last report. Add this quarter’s numbers for each program in turn; tick or untick yards as you go. To add or remove a prison, use Edit prisons. `;
+  document.querySelector('#programs-question').nextElementSibling.hidden = true; // "Add each program, select a facility…"
+  note.textContent = 'Programs carried forward. Update this quarter’s numbers. ';
   const blank = document.createElement('a');
   params.set('blank', '1'); blank.href = `?${params}`; blank.textContent = 'Start blank instead';
   note.append(blank);
-  reviewNext();
+
 }
-prefillFromLastQuarter();
+// Only completed, explicitly submitted attempts are persisted in either Neon mode.
+// Unsubmitted editor inputs are deliberately NOT autosaved; the default Sheets flow is unchanged.
+function recoverLocalAttempt() {
+  if (!neonSubmissionMode()) return false;
+  let attempt;
+  try { attempt = readAttempt(); }
+  catch (error) {
+    const note = document.createElement('p'); note.setAttribute('role', 'alert');
+    note.textContent = `${error.message} Submission recovery is unavailable; no new submission will be sent unless storage works.`;
+    form.prepend(note); return true;
+  }
+  if (!attempt) return false;
+  const saved = attempt.submission;
+  selectReportingPeriod(saved.reportingPeriod);
+  organization.value = saved.organization;
+  document.querySelector('#organization-summary').textContent = saved.organization;
+  for (const prison of saved.prisons) {
+    if (![...picker.options].some(option => option.value === prison.code)) picker.add(new Option(prison.name, prison.code));
+    picker.value = prison.code; picker.dispatchEvent(new Event('change'));
+    const record = prisons.get(prison.code);
+    if (!record) continue;
+    for (const yard of prison.yards) if (!findYard(record, yard)) record.addYard(yard);
+    for (const box of record.card.querySelectorAll('.yard-choices input[type="checkbox"]')) {
+      box.checked = prison.yards.includes(box.value);
+      box.dispatchEvent(new Event('change'));
+    }
+  }
+  if (saved.orgId) lastQuarter = { orgId: saved.orgId, previousSubmissionId: saved.previousSubmissionId || '', programs: [] };
+  completedPrograms.push(...saved.programs);
+  submissionId = attempt.payload.submissionId; submittedPayload = attempt.canonical;
+  refreshPrisons();
+  document.querySelector('#program-next').hidden = false;
+  organizationStep.hidden = true; facilitiesStep.hidden = true; programsStep.hidden = false;
+  form.classList.add('program-mode');
+  const note = document.createElement('p'); note.setAttribute('role', 'status');
+  note.textContent = attempt.receipt
+    ? 'Recovered your saved submission. This copy stays here until you choose Start a new submission.'
+    : 'Recovered the completed answers from your last save attempt. Retry unchanged answers to confirm its receipt without creating another submission. Inputs not included in that attempt were not saved.';
+  form.prepend(note);
+  if (attempt.receipt) {
+    renderSubmission(saved);
+    document.querySelector('#program-next').hidden = true;
+    programsStep.classList.add('submitted');
+    document.querySelector('#submission-result').hidden = false;
+    document.querySelector('#edit-prisons').hidden = true;
+    const receipt = document.querySelector('#submission-receipt');
+    receipt.textContent = `Submitted to TPW: reference ${attempt.receipt.reference || attempt.receipt.submissionId}.`;
+    receipt.hidden = false;
+  }
+  return true;
+}
+async function offerSavedProgramsPreview() {
+  if (new URLSearchParams(location.search).get('blank') !== '1') return;
+  try {
+    const response = await fetch('../api/local-development');
+    if (!response.ok || (await response.json()).localDevelopment !== true) return;
+  } catch { return; }
+  if (organizationStep.hidden) return;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'continue-button';
+  button.textContent = 'Dev: Preview saved programs';
+  organizationStep.append(button);
+  button.addEventListener('click', () => {
+    if (organizationStep.hidden || transitioning) return;
+    organization.value ||= 'Org 1';
+    document.querySelector('#organization-summary').textContent = organization.value;
+    picker.value = 'CCI';
+    picker.dispatchEvent(new Event('change'));
+    const facility = prisons.get('CCI');
+    const yard = facility.options[0];
+    const checkbox = [...facility.card.querySelectorAll('.yard-choices input[type="checkbox"]')]
+      .find(input => input.value === yard);
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new Event('change'));
+    completedPrograms.push({
+      id: crypto.randomUUID(),
+      name: 'Sample program',
+      assignments: [{ code: 'CCI', yards: [yard] }],
+      values: { 'programs[1][program_name]': 'Sample program', 'programs[1][scheduled_status]': 'Planned', 'programs[1][course_hours]': '0' },
+      counts: { [`CCI|${yard}`]: { participants: 10, completed: 8 } }
+    });
+    document.querySelector('#finish-form').disabled = true;
+    form.classList.add('program-mode');
+    refreshPrisons();
+    document.querySelector('#program-next').hidden = false;
+    showStep(organizationStep, programsStep, document.querySelector('#program-next-heading'));
+    button.remove();
+  });
+}
+
+if (isNeonMode()) {
+  if (neonAuthError || !neonContext?.ok || !neonContext.userId || (!neonContext.isStaff && !neonContext.orgs?.length)) {
+    const note = document.createElement('p'); note.setAttribute('role', 'alert');
+    note.textContent = 'Sign in with an assigned organization account before submitting. Your saved attempt is still here. If you need access, contact TPW. ';
+    const signin = document.createElement('a'); signin.href = new URL('../neon/?backend=neon', import.meta.url).href;
+    signin.target = '_top'; signin.textContent = 'Sign in'; note.append(signin); form.prepend(note);
+  } else {
+    const profiles = neonContext.orgs || [];
+    document.querySelector('#member-list').replaceChildren(...profiles.map(profile => new Option(profile.name)));
+    if (!neonContext.isStaff && profiles.length === 1) {
+      // Identity is independent of historical data and ?blank=1.
+      organization.value = profiles[0].name;
+      organization.readOnly = true;
+      document.querySelector('#organization-summary').textContent = profiles[0].name;
+    }
+    if (!recoverLocalAttempt()) prefillFromLastQuarter();
+  }
+} else if (isSandboxMode()) {
+  document.querySelector('#member-list').replaceChildren(new Option('Org 1'), new Option('Org 2'));
+  if (!staffView) {
+    organization.value = getDemoAccount() === 'org-2' ? 'Org 2' : 'Org 1';
+    organization.readOnly = true;
+    document.querySelector('#organization-summary').textContent = organization.value;
+  }
+  if (!recoverLocalAttempt()) prefillFromLastQuarter();
+} else if (!recoverLocalAttempt()) prefillFromLastQuarter();
+offerSavedProgramsPreview();
 </script>
 </body>
 </html>

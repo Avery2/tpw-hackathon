@@ -1,3 +1,5 @@
+import { organizationsPage, programsPage, submissionsPage, submissionTracking } from './registers.js';
+import { loadTpwOverview } from './overview.js';
 import { randomUUID } from 'node:crypto';
 import { database } from './db.js';
 import { InputError, validateSubmission } from './validation.js';
@@ -9,6 +11,21 @@ export async function handleApi(req, res) {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'GET' && url.pathname === '/api/health') {
       await database().query('SELECT 1'); return send(200,{ok:true,database:'postgres',demo:true});
+    }
+    if (req.method === 'GET' && url.pathname === '/api/overview') {
+      return send(200, await loadTpwOverview(database()));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/organizations') {
+      return send(200, await organizationsPage(database(), url.searchParams));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/programs') {
+      return send(200, await programsPage(database(), url.searchParams));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/submissions') {
+      return send(200, await submissionsPage(database(), url.searchParams));
+    }
+    if (req.method === 'GET' && url.pathname === '/api/submission-tracking') {
+      return send(200, await submissionTracking(database()));
     }
     if (req.method === 'GET' && url.pathname === '/api/dashboard') {
       const id=url.searchParams.get('org');

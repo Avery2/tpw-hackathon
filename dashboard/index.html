@@ -343,6 +343,18 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
   </div>
 </div>
 </main>
+<script>
+  if (new URLSearchParams(location.search).get('entry') === 'team') {
+    const stylesheet = document.createElement('link');
+    stylesheet.rel = 'stylesheet';
+    stylesheet.href = '../assets/site-shell.css?v=snapshot-views-1';
+    document.head.append(stylesheet);
+    import('../assets/site-shell.js?v=snapshot-views-1');
+    for (const option of document.querySelectorAll('#signin .signin-option')) {
+      option.href = '../team-dashboard/' + option.hash;
+    }
+  }
+</script>
 <script type="module" src="./js/main.js?v=standalone-1"></script>
 </body>
 </html>

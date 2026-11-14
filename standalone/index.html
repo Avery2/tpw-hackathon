@@ -2,10 +2,10 @@
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TPW Dashboard</title></head>
 <body>
-<p><a href="./dashboard/">Open dashboard</a></p>
+<p><a href="./dashboard/?entry=team">Open dashboard</a></p>
 <script>
-const dashboard = new URL('./dashboard/', location.href);
-dashboard.search = location.search;
+const dashboard = new URL('./dashboard/?entry=team', location.href);
+for (const [key, value] of new URLSearchParams(location.search)) dashboard.searchParams.set(key, value);
 dashboard.hash = location.hash;
 location.replace(dashboard);
 </script>

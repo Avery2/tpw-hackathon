@@ -7,6 +7,10 @@ const root=path.resolve('dist');
 const mime={'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.svg':'image/svg+xml','.png':'image/png','.jpg':'image/jpeg','.woff2':'font/woff2','.pdf':'application/pdf'};
 const server=http.createServer(async(req,res)=>{
   const url=new URL(req.url,'http://localhost');
+  if (req.method === 'GET' && url.pathname === '/api/local-development' && process.env.NODE_ENV !== 'production') {
+    res.writeHead(200, {'Content-Type': 'application/json', 'Cache-Control': 'no-store'});
+    return res.end(JSON.stringify({ localDevelopment: true }));
+  }
   if(url.pathname.startsWith('/api/')) return handleApi(req,res);
   try {
     const decoded=decodeURIComponent(url.pathname);
