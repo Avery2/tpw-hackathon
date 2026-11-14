@@ -2,7 +2,7 @@ import { loadDashboard } from './data.js?v=valid-orgs-1';
 import { loadingSkeleton } from './loading.js';
 import { renderSubmissionTracker } from './submission-tracker.js?v=paginated-1';
 let revision = 0;
-import { updateWorkspace } from './layout.js?v=shared-nav-2';
+import { updateWorkspace } from './layout.js?v=standalone-1';
 async function render() {
   const token = ++revision;
   const account = location.hash.slice(1);

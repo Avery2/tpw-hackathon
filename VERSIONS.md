@@ -4,8 +4,8 @@ This branch retains both implementations for comparison.
 
 | Route | Version | Data |
 |---|---|---|
-| `/dashboard/` | Original organization dashboard, Programs, Check in | Firebase |
-| `/form-demo/` | Original guided form | Firebase |
+| `/dashboard/` | Original organization dashboard, Programs, Check in | Neon Postgres via server API |
+| `/form-demo/` | Original guided form | Neon Postgres via server API |
 | `/team-dashboard/` | Team dashboard and Data view from main | Google Sheet receiver + sample data; embedded Sheet Data page |
 | `/team-form/` | Team guided form from main | Google Apps Script / Google Sheet |
 | `/intake/simple.html` | Team intake and embedded quarterly form | Google Apps Script / Google Sheet |

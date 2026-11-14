@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>TPW Dashboard</title></head>
+<body>
+<p><a href="./dashboard/">Open dashboard</a></p>
+<script>
+const dashboard = new URL('./dashboard/', location.href);
+dashboard.search = location.search;
+dashboard.hash = location.hash;
+location.replace(dashboard);
+</script>
+</body>
+</html>

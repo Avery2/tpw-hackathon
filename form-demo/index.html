@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Form Demo</title>
+<title>New submission — TPW</title>
 <style>
   @font-face { font-family:'Rubik One'; src:url('../assets/fonts/rubik-one.woff2') format('woff2'); font-weight:400; font-display:swap; }
   @font-face { font-family:'Degular'; src:url('../assets/fonts/degular-text-500.woff2') format('woff2'); font-weight:400 500; font-display:swap; }
@@ -552,34 +552,25 @@ body.embed .form-section { padding-top: 12px; padding-bottom: 24px; }
 .program-edit-actions .program-edit-back { margin: 0; min-height: 54px; padding: 14px 24px; border: 1px solid #ccc; border-radius: 999px; background: #fff; color: #171717; font: inherit; font-weight: 600; cursor: pointer; }
 .program-edit-actions .program-edit-back:hover { background: #f5f5f5; border-color: #999; }
 .program-edit-actions .program-edit-back:focus-visible { outline: 2px solid #171717; outline-offset: 3px; }
+.app-form-header { display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 12px 28px; background: #fff; border-bottom: 1px solid #e4e7e0; }
+.app-form-logo img { width: 75px; }
+.app-dashboard-link { font-weight: 700; text-decoration: none; font-size: 16px; }
+.app-dashboard-link:hover { text-decoration: underline; }
+body.embed .app-form-header { display: none; }
 </style>
 <link rel="stylesheet" href="../dashboard/loading.css?v=1">
 </head>
 <body id="top">
 <script>if (new URLSearchParams(location.search).has('embed')) document.body.classList.add('embed');</script>
 
-<div class="demo-banner">
-  <b>Demo</b>
-  <span>Unofficial prototype for Hack for Social Impact 2026 · not affiliated with TPW</span>
-</div>
-
-<header class="site-header">
-  <a class="logo" href="../"><img src="../assets/img/logo.png" alt="TPW"></a>
-  <nav aria-label="Main navigation">
-    <a href="../site/our-members/">Our Members</a>
-    <a href="../site/ourstory/">Our Story</a>
-    <a href="../site/ourwork/">Our Work</a>
-    <a href="../site/our-team/">Our Team</a>
-    <a class="cta" href="./" aria-current="page">Form Demo</a>
-    <a href="../dashboard/">Dashboard</a>
-    <a class="login" href="../intake/simple.html">Members Login</a>
-  </nav>
+<header class="app-form-header">
+  <a class="app-form-logo" href="../dashboard/" aria-label="TPW dashboard"><img src="../assets/img/logo.png" alt="TPW"></a>
+  <a class="app-dashboard-link" href="../dashboard/">← Dashboard</a>
 </header>
-
 
 <main>
   <section class="page-heading" aria-labelledby="page-title">
-    <div class="shell"><h1 id="page-title">Form Demo</h1></div>
+    <div class="shell"><h1 id="page-title">New submission</h1></div>
   </section>
   <section class="form-section" aria-label="Program location and organization">
     <div class="shell">
@@ -768,15 +759,7 @@ body.embed .form-section { padding-top: 12px; padding-bottom: 24px; }
     </div>
   </section>
 </main>
-<footer>
-  <div class="shell">
-    <div class="logo"><img src="../assets/img/logo.png" alt="TPW"></div>
-    <div class="cols">
-      <p class="note">Unofficial hackathon demo built for Hack for Social Impact 2026. Not affiliated with Transformative Programming Works; their logo, photography, and copy belong to them and are used here to prototype in their design language.</p>
-      <p><a href="https://github.com/Avery2/tpw-hackathon">Repository</a><br><a href="../site/">Site mirror</a><br><a href="#top">Back to top</a></p>
-    </div>
-  </div>
-</footer>
+
 
 <script>
 const form = document.querySelector('#demo-form');
@@ -1436,7 +1419,7 @@ document.querySelector('#finish-form').addEventListener('click', async () => {
   programsStep.setAttribute('aria-busy', 'true');
   try {
     submissionId ||= crypto.randomUUID();
-    const { saveSubmission } = await import('./js/submissions.js');
+    const { saveSubmission } = await import('./js/submissions.js?v=neon-1');
     await saveSubmission(submission, submissionId);
   } catch (error) {
     console.error('Submission save failed:', error);

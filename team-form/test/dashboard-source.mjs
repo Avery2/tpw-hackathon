@@ -111,10 +111,10 @@ test('an organization with no profile is an error, as before', async () => {
   await assert.rejects(loadDashboard('org-99'), /not found/);
 });
 
-test('parallel dashboards retain their separate Firebase and Sheet loaders', async () => {
+test('parallel dashboards retain their separate Neon API and Sheet loaders', async () => {
   assert.notEqual(dashboardData.loadDashboard, loadDashboard);
   const original = fs.readFileSync(path.join(root, 'dashboard/js/data.js'), 'utf8');
-  assert.match(original, /firestoreClient/);
+  assert.match(original, /demoApi/);
   assert.equal(teamDashboardData.loadDashboard, loadDashboard);
 });
 
@@ -133,11 +133,11 @@ test('the form\'s last-quarter prefill comes from the sheet: a program filed in 
   assert.deepEqual(draft.reportingPeriod, { quarter: 1, year: 2027 });
 });
 
-test('Firebase stays confined to the preserved original dashboard and form', () => {
+test('browser app no longer loads Firebase', () => {
   const offenders = [];
   const walk = (dir) => {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (['.git', 'site', 'node_modules', 'docs'].includes(entry.name)) continue;
+      if (['.git', 'site', 'node_modules', 'docs', 'work', 'dist'].includes(entry.name)) continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else if (/\.(js|mjs|html)$/.test(entry.name) && !full.includes(`${path.sep}test${path.sep}`)) {
@@ -147,5 +147,5 @@ test('Firebase stays confined to the preserved original dashboard and form', () 
     }
   };
   walk(root);
-  assert.deepEqual(offenders.sort(), ['dashboard/js/data.js', 'form-demo/js/submissions.js']);
+  assert.deepEqual(offenders, []);
 });

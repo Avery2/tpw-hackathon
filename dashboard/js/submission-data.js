@@ -1,5 +1,5 @@
 import { renderSubmissionTracker } from './submission-tracker.js?v=paginated-1';
-import { updateWorkspace } from './layout.js?v=shared-nav-2';
+import { updateWorkspace } from './layout.js?v=standalone-1';
 import { loadDashboard, existingPrograms } from './data.js?v=impact-1';
 import { loadingSkeleton } from './loading.js';
 const $ = selector => document.querySelector(selector);

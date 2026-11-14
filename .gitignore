@@ -3,3 +3,10 @@ work/
 node_modules/
 __pycache__/
 *.pyc
+.neon
+
+.env
+.env.*
+!.env.example
+dist/
+.vercel/

@@ -1,4 +1,4 @@
-import { updateWorkspace } from './layout.js?v=shared-nav-2';
+import { updateWorkspace } from './layout.js?v=standalone-1';
 import { loadDashboard, existingPrograms } from './data.js?v=valid-orgs-1';
 import { participantsChart } from './chart.js?v=quarter-spacing-1';
 import { programCards } from './cards.js';

@@ -1,5 +1,5 @@
 import { loadingSkeleton } from './loading.js';
-import { updateWorkspace } from './layout.js?v=shared-nav-2';
+import { updateWorkspace } from './layout.js?v=standalone-1';
 let frameObserver;
 function render() {
   frameObserver?.disconnect();

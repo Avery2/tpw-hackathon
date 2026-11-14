@@ -1,4 +1,4 @@
-/* Workspace chrome shared by every dashboard page. The website header stays above it. */
+/* Workspace chrome shared by every page of the standalone dashboard. */
 .dashboard-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); max-width: 1640px; width: 100%; margin: 0 auto; border-top: 1px solid #e4e7e0; background: #f7f8f5; min-height: 72vh; }
 .dashboard-sidebar { padding: 30px 20px; background: #fff; border-right: 1px solid #e4e7e0; display: flex; flex-direction: column; align-self: stretch; gap: 30px; }
 .sidebar-brand { font-family: var(--display); font-size: 17px; font-weight: 400; margin: 0; }

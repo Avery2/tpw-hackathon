@@ -1,12 +1,4 @@
-// Firebase's web config identifies the project; it is not a server credential.
-const firebaseConfig = {
-  apiKey: 'AIzaSyCI-GZSIwSNzJq8R3WockZ9guTsZLGwrsY',
-  authDomain: 'tpw-hackathon.firebaseapp.com',
-  projectId: 'tpw-hackathon',
-  storageBucket: 'tpw-hackathon.firebasestorage.app',
-  messagingSenderId: '778729098251',
-  appId: '1:778729098251:web:397f68456dd76a3878cb0e'
-};
+import { demoApi } from '../../assets/neon-api.js';
 
 export function submissionDocument(submission) {
   const value = (program, key) => Object.entries(program.values)
@@ -41,27 +33,7 @@ export function submissionDocument(submission) {
   };
 }
 
-let client;
-export async function firestoreClient() {
-  // Lazy loading keeps the rest of the form usable if Firebase cannot load.
-  if (!client) {
-    client = Promise.all([
-      import('https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js'),
-      import('https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js')
-    ]).then(([app, firestore]) => ({
-      ...firestore,
-      db: firestore.getFirestore(app.initializeApp(firebaseConfig))
-    })).catch(error => { client = undefined; throw error; });
-  }
-  return client;
-}
-
 export async function saveSubmission(submission, id) {
-  const { db, doc, setDoc, serverTimestamp } = await firestoreClient();
-  // Reuse the ID on retry so a delayed response cannot create duplicate records.
-  await setDoc(doc(db, 'submissions', id), {
-    ...submissionDocument(submission),
-    receivedAt: serverTimestamp()
-  });
-  return id;
+  const result = await demoApi('submissions', {method:'POST', body:JSON.stringify({id, submission:submissionDocument(submission)})});
+  return result.id;
 }
