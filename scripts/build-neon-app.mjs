@@ -1,7 +1,9 @@
-import {mkdtemp,rm,cp,mkdir} from 'node:fs/promises';
+import {mkdtemp,rm,cp,mkdir,readdir} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+const next = process.argv.includes('--next');
+const output = next ? 'public' : 'dist';
 const temp=await mkdtemp(path.join(tmpdir(),'tpw-app-'));
 try {
   // Publish the application only. Keep the old public website in source/archive,
@@ -24,9 +26,17 @@ try {
   await cp('report', path.join(temp, 'report'), { recursive: true, filter: source => !path.extname(source) || path.extname(source) === '.pdf' });
   await mkdir(path.join(temp,'data/public'),{recursive:true});
   await cp('data/public/tpw-members.csv',path.join(temp,'data/public/tpw-members.csv'));
-  await cp('standalone/index.html',path.join(temp,'index.html'));
+  await cp('standalone/index.html',path.join(temp,next ? 'entry.html' : 'index.html'));
   await cp('.nojekyll',path.join(temp,'.nojekyll'));
-  await rm('dist',{recursive:true,force:true});await cp(temp,'dist',{recursive:true});
+  if (next) {
+    for (const directory of ['dashboard', 'team-dashboard', 'intake', 'team-form', 'form-demo']) {
+      for (const file of await readdir(path.join(temp, directory))) {
+        if (file.endsWith('.html')) await rm(path.join(temp, directory, file));
+      }
+    }
+    await rm(path.join(temp, 'entry.html'));
+  }
+  await rm(output,{recursive:true,force:true});await cp(temp,output,{recursive:true});
   for(const file of ['server/api.js','server/local.js','dashboard/js/layout.js'])execFileSync(process.execPath,['--check',file],{stdio:'inherit'});
   console.log('Build passed: standalone dashboard, submission form and Neon API. Public website excluded.');
 }finally{await rm(temp,{recursive:true,force:true});}

@@ -88,3 +88,6 @@ body.embed #organization, body.embed #facility { max-width: 640px; }
   .tpw-site .tpw-header, .tpw-site .tpw-footer, .tpw-site .tpw-disclosure, .tpw-site .tpw-member-nav, .tpw-site .devbar { display: none !important; }
   .tpw-site .tpw-workspace, .tpw-site .tpw-workspace-content, .tpw-site .tpw-sheet-preview { display: block; width: auto; min-height: 0; margin: 0; padding: 0; border: 0; border-radius: 0; overflow: visible; background: #fff; }
 }
+
+/* Keep account links consistent across views. */
+body.tpw-site .tpw-header nav a.login { font-weight: 400; }

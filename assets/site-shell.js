@@ -81,6 +81,13 @@ export function updateMemberWorkspace(account, page = workspacePage) {
   workspacePage = page;
   if (!isNeonMode() && Object.hasOwn(demoAccounts, account)) setDemoAccount(account);
   const key = getDemoAccount();
+  if (document.body.hasAttribute('data-next-workspace')) {
+    document.querySelector('#dashboard-exports')?.remove();
+    if (['overview', 'programs'].includes(page) && Object.hasOwn(demoAccounts, account)) {
+      mountDashboardExports(null, key === 'tpw' ? null : key);
+    }
+    return;
+  }
   if (dashboard) {
     document.querySelector('#dashboard-exports')?.remove();
     if (['overview', 'programs'].includes(page) && Object.hasOwn(demoAccounts, account)) {
@@ -185,4 +192,4 @@ function mount() {
     if (dashboard && !leaveDataForMembers()) updateMemberWorkspace(activeAccount(), workspacePage);
   });
 }
-mount();
+if (!document.body.hasAttribute('data-next-workspace')) mount();
