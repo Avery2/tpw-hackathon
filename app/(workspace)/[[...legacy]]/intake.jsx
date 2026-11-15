@@ -2,7 +2,6 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { currentReportingPeriod } from '../../../team-form/js/reporting-period.js';
-import { existingPrograms } from '../../../dashboard/js/existing-programs.js';
 
 function SuccessMetric({ value, label, roll }) {
   const amount = useRef(null);
@@ -39,17 +38,26 @@ function facilityStyle(index) {
   return { '--prison': border, '--prison-bg': background };
 }
 
-const newProgram = (locations = []) => ({ id: crypto.randomUUID(), name: '', status: '', startDate: '', endDate: '', courseHours: 0, sites: locations.length === 1 && locations[0].yards.length === 1
-  ? [{ facilityCode: locations[0].code, yard: locations[0].yards[0], participants: 0, completed: 0 }]
-  : [] });
+const newProgram = () => ({ id: crypto.randomUUID(), name: '', status: '', startDate: '', endDate: '', courseHours: 0, sites: [] });
 const counts = sites => sites.reduce((total, site) => ({
   participants: total.participants + Number(site.participants || 0),
   participantsCompleted: total.participantsCompleted + Number(site.completed || 0)
 }), { participants: 0, participantsCompleted: 0 });
 
-export default function Intake({ account, blank, css, facilities = [] }) {
+export default function Intake(props) {
+  const [hashAccount, setHashAccount] = useState('');
+  useEffect(() => {
+    if (new URLSearchParams(location.search).has('account')) return;
+    const account = location.hash.slice(1);
+    if (['org-1', 'org-2', 'tpw'].includes(account)) setHashAccount(account);
+  }, []);
+  const account = hashAccount || props.account;
+  return <IntakeForm key={account} {...props} account={account} />;
+}
+
+function IntakeForm({ account, blank, css, facilities = [] }) {
   const [period, setPeriod] = useState(null);
-  const [step, setStep] = useState(blank || account === 'tpw' ? 'organization' : 'quarter');
+  const [step, setStep] = useState(blank || account === 'tpw' ? 'organization' : 'choice');
   const [organization, setOrganization] = useState(account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1');
   const [locations, setLocations] = useState([]);
   const [programs, setPrograms] = useState([]);
@@ -103,6 +111,9 @@ export default function Intake({ account, blank, css, facilities = [] }) {
   const [receipt, setReceipt] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [prefillFailed, setPrefillFailed] = useState(false);
+  const [usePrevious, setUsePrevious] = useState(false);
+  const [prefillAttempt, setPrefillAttempt] = useState(0);
   const key = 'tpw.react.submission:' + account;
 
   useEffect(() => {
@@ -123,28 +134,37 @@ export default function Intake({ account, blank, css, facilities = [] }) {
     } catch { setError('Could not read the saved attempt.'); }
     if (!blank && account !== 'tpw') {
       setBusy(true);
-      fetch('/api/dashboard?org=' + account, { signal: controller.signal }).then(response => {
+      setPrefillFailed(false);
+      fetch('/api/dashboard/?org=' + account, { signal: controller.signal }).then(response => {
         if (!response.ok) throw new Error();
         return response.json();
       }).then(data => {
-        const locations = new Map();
-        const previous = existingPrograms(data.submissions).map(program => {
-          const sites = program.assignments.flatMap(({ code, yards }) => {
-            const entry = locations.get(code) || { code, name: program.prisons.find(p => p.code === code)?.name || code, yards: [] };
+        const submittedTime = entry => Date.parse(entry.receivedAt || entry.submittedAt || '') || 0;
+        const [latest] = [...data.submissions].sort((first, second) =>
+          submittedTime(second) - submittedTime(first));
+        const locations = new Map((latest?.prisons || []).map(facility => [facility.code, { ...facility, yards: [...(facility.yards ?? [])] }]));
+        const previous = (latest?.programs || []).map(program => {
+          const sites = (program.assignments ?? []).flatMap(({ code, yards }) => {
+            const entry = locations.get(code) || { code, name: code, yards: [] };
             entry.yards = [...new Set([...entry.yards, ...yards])];
             locations.set(code, entry);
             return yards.map(yard => ({ facilityCode: code, yard, participants: '', completed: '' }));
           });
-          return { ...newProgram(), id: program.id || crypto.randomUUID(), name: program.name, courseHours: program.courseHours, sites };
+          return { ...newProgram(), id: program.id || crypto.randomUUID(), name: program.name, courseHours: program.courseHours ?? 0, sites };
         });
         setOrganization(data.org.name);
         setLocations([...locations.values()]);
         setPrograms(previous);
-      }).catch(() => { if (!controller.signal.aborted) setError('Could not load previous programs. You can start blank.'); })
+
+      }).catch(() => { if (!controller.signal.aborted) setPrefillFailed(true); })
         .finally(() => { if (!controller.signal.aborted) setBusy(false); });
     }
     return () => controller.abort();
-  }, [account, blank, key]);
+  }, [account, blank, key, prefillAttempt]);
+
+  useEffect(() => {
+    if (step === 'choice' && usePrevious && !busy && !prefillFailed) setStep('quarter');
+  }, [step, usePrevious, busy, prefillFailed]);
 
   async function submit() {
     setError('');
@@ -187,14 +207,21 @@ export default function Intake({ account, blank, css, facilities = [] }) {
   const racDays = submittedPrograms.reduce((sum, program) => sum +
     Math.min(40, Math.floor(Number(program.courseHours) / 52) * 10) * counts(program.sites).participantsCompleted, 0);
 
+  function cancelProgramEdit() {
+    setError('');
+    setEditing(programs.length ? null : newProgram());
+  }
+
   function saveProgram(event) {
     event.preventDefault();
+    if (!editing.name.trim()) { setError('Enter a program name.'); return; }
     if (!editing.sites.length) { setError('Select at least one yard.'); return; }
     if (editing.sites.some(site => Number(site.completed) > Number(site.participants))) {
       setError('Completed cannot exceed enrollment at a yard.'); return;
     }
-    setPrograms(list => list.some(program => program.id === editing.id)
-      ? list.map(program => program.id === editing.id ? editing : program) : [...list, editing]);
+    const { selectedFacilityCodes, ...program } = editing;
+    setPrograms(list => list.some(item => item.id === program.id)
+      ? list.map(item => item.id === program.id ? program : item) : [...list, program]);
     setEditing(null);
     setError('');
   }
@@ -202,8 +229,21 @@ export default function Intake({ account, blank, css, facilities = [] }) {
   return <main className="tpw-workspace"><div className="tpw-workspace-content">
     <h1 className="tpw-page-title">Log data</h1>
     <div className="quarter-preview"><style>{css}</style><div className="demo-form" ref={formRoot}>
-      {error && <p role="alert">{error}</p>}
-      {busy && step === 'quarter' && <p role="status">Loading previous programs…</p>}
+      {error && !editing && <p role="alert">{error}</p>}
+      {step === 'choice' && <section className="question-step prefill-loading">
+        <h2 className="form-title">How would you like to start?</h2>
+        {prefillFailed && <p role="alert">Could not load previous entries. Try again or start blank.</p>}
+        <button type="button" className="continue-button" onClick={() => {
+          setUsePrevious(true);
+          if (prefillFailed) {
+            setPrefillFailed(false);
+            setBusy(true);
+            setPrefillAttempt(attempt => attempt + 1);
+          }
+        }}>{prefillFailed ? 'Retry loading' : 'Use previous entries'}</button>
+        <span>or</span>
+        <a href={`?account=${account}&blank=1`}>Start blank</a>
+      </section>}
       {step === 'organization' && <form id="organization-step" className="question-step" onSubmit={event => {
         event.preventDefault();
         if (organization.trim()) goToStep('quarter');
@@ -219,8 +259,10 @@ export default function Intake({ account, blank, css, facilities = [] }) {
         </div>
         <button className="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
       </form>}
-      {step === 'quarter' && period && <form className="question-step" onSubmit={event => { event.preventDefault(); goToStep('facilities'); }}>
-        {!blank && <p className="prefill-note">Continue with your previously reported programs or <a href={`?account=${account}&blank=1`}>Start blank instead</a>.</p>}
+      {step === 'quarter' && period && !busy && !prefillFailed && <form className="question-step entering" onSubmit={event => { event.preventDefault(); goToStep('facilities'); }}>
+        {usePrevious && <div className="prefill-note">
+          This form is prefilled with your previous entries. <a href={`?account=${account}&blank=1`}>Start blank instead</a>.
+        </div>}
         <p className="step-label">Reporting period</p><h2 className="form-title">Which quarter are you reporting for?</h2>
         <p className="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
         <fieldset className="quarter-options"><legend className="sr-only">Reporting quarter</legend>
@@ -230,64 +272,81 @@ export default function Intake({ account, blank, css, facilities = [] }) {
           </label>)}
         </fieldset>
         <div className="form-field"><label htmlFor="reporting-year">Year</label><input id="reporting-year" type="number" required min="2000" max="2200" value={period.year} onChange={event => setPeriod({ ...period, year: event.target.value })} /></div>
-        <div className="next-actions"><button className="continue-button" disabled={busy}>Continue →</button></div>
+        <div className="next-actions"><button className="continue-button" disabled={busy || prefillFailed}>Continue →</button></div>
       </form>}
       {step === 'facilities' && <section className="question-step" id="facilities-step">
 
         <div className="organization-summary"><span>Organization: <strong>{organization}</strong></span></div>
-        <div className="organization-summary"><span>Reporting period: <strong>Q{period?.quarter} {period?.year}</strong></span></div>
-        <p className="step-label">Step 2 · Facilities</p><h2 className="form-title">Your facilities</h2>
+        <div className="organization-summary"><span>Reporting period: <strong>Q{period?.quarter} {period?.year}</strong></span>
+        </div>
+        <div className="form-step-header">
+          <p className="step-label">Step 2 · Facilities</p>
+          <button type="button" className="continue-button" onClick={() => goToStep('quarter')}>← Back</button>
+        </div>
+        <h2 className="form-title">Which facilities do you operate in?</h2>
         <p className="form-hint">Select each facility where you operate, then check all the yards you work in at that facility.</p>
         <div id="facility-cards" className="facility-cards">
-        {locations.map(location => <div className="facility-card active" key={location.code}><div className="prison-card-header"><strong className="choose">{location.name}</strong>
+        {locations.map((location, index) => <div className="facility-card active" style={facilityStyle(index)} key={location.code}><div className="prison-card-header"><strong className="choose">{location.name}</strong>
           <button type="button" className="remove" aria-label={`Remove ${location.name}`} onClick={() => setLocations(locations.filter(item => item.code !== location.code))}>×</button></div>
           <fieldset className="yard-choices"><legend>Yards you operate in</legend><p className="yard-hint">Select all that apply.</p>{[...new Set(['A Yard', 'B Yard', 'C Yard', 'D Yard', 'E Yard', 'F Yard', 'North', 'South', 'Reception', 'Ad Seg', ...location.yards])].map(yard =>
             <label key={yard}><input type="checkbox" checked={location.yards.includes(yard)}
               onChange={event => setLocations(locations.map(item => item === location ? { ...item, yards: event.target.checked ? [...item.yards, yard] : item.yards.filter(value => value !== yard) } : item))} />{yard}</label>)}
+          </fieldset>
           <form className="yard-add" onSubmit={event => {
             event.preventDefault();
             const yard = new FormData(event.currentTarget).get('yard').trim();
             if (yard && !location.yards.includes(yard)) setLocations(locations.map(item => item === location ? { ...item, yards: [...item.yards, yard] } : item));
             event.currentTarget.reset();
           }}><label htmlFor={`yard-${location.code}`}>Yard not listed?</label><div className="yard-add-row"><input id={`yard-${location.code}`} name="yard" required maxLength={100} /><button aria-label="Add yard">Add</button></div></form>
-        </fieldset></div>)}
+        </div>)}
         </div>
-        <label className="form-field">Add a facility <select value="" onChange={event => {
+        <label className="form-field"><span className="field-label">Add a facility</span> <select value="" onChange={event => {
           const code = event.target.value;
           const facility = facilities.find(item => item.code === code);
           if (facility) setLocations([...locations, { ...facility, yards: [] }]);
         }}><option value="">Select a facility</option>{facilities.filter(item => !locations.some(location => location.code === item.code)).map(item =>
           <option value={item.code} key={item.code}>{item.name}</option>)}</select></label>
-        <button className="continue-button" disabled={!locations.length || locations.some(item => !item.yards.length)} onClick={() => {
-          setPrograms(programs.map(program => ({ ...program, sites: program.sites.filter(site => locations.some(item => item.code === site.facilityCode && item.yards.includes(site.yard))) })));
-          if (!programs.length) setEditing(newProgram(locations));
-          goToStep('review');
-        }}>Continue to programs →</button>
+        <div className="next-actions">
+          <button className="continue-button" disabled={!locations.length || locations.some(item => !item.yards.length)} onClick={() => {
+            setPrograms(programs.map(program => ({ ...program, sites: program.sites.filter(site => locations.some(item => item.code === site.facilityCode && item.yards.includes(site.yard))) })));
+            if (!programs.length && !editing) setEditing(newProgram());
+            goToStep('review');
+          }}>Continue to programs →</button>
+        </div>
       </section>}
       {step === 'review' && <section id="programs-step" className="question-step">
         <aside className="program-sidebar" aria-label="Facilities and yards">
           <div className="organization-summary"><span>Your facilities &amp; yards</span>{!pending && <button onClick={() => goToStep('facilities')}>Edit facilities</button>}</div>
-          <ul id="prison-summary" className="prison-summary">{locations.map((location, index) => <li style={facilityStyle(index)} className="facility-card active" key={location.code}><details open={locations.length < 3}><summary><strong>{location.name}</strong> <span className="prison-card-program-count">{programs.filter(program => program.sites.some(site => site.facilityCode === location.code)).length} programs</span></summary>
+          <ul id="prison-summary" className="prison-summary">{locations.map((location, index) => <li style={facilityStyle(index)} className="facility-card active" key={location.code}><details open={locations.length < 3}><summary><strong>{location.name}</strong> <span className="program-count">{programs.filter(program => program.sites.some(site => site.facilityCode === location.code)).length} programs</span></summary>
             {location.yards.map(yard => <div className="summary-yard" key={yard}><h4>{yard}</h4>{programs.filter(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)).map(program => <p key={program.id}>{program.name}</p>)}{!programs.some(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)) && <p className="yard-hint">No programs added yet</p>}</div>)}</details>
           </li>)}</ul>
         </aside>
         <div className="program-editor">
-        <p className="step-label">Step 3 · Programs</p>
+        <div className="form-step-header">
+          <p className="step-label">Step 3 · Programs</p>
+          {!pending && <button type="button" className="continue-button" onClick={() => goToStep('facilities')}>← Back</button>}
+        </div>
         <h2 className="form-title">What programs do you run?</h2>
         <p className="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
-        {editing && <ol className="added-programs"><li className="is-open"><form className="program-card question-step" onSubmit={saveProgram}><div className="organization-summary"><h3 className="form-title">{editing.name || 'New program'}</h3>
-          <button className="program-remove" type="button" onClick={() => setEditing(programs.length ? null : newProgram(locations))}>Remove</button></div>
-          <label className="form-field">Program Name <input required maxLength={120} placeholder="Enter your program name" value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} /></label>
+        {editing && <ol className="added-programs"><li className="is-open"><form className="program-card question-step" onSubmit={saveProgram} onChange={() => setError('')} onInvalid={event => {
+          if (!event.target.form.querySelector('input:invalid, select:invalid, textarea:invalid')?.isSameNode(event.target)) return;
+          const label = event.target.labels?.[0]?.querySelector('.field-label, .yard-count-label')?.textContent;
+          setError(label ? `${label}: ${event.target.validationMessage}` : event.target.validationMessage);
+        }}><div className="organization-summary"><h3 className="form-title">{editing.name || 'New program'}</h3>
+          <button className="program-remove" type="button" onClick={cancelProgramEdit}>{programs.some(program => program.id === editing.id) ? 'Cancel editing' : 'Remove'}</button></div>
+          <label className="form-field"><span className="field-label">Program Name</span> <input required maxLength={120} placeholder="Enter your program name" value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} /></label>
           <fieldset className="prison-options"><legend>Which facilities does this program apply to?</legend>
           <div className="program-assignments">{locations.map((location, index) => {
-            const selected = editing.sites.some(site => site.facilityCode === location.code);
+            const selectedCodes = editing.selectedFacilityCodes ?? [...new Set(editing.sites.map(site => site.facilityCode))];
+            const selected = selectedCodes.includes(location.code);
             const siteFor = yard => ({ facilityCode: location.code, yard, participants: '', completed: '' });
             return <div className="assignment-row" style={facilityStyle(index)} key={location.code}>
               <label><input type="checkbox" checked={selected} onChange={() => setEditing({
-                ...editing, sites: selected ? editing.sites.filter(site => site.facilityCode !== location.code) :
-                  [...editing.sites, ...location.yards.map(siteFor)]
+                ...editing,
+                selectedFacilityCodes: selected ? selectedCodes.filter(code => code !== location.code) : [...selectedCodes, location.code],
+                sites: selected ? editing.sites.filter(site => site.facilityCode !== location.code) : editing.sites
               })} />{location.name}</label>
-              {(selected || locations.length === 1) && <fieldset className="program-yards"><legend>Yards for this program</legend>
+              {selected && <fieldset className="program-yards"><legend>Yards for this program</legend>
                 <p className="yard-hint">Choose the yards where this program runs.</p>
                 {location.yards.map(yard => {
                   const site = editing.sites.find(item => item.facilityCode === location.code && item.yard === yard);
@@ -299,21 +358,21 @@ export default function Intake({ account, blank, css, facilities = [] }) {
             </div>;
           })}</div>
           </fieldset>
-          <div className="count-row"><label className="form-field">Course Hours <span className="label-note">(per participant)</span>
+          <div className="count-row"><label className="form-field">
+            <span className="field-label">Course Hours <span className="label-note">(per participant)</span></span>
             <NumberStepper value={editing.courseHours} onChange={courseHours => setEditing({ ...editing, courseHours })} fractional />
           </label></div>
-          <label className="form-field">Schedule Status <select required value={editing.status} onChange={event => setEditing({ ...editing, status: event.target.value })}>
+          <label className="form-field"><span className="field-label">Schedule Status</span> <select required value={editing.status} onChange={event => setEditing({ ...editing, status: event.target.value })}>
             <option value="" disabled>Select a status</option>
             {['Planned', 'In Progress', 'Completed'].map(status => <option key={status}>{status}</option>)}</select></label>
           <div className="date-row">{[[ 'startDate', 'Start Date'], ['endDate', 'End Date']].map(([key, label]) =>
-            <label className="form-field" key={key}>{label} <input type={key === 'courseHours' ? 'number' : 'date'} min={key === 'courseHours' ? 0 : key === 'endDate' ? editing.startDate : undefined} step="any"
-              required={key === 'startDate' ? editing.status !== 'Planned' : key === 'endDate' && editing.status === 'Completed'}
+            <label className="form-field" key={key}><span className="field-label">{label}</span> <input type={key === 'courseHours' ? 'number' : 'date'} min={key === 'courseHours' ? 0 : key === 'endDate' ? editing.startDate : undefined} step="any"
+              required={key === 'startDate' ? ['In Progress', 'Completed'].includes(editing.status) : key === 'endDate' && editing.status === 'Completed'}
               value={editing[key]} onChange={event => setEditing({ ...editing, [key]: event.target.value })} /></label>)}</div>
 
           <fieldset className="yard-numbers"><legend>Participants at each yard</legend>
-            <p className="yard-hint">Blank counts are saved as 0.</p>
             <div className="yard-number-rows">{editing.sites.map(site =>
-              <div className="yard-number-row" style={facilityStyle(locations.findIndex(location => location.code === site.facilityCode))} key={JSON.stringify([site.facilityCode, site.yard])}>
+              <div className={`yard-number-row${Number(site.completed) > Number(site.participants || 0) ? ' yard-number-invalid' : ''}`} style={facilityStyle(locations.findIndex(location => location.code === site.facilityCode))} key={JSON.stringify([site.facilityCode, site.yard])}>
                 <strong className="yard-number-place">{site.facilityCode} · {site.yard}</strong>
                 {[['participants', 'Participants enrolled'], ['completed', 'Completed']].map(([key, label]) =>
                   <label className="yard-count" key={key}><span className="yard-count-label">{label}</span>
@@ -321,35 +380,50 @@ export default function Intake({ account, blank, css, facilities = [] }) {
                       ...editing, sites: editing.sites.map(item => item === site ? { ...item, [key]: value } : item)
                     })} />
                   </label>)}
+                {Number(site.completed) > Number(site.participants || 0) &&
+                  <>
+                    <span className="yard-warning-icon" aria-hidden="true">!</span>
+                    <p className="yard-count-error">Completed cannot exceed enrollment at this yard.</p>
+                  </>}
               </div>)}</div>
             {!editing.sites.length && <p className="yard-hint">Choose a facility and yard above first.</p>}
           </fieldset>
-          <button className="continue-button">Done with program</button>
+          {error && <p className="program-error" role="alert">{error}</p>}
+          <div className="next-actions">
+            <button type="submit" className="continue-button">Done with program</button>
+            {programs.some(program => program.id === editing.id) &&
+              <button className="program-remove" type="button" onClick={cancelProgramEdit}>Cancel editing</button>}
+          </div>
         </form></li></ol>}
         <section id="program-next" className="question-step" aria-labelledby="program-next-heading" hidden={!!editing}>
-          <h3 id="program-next-heading" className="form-title">Ready to submit</h3>
+          <h3 id="program-next-heading" className="form-title">Program added. What’s next?</h3>
           <ol className="added-programs" role="list" aria-label="Programs this quarter">
             {programs.map(program => {
               const { participants, participantsCompleted } = counts(program.sites);
               return <li key={program.id}>
                 <div className="program-row">
-                  <button type="button" className="program-toggle" aria-label={`Edit ${program.name}`} disabled={!!pending} onClick={() => setEditing(program)}>
+                  <div className="program-toggle" style={{ cursor: 'inherit' }}>
                     <span className="added-name">{program.name}</span>
-                    <span className={`program-state${program.sites.length ? ' is-ready' : ''}`}>
-                      {program.sites.length ? `✓ Ready · ${participants} enrolled · ${participantsCompleted} completed` : 'Choose facilities & yards'}
+                    <span className={`program-state${program.status && program.sites.length ? ' is-ready' : ''}`}>
+                      {!program.status ? 'Needs review' : program.sites.length ? `✓ Ready · ${participants} enrolled · ${participantsCompleted} completed` : 'Choose facilities & yards'}
                     </span>
-                  </button>
-                  {!pending && <button type="button" className="program-remove" aria-label={`Remove ${program.name}`} onClick={() => {
+                  </div>
+                  {!pending &&
+                    <button type="button" className={`continue-button program-review${program.status ? ' program-edit' : ''}`} aria-label={`${program.status ? 'Edit' : 'Review'} ${program.name}`} onClick={() => setEditing(program)}>{program.status ? 'Edit' : 'Review'}</button>}
+                  {!pending && <button type="button" className="continue-button program-delete" aria-label={`Remove ${program.name}`} onClick={() => {
                     setPrograms(programs.filter(item => item.id !== program.id));
-                    if (programs.length === 1) setEditing(newProgram(locations));
+                    if (programs.length === 1) setEditing(newProgram());
                   }}>Remove</button>}
                 </div>
               </li>;
             })}
           </ol>
           <div className="next-actions">
-            {!pending && <button type="button" id="another-program" className="continue-button" onClick={() => setEditing(newProgram(locations))}>+ Add another program</button>}
-            <button type="button" id="finish-form" className="continue-button" disabled={busy || !!editing || !programs.length || programs.some(program => !program.sites.length)} onClick={submit}>{pending ? 'Retry submission' : 'Finish and submit'}</button>
+            {!pending && <button type="button" id="another-program" className="continue-button" onClick={() => setEditing(newProgram())}>+ Add another program</button>}
+            <button type="button" id="finish-form" className="continue-button" disabled={busy || !!editing || !programs.length || programs.some(program => !program.status || !program.sites.length)} onClick={submit}>
+              {busy ? <><span className="submit-spinner" aria-hidden="true" />Submitting…</> : pending ? 'Retry submission' : 'Finish and submit'}
+            </button>
+            <span className="sr-only" role="status">{busy ? 'Submitting your report' : ''}</span>
           </div>
         </section></div>
       </section>}
@@ -424,7 +498,7 @@ export default function Intake({ account, blank, css, facilities = [] }) {
 function NumberStepper({ value, onChange, fractional = false }) {
   return <span className="stepper">
     <button type="button" aria-label="Decrease" onClick={() => onChange(Math.max(0, Number(value) - 1))}>−</button>
-    <input type="number" min="0" step={fractional ? 'any' : '1'} placeholder="0" value={value}
+    <input type="number" min="0" max="10000000" step={fractional ? 'any' : '1'} placeholder="0" value={value}
       onChange={event => onChange(event.target.value)} />
     <button type="button" aria-label="Increase" onClick={() => onChange(Number(value) + 1)}>+</button>
   </span>;

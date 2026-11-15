@@ -15,7 +15,7 @@ function subscribe(listener) {
   };
 }
 function readAccount() {
-  const account = location.hash.slice(1);
+  const account = location.hash.slice(1) || new URLSearchParams(location.search).get('account');
   return accounts.includes(account) ? account : '';
 }
 
@@ -35,6 +35,11 @@ export default function Workspace({ children }) {
     return () => document.body.classList.remove('embed');
   }, [pathname]);
   const account = fragmentAccount || queryAccount;
+  useEffect(() => {
+    if ((pathname === '/dashboard/' || pathname === '/dashboard/index.html') && account) {
+      router.replace('/team-dashboard/' + location.search + '#' + account);
+    }
+  }, [account, pathname, router]);
   const tabs = [
     ['Overview', '/team-dashboard/'],
     ['Programs', '/team-dashboard/programs.html'],
