@@ -1,22 +1,40 @@
 import { readFile } from 'node:fs/promises';
+import { headers } from 'next/headers';
+import { reportingAccess } from '../../../server/reporting-access.js';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Intake from './intake.jsx';
+import Login from './login.jsx';
 
 export default async function Page({ params, searchParams }) {
   const { legacy = [] } = await params;
   const key = legacy.join('/');
   if (!key) redirect('/dashboard/?entry=team');
-  if (key === 'dashboard' || key === 'dashboard/index.html') {
+  if (key === 'dashboard' || key === 'dashboard/index.html' || key === 'accept-invite') {
+    const invitePage = key === 'accept-invite';
+    const { id } = invitePage ? await searchParams : {};
+    if (invitePage && (typeof id !== 'string' || !/^[0-9a-f-]{36}$/.test(id))) notFound();
     const source = await readFile('dashboard/index.html', 'utf8');
     const css = source.match(/<style>([\s\S]*?)<\/style>/)[1];
-    return <><style>{css}</style><main className="dashboard-layout choosing-account">
+    return <><style>{css + `
+      .dashboard-login { width: min(100%, 480px); margin: 0 auto 24px; padding: 24px; border: 1px solid #dce3da; border-radius: 16px; background: #fff; }
+      .dashboard-login h2 { margin: 0 0 16px; }
+      .dashboard-login form, .dashboard-login label { display: grid; gap: 8px; }
+      .dashboard-login form { gap: 16px; }
+      .dashboard-login label { font-weight: 700; }
+      .dashboard-login input { min-width: 0; padding: 10px 12px; border: 1px solid #aaa; border-radius: 8px; font: inherit; font-weight: 400; }
+      .dashboard-login button { justify-self: start; border: 0; border-radius: 999px; padding: 10px 22px; background: #111; color: #fff; font: inherit; font-weight: 700; }
+      .dashboard-login button:disabled { opacity: .5; }
+      .dashboard-login p { margin: 0; }
+      .dashboard-login [role="status"]:empty { display: none; }
+    `}</style><main className="dashboard-layout choosing-account">
       <div className="workspace-content">
         <section className="dashboard-heading"><div className="shell"><h1>Sign in</h1></div></section>
-        <div className="shell dashboard-content"><section id="signin" aria-labelledby="signin-heading">
-          <div className="view-heading"><div><span className="account-label">Sign in</span>
-            <h2 id="signin-heading">Choose an account</h2><p>Continue to your dashboard.</p></div></div>
+        <div className="shell dashboard-content">
+          <Login inviteId={invitePage ? id : undefined} configured={Boolean(process.env.BETTER_AUTH_SECRET && process.env.BETTER_AUTH_URL && process.env.DATABASE_URL)} />
+          {!invitePage && <section id="signin" aria-labelledby="signin-heading">
+          <div className="view-heading"><h2 id="signin-heading">Development Picker</h2></div>
           <div className="signin-grid">
             {[
               ['org-1', 'Org 1', '01', ''],
@@ -26,18 +44,48 @@ export default async function Page({ params, searchParams }) {
               <span className={`option-icon ${style}`} aria-hidden="true">{badge}</span><span>{label}</span>
             </Link>)}
           </div>
-        </section></div>
+        </section>}</div>
       </div>
     </main></>;
   }
   if (key === 'intake/simple.html') {
     const query = await searchParams;
-    const account = ['org-1', 'org-2', 'tpw'].includes(query.account) ? query.account : 'org-1';
+    const access = await reportingAccess(await headers());
+    const account = access.demo
+      ? (['org-1', 'org-2', 'tpw'].includes(query.account) ? query.account : 'org-1')
+      : access.orgId;
+    if (!access.demo && (access.status || !access.canSubmit)) {
+      return <main className="tpw-workspace"><div className="tpw-workspace-content">
+        <h1 className="tpw-page-title">Log data</h1>
+        <section className="log-data-access" aria-labelledby="log-data-access-heading">
+        <h2 id="log-data-access-heading">{access.status === 401 ? 'Sign in to log data' : access.status ? 'Organization access required' : 'Submission access required'}</h2>
+        <p>{access.status === 401 ? 'Sign in to access your organization’s reporting form.'
+          : access.status ? 'Your account does not have access to this organization. Contact your organization admin for help.'
+          : 'Ask your organization admin to grant you permission to submit reports.'}</p>
+        {access.status === 401 && <Link href="/dashboard/?entry=team">Sign in</Link>}
+        </section>
+        <style>{`
+          .log-data-access {
+            max-width: 640px;
+            margin: 24px auto 0;
+            padding: clamp(24px, 5vw, 48px);
+            border: 1px solid #d4e2d6;
+            border-radius: 16px;
+            background: #edf6ef;
+            text-align: center;
+            font-family: var(--tpw-text);
+          }
+          .log-data-access h2 { margin: 0 0 8px; font-size: 1.65rem; line-height: 1.2; }
+          .log-data-access p { margin: 0; color: #344a39; font-size: 1.125rem; }
+          .log-data-access a { display: inline-block; margin-top: 16px; font-weight: 700; }
+        `}</style>
+      </div></main>;
+    }
     const source = await readFile('team-form/index.html', 'utf8');
     const styles = [...source.matchAll(/<style>([\s\S]*?)<\/style>/g)].map(match => match[1]).join('\n');
     const picker = source.match(/<select[^>]*id="facility"[^>]*>([\s\S]*?)<\/select>/)?.[1] || '';
     const facilities = [...picker.matchAll(/<option value="([^"]+)">([^<]+)<\/option>/g)].map(([, code, name]) => ({ code, name }));
-    return <Intake key={account + String(query.blank)} facilities={facilities} account={account} blank={query.blank === '1'} css={styles.replaceAll('../assets/', '/assets/') + `
+    return <Intake organizationName={access.orgName} allowHashAccount={access.demo} key={account + String(query.blank)} facilities={facilities} account={account} blank={query.blank === '1'} css={styles.replaceAll('../assets/', '/assets/') + `
       .quarter-preview { padding-top: 8px; }
       .quarter-preview .prefill-loading { justify-items: center; text-align: center; padding-block: 24px; }
       .quarter-preview .prefill-loading .continue-button { justify-self: center; }

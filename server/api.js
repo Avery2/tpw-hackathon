@@ -1,3 +1,4 @@
+import { reportingAccess } from './reporting-access.js';
 import { organizationsPage, programsPage, submissionsPage, submissionTracking } from './registers.js';
 import { loadTpwOverview } from './overview.js';
 import { randomUUID } from 'node:crypto';
@@ -11,6 +12,30 @@ export async function handleApi(req, res) {
     const url = new URL(req.url, 'http://localhost');
     if (req.method === 'GET' && url.pathname === '/api/health') {
       await database().query('SELECT 1'); return send(200,{ok:true,database:'postgres',demo:true});
+    }
+    const access = await reportingAccess(req.headers);
+    if (access.status) return send(access.status, { error: access.error });
+    if (!access.demo) {
+      if (req.method === 'GET' && !access.staff) {
+        if (!['/api/dashboard', '/api/programs', '/api/submissions'].includes(url.pathname)) {
+          return send(403, { error: 'This view is unavailable to organization accounts.' });
+        }
+        if (url.searchParams.has('org') && url.searchParams.get('org') !== access.orgId) {
+          return send(403, { error: 'You can only access your own organization.' });
+        }
+        const detail = url.searchParams.get('detail');
+        if (detail && url.pathname === '/api/submissions') {
+          let identity;
+          try { identity = JSON.parse(detail); } catch { throw new InputError('Invalid submission reference.'); }
+          if (!Array.isArray(identity) || identity[0] !== access.orgId) {
+            return send(403, { error: 'You can only access your own organization.' });
+          }
+        }
+        url.searchParams.set('org', access.orgId);
+      }
+      if (req.method === 'POST' && url.pathname === '/api/submissions' && !access.canSubmit) {
+        return send(403, { error: 'Your account cannot submit reports.' });
+      }
     }
     if (req.method === 'GET' && url.pathname === '/api/overview') {
       return send(200, await loadTpwOverview(database()));
@@ -47,6 +72,9 @@ export async function handleApi(req, res) {
       const {id,submission}=payload;
       if (typeof id !== 'string' || !/^[a-zA-Z0-9_-]{1,150}$/.test(id)) throw new InputError('Invalid submission ID.');
       const document=validateSubmission(submission);
+      if (!access.demo && document.orgId !== access.orgId) {
+        return send(403, { error: 'You can only submit for your own organization.' });
+      }
       const client=await database().connect();
       try {
         await client.query('BEGIN');
@@ -58,6 +86,29 @@ export async function handleApi(req, res) {
           org=(await client.query(`INSERT INTO organizations(id,name,profile) VALUES($1,$2,$3) ON CONFLICT (lower(name)) DO UPDATE SET name=organizations.name RETURNING id,name`,[randomUUID(),document.organization,{synthetic:true}])).rows[0];
         }
         document.orgId=org.id;
+        if (!access.demo) {
+          await client.query('SELECT id FROM organizations WHERE id=$1 FOR UPDATE', [org.id]);
+          const { quarter, year } = document.reportingPeriod;
+          const { rows: existing } = await client.query(
+            `SELECT id, org_id, document = $5::jsonb AS unchanged FROM submissions
+             WHERE id=$1 OR (org_id=$2 AND reporting_year=$3 AND reporting_quarter=$4)`,
+            [id, org.id, year, quarter, document]
+          );
+          if (existing.some(row => row.id === id && row.org_id === org.id && row.unchanged)) {
+            await client.query('COMMIT');
+            return send(200, { id });
+          }
+          if (existing.length) {
+            await client.query('ROLLBACK');
+            return send(409, { error: 'This report has already been submitted. Contact TPW to request a correction.' });
+          }
+          const inserted = await client.query(
+            'INSERT INTO submissions(id,org_id,document) VALUES($1,$2,$3) ON CONFLICT(id) DO NOTHING',
+            [id, org.id, document]
+          );
+          await client.query('COMMIT');
+          return inserted.rowCount ? send(200, { id }) : send(409, { error: 'This submission ID is already in use.' });
+        }
         const previous=(await client.query('SELECT org_id FROM submissions WHERE id=$1 FOR UPDATE',[id])).rows[0];
         if((await client.query('SELECT 1 FROM submission_requires_location_ui WHERE submission_id=$1',[id])).rowCount) throw new InputError('This report has location-specific figures and cannot be overwritten by the shared-count form.');
         if(previous && previous.org_id!==org.id) throw new InputError('This submission ID belongs to another organization.');

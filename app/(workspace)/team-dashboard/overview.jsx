@@ -106,7 +106,7 @@ export default function Overview() {
     <section className="dashboard-heading"><div className="shell"><h1>Overview</h1>{account && <DashboardExports key={account} account={account} />}</div></section>
     {account && <div className="shell dashboard-content"><div className="view-heading"><div>
       <span className="account-label">{admin ? 'TPW overview' : 'Organization'}</span>
-      <h2 id="profile-heading">{admin ? 'Collective overview' : data?.name || (account === 'org-1' ? 'Org 1' : 'Org 2')}</h2>
+      <h2 id="profile-heading">{admin ? 'Collective overview' : data?.name || 'Organization overview'}</h2>
     </div><Link className="action switch" href="/dashboard/?entry=team">Switch view ↗</Link></div></div>}
     {!account ? <Link href="/dashboard/?entry=team">Choose an account</Link> : current?.error ?
       <p role="alert">Could not load Overview. <button onClick={() => retry(attempt + 1)}>Try again</button></p> :

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
-const accounts = ['org-1', 'org-2', 'tpw'];
+const validAccount = value => typeof value === 'string' && /^(tpw|org-[a-z0-9-]+)$/.test(value);
 function subscribe(listener) {
   window.addEventListener('hashchange', listener);
   window.addEventListener('popstate', listener);
@@ -16,7 +16,7 @@ function subscribe(listener) {
 }
 function readAccount() {
   const account = location.hash.slice(1) || new URLSearchParams(location.search).get('account');
-  return accounts.includes(account) ? account : '';
+  return validAccount(account) ? account : '';
 }
 
 export function useWorkspaceAccount() {
@@ -30,11 +30,40 @@ export default function Workspace({ children }) {
   const [queryAccount, setQueryAccount] = useState('');
   useEffect(() => {
     const value = new URLSearchParams(location.search).get('account');
-    setQueryAccount(accounts.includes(value) ? value : '');
+    setQueryAccount(validAccount(value) ? value : '');
     document.body.classList.toggle('embed', new URLSearchParams(location.search).has('embed'));
     return () => document.body.classList.remove('embed');
   }, [pathname]);
-  const account = fragmentAccount || queryAccount;
+  const selectedAccount = fragmentAccount || queryAccount;
+  useEffect(() => {
+    if (pathname === '/team-dashboard/members/' && location.hash) {
+      history.replaceState(history.state, '', location.pathname + location.search);
+    }
+  }, [pathname]);
+  const dashboardPage = pathname.startsWith('/team-dashboard/');
+  const [managedOrg, setManagedOrg] = useState('');
+  const account = selectedAccount || (dashboardPage ? managedOrg : '');
+  const [inviteAccepted, setInviteAccepted] = useState(false);
+  useEffect(() => {
+    if (!account || pathname !== '/team-dashboard/' || sessionStorage.getItem('tpw-invite-accepted') !== account) return;
+    sessionStorage.removeItem('tpw-invite-accepted');
+    setInviteAccepted(true);
+  }, [account, pathname]);
+
+  useEffect(() => {
+    if (!inviteAccepted) return;
+    const timeout = setTimeout(() => setInviteAccepted(false), 6000);
+    return () => clearTimeout(timeout);
+  }, [inviteAccepted]);
+  useEffect(() => {
+    if (!dashboardPage && !selectedAccount) return;
+    const controller = new AbortController();
+    fetch('/api/pilot-account/', { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => setManagedOrg(data?.canManageMembers ? data.orgId : ''))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [dashboardPage, selectedAccount]);
   useEffect(() => {
     if ((pathname === '/dashboard/' || pathname === '/dashboard/index.html') && account) {
       router.replace('/team-dashboard/' + location.search + '#' + account);
@@ -81,8 +110,19 @@ export default function Workspace({ children }) {
       {tabs.slice(0, 1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path ? 'page' : undefined}>{label}</Link>)}
       <Link href={`/intake/simple.html?backend=demo&account=${account}`} aria-current={pathname === '/intake/simple.html' ? 'page' : undefined}>Log data</Link>
       {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname.endsWith('/submission-data.html')) ? 'page' : undefined}>{label}</Link>)}
+      {account && account === managedOrg && <Link href="/team-dashboard/members/"
+        aria-current={pathname === '/team-dashboard/members/' ? 'page' : undefined}>Members</Link>}
       <a href={annualReport} target="_blank" rel="noopener noreferrer">Annual report</a>
     </nav>}
+    {inviteAccepted && <div className="tpw-invite-toast">
+      <div role="status"><strong>Invitation accepted</strong><span>You’ve joined the organization.</span></div>
+      <button type="button" aria-label="Dismiss confirmation" onClick={() => setInviteAccepted(false)}>×</button>
+      <style>{`
+        .tpw-invite-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 20px; width: max-content; max-width: calc(100% - 32px); padding: 14px 18px; border: 1px solid #b8d2be; border-radius: 12px; background: #edf6ef; color: #214c30; box-shadow: 0 6px 24px #0002; }
+        .tpw-invite-toast [role="status"] { display: grid; gap: 2px; }
+        .tpw-invite-toast button { border: 0; background: transparent; color: inherit; font: inherit; font-size: 22px; cursor: pointer; }
+      `}</style>
+    </div>}
     <AccountDrawer account={account} dialog={dialog} />
     <div onClick={navigateDashboard}>{children}</div>
   </>;

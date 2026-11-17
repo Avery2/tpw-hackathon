@@ -6,6 +6,7 @@ export const runtime = 'nodejs';
 async function dispatch(request) {
   const input = request.body ? Readable.fromWeb(request.body) : Readable.from([]);
   input.method = request.method;
+  input.headers = request.headers;
   const url = new URL(request.url);
   url.pathname = url.pathname.replace(/\/$/, '');
   if (request.method === 'GET' && url.pathname === '/api/local-development' && process.env.NODE_ENV === 'development') {
