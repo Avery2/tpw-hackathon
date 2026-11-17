@@ -21,7 +21,8 @@
     "test:neon": "node --test test/neon/*.test.mjs",
     "build:legacy": "node scripts/build-neon-app.mjs",
     "dev:legacy": "node --env-file-if-exists=.env.local --env-file-if-exists=.env server/local.js",
-    "test:browser": "node test/browser/next-workspace.mjs"
+    "test:browser": "node test/browser/next-workspace.mjs",
+    "db:auth-setup": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/auth-setup.mjs"
   },
   "engines": {
     "node": ">=22.16"

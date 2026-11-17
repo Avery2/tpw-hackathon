@@ -6,6 +6,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Intake from './intake.jsx';
 import Login from './login.jsx';
+import DevelopmentPicker from './development-picker.jsx';
+import { developmentLoginEnabled } from '../../../server/development-login.js';
 
 export default async function Page({ params, searchParams }) {
   const { legacy = [] } = await params;
@@ -13,6 +15,9 @@ export default async function Page({ params, searchParams }) {
   if (!key) redirect('/dashboard/?entry=team');
   if (key === 'dashboard' || key === 'dashboard/index.html' || key === 'accept-invite') {
     const invitePage = key === 'accept-invite';
+    const authConfigured = Boolean(process.env.BETTER_AUTH_SECRET && process.env.BETTER_AUTH_URL && process.env.DATABASE_URL);
+    const oneClick = authConfigured && developmentLoginEnabled();
+    const showDevelopmentPicker = !invitePage && (oneClick || !authConfigured);
     const { id } = invitePage ? await searchParams : {};
     if (invitePage && (typeof id !== 'string' || !/^[0-9a-f-]{36}$/.test(id))) notFound();
     const source = await readFile('dashboard/index.html', 'utf8');
@@ -32,10 +37,10 @@ export default async function Page({ params, searchParams }) {
       <div className="workspace-content">
         <section className="dashboard-heading"><div className="shell"><h1>Sign in</h1></div></section>
         <div className="shell dashboard-content">
-          <Login inviteId={invitePage ? id : undefined} configured={Boolean(process.env.BETTER_AUTH_SECRET && process.env.BETTER_AUTH_URL && process.env.DATABASE_URL)} />
-          {!invitePage && <section id="signin" aria-labelledby="signin-heading">
+          <Login inviteId={invitePage ? id : undefined} configured={authConfigured} />
+          {showDevelopmentPicker && <section id="signin" aria-labelledby="signin-heading">
           <div className="view-heading"><h2 id="signin-heading">Development Picker</h2></div>
-          <div className="signin-grid">
+          {oneClick ? <DevelopmentPicker /> : <div className="signin-grid">
             {[
               ['org-1', 'Org 1', '01', ''],
               ['org-2', 'Org 2', '02', 'org-two'],
@@ -43,7 +48,7 @@ export default async function Page({ params, searchParams }) {
             ].map(([id, label, badge, style]) => <Link key={id} className="signin-option" href={`/team-dashboard/#${id}`}>
               <span className={`option-icon ${style}`} aria-hidden="true">{badge}</span><span>{label}</span>
             </Link>)}
-          </div>
+          </div>}
         </section>}</div>
       </div>
     </main></>;
