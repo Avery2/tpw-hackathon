@@ -28,24 +28,35 @@ try {
     return route.abort();
   });
 
+  for (const oldPath of ['/dashboard/', '/intake/simple.html/', '/team-dashboard/programs.html/', '/form-demo/']) {
+    assert.equal((await page.request.get(base + oldPath)).status(), 404, oldPath);
+  }
+  await page.goto(base + '/');
+  await page.getByRole('heading', { name: 'Sign in', exact: true }).waitFor();
+  assert.equal(new URL(page.url()).pathname, '/sign-in/');
+  assert.equal((await page.request.get(base + '/accept-invite/?id=00000000-0000-4000-8000-000000000000')).status(), 200);
+  assert.equal((await page.request.get(base + '/accept-invite/')).status(), 404);
+
   await page.goto(base + '/team-dashboard/#org-2');
   await page.locator('#profile-heading').filter({ hasText: 'Org 2' }).waitFor();
   await page.locator('.tpw-header').evaluate(header => { header.dataset.browserTest = 'retained'; });
   await page.getByRole('navigation', { name: 'Member navigation' }).getByRole('link', { name: 'Programs' }).click();
   await page.getByText('No programs have been submitted yet.').waitFor();
+  assert.equal(new URL(page.url()).pathname, '/team-dashboard/programs/');
   assert.equal(await page.locator('.tpw-header').getAttribute('data-browser-test'), 'retained');
   await page.goBack();
   await page.locator('#profile-heading').filter({ hasText: 'Org 2' }).waitFor();
   assert.equal(await page.locator('.tpw-header').getAttribute('data-browser-test'), 'retained');
   await page.getByRole('link', { name: 'Log data' }).click();
+  await page.waitForURL('**/log-data/?account=org-2');
   await page.getByRole('button', { name: 'Use previous entries' }).click();
   await page.getByRole('heading', { name: 'Which quarter are you reporting for?' }).waitFor();
-  await page.getByRole('button', { name: 'Continue →' }).click();
+  await page.getByRole('button', { name: 'Continue', exact: true }).click();
   await page.locator('#facilities-step').waitFor();
   assert.equal(await page.locator('iframe').count(), 0);
   await page.getByLabel('Add a facility').selectOption('CCI');
   await page.getByRole('checkbox', { name: 'A Yard', exact: true }).check();
-  await page.getByRole('button', { name: 'Continue to programs →' }).click();
+  await page.getByRole('button', { name: 'Continue to programs', exact: true }).click();
   await page.getByLabel('Program name').fill('Browser test program');
   await page.locator('.assignment-row').getByRole('checkbox').first().check();
   assert.equal(await page.getByRole('checkbox', { name: 'A Yard', exact: true }).isChecked(), false);

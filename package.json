@@ -7,20 +7,19 @@
     "next": "^16.4.6",
     "pg": "^8.23.1",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-icons": "^5.7.0"
   },
   "name": "tpw-demo",
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-neon-app.mjs --next && next build",
-    "dev": "node scripts/build-neon-app.mjs --next && next dev --hostname 127.0.0.1",
+    "build": "node scripts/build-neon-app.mjs && next build",
+    "dev": "node scripts/build-neon-app.mjs && next dev --hostname 127.0.0.1",
     "start": "next start",
     "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/neon-migrate.mjs",
     "db:import-demo": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/neon-import-demo.mjs",
     "test:neon": "node --test test/neon/*.test.mjs",
-    "build:legacy": "node scripts/build-neon-app.mjs",
-    "dev:legacy": "node --env-file-if-exists=.env.local --env-file-if-exists=.env server/local.js",
     "test:browser": "node test/browser/next-workspace.mjs",
     "db:auth-setup": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/auth-setup.mjs"
   },

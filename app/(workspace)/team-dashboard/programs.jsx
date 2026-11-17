@@ -1,5 +1,7 @@
 'use client';
 
+import { LuArrowDown, LuArrowLeft, LuArrowUp, LuArrowUpDown } from 'react-icons/lu';
+
 import { useEffect, useState } from 'react';
 import { DashboardExports } from './controls.jsx';
 import Link from 'next/link';
@@ -34,7 +36,7 @@ export default function ProgramsPage() {
   const account = useWorkspaceAccount();
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Programs</h1><p>All your program details in one place.</p>{account && <DashboardExports key={account} account={account} />}</div></section>
-    {account ? <Register key={account} account={account} /> : <Link href="/dashboard/?entry=team">Choose an account</Link>}
+    {account ? <Register key={account} account={account} /> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
 
@@ -70,7 +72,7 @@ function Register({ account }) {
         <h2 id="table-heading">Existing programs</h2>
         <p id="program-count" role="status">{data ? `${data.count} of ${data.total} ${view === 'table' ? 'facility assignments' : 'programs'}` : current?.error ? 'Could not load programs.' : 'Loading programs…'}</p>
       </div>
-      <Link className="action switch" href={`/team-dashboard/#${account}`}>← Dashboard</Link>
+      <Link className="action switch" href={`/team-dashboard/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Dashboard</Link>
     </div>
     <div className="program-toolbar">
       <div className="view-toggle" role="group" aria-label="Program display">{[['table', 'Table view'], ['cards', 'Card view']].map(([key, label]) =>
@@ -81,14 +83,16 @@ function Register({ account }) {
     {current?.error && <button onClick={() => retry(attempt + 1)}>Try again</button>}
     {!current && <div className="skeleton-block" style={{ minHeight: 160 }} aria-hidden="true" />}
     {data && (data.items.length === 0 ? <p>{data.total ? 'No programs match your search.' : 'No programs have been submitted yet.'}</p> :
-      view === 'cards' ? <div className="existing-program-grid">{data.items.map((program, index) =>
-        <ProgramCard key={program.id || index} program={program} staff={account === 'tpw'} />)}</div> :
+      view === 'cards' ? <div className="existing-program-grid">{data.items.map(program =>
+        <ProgramCard key={JSON.stringify([program.orgId || program.organization || program.submissionId, program.id || program.name.trim().toLowerCase()])} program={program} staff={account === 'tpw'} />)}</div> :
       <div className="table-wrap" tabIndex={0} role="region" aria-label="Scrollable program register"><table className="program-table">
         <caption>One row per program and facility assignment. Program totals repeat across its facilities.</caption>
-        <thead><tr><th>#</th>{columns.map(([key, label]) =>
-          <th key={key} scope="col" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
-            <button onClick={() => { setSort({ key, direction: key === sort.key && sort.direction === 'asc' ? 'desc' : 'asc' }); setPage(1); }}>{label} {key === sort.key ? sort.direction === 'asc' ? '↑' : '↓' : '↕'}</button>
-          </th>)}</tr></thead>
+        <thead><tr><th scope="col" aria-label="Row number">#</th>{columns.map(([key, label]) => {
+          const SortIcon = key !== sort.key ? LuArrowUpDown : sort.direction === 'asc' ? LuArrowUp : LuArrowDown;
+          return <th key={key} scope="col" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+            <button onClick={() => { setSort({ key, direction: key === sort.key && sort.direction === 'asc' ? 'desc' : 'asc' }); setPage(1); }}>{label} <SortIcon size={14} aria-hidden="true" style={{ flexShrink: 0, alignSelf: 'center' }} /></button>
+          </th>;
+        })}</tr></thead>
         <tbody>{data.items.map((row, index) => <tr key={data.offset + index}><td className="row-number">{data.offset + index + 1}</td>{columns.map(([key]) =>
           <td key={key} className={metrics.some(([metric]) => metric === key) ? 'numeric' : key === 'name' ? 'program-name' : undefined}>{key === 'status' ? <span className="program-status" data-status={row.status}>{row.status || 'Not specified'}</span> :
             metrics.some(([metric]) => metric === key) ? number(row[key]) : row[key] || '—'}</td>)}</tr>)}</tbody>

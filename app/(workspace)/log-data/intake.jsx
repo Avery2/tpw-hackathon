@@ -1,5 +1,7 @@
 'use client';
 
+import { LuArrowLeft, LuArrowRight, LuCheck, LuChevronRight, LuCircleAlert, LuMinus, LuPlus, LuX } from 'react-icons/lu';
+
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { currentReportingPeriod } from '../../../team-form/js/reporting-period.js';
 
@@ -55,7 +57,7 @@ export default function Intake(props) {
   return <IntakeForm key={account} {...props} account={account} />;
 }
 
-function IntakeForm({ account, blank, css, organizationName, facilities = [] }) {
+function IntakeForm({ account, blank, organizationName, facilities = [] }) {
   const [period, setPeriod] = useState(null);
   const [step, setStep] = useState(blank || account === 'tpw' ? 'organization' : 'choice');
   const [organization, setOrganization] = useState(organizationName ?? (account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1'));
@@ -187,7 +189,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
     try {
       localStorage.setItem(key, JSON.stringify(attempt));
       setPending(attempt);
-      const response = await fetch('/api/submissions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(attempt) });
+      const response = await fetch('/api/submissions/?org=' + encodeURIComponent(account), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(attempt) });
       const result = await response.json();
       if ([400, 413].includes(response.status)) {
         localStorage.removeItem(key);
@@ -228,7 +230,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
 
   return <main className="tpw-workspace"><div className="tpw-workspace-content">
     <h1 className="tpw-page-title">Log data</h1>
-    <div className="quarter-preview"><style>{css}</style><div className="demo-form" ref={formRoot}>
+    <div className="quarter-preview"><div className="demo-form" ref={formRoot}>
       {error && !editing && <p role="alert">{error}</p>}
       {step === 'choice' && <section className="question-step prefill-loading">
         <h2 className="form-title">How would you like to start?</h2>
@@ -257,7 +259,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
             onChange={event => setOrganization(event.target.value)} />
           <p className="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
         </div>
-        <button className="continue-button" type="submit">Continue <span aria-hidden="true">→</span></button>
+        <button className="continue-button" type="submit">Continue <LuArrowRight aria-hidden="true" /></button>
       </form>}
       {step === 'quarter' && period && !busy && !prefillFailed && <form className="question-step entering" onSubmit={event => { event.preventDefault(); goToStep('facilities'); }}>
         {usePrevious && <div className="prefill-note">
@@ -272,7 +274,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
           </label>)}
         </fieldset>
         <div className="form-field"><label htmlFor="reporting-year">Year</label><input id="reporting-year" type="number" required min="2000" max="2200" value={period.year} onChange={event => setPeriod({ ...period, year: event.target.value })} /></div>
-        <div className="next-actions"><button className="continue-button" disabled={busy || prefillFailed}>Continue →</button></div>
+        <div className="next-actions"><button className="continue-button" disabled={busy || prefillFailed}>Continue <LuArrowRight aria-hidden="true" /></button></div>
       </form>}
       {step === 'facilities' && <section className="question-step" id="facilities-step">
 
@@ -281,13 +283,13 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
         </div>
         <div className="form-step-header">
           <p className="step-label">Step 2 · Facilities</p>
-          <button type="button" className="continue-button" onClick={() => goToStep('quarter')}>← Back</button>
+          <button type="button" className="continue-button" onClick={() => goToStep('quarter')}><LuArrowLeft aria-hidden="true" /> Back</button>
         </div>
         <h2 className="form-title">Which facilities do you operate in?</h2>
         <p className="form-hint">Select each facility where you operate, then check all the yards you work in at that facility.</p>
         <div id="facility-cards" className="facility-cards">
         {locations.map((location, index) => <div className="facility-card active" style={facilityStyle(index)} key={location.code}><div className="prison-card-header"><strong className="choose">{location.name}</strong>
-          <button type="button" className="remove" aria-label={`Remove ${location.name}`} onClick={() => setLocations(locations.filter(item => item.code !== location.code))}>×</button></div>
+          <button type="button" className="remove" aria-label={`Remove ${location.name}`} onClick={() => setLocations(locations.filter(item => item.code !== location.code))}><LuX aria-hidden="true" /></button></div>
           <fieldset className="yard-choices"><legend>Yards you operate in</legend><p className="yard-hint">Select all that apply.</p>{[...new Set(['A Yard', 'B Yard', 'C Yard', 'D Yard', 'E Yard', 'F Yard', 'North', 'South', 'Reception', 'Ad Seg', ...location.yards])].map(yard =>
             <label key={yard}><input type="checkbox" checked={location.yards.includes(yard)}
               onChange={event => setLocations(locations.map(item => item === location ? { ...item, yards: event.target.checked ? [...item.yards, yard] : item.yards.filter(value => value !== yard) } : item))} />{yard}</label>)}
@@ -311,20 +313,20 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
             setPrograms(programs.map(program => ({ ...program, sites: program.sites.filter(site => locations.some(item => item.code === site.facilityCode && item.yards.includes(site.yard))) })));
             if (!programs.length && !editing) setEditing(newProgram());
             goToStep('review');
-          }}>Continue to programs →</button>
+          }}>Continue to programs <LuArrowRight aria-hidden="true" /></button>
         </div>
       </section>}
       {step === 'review' && <section id="programs-step" className="question-step">
         <aside className="program-sidebar" aria-label="Facilities and yards">
           <div className="organization-summary"><span>Your facilities &amp; yards</span>{!pending && <button onClick={() => goToStep('facilities')}>Edit facilities</button>}</div>
-          <ul id="prison-summary" className="prison-summary">{locations.map((location, index) => <li style={facilityStyle(index)} className="facility-card active" key={location.code}><details open={locations.length < 3}><summary><strong>{location.name}</strong> <span className="program-count">{programs.filter(program => program.sites.some(site => site.facilityCode === location.code)).length} programs</span></summary>
+          <ul id="prison-summary" className="prison-summary">{locations.map((location, index) => <li style={facilityStyle(index)} className="facility-card active" key={location.code}><details open={locations.length < 3}><summary className="intake-disclosure"><LuChevronRight aria-hidden="true" /><strong>{location.name}</strong> <span className="program-count">{programs.filter(program => program.sites.some(site => site.facilityCode === location.code)).length} programs</span></summary>
             {location.yards.map(yard => <div className="summary-yard" key={yard}><h4>{yard}</h4>{programs.filter(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)).map(program => <p key={program.id}>{program.name}</p>)}{!programs.some(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)) && <p className="yard-hint">No programs added yet</p>}</div>)}</details>
           </li>)}</ul>
         </aside>
         <div className="program-editor">
         <div className="form-step-header">
           <p className="step-label">Step 3 · Programs</p>
-          {!pending && <button type="button" className="continue-button" onClick={() => goToStep('facilities')}>← Back</button>}
+          {!pending && <button type="button" className="continue-button" onClick={() => goToStep('facilities')}><LuArrowLeft aria-hidden="true" /> Back</button>}
         </div>
         <h2 className="form-title">What programs do you run?</h2>
         <p className="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
@@ -382,7 +384,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
                   </label>)}
                 {Number(site.completed) > Number(site.participants || 0) &&
                   <>
-                    <span className="yard-warning-icon" aria-hidden="true">!</span>
+                    <LuCircleAlert className="yard-warning-icon" aria-hidden="true" />
                     <p className="yard-count-error">Completed cannot exceed enrollment at this yard.</p>
                   </>}
               </div>)}</div>
@@ -405,7 +407,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
                   <div className="program-toggle" style={{ cursor: 'inherit' }}>
                     <span className="added-name">{program.name}</span>
                     <span className={`program-state${program.status && program.sites.length ? ' is-ready' : ''}`}>
-                      {!program.status ? 'Needs review' : program.sites.length ? `✓ Ready · ${participants} enrolled · ${participantsCompleted} completed` : 'Choose facilities & yards'}
+                      {!program.status ? 'Needs review' : program.sites.length ? <><LuCheck aria-hidden="true" />{`Ready · ${participants} enrolled · ${participantsCompleted} completed`}</> : 'Choose facilities & yards'}
                     </span>
                   </div>
                   {!pending &&
@@ -419,7 +421,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
             })}
           </ol>
           <div className="next-actions">
-            {!pending && <button type="button" id="another-program" className="continue-button" onClick={() => setEditing(newProgram())}>+ Add another program</button>}
+            {!pending && <button type="button" id="another-program" className="continue-button" onClick={() => setEditing(newProgram())}><LuPlus aria-hidden="true" /> Add another program</button>}
             <button type="button" id="finish-form" className="continue-button" disabled={busy || !!editing || !programs.length || programs.some(program => !program.status || !program.sites.length)} onClick={submit}>
               {busy ? <><span className="submit-spinner" aria-hidden="true" />Submitting…</> : pending ? 'Retry submission' : 'Finish and submit'}
             </button>
@@ -428,7 +430,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
         </section></div>
       </section>}
       {step === 'done' && <section id="submission-result" className="question-step" aria-labelledby="submission-heading">
-        <div className="success-check" aria-hidden="true">✓</div>
+        <div className="success-check" aria-hidden="true"><LuCheck /></div>
         <h2 className="form-title" id="submission-heading">You’re all set!</h2>
         <p className="submission-context">{organization} · Q{period.quarter} {period.year}</p>
         <p id="submission-receipt" className="submit-status" role="status">Submitted to TPW. Reference {receipt}.</p>
@@ -449,7 +451,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
           <p>Estimated RAC days × $59 per day, using the same calculation as the dashboard.</p>
         </section>}
         <details className="full-report">
-          <summary>Expand full submission</summary>
+          <summary className="intake-disclosure"><LuChevronRight aria-hidden="true" />Expand full submission</summary>
           <p className="report-note">Program totals are counted once, even when a program serves multiple facilities. Participants are program enrollments, not unique people. Per-facility cards show assignments; totals are not allocated across facilities.</p>
           <div id="report-prisons" className="report-grid">
             {locations.map((location, index) => {
@@ -497,9 +499,9 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
 
 function NumberStepper({ value, onChange, fractional = false }) {
   return <span className="stepper">
-    <button type="button" aria-label="Decrease" onClick={() => onChange(Math.max(0, Number(value) - 1))}>−</button>
+    <button type="button" aria-label="Decrease" onClick={() => onChange(Math.max(0, Number(value) - 1))}><LuMinus aria-hidden="true" /></button>
     <input type="number" min="0" max="10000000" step={fractional ? 'any' : '1'} placeholder="0" value={value}
       onChange={event => onChange(event.target.value)} />
-    <button type="button" aria-label="Increase" onClick={() => onChange(Number(value) + 1)}>+</button>
+    <button type="button" aria-label="Increase" onClick={() => onChange(Number(value) + 1)}><LuPlus aria-hidden="true" /></button>
   </span>;
 }

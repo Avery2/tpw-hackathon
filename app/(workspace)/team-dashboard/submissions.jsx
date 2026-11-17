@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import { LuArrowLeft, LuArrowRight, LuChevronRight, LuFileText, LuTable2 } from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 import { recentQuarterStatus } from '../../../team-dashboard/js/submission-tracker.js';
 import { useWorkspaceAccount } from './workspace.jsx';
 
 const heading = period => `Q${period.quarter} ${period.year}`;
-const orgLink = org => `/team-dashboard/organizations.html?org=${encodeURIComponent(org.id)}#tpw`;
+const orgLink = org => `/team-dashboard/organizations/?org=${encodeURIComponent(org.id)}#tpw`;
 const defaults = { search: '', quarter: 'all', status: 'all', size: 10 };
 
 export default function Submissions() {
@@ -17,23 +18,22 @@ export default function Submissions() {
       <h2 id="submission-choice-heading">What would you like to do?</h2>
       <p>Explore what you’ve submitted or turn it into a report.</p>
       <div className="submission-choice-grid">
-        <Link className="submission-choice" href={`/team-dashboard/submission-data.html#${account}`}>
+        <Link className="submission-choice" href={`/team-dashboard/submission-data/#${account}`}>
           <ChoiceIcon /><strong>View your data</strong><span>Browse your submissions and program details.</span>
-          <span className="choice-next" aria-hidden="true">Explore data →</span>
+          <span className="choice-next" aria-hidden="true">Explore data <LuArrowRight size={14} /></span>
         </Link>
         <button type="button" className="submission-choice"><ChoiceIcon report /><strong>Generate a report</strong>
-          <span>Bring your program activity and impact together.</span><span className="choice-next" aria-hidden="true">Create report →</span>
+          <span>Bring your program activity and impact together.</span><span className="choice-next" aria-hidden="true">Create report <LuArrowRight size={14} /></span>
         </button>
       </div>
-    </section> : <Link href="/dashboard/?entry=team">Choose an account</Link>}
+    </section> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
 
 export function ChoiceIcon({ report }) {
+  const Icon = report ? LuFileText : LuTable2;
   return <span className={report ? 'choice-icon report-icon' : 'choice-icon'} aria-hidden="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
-      <path d={report ? 'M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6' : 'M4 4h16v16H4zM4 10h16M10 4v16'} />
-    </svg>
+    <Icon />
   </span>;
 }
 
@@ -85,7 +85,7 @@ function TrackingResults({ data }) {
           <div className="tracker-submitted-count"><strong>{period.submitted}</strong><span>Submitted</span></div>
           <div className="tracker-missing-count"><strong>{period.missing}</strong><span>Not submitted</span></div>
         </div>
-        <details><summary>{missing.length ? 'Organizations that haven’t submitted' : 'All organizations submitted'}</summary>
+        <details><summary className="dashboard-disclosure"><LuChevronRight aria-hidden="true" />{missing.length ? 'Organizations that haven’t submitted' : 'All organizations submitted'}</summary>
           {!!missing.length && <ul className="followup-grid">{missing.map(({ org }) =>
             <li key={org.id}><Link href={orgLink(org)}>{org.name}</Link></li>)}</ul>}
         </details>
@@ -112,9 +112,9 @@ function TrackingResults({ data }) {
           </tr>)}</tbody>
         </table></div>
         <nav className="tracker-pagination" aria-label="Organization status pages">
-          <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}>← Previous</button>
+          <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}><LuArrowLeft size={14} aria-hidden="true" /> Previous</button>
           <span>Page {page} of {pages}</span>
-          <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)}>Next →</button>
+          <button type="button" disabled={page === pages} onClick={() => setPage(page + 1)}>Next <LuArrowRight size={14} aria-hidden="true" /></button>
         </nav>
       </>}
     </div>

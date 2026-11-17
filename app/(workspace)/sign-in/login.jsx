@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { authClient } from '../../../server/auth-client.js';
 
 export default function Login({ configured, inviteId }) {
+  const [register, setRegister] = useState(Boolean(inviteId));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -13,6 +14,18 @@ export default function Login({ configured, inviteId }) {
     setBusy(true);
     setMessage('');
     try {
+      if (register) {
+        const response = await fetch('/api/pilot-invitations/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'register', id: inviteId, ...Object.fromEntries(fields) }),
+        });
+        if (!response.ok) {
+          setMessage((await response.json()).error);
+          return;
+        }
+        setRegister(false);
+      }
       const { error } = await authClient.signIn.email({
         email: fields.get('email'),
         password: fields.get('password'),
@@ -62,11 +75,16 @@ export default function Login({ configured, inviteId }) {
 
   return <section className="dashboard-login" aria-labelledby="login-heading">
     <h2 id="login-heading">{inviteId ? 'Accept invitation' : 'Log in'}</h2>
-    {inviteId && <p>Sign in with the invited pilot account to join the organization.</p>}
+    {inviteId && <p>Enter the email address your admin invited to join the organization.</p>}
     <form onSubmit={signIn}>
+      {register && <label>Name<input name="name" autoComplete="name" maxLength={120} required /></label>}
       <label>Email<input name="email" type="email" autoComplete="username" required /></label>
-      <label>Password<input name="password" type="password" autoComplete="current-password" required /></label>
-      <button type="submit" disabled={!configured || busy}>{busy ? 'Working…' : inviteId ? 'Log in and accept' : 'Log in'}</button>
+      <label>Password<input name="password" type="password" autoComplete={register ? 'new-password' : 'current-password'} minLength={register ? 8 : undefined} maxLength={128} required /></label>
+      <button type="submit" disabled={!configured || busy}>{busy ? 'Working…' : register ? 'Create account and join' : inviteId ? 'Log in and accept' : 'Log in'}</button>
+      {inviteId && <button type="button" disabled={busy} onClick={() => {
+        setRegister(!register);
+        setMessage('');
+      }}>{register ? 'I already have an account' : 'Create an account'}</button>}
       {!configured && <p>Login is unavailable in this environment.</p>}
       <span role="status">{message}</span>
     </form>

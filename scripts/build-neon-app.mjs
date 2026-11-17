@@ -1,42 +1,43 @@
-import {mkdtemp,rm,cp,mkdir,readdir} from 'node:fs/promises';
-import {tmpdir} from 'node:os';
+import { cp, mkdir, mkdtemp, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
 import path from 'node:path';
-import {execFileSync} from 'node:child_process';
-const next = process.argv.includes('--next');
-const output = next ? 'public' : 'dist';
-const temp=await mkdtemp(path.join(tmpdir(),'tpw-app-'));
+
+const publicFiles = [
+  'assets/fonts',
+  'assets/img',
+  'assets/account-drawer.css',
+  'assets/dashboard-exports.css',
+  'assets/dashboard-exports.js',
+  'assets/member-session.js',
+  'assets/neon-api.js',
+  'assets/neon-auth-client.js',
+  'assets/neon-config.js',
+  'assets/site-shell.css',
+  'assets/team-dashboard.css',
+  'assets/workspace-log-data.css',
+  'assets/workspace-signin.css',
+  'dashboard/js/rolling-number.js',
+  'team-dashboard/js/data.js',
+  'team-dashboard/js/rac.js',
+  'team-dashboard/js/rolling-number.js',
+  'team-dashboard/loading.css',
+  'team-dashboard/workspace.css',
+];
+
+const temp = await mkdtemp(path.join(tmpdir(), 'tpw-app-'));
 try {
-  // Publish the application only. Keep the old public website in source/archive,
-  // but exclude its pages, member portal and server secrets.
-  const browserFiles=source=>!source.includes('__pycache__') && (!path.extname(source)||['.html','.js','.css'].includes(path.extname(source)));
-  await cp('dashboard',path.join(temp,'dashboard'),{recursive:true,filter:browserFiles});
-  await cp('form-demo',path.join(temp,'form-demo'),{recursive:true,filter:browserFiles});
-  for(const directory of ['assets/fonts','assets/img'])await cp(directory,path.join(temp,directory),{recursive:true});
-  for (const directory of ['team-dashboard', 'team-form', 'intake']) {
-    await cp(directory, path.join(temp, directory), {
-      recursive: true,
-      filter: source => browserFiles(source) && !source.split(path.sep).some(part => ['test', 'receiver', 'backend.js', 'sheets.js', 'raw-data.html'].includes(part))
-    });
+  for (const source of publicFiles) {
+    const destination = path.join(temp, source);
+    await mkdir(path.dirname(destination), { recursive: true });
+    await cp(source, destination, { recursive: true });
   }
-  for (const file of ['neon-api.js', 'team-submissions.js', 'dashboard-source.js', 'dashboard-exports.js', 'dashboard-exports.css',
-    'site-shell.js', 'site-shell.css', 'member-session.js', 'account-drawer.js', 'account-drawer.css',
-    'neon-config.js', 'neon-auth-client.js', 'neon-demo-client.js']) {
-    await cp(path.join('assets', file), path.join(temp, 'assets', file));
-  }
-  await cp('report', path.join(temp, 'report'), { recursive: true, filter: source => !path.extname(source) || path.extname(source) === '.pdf' });
-  await mkdir(path.join(temp,'data/public'),{recursive:true});
-  await cp('data/public/tpw-members.csv',path.join(temp,'data/public/tpw-members.csv'));
-  await cp('standalone/index.html',path.join(temp,next ? 'entry.html' : 'index.html'));
-  await cp('.nojekyll',path.join(temp,'.nojekyll'));
-  if (next) {
-    for (const directory of ['dashboard', 'team-dashboard', 'intake', 'team-form', 'form-demo']) {
-      for (const file of await readdir(path.join(temp, directory))) {
-        if (file.endsWith('.html')) await rm(path.join(temp, directory, file));
-      }
-    }
-    await rm(path.join(temp, 'entry.html'));
-  }
-  await rm(output,{recursive:true,force:true});await cp(temp,output,{recursive:true});
-  for(const file of ['server/api.js','server/local.js','dashboard/js/layout.js'])execFileSync(process.execPath,['--check',file],{stdio:'inherit'});
-  console.log('Build passed: standalone dashboard, submission form and Neon API. Public website excluded.');
-}finally{await rm(temp,{recursive:true,force:true});}
+  await cp('report', path.join(temp, 'report'), {
+    recursive: true,
+    filter: source => !path.extname(source) || path.extname(source) === '.pdf',
+  });
+  await rm('public', { recursive: true, force: true });
+  await cp(temp, 'public', { recursive: true });
+  console.log('Prepared Next.js public assets.');
+} finally {
+  await rm(temp, { recursive: true, force: true });
+}

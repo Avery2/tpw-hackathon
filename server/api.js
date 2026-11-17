@@ -13,7 +13,7 @@ export async function handleApi(req, res) {
     if (req.method === 'GET' && url.pathname === '/api/health') {
       await database().query('SELECT 1'); return send(200,{ok:true,database:'postgres',demo:true});
     }
-    const access = await reportingAccess(req.headers);
+    const access = await reportingAccess(req.headers, url.searchParams.get('org'));
     if (access.status) return send(access.status, { error: access.error });
     if (!access.demo) {
       if (req.method === 'GET' && !access.staff) {

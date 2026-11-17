@@ -7,7 +7,7 @@ const reply = (body, status = 200) =>
   Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 
 async function dispatch(request) {
-  const access = await reportingAccess(request.headers);
+  const access = await reportingAccess(request.headers, new URL(request.url).searchParams.get('org'));
   if (!access.canManageMembers) {
     return reply({ error: access.error || 'Only organization admins can manage members.' }, access.status || 403);
   }

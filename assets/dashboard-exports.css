@@ -6,3 +6,10 @@
 .tpw-data-exports small { flex-basis: 100%; max-width: 75ch; color: #555; font-size: 13px; line-height: 1.5; }
 .tpw-data-exports [role="status"] { flex-basis: 100%; font-size: 14px; }
 @media print { .tpw-data-exports { display: none; } }
+.tpw-data-exports .sheets-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border-bottom: 1px solid currentColor;
+  text-decoration: none;
+}

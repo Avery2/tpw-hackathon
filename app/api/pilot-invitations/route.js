@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { getAuth } from '../../../server/auth.js';
+import { getAuth, getInviteSignupAuth } from '../../../server/auth.js';
 import { database } from '../../../server/db.js';
 import { reportingAccess } from '../../../server/reporting-access.js';
 
@@ -9,7 +9,7 @@ const reply = (data, status = 200) => Response.json(data, {
 });
 
 export async function GET(request) {
-  const access = await reportingAccess(request.headers);
+  const access = await reportingAccess(request.headers, new URL(request.url).searchParams.get('org'));
   if (!access.canManageMembers) return reply({ error: 'Organization admin access required.' }, access.status || 403);
   const { rows } = await database().query(
     `SELECT id, email, "expiresAt" FROM invitation WHERE "organizationId" = $1 AND status = 'pending'
@@ -26,6 +26,38 @@ export async function POST(request) {
   }
   const body = await request.json().catch(() => null);
   const db = database();
+  if (body?.action === 'register') {
+    const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
+    const password = body.password;
+    if (typeof body.id !== 'string' || body.id.length > 64 || !name || name.length > 120 ||
+        email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ||
+        typeof password !== 'string' || password.length < 8 || password.length > 128) {
+      return reply({ error: 'Enter your name, invited email, and a password of 8–128 characters.' }, 400);
+    }
+    const { rows: [invitation] } = await db.query(
+      `SELECT i.email FROM invitation i
+       JOIN reporting_auth_organizations link ON link.auth_org_id = i."organizationId"
+       WHERE i.id = $1 AND i.status = 'pending' AND i."expiresAt" > now() AND i.role IN ('member', 'admin')`,
+      [body.id]
+    );
+    if (!invitation) return reply({ error: 'This invitation is no longer available. Ask your admin for a new link.' }, 409);
+    if (invitation.email.toLowerCase() !== email) return reply({ error: 'Use the email address your admin invited.' }, 403);
+
+    if ((await db.query('SELECT 1 FROM "user" WHERE lower(email) = $1', [email])).rowCount) {
+      return reply({ error: 'An account already exists for this email. Log in to accept the invitation.' }, 409);
+    }
+    try {
+      await getInviteSignupAuth().api.signUpEmail({ body: { name, email, password } });
+      return reply({ ok: true }, 201);
+    } catch (error) {
+      if (error.body?.code === 'USER_ALREADY_EXISTS' || error.body?.code === 'USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL') {
+        return reply({ error: 'An account already exists for this email. Log in to accept the invitation.' }, 409);
+      }
+      console.error('Invite account creation failed:', error.code || error.name);
+      return reply({ error: 'Could not create your account. Try again.' }, 503);
+    }
+  }
   if (body?.action === 'accept') {
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session) return reply({ error: 'Sign in first.' }, 401);
@@ -47,7 +79,7 @@ export async function POST(request) {
     );
     return rows.length ? reply(rows[0]) : reply({ error: 'This invitation is expired, revoked, already used, or for a different email.' }, 409);
   }
-  const access = await reportingAccess(request.headers);
+  const access = await reportingAccess(request.headers, new URL(request.url).searchParams.get('org'));
   if (!access.canManageMembers) return reply({ error: 'Organization admin access required.' }, access.status || 403);
   if (body?.action === 'revoke' && typeof body.id === 'string') {
     const result = await db.query(
