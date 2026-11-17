@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { LuShield, LuUser, LuUserCog } from 'react-icons/lu';
 
 const choices = [
-  ['admin', 'Org 1 Admin', '01', ''],
-  ['member', 'Org 1 Member', '01', 'org-two'],
-  ['staff', 'TPW Staff', 'TPW', 'tpw-icon'],
+  ['admin', 'Org 1 Admin', LuUserCog, ''],
+  ['member', 'Org 1 Member', LuUser, 'org-two'],
+  ['staff', 'TPW Staff', LuShield, 'tpw-icon'],
 ];
 
 export default function DevelopmentPicker() {
@@ -38,10 +39,10 @@ export default function DevelopmentPicker() {
   }
 
   return <div className="signin-grid">
-    {choices.map(([role, label, badge, style]) => <button key={role} type="button" className="signin-option"
+    {choices.map(([role, label, Icon, style]) => <button key={role} type="button" className="signin-option"
       style={{ fontFamily: 'inherit', width: '100%', cursor: 'pointer' }}
       disabled={!!busy} onClick={() => signIn(role)}>
-      <span className={`option-icon ${style}`} aria-hidden="true">{badge}</span>
+      <span className={`option-icon ${style}`} aria-hidden="true"><Icon size={18} /></span>
       <span>{busy === role ? 'Signing in…' : label}</span>
     </button>)}
     {error && <p role="alert">{error}</p>}

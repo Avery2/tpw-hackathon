@@ -8,17 +8,16 @@ import Organizations from '../organizations.jsx';
 import ProgramsPage from '../programs.jsx';
 import Members from '../members.jsx';
 
-const views = ['index.html', 'programs.html', 'organizations.html', 'submissions.html', 'submission-data.html', 'members'];
+const views = ['programs', 'organizations', 'submissions', 'submission-data', 'members'];
 
 export function generateStaticParams() {
-  return [{ view: [] }, ...views.map(file => ({ view: [file] }))];
+  return [{ view: [] }, ...views.map(name => ({ view: [name] }))];
 }
 
 export default async function Page({ params }) {
   const { view = [] } = await params;
-  const file = view[0] || 'index.html';
-  if (view.length > 1 || !views.includes(file)) notFound();
-  const name = file.replace(/\.html$/, '');
+  if (view.length > 1 || (view.length === 1 && !views.includes(view[0]))) notFound();
+  const name = view[0] || 'index';
   const content = {
     index: <Overview />,
     programs: <ProgramsPage />,

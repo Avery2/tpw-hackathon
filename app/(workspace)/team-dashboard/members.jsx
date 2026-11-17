@@ -1,5 +1,7 @@
 'use client';
 
+import { LuUserMinus } from 'react-icons/lu';
+
 import { useEffect, useRef, useState } from 'react';
 import Invitations from './invitations.jsx';
 
@@ -67,7 +69,7 @@ function MemberList({ account }) {
         <td>{member.role === 'member' ? <input type="checkbox" checked={member.canSubmit} disabled={busy}
           aria-label={`Can submit reports for ${member.name}`} onChange={() => changeMember(member, 'PATCH')} /> : 'Yes'}</td>
         <td>{member.role === 'member' && <button type="button" disabled={busy}
-          aria-label={`Remove ${member.name}`} onClick={() => { setRemoveTarget(member); removeDialog.current.showModal(); }}>Remove</button>}</td>
+          aria-label={`Remove ${member.name}`} onClick={() => { setRemoveTarget(member); removeDialog.current.showModal(); }}><LuUserMinus size={14} aria-hidden="true" /> Remove</button>}</td>
       </tr>)}</tbody>
     </table></div>}
     <dialog ref={removeDialog} className="member-confirm" aria-labelledby="remove-member-heading"
@@ -79,7 +81,7 @@ function MemberList({ account }) {
         <button type="button" className="member-confirm-remove" onClick={() => {
           changeMember(removeTarget, 'DELETE');
           removeDialog.current.close();
-        }}>Remove member</button>
+        }}><LuUserMinus size={16} aria-hidden="true" /> Remove member</button>
       </form>
     </dialog>
     <style>{`
@@ -93,6 +95,7 @@ function MemberList({ account }) {
       .member-confirm form { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; }
       .member-confirm button { border: 1px solid #dce3da; border-radius: 999px; padding: 8px 16px; background: #fff; color: #111; font: inherit; font-weight: 700; cursor: pointer; }
       .member-confirm .member-confirm-remove { background: #b42318; color: #fff; border-color: #b42318; }
+      :is(.members-table, .member-confirm, .pilot-invitations) button svg { vertical-align: middle; margin-inline-end: 4px; }
       .members-table button:hover { background: #fef3f2; }
     `}</style>
     </div>

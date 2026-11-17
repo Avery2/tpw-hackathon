@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { LuExternalLink, LuX } from 'react-icons/lu';
 import { authClient } from '../../../server/auth-client.js';
 
 export function AccountDrawer({ account, dialog, organizations }) {
@@ -39,7 +40,7 @@ export function AccountDrawer({ account, dialog, organizations }) {
       }
       const { clearDemoAccount } = await import(/* turbopackIgnore: true */ '/assets/member-session.js?v=reporting-1');
       clearDemoAccount();
-      location.replace('/dashboard/?entry=team');
+      location.replace('/sign-in/');
     } catch {
       setError('Sign-out could not be confirmed. Please try again.');
       setBusy(false);
@@ -53,7 +54,7 @@ export function AccountDrawer({ account, dialog, organizations }) {
       if (event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) event.currentTarget.close();
     }}>
     <header className="tpw-account-header"><h2 id="tpw-account-title">Account</h2>
-      <button autoFocus className="tpw-account-close" onClick={() => dialog.current.close()}>Close</button>
+      <button autoFocus className="tpw-account-close" onClick={() => dialog.current.close()}><LuX aria-hidden="true" size={16} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />Close</button>
     </header>
     <div className="tpw-account-body">
       <section className="tpw-account-greeting"><h3>{user?.name ? `Hi, ${user.name}` : 'Hi' }</h3>
@@ -111,7 +112,7 @@ export function DashboardExports({ account }) {
   return <div ref={container} id="dashboard-exports" className="tpw-data-exports" aria-label="Download reporting data">
     <button disabled={!!busy} onClick={() => download('csv')}>Export program history (CSV)</button>
     <button disabled={!!busy} onClick={() => download('json')}>Export JSON</button>
-    <a href="https://sheets.new" target="_blank" rel="noopener noreferrer">New Google Sheet ↗</a>
+    <a className="sheets-link" href="https://sheets.new" target="_blank" rel="noopener noreferrer">New Google Sheet <LuExternalLink aria-hidden="true" focusable="false" size={14} /></a>
     <small>Download CSV, then File → Import → Upload in the new Sheet. Turn off conversion to formulas. This creates a copy, not a sync.</small>
     <span role="status">{status}</span>
   </div>;

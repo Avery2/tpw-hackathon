@@ -1,5 +1,7 @@
 'use client';
 
+import { LuArrowLeft, LuChevronRight } from 'react-icons/lu';
+
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { useWorkspaceAccount } from './workspace.jsx';
@@ -19,7 +21,7 @@ export default function SubmissionHistory() {
   const account = useWorkspaceAccount();
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Your data</h1></div></section>
-    {account ? <History key={account} account={account} /> : <Link href="/dashboard/?entry=team">Choose an account</Link>}
+    {account ? <History key={account} account={account} /> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
 
@@ -54,7 +56,7 @@ function History({ account }) {
     <div className="view-heading"><div><h2>Your submissions</h2><p id="submission-status" role="status">
       {invalid ? 'The end date must be on or after the start date.' : current?.error ? 'Could not load submissions.' :
         data ? `${data.count} of ${data.total} submissions` : 'Loading submissions…'}
-    </p></div><Link id="submission-back" className="action" href={`/team-dashboard/submissions.html#${account}`}>← Submissions</Link></div>
+    </p></div><Link id="submission-back" className="action" href={`/team-dashboard/submissions/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Submissions</Link></div>
     <section className="submission-filters" aria-label="Filter submissions">
       <label>From<input type="date" value={filters.from} onChange={change('from')} /></label>
       <label>To<input type="date" value={filters.to} onChange={change('to')} /></label>
@@ -120,7 +122,7 @@ function SubmissionCard({ record, account }) {
     <div className="submission-card-metrics">{[['Participants', metrics.participants], ['Completed', metrics.completed], ['Hours completed', metrics.hours]].map(([label, value]) =>
       <div key={label}><strong>{format(value)}</strong><span>{label}</span></div>)}</div>
     <details onToggle={loadDetails}>
-      <summary>{metrics.programs} {metrics.programs === 1 ? 'program' : 'programs'} · {facilities} {facilities === 1 ? 'facility' : 'facilities'}</summary>
+      <summary className="dashboard-disclosure"><LuChevronRight aria-hidden="true" />{metrics.programs} {metrics.programs === 1 ? 'program' : 'programs'} · {facilities} {facilities === 1 ? 'facility' : 'facilities'}</summary>
       {loading ? <p>Loading programs…</p> : Array.isArray(details) ? <ul>{details.map((program, index) =>
         <li key={index}><strong>{program.name}</strong><div>{program.assignments.map(({ code, yards }) =>
           `${program.prisons.find(facility => facility.code === code)?.name || code}: ${yards.join(', ')}`).join(' · ')}</div>

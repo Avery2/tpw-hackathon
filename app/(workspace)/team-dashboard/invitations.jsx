@@ -1,5 +1,7 @@
 'use client';
 
+import { LuCopy, LuLink2Off, LuUserPlus } from 'react-icons/lu';
+
 import { useEffect, useState } from 'react';
 
 export default function Invitations({ account }) {
@@ -37,7 +39,7 @@ export default function Invitations({ account }) {
       change({ action: 'create', email: new FormData(event.currentTarget).get('email') });
     }}>
       <label>Invitee email <input type="email" name="email" required maxLength={254} /></label>
-      <button disabled={busy}>Create invite</button>
+      <button disabled={busy}><LuUserPlus size={16} aria-hidden="true" /> Create invite</button>
     </form>
     <p role="status">{message}</p>
     {invitations.length > 0 && <div className="table-wrap members-table"><table className="program-table">
@@ -51,8 +53,8 @@ export default function Invitations({ account }) {
           } catch {
             setMessage('Could not copy the invite link.');
           }
-        }}>Copy invite link</button>{' '}
-        <button type="button" disabled={busy} onClick={() => change({ action: 'revoke', id: invite.id })}>Revoke</button></td>
+        }}><LuCopy size={14} aria-hidden="true" /> Copy invite link</button>{' '}
+        <button type="button" disabled={busy} onClick={() => change({ action: 'revoke', id: invite.id })}><LuLink2Off size={14} aria-hidden="true" /> Revoke</button></td>
       </tr>)}</tbody>
     </table></div>}
     <style>{`

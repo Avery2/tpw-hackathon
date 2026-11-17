@@ -1,5 +1,6 @@
 'use client';
 
+import { LuChevronDown, LuX } from 'react-icons/lu';
 import { AccountDrawer } from './controls.jsx';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -69,15 +70,15 @@ export default function Workspace({ children }) {
     return () => controller.abort();
   }, [dashboardPage, selectedAccount]);
   useEffect(() => {
-    if ((pathname === '/dashboard/' || pathname === '/dashboard/index.html') && account) {
+    if (pathname === '/sign-in/' && account) {
       router.replace('/team-dashboard/' + location.search + '#' + account);
     }
   }, [account, pathname, router]);
   const tabs = [
     ['Overview', '/team-dashboard/'],
-    ['Programs', '/team-dashboard/programs.html'],
-    ...(account === 'tpw' ? [['Organizations', '/team-dashboard/organizations.html']] : []),
-    ['Submissions', '/team-dashboard/submissions.html']
+    ['Programs', '/team-dashboard/programs/'],
+    ...(account === 'tpw' ? [['Organizations', '/team-dashboard/organizations/']] : []),
+    ['Submissions', '/team-dashboard/submissions/']
   ];
   const annualReport = account === 'tpw' ? '/report/TPW-Collective-Impact-Report-2026.pdf' :
     `/report/organizations/${account}-annual-report-2026.pdf`;
@@ -101,32 +102,32 @@ export default function Workspace({ children }) {
   }
 
   return <>
-    <header hidden={pathname === '/team-form/' || pathname === '/form-demo/'} className="site-header tpw-header noprint">
-      <Link href={account ? `/team-dashboard/#${account}` : '/dashboard/?entry=team'} className="logo" aria-label="TPW dashboard">
+    <header className="site-header tpw-header noprint">
+      <Link href={account ? `/team-dashboard/#${account}` : '/sign-in/'} className="logo" aria-label="TPW dashboard">
         <img src="/assets/img/logo.png" alt="Transformative Programming Works" width="220" />
       </Link>
       <nav aria-label="Account navigation">
-        {account ? <a className="login" href={`/intake/simple.html?backend=demo&account=${account}`} aria-haspopup="dialog" onClick={openAccount}>Account</a>
-          : <a className="login" href="/dashboard/?entry=team">Members Login</a>}
+        {account ? <a className="login" href={`/log-data/?account=${account}`} aria-haspopup="dialog" onClick={openAccount}>Account</a>
+          : <a className="login" href="/sign-in/">Members Login</a>}
       </nav>
     </header>
-    {account && !['/team-form/', '/form-demo/'].includes(pathname) && <nav className="tpw-member-nav noprint" aria-label="Member navigation">
+    {account && <nav className="tpw-member-nav noprint" aria-label="Member navigation">
       {tabs.slice(0, 1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path ? 'page' : undefined}>{label}</Link>)}
-      <Link href={`/intake/simple.html?backend=demo&account=${account}`} aria-current={pathname === '/intake/simple.html' ? 'page' : undefined}>Log data</Link>
-      {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname.endsWith('/submission-data.html')) ? 'page' : undefined}>{label}</Link>)}
+      <Link href={`/log-data/?account=${account}`} aria-current={pathname === '/log-data/' ? 'page' : undefined}>Log data</Link>
+      {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname === '/team-dashboard/submission-data/') ? 'page' : undefined}>{label}</Link>)}
       {account && account === managedOrg && <Link href={`/team-dashboard/members/?account=${encodeURIComponent(account)}`}
         aria-current={pathname === '/team-dashboard/members/' ? 'page' : undefined}>Members</Link>}
       <a href={annualReport} target="_blank" rel="noopener noreferrer">Annual report</a>
-      {organizations.some(org => org.id === account) && <select className="tpw-org-picker"
+      {organizations.some(org => org.id === account) && <div className="tpw-org-picker-wrap"><select className="tpw-org-picker"
         aria-label="Current organization" value={account} onChange={event => {
           location.assign('/team-dashboard/#' + encodeURIComponent(event.target.value));
         }}>
         {organizations.map(org => <option key={org.id} value={org.id}>{org.name}</option>)}
-      </select>}
+      </select><LuChevronDown aria-hidden="true" size={16} /></div>}
     </nav>}
     {inviteAccepted && <div className="tpw-invite-toast">
       <div role="status"><strong>Invitation accepted</strong><span>You’ve joined the organization.</span></div>
-      <button type="button" aria-label="Dismiss confirmation" onClick={() => setInviteAccepted(false)}>×</button>
+      <button type="button" aria-label="Dismiss confirmation" onClick={() => setInviteAccepted(false)}><LuX aria-hidden="true" size={18} /></button>
       <style>{`
         .tpw-invite-toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%); z-index: 20; display: flex; align-items: center; gap: 20px; width: max-content; max-width: calc(100% - 32px); padding: 14px 18px; border: 1px solid #b8d2be; border-radius: 12px; background: #edf6ef; color: #214c30; box-shadow: 0 6px 24px #0002; }
         .tpw-invite-toast [role="status"] { display: grid; gap: 2px; }

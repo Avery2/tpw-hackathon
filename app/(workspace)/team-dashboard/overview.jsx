@@ -2,11 +2,18 @@
 
 import { DashboardExports } from './controls.jsx';
 import Link from 'next/link';
+import { LuArrowUpRight, LuChevronRight } from 'react-icons/lu';
 import { useEffect, useRef, useState } from 'react';
 import { useWorkspaceAccount } from './workspace.jsx';
 
 const number = value => Number(value || 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
 const modes = [['participants', 'Participants'], ['completionRate', 'Completion rate'], ['racDays', 'RAC credits']];
+
+function OverviewSummary({ children }) {
+  return <summary className="dashboard-disclosure">
+    <LuChevronRight aria-hidden="true" focusable="false" />{children}
+  </summary>;
+}
 
 export function Trends({ points }) {
   const [metric, setMetric] = useState('participants');
@@ -33,7 +40,7 @@ export function Trends({ points }) {
       {plotted.map((dot, index) => <circle key={dot.point.day} className="chart-dot-enter" style={{ animationDelay: `${120 + index * Math.min(35, 450 / plotted.length)}ms` }} cx={dot.x} cy={dot.y} r="5" fill={color} tabIndex={0}><title>{dot.point.quarterLabel}: {format(dot.point[metric])}</title></circle>)}
       {points.map((point,index) => (index % Math.ceil(points.length / 5) === 0) && <text key={point.day} x={x(point)} y="284" textAnchor="middle" className="chart-axis">{point.quarterLabel}</text>)}
     </svg>}
-    {points.length > 0 && <details><summary>View chart data</summary><table><thead><tr><th>Quarter</th><th>{modes.find(([key]) => key === metric)[1]}</th></tr></thead><tbody>
+    {points.length > 0 && <details><OverviewSummary>View chart data</OverviewSummary><table><thead><tr><th>Quarter</th><th>{modes.find(([key]) => key === metric)[1]}</th></tr></thead><tbody>
       {points.map(point => <tr key={point.day}><td>{point.quarterLabel}</td><td>{format(point[metric])}</td></tr>)}
     </tbody></table></details>}
   </section>;
@@ -96,8 +103,8 @@ export default function Overview() {
   const current = result?.account === account && result.attempt === attempt ? result : null;
   const data = current?.data;
   const metrics = data ? [
-    ...(admin ? [['Registered organizations', data.organizationCount, '/team-dashboard/organizations.html#tpw']] : []),
-    ['Programs', data.programCount, `/team-dashboard/programs.html#${account}`],
+    ...(admin ? [['Registered organizations', data.organizationCount, '/team-dashboard/organizations/#tpw']] : []),
+    ['Programs', data.programCount, `/team-dashboard/programs/#${account}`],
     ['Facilities', data.facilityCount], ['Submissions', data.submissionCount], ['Total participants', data.participants],
     ...(admin ? [['Participants completed', data.completed], ['Completion rate', data.completionRate == null ? '—' : `${data.completionRate.toFixed(1)}%`]] : []),
     ['Total hours completed', data.hours]
@@ -107,8 +114,8 @@ export default function Overview() {
     {account && <div className="shell dashboard-content"><div className="view-heading"><div>
       <span className="account-label">{admin ? 'TPW overview' : 'Organization'}</span>
       <h2 id="profile-heading">{admin ? 'Collective overview' : data?.name || 'Organization overview'}</h2>
-    </div><Link className="action switch" href="/dashboard/?entry=team">Switch view ↗</Link></div></div>}
-    {!account ? <Link href="/dashboard/?entry=team">Choose an account</Link> : current?.error ?
+    </div><Link className="action switch" href="/sign-in/">Switch view <LuArrowUpRight aria-hidden="true" focusable="false" /></Link></div></div>}
+    {!account ? <Link href="/sign-in/">Choose an account</Link> : current?.error ?
       <p role="alert">Could not load Overview. <button onClick={() => retry(attempt + 1)}>Try again</button></p> :
       !data ? <div aria-busy="true" className="dashboard-overview"><div className="program-stats">{Array.from({length: admin ? 8 : 5}, (_, index) => <div className="program-stat" key={index}><span className="skeleton-block" style={{height: 30}} /></div>)}</div><div className="participants-chart skeleton-plot" aria-label="Loading overview" /></div> :
       <>
@@ -121,7 +128,7 @@ export default function Overview() {
           <div className="rac-orgs">{data.programCount ? <div className="rac-pair">
             <article className="rac-org"><h4>{admin ? 'Total RAC credits' : data.name}</h4>
               <strong className="rac-total">{number(data.racDays)}</strong><span className="rac-unit">estimated calendar days of credit</span>
-              {!admin && <details><summary>See calculation</summary>{data.breakdown.map(({name, hours, completed, daysPerEnrollment}, index) =>
+              {!admin && <details><OverviewSummary>See calculation</OverviewSummary>{data.breakdown.map(({name, hours, completed, daysPerEnrollment}, index) =>
                 <div className="rac-calculation" key={index}><strong>{name}</strong><span>{hours} hours → {daysPerEnrollment} days × {completed} completed enrollments = {number(daysPerEnrollment * completed)} days</span></div>
               )}</details>}
             </article>

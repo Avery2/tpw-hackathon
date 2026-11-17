@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { LuArrowLeft, LuArrowRight, LuChevronRight } from 'react-icons/lu';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ChoiceIcon } from './submissions.jsx';
@@ -8,7 +9,7 @@ import { ProgramCard } from './programs.jsx';
 import { Savings, Trends } from './overview.jsx';
 import { useWorkspaceAccount } from './workspace.jsx';
 
-const directory = '/team-dashboard/organizations.html';
+const directory = '/team-dashboard/organizations/';
 const format = value => Number(value || 0).toLocaleString();
 const metrics = [['programs', 'Programs'], ['facilities', 'Facilities'], ['participants', 'Participants'], ['hours', 'Hours completed']];
 const date = value => value ? new Date(value).toLocaleDateString() : 'No submissions yet';
@@ -22,7 +23,7 @@ export default function Organizations() {
   const id = useSearchParams().get('org');
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Organizations</h1></div></section>
-    {account === 'tpw' ? <Directory key={id || 'directory'} id={id} /> : <Link href="/dashboard/?entry=team">Choose TPW View</Link>}
+    {account === 'tpw' ? <Directory key={id || 'directory'} id={id} /> : <Link href="/sign-in/">Choose TPW View</Link>}
   </div></main>;
 }
 
@@ -85,7 +86,7 @@ function CreateOrganization({ mode, setMode, onCreate }) {
   return <section className="organization-onboarding" aria-labelledby="organization-onboarding-heading">
     <div className="view-heading">
       <h2 id="organization-onboarding-heading">Create an organization</h2>
-      <button type="button" className="action switch" disabled={busy} onClick={() => setMode('choices')}>← Back</button>
+      <button type="button" className="action switch" disabled={busy} onClick={() => setMode('choices')}><LuArrowLeft size={16} aria-hidden="true" /> Back</button>
     </div>
     <form onSubmit={submit}>
       <label>Organization name<input name="name" autoFocus required maxLength={200} /></label>
@@ -166,8 +167,8 @@ function Directory({ id }) {
       <h2 id="org-page-heading">{id && data ? data.org.name : 'Organization directory'}</h2>
       <p id="org-status" role="status">{current?.error ? 'Could not load organization data.' : !data ? 'Loading organizations…' :
         id ? 'Organization overview' : data.count ? `Showing ${data.offset + 1}–${data.offset + data.items.length} of ${data.count} organizations` : '0 organizations'}</p>
-    </div>{id && <Link id="org-back" className="action switch" href={directory + '#tpw'}>← All organizations</Link>}
-    {!id && <button type="button" className="action switch" style={{ display: 'inline-flex' }} onClick={() => setMode('choices')}>← Back</button>}</div>
+    </div>{id && <Link id="org-back" className="action switch" href={directory + '#tpw'}><LuArrowLeft size={16} aria-hidden="true" /> All organizations</Link>}
+    {!id && <button type="button" className="action switch" style={{ display: 'inline-flex' }} onClick={() => setMode('choices')}><LuArrowLeft size={16} aria-hidden="true" /> Back</button>}</div>
     {!id && <>
       <label id="org-search-label" className="org-search">Find an organization<input id="org-search" type="search" placeholder="Search by organization name" value={search}
         onChange={event => { setSearch(event.target.value); setPage(1); }} /></label>
@@ -194,7 +195,7 @@ function Results({ data, view, setPage }) {
       <Link href={href(org.id)} className="org-card" key={org.id}><h3>{org.name}</h3>
         <div className="org-metrics"><Metrics totals={totals} fields={metrics.slice(0, 3)} /></div>
         <p className="org-updated">{latest ? 'Latest submission · ' : ''}{date(latest)}</p>
-        <span className="org-open">View organization →</span>
+        <span className="org-open">View organization <LuArrowRight size={14} aria-hidden="true" /></span>
       </Link>)}</div> :
       <div className="table-wrap" tabIndex={0} role="region" aria-label="Organization directory table"><table className="program-table" style={{ minWidth: 800 }}>
         <thead><tr>{['Organization', ...metrics.map(([, label]) => label), 'Latest submission'].map(label => <th scope="col" key={label}>{label}</th>)}</tr></thead>
@@ -202,9 +203,9 @@ function Results({ data, view, setPage }) {
           {metrics.map(([key]) => <td key={key}>{format(totals[key])}</td>)}<td>{date(latest)}</td></tr>)}</tbody>
       </table></div>}
     {data.pages > 1 && <nav className="tracker-pagination" aria-label="Organization pages">
-      <button disabled={data.page === 1} onClick={() => setPage(data.page - 1)}>← Previous</button>
+      <button disabled={data.page === 1} onClick={() => setPage(data.page - 1)}><LuArrowLeft size={14} aria-hidden="true" /> Previous</button>
       <span>Page {data.page} of {data.pages}</span>
-      <button disabled={data.page === data.pages} onClick={() => setPage(data.page + 1)}>Next →</button>
+      <button disabled={data.page === data.pages} onClick={() => setPage(data.page + 1)}>Next <LuArrowRight size={14} aria-hidden="true" /></button>
     </nav>}
   </>;
 }
@@ -232,7 +233,7 @@ function OrganizationDetail({ data }) {
       <div className="rac-orgs">{programs.length ? <div className="rac-pair">
         <article className="rac-org"><h4>{org.name}</h4><strong className="rac-total">{format(days)}</strong>
           <span className="rac-unit">estimated calendar days of credit</span>
-          <details><summary>See calculation</summary>{breakdown.map(({ program, hours, completed, perEnrollment, days }, index) =>
+          <details><summary className="dashboard-disclosure"><LuChevronRight aria-hidden="true" />See calculation</summary>{breakdown.map(({ program, hours, completed, perEnrollment, days }, index) =>
             <div className="rac-calculation" key={index}><strong>{program.name}</strong><span>{hours} hours → {perEnrollment} days × {completed} completed enrollments = {format(days)} days</span></div>)}</details>
         </article>
         <article className="rac-org savings-card"><h4>Estimated taxpayer savings</h4><Savings value={days * 59} />

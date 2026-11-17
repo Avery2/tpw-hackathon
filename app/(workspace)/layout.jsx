@@ -22,20 +22,21 @@ export default function DashboardLayout({ children }) {
       .tpw-site .tpw-workspace .tpw-page-title {
         font: 400 clamp(2rem, 4vw, 3rem)/1.15 'TPW Dashboard Title', sans-serif;
       }
+      .tpw-org-picker-wrap { position: relative; align-self: center; margin-inline-start: auto; max-inline-size: 100%; }
+      .tpw-org-picker-wrap > svg { position: absolute; inset-inline-end: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
       .tpw-member-nav .tpw-org-picker {
-        align-self: center;
-        margin-inline-start: auto;
         max-inline-size: min(100%, 250px);
         appearance: none;
         padding: 6px 36px 6px 12px;
         border: 1px solid #d4e2d6;
         border-radius: 8px;
-        background: #f5f8f4 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23214c30' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 12px center / 16px;
+        background: #f5f8f4;
         color: #214c30;
         font: inherit;
       }
       @media (forced-colors: active) {
-        .tpw-member-nav .tpw-org-picker { appearance: auto; background-image: none; }
+        .tpw-org-picker-wrap > svg { display: none; }
+        .tpw-member-nav .tpw-org-picker { appearance: auto; }
       }
       .tpw-account-organizations { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
       .tpw-account-organizations a { display: flex; justify-content: space-between; gap: 12px; padding: 8px 12px; border: 1px solid #d4e2d6; border-radius: 8px; color: #214c30; text-decoration: none; }
