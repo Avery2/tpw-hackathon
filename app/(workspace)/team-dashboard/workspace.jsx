@@ -7,6 +7,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 const validAccount = value => typeof value === 'string' && /^(tpw|org-[a-z0-9-]+)$/.test(value);
+const websiteLinks = [
+  ['Our Members', 'https://www.thetpw.org/our-members'],
+  ['Our Story', 'https://www.thetpw.org/ourstory'],
+  ['Our Work', 'https://www.thetpw.org/ourwork'],
+  ['Our Team', 'https://www.thetpw.org/our-team'],
+];
 function subscribe(listener) {
   window.addEventListener('hashchange', listener);
   window.addEventListener('popstate', listener);
@@ -103,10 +109,12 @@ export default function Workspace({ children }) {
 
   return <>
     <header className="site-header tpw-header noprint">
-      <Link href={account ? `/team-dashboard/#${account}` : '/sign-in/'} className="logo" aria-label="TPW dashboard">
+      <a href="https://www.thetpw.org/" className="logo" aria-label="TPW home">
         <img src="/assets/img/logo.png" alt="Transformative Programming Works" width="220" />
-      </Link>
-      <nav aria-label="Account navigation">
+      </a>
+      <nav aria-label="Main navigation">
+        {websiteLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
+        <Link href={account ? `/team-dashboard/#${account}` : '/sign-in/'} aria-current="location">Member tools</Link>
         {account ? <a className="login" href={`/log-data/?account=${account}`} aria-haspopup="dialog" onClick={openAccount}>Account</a>
           : <a className="login" href="/sign-in/">Members Login</a>}
       </nav>
