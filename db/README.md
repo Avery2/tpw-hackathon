@@ -53,3 +53,22 @@ The existing UI cannot edit multiple metric groups yet. `submission_requires_loc
 `npm run db:migrate -- --dry-run` applies pending SQL in a transaction, runs live shared/per-location constraint tests, checks all historical program/facility snapshots, and rolls back. `npm run db:migrate` applies pending migrations once with a checksum ledger and the same historical reconciliation. Test/migrate the demo branch before production.
 
 `node --env-file=.env.local test/neon/relational-live.mjs` checks live grouping, constraints, history isolation and compatibility roundtrips with fixtures rolled back afterwards.
+
+## Initialize an empty database for the Better Auth pilot
+
+Use a separate Neon database or branch. Set its direct connection as
+`DATABASE_URL_UNPOOLED` and run `npm run db:migrate` first.
+
+Set `BETTER_AUTH_URL` to the app origin and `BETTER_AUTH_SECRET` to a generated
+secret. To create the first staff login, also set
+`TPW_BOOTSTRAP_STAFF_EMAIL` and `TPW_BOOTSTRAP_STAFF_PASSWORD` in the local
+environment for the setup command. Run `npm run db:auth-setup`. It creates the
+Better Auth tables, applies the tracked access migrations, and optionally
+creates the staff account. Re-running it preserves an existing staff account
+and its password. Remove the bootstrap credentials from the environment afterward.
+
+For the pilot app runtime, set `DATABASE_URL` to the same database's pooled
+connection and configure the same Better Auth URL and secret. The existing
+reporting API also requires `DEMO_MODE=true` for the synthetic-data pilot.
+A fresh setup starts with zero organizations and submissions. Create
+organizations through the staff dashboard.
