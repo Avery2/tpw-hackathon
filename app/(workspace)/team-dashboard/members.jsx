@@ -3,9 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Invitations from './invitations.jsx';
 
-const url = '/api/pilot-members/';
+import { useWorkspaceAccount } from './workspace.jsx';
 
 export default function Members() {
+  const account = useWorkspaceAccount();
+  return <MemberList key={account} account={account} />;
+}
+
+function MemberList({ account }) {
+  const url = '/api/pilot-members/' + (account ? '?org=' + encodeURIComponent(account) : '');
   const [members, setMembers] = useState(null);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -22,7 +28,7 @@ export default function Members() {
       if (!controller.signal.aborted) setError(cause.message);
     });
     return () => controller.abort();
-  }, []);
+  }, [url]);
 
   async function changeMember(member, method) {
     setBusy(true);
@@ -47,7 +53,7 @@ export default function Members() {
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Members</h1></div></section>
     <div className="shell dashboard-content">
-    {members && <Invitations />}
+    {members && <Invitations account={account} />}
     <div className="view-heading"><div>
       <h2>Organization members</h2>
       {members && <p>{members.length} {members.length === 1 ? 'member' : 'members'}</p>}

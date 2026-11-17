@@ -55,7 +55,7 @@ export default async function Page({ params, searchParams }) {
   }
   if (key === 'intake/simple.html') {
     const query = await searchParams;
-    const access = await reportingAccess(await headers());
+    const access = await reportingAccess(await headers(), typeof query.account === 'string' ? query.account : null);
     const account = access.demo
       ? (['org-1', 'org-2', 'tpw'].includes(query.account) ? query.account : 'org-1')
       : access.orgId;

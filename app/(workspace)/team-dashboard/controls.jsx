@@ -3,11 +3,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { authClient } from '../../../server/auth-client.js';
 
-export function AccountDrawer({ account, dialog }) {
+export function AccountDrawer({ account, dialog, organizations }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  const [email, setEmail] = useState('');
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const drawer = dialog.current;
@@ -15,9 +15,9 @@ export function AccountDrawer({ account, dialog }) {
     let active = true;
     const observer = new MutationObserver(() => {
       if (!drawer.open) return;
-      setEmail('');
+      setUser(null);
       authClient.getSession().then(({ data }) => {
-        if (active && drawer.open) setEmail(data?.user.email || '');
+        if (active && drawer.open) setUser(data?.user || null);
       }).catch(() => {});
     });
     observer.observe(drawer, { attributes: true, attributeFilter: ['open'] });
@@ -56,10 +56,19 @@ export function AccountDrawer({ account, dialog }) {
       <button autoFocus className="tpw-account-close" onClick={() => dialog.current.close()}>Close</button>
     </header>
     <div className="tpw-account-body">
-      <section className="tpw-account-greeting"><h3>Hi, {{ 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' }[account]}</h3>
+      <section className="tpw-account-greeting"><h3>{user?.name ? `Hi, ${user.name}` : 'Hi' }</h3>
         <button className="tpw-account-signout" disabled={busy} onClick={signOut}>Sign out</button>
       </section>
-      <section className="tpw-account-row"><h3>Profile</h3><p>{email || 'Member'}</p></section>
+      {organizations.length > 0 && <section className="tpw-account-row">
+        <h3>Your organizations</h3>
+        <ul className="tpw-account-organizations">{organizations.map(org => <li key={org.id}>
+          <a href={`/team-dashboard/#${encodeURIComponent(org.id)}`} aria-current={org.id === account ? 'true' : undefined}
+            onClick={() => dialog.current.close()}>{org.name}
+            {org.id === account && <span>Currently viewing</span>}
+          </a>
+        </li>)}</ul>
+      </section>}
+      <section className="tpw-account-row"><h3>Profile</h3><p>{user?.email || 'Member'}</p></section>
       <p className="tpw-account-preview" role="alert">{error}</p>
     </div>
   </dialog>;

@@ -187,7 +187,7 @@ function IntakeForm({ account, blank, css, organizationName, facilities = [] }) 
     try {
       localStorage.setItem(key, JSON.stringify(attempt));
       setPending(attempt);
-      const response = await fetch('/api/submissions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(attempt) });
+      const response = await fetch('/api/submissions/?org=' + encodeURIComponent(account), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(attempt) });
       const result = await response.json();
       if ([400, 413].includes(response.status)) {
         localStorage.removeItem(key);

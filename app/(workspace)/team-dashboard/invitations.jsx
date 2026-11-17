@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
-const endpoint = '/api/pilot-invitations/';
-
-export default function Invitations() {
+export default function Invitations({ account }) {
+  const endpoint = '/api/pilot-invitations/' + (account ? '?org=' + encodeURIComponent(account) : '');
   const [invitations, setInvitations] = useState([]);
   const [message, setMessage] = useState('');
   const [busy, setBusy] = useState(false);
@@ -13,7 +12,7 @@ export default function Invitations() {
       if (!response.ok) throw new Error();
       setInvitations((await response.json()).invitations);
     }).catch(() => setMessage('Could not load pending invitations.'));
-  }, []);
+  }, [endpoint]);
 
   async function change(body) {
     setBusy(true);

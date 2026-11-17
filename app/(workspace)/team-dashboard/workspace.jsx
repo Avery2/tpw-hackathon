@@ -42,6 +42,7 @@ export default function Workspace({ children }) {
   }, [pathname]);
   const dashboardPage = pathname.startsWith('/team-dashboard/');
   const [managedOrg, setManagedOrg] = useState('');
+  const [organizations, setOrganizations] = useState([]);
   const account = selectedAccount || (dashboardPage ? managedOrg : '');
   const [inviteAccepted, setInviteAccepted] = useState(false);
   useEffect(() => {
@@ -58,9 +59,12 @@ export default function Workspace({ children }) {
   useEffect(() => {
     if (!dashboardPage && !selectedAccount) return;
     const controller = new AbortController();
-    fetch('/api/pilot-account/', { signal: controller.signal })
+    fetch('/api/pilot-account/' + (selectedAccount ? '?org=' + encodeURIComponent(selectedAccount) : ''), { signal: controller.signal })
       .then(response => response.ok ? response.json() : null)
-      .then(data => setManagedOrg(data?.canManageMembers ? data.orgId : ''))
+      .then(data => {
+        setManagedOrg(data?.canManageMembers ? data.orgId : '');
+        setOrganizations(data?.organizations || []);
+      })
       .catch(() => {});
     return () => controller.abort();
   }, [dashboardPage, selectedAccount]);
@@ -110,9 +114,15 @@ export default function Workspace({ children }) {
       {tabs.slice(0, 1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path ? 'page' : undefined}>{label}</Link>)}
       <Link href={`/intake/simple.html?backend=demo&account=${account}`} aria-current={pathname === '/intake/simple.html' ? 'page' : undefined}>Log data</Link>
       {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname.endsWith('/submission-data.html')) ? 'page' : undefined}>{label}</Link>)}
-      {account && account === managedOrg && <Link href="/team-dashboard/members/"
+      {account && account === managedOrg && <Link href={`/team-dashboard/members/?account=${encodeURIComponent(account)}`}
         aria-current={pathname === '/team-dashboard/members/' ? 'page' : undefined}>Members</Link>}
       <a href={annualReport} target="_blank" rel="noopener noreferrer">Annual report</a>
+      {organizations.some(org => org.id === account) && <select className="tpw-org-picker"
+        aria-label="Current organization" value={account} onChange={event => {
+          location.assign('/team-dashboard/#' + encodeURIComponent(event.target.value));
+        }}>
+        {organizations.map(org => <option key={org.id} value={org.id}>{org.name}</option>)}
+      </select>}
     </nav>}
     {inviteAccepted && <div className="tpw-invite-toast">
       <div role="status"><strong>Invitation accepted</strong><span>You’ve joined the organization.</span></div>
@@ -123,7 +133,7 @@ export default function Workspace({ children }) {
         .tpw-invite-toast button { border: 0; background: transparent; color: inherit; font: inherit; font-size: 22px; cursor: pointer; }
       `}</style>
     </div>}
-    <AccountDrawer account={account} dialog={dialog} />
+    <AccountDrawer account={account} dialog={dialog} organizations={organizations} />
     <div onClick={navigateDashboard}>{children}</div>
   </>;
 }
