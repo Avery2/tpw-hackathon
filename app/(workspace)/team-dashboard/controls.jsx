@@ -1,15 +1,42 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { authClient } from '../../../server/auth-client.js';
 
 export function AccountDrawer({ account, dialog }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const drawer = dialog.current;
+    if (!drawer) return;
+    let active = true;
+    const observer = new MutationObserver(() => {
+      if (!drawer.open) return;
+      setEmail('');
+      authClient.getSession().then(({ data }) => {
+        if (active && drawer.open) setEmail(data?.user.email || '');
+      }).catch(() => {});
+    });
+    observer.observe(drawer, { attributes: true, attributeFilter: ['open'] });
+    return () => {
+      active = false;
+      observer.disconnect();
+    };
+  }, [dialog]);
+
   async function signOut() {
     setError('');
     setBusy(true);
     try {
+      const session = await authClient.getSession();
+      if (session.error && session.error.status !== 503) throw session.error;
+      if (session.data) {
+        const { error } = await authClient.signOut();
+        if (error) throw error;
+      }
       const { clearDemoAccount } = await import(/* turbopackIgnore: true */ '/assets/member-session.js?v=reporting-1');
       clearDemoAccount();
       location.replace('/dashboard/?entry=team');
@@ -32,7 +59,7 @@ export function AccountDrawer({ account, dialog }) {
       <section className="tpw-account-greeting"><h3>Hi, {{ 'org-1': 'Org 1', 'org-2': 'Org 2', tpw: 'TPW View' }[account]}</h3>
         <button className="tpw-account-signout" disabled={busy} onClick={signOut}>Sign out</button>
       </section>
-      <section className="tpw-account-row"><h3>Profile</h3><p>Member</p></section>
+      <section className="tpw-account-row"><h3>Profile</h3><p>{email || 'Member'}</p></section>
       <p className="tpw-account-preview" role="alert">{error}</p>
     </div>
   </dialog>;

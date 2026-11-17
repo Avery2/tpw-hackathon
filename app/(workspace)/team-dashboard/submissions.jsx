@@ -29,7 +29,7 @@ export default function Submissions() {
   </div></main>;
 }
 
-function ChoiceIcon({ report }) {
+export function ChoiceIcon({ report }) {
   return <span className={report ? 'choice-icon report-icon' : 'choice-icon'} aria-hidden="true">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
       <path d={report ? 'M6 3h8l4 4v14H6zM14 3v5h4M9 12h6M9 16h6' : 'M4 4h16v16H4zM4 10h16M10 4v16'} />

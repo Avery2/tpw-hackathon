@@ -47,18 +47,18 @@ const counts = sites => sites.reduce((total, site) => ({
 export default function Intake(props) {
   const [hashAccount, setHashAccount] = useState('');
   useEffect(() => {
-    if (new URLSearchParams(location.search).has('account')) return;
+    if (!props.allowHashAccount || new URLSearchParams(location.search).has('account')) return;
     const account = location.hash.slice(1);
     if (['org-1', 'org-2', 'tpw'].includes(account)) setHashAccount(account);
-  }, []);
+  }, [props.allowHashAccount]);
   const account = hashAccount || props.account;
   return <IntakeForm key={account} {...props} account={account} />;
 }
 
-function IntakeForm({ account, blank, css, facilities = [] }) {
+function IntakeForm({ account, blank, css, organizationName, facilities = [] }) {
   const [period, setPeriod] = useState(null);
   const [step, setStep] = useState(blank || account === 'tpw' ? 'organization' : 'choice');
-  const [organization, setOrganization] = useState(account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1');
+  const [organization, setOrganization] = useState(organizationName ?? (account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1'));
   const [locations, setLocations] = useState([]);
   const [programs, setPrograms] = useState([]);
   const formRoot = useRef(null);

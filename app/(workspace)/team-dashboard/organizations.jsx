@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { ChoiceIcon } from './submissions.jsx';
 import { ProgramCard } from './programs.jsx';
 import { Savings, Trends } from './overview.jsx';
 import { useWorkspaceAccount } from './workspace.jsx';
@@ -25,7 +26,101 @@ export default function Organizations() {
   </div></main>;
 }
 
+function CreateOrganization({ mode, setMode, onCreate }) {
+  const [staff, setStaff] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const [invite, setInvite] = useState('');
+
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch('/api/pilot-account/', { signal: controller.signal })
+      .then(response => response.ok ? response.json() : null)
+      .then(data => setStaff(Boolean(data?.staff)))
+      .catch(() => {});
+    return () => controller.abort();
+  }, []);
+
+  async function submit(event) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    setBusy(true);
+    setMessage('');
+    try {
+      const response = await fetch('/api/staff-organizations/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error);
+      setInvite(new URL('/accept-invite/?id=' + data.invitationId, location.origin).href);
+      setMessage('Organization created. Share this link with its first admin.');
+      form.reset();
+      onCreate();
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  if (mode === 'directory') return null;
+  if (mode === 'choices') return <section className="submission-choices" aria-labelledby="submission-choice-heading">
+    <h2 id="submission-choice-heading">What would you like to do?</h2>
+    <div className="submission-choice-grid" style={{ marginBlockStart: 28 }}>
+      {staff && <button type="button" className="submission-choice" onClick={() => {
+        setMessage('');
+        setInvite('');
+        setMode('create');
+      }}>
+        <ChoiceIcon report /><strong>Create New Org</strong><span>Set up an organization and invite its first admin.</span>
+      </button>}
+      <button type="button" className="submission-choice" onClick={() => setMode('directory')}>
+        <ChoiceIcon /><strong>View Orgs</strong><span>Browse organizations and their reporting data.</span>
+      </button>
+    </div>
+  </section>;
+  if (!staff) return null;
+  return <section className="organization-onboarding" aria-labelledby="organization-onboarding-heading">
+    <div className="view-heading">
+      <h2 id="organization-onboarding-heading">Create an organization</h2>
+      <button type="button" className="action switch" disabled={busy} onClick={() => setMode('choices')}>← Back</button>
+    </div>
+    <form onSubmit={submit}>
+      <label>Organization name<input name="name" autoFocus required maxLength={200} /></label>
+      <label>First admin email<input name="email" type="email" required maxLength={254} /></label>
+      <button type="submit" className="action" disabled={busy}>{busy ? 'Creating…' : 'Create organization'}</button>
+    </form>
+    <p role="status">{message}</p>
+    {invite && <div className="organization-invite">
+      <label>First admin invite link<input value={invite} readOnly /></label>
+      <button type="button" className="action switch" onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(invite);
+          setMessage('Invite link copied.');
+        } catch {
+          setMessage('Select the invite link to copy it.');
+        }
+      }}>Copy invite link</button>
+    </div>}
+    <style>{`
+      .organization-onboarding { margin: 0 0 24px; padding: 20px; border: 1px solid #dce3da; border-radius: 12px; background: #f5f8f4; }
+      .organization-onboarding { animation: organization-slide-in 280ms ease-out both; }
+      .dashboard-layout .organization-onboarding .view-heading .action.switch { display: inline-flex; }
+      @keyframes organization-slide-in { from { opacity: 0; transform: translateX(24px); } }
+      @media (prefers-reduced-motion: reduce) { .organization-onboarding { animation: none; } }
+      .dashboard-layout .organization-onboarding .view-heading .action.switch { display: inline-flex; }
+      .organization-onboarding form, .organization-invite { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; }
+      .organization-onboarding label { display: grid; flex: 1 1 200px; gap: 6px; font-weight: 700; }
+      .organization-onboarding input { min-width: 0; border: 1px solid #b7c5b4; border-radius: 8px; padding: 8px 12px; font: inherit; background: white; }
+      .organization-onboarding [role="status"]:empty { display: none; }
+    `}</style>
+  </section>;
+}
+
 function Directory({ id }) {
+  const [mode, setMode] = useState('choices');
   const [search, setSearch] = useState('');
   const [view, setView] = useState('cards');
   const [page, setPage] = useState(1);
@@ -61,11 +156,18 @@ function Directory({ id }) {
   const current = result?.url === url && result.attempt === attempt ? result : null;
   const data = current?.data;
   return <>
+    {!id && <CreateOrganization mode={mode} setMode={setMode} onCreate={() => {
+      setPage(1);
+      setSearch('');
+      retry(n => n + 1);
+    }} />}
+    <div hidden={!id && mode !== 'directory'}>
     <div className="view-heading"><div>
       <h2 id="org-page-heading">{id && data ? data.org.name : 'Organization directory'}</h2>
       <p id="org-status" role="status">{current?.error ? 'Could not load organization data.' : !data ? 'Loading organizations…' :
         id ? 'Organization overview' : data.count ? `Showing ${data.offset + 1}–${data.offset + data.items.length} of ${data.count} organizations` : '0 organizations'}</p>
-    </div>{id && <Link id="org-back" className="action switch" href={directory + '#tpw'}>← All organizations</Link>}</div>
+    </div>{id && <Link id="org-back" className="action switch" href={directory + '#tpw'}>← All organizations</Link>}
+    {!id && <button type="button" className="action switch" style={{ display: 'inline-flex' }} onClick={() => setMode('choices')}>← Back</button>}</div>
     {!id && <>
       <label id="org-search-label" className="org-search">Find an organization<input id="org-search" type="search" placeholder="Search by organization name" value={search}
         onChange={event => { setSearch(event.target.value); setPage(1); }} /></label>
@@ -79,6 +181,7 @@ function Directory({ id }) {
       {!current && <div className="skeleton-block" style={{ minHeight: 160 }} />}
       {current?.error && <button type="button" onClick={() => retry(attempt + 1)}>Try again</button>}
       {data && (id ? <OrganizationDetail data={data} /> : <Results data={data} view={view} setPage={setPage} />)}
+    </div>
     </div>
   </>;
 }
