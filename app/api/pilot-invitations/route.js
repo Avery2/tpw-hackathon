@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
-import { getAuth, getInviteSignupAuth } from '../../../server/auth.js';
-import { database } from '../../../server/db.js';
-import { reportingAccess } from '../../../server/reporting-access.js';
+import { getAuth, getInviteSignupAuth } from '../../../lib/server/auth.js';
+import { database } from '../../../lib/server/db.js';
+import { reportingAccess } from '../../../lib/server/reporting-access.js';
 
 const reply = (data, status = 200) => Response.json(data, {
   status,

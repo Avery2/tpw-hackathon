@@ -14,14 +14,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-neon-app.mjs && next build",
-    "dev": "node scripts/build-neon-app.mjs && next dev --hostname 127.0.0.1",
+    "build": "next build",
+    "dev": "next dev --hostname 127.0.0.1",
     "start": "next start",
-    "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/neon-migrate.mjs",
-    "db:import-demo": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/neon-import-demo.mjs",
-    "test:neon": "node --test test/neon/*.test.mjs",
-    "test:browser": "node test/browser/next-workspace.mjs",
-    "db:auth-setup": "node --env-file-if-exists=.env.local --env-file-if-exists=.env scripts/auth-setup.mjs"
+    "db:migrate": "node --env-file-if-exists=.env.local --env-file-if-exists=.env lib/scripts/neon-migrate.mjs",
+    "db:import-demo": "node --env-file-if-exists=.env.local --env-file-if-exists=.env lib/scripts/neon-import-demo.mjs",
+    "test:neon": "node --test lib/tests/neon/*.test.mjs",
+    "test:browser": "node lib/tests/browser/next-workspace.mjs",
+    "db:auth-setup": "node --env-file-if-exists=.env.local --env-file-if-exists=.env lib/scripts/auth-setup.mjs"
   },
   "engines": {
     "node": ">=22.16"

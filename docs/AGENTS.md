@@ -17,6 +17,7 @@ Signpost for the `docs/` folder. For the rest of the repository, see `../AGENTS.
 
 | File | What it is |
 |---|---|
+| `html site archive/` | Retired static site, legacy server and Data API tooling, preserved for reference. See its README. |
 | `technical-guide.md` | How every part works and fits together, with the Google Apps Script back end in detail: its files, settings, requests and replies, the Sheet's columns, setting up a fresh copy, deploying changes, limits, sign-in, hosting and testing. |
 | `go-live-checklist.md` | The steps between today's prototype and real member data, in order: TPW's own accounts, real sign-in, closing the open dashboard feed, removing demo data, keeping public figures combined. |
 | `TPW Data Glossary Instructions.docx` | TPW's field-by-field definitions and submission rules for its Collective Impact form (June 2026). The Sheet's columns A to M follow it. Read it before changing the form. Convert it to text with, for example, `pandoc -t plain "TPW Data Glossary Instructions.docx"`. |

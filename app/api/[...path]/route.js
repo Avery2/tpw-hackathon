@@ -1,5 +1,5 @@
 import { Readable } from 'node:stream';
-import { handleApi } from '../../../server/api.js';
+import { handleApi } from '../../../lib/server/api.js';
 
 export const runtime = 'nodejs';
 

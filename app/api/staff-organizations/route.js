@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { database } from '../../../server/db.js';
-import { reportingAccess } from '../../../server/reporting-access.js';
+import { database } from '../../../lib/server/db.js';
+import { reportingAccess } from '../../../lib/server/reporting-access.js';
 
 const reply = (body, status) => Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
 

@@ -1,5 +1,5 @@
-import { reportingAccess } from '../../../server/reporting-access.js';
-import { database } from '../../../server/db.js';
+import { reportingAccess } from '../../../lib/server/reporting-access.js';
+import { database } from '../../../lib/server/db.js';
 
 export const runtime = 'nodejs';
 

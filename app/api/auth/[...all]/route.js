@@ -1,4 +1,4 @@
-import { getAuth } from '../../../../server/auth.js';
+import { getAuth } from '../../../../lib/server/auth.js';
 
 export const runtime = 'nodejs';
 
