@@ -99,6 +99,32 @@ cite this file as evidence that they help:
 - The programs table keeps its horizontal scroll: it is a wide data table, and the scroll region is
   labelled and keyboard reachable.
 
+
+## Log data: screens and clicks
+
+Measured on the shortest path from opening Log data to a saved report, one program at one yard.
+
+| | Screens | Navigation clicks before a field appears | What is visible at the start |
+|---|---|---|---|
+| Before (published `main`) | 5: how to start, quarter, facilities, programs, receipt | 3 (start, continue, continue to programs) | one question and two buttons |
+| After (`a11y/ux-audit`) | 1 report + receipt | 0 | period, facilities, programs and submit on one page |
+
+The page keeps a four-link skip row (period, facilities, programs, submit) and a compact
+organization/quarter summary, so the whole report is one scroll instead of a sequence of
+unknown steps. Nothing is hidden behind a step the member has not seen yet.
+
+**This is a hypothesis, not a finding.** The dense single page trades guided progression for
+visibility. The previous engineer's wizard work is kept in git; the two can be compared by
+running `main` and this branch side by side and asking members which they finish faster and with
+fewer mistakes. Record the result here before choosing one.
+
+## Member Portal content
+
+TPW's Squarespace member portal content now lives at `/team-dashboard/member-portal/`: current
+initiatives, resources, announcements and help, with the original external links. The side drawer
+was removed; the header entry and the nav tab both open the page, and sign-out moved onto it.
+The resource library on TPW's own site remains the source of truth for anything not copied here.
+
 ## How this was checked
 
 - `npm run test:browser` asserts the header structure, the portal drawer, the collapsed export
