@@ -35,10 +35,11 @@ export function Trends({ points }) {
   const step = Math.max(1, Math.ceil(points.length / 5));
   return <section className="participants-chart">
     <div className="chart-heading"><h3>Program trends</h3><div className="chart-pills" role="group" aria-label="Chart metric">
-      {modes.map(([key, label]) => <button key={key} aria-pressed={metric === key} onClick={() => setMetric(key)}>{label}</button>)}
+      {modes.map(([key, label]) => <button key={key} aria-pressed={metric === key} onClick={() => setMetric(key)}>
+        {label}<span className="pill-value">{points.length ? format(points.at(-1)[key]) : '—'}</span>
+      </button>)}
     </div></div>
-    <strong className="chart-current">{points.length ? format(points.at(-1)[metric]) : 'No history yet'}</strong>
-    <p className="chart-caption">Latest reported data for each quarter. Choose a measure, or open “View chart data” for the numbers.</p>
+    <p className="chart-caption">Each value sits beside its name, so nothing here needs a click. Open “View chart data” for the full table.</p>
     {plotted.length > 0 && <div className="chart-figure">
       <ul className="chart-y-axis" aria-hidden="true">{ticks.map(value => <li key={value}>{format(value)}</li>)}</ul>
       <svg key={metric} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
@@ -113,24 +114,27 @@ export default function Overview() {
   const current = result?.account === account && result.attempt === attempt ? result : null;
   const data = current?.data;
   const metrics = data ? [
-    ...(admin ? [['Registered organizations', data.organizationCount, '/team-dashboard/organizations/#tpw']] : []),
-    ['Programs', data.programCount, `/team-dashboard/programs/#${account}`],
-    ['Facilities', data.facilityCount], ['Submissions', data.submissionCount], ['Total participants', data.participants],
-    ...(admin ? [['Participants completed', data.completed], ['Completion rate', data.completionRate == null ? '—' : `${data.completionRate.toFixed(1)}%`]] : []),
-    ['Total hours completed', data.hours]
+    ...(admin ? [['Registered organizations', data.organizationCount, '/team-dashboard/organizations/#tpw', 'With at least one report']] : []),
+    ['Programs', data.programCount, `/team-dashboard/programs/#${account}`, 'Ever reported, counted once each'],
+    ['Facilities', data.facilityCount, null, 'Where those programs run'],
+    ['Submissions', data.submissionCount, `/team-dashboard/submissions/#${account}`, 'Reports filed, all quarters'],
+    ['Total participants', data.participants, null, 'Enrollments in each program’s latest report'],
+    ...(admin ? [['Participants completed', data.completed, null, 'In each program’s latest report'], ['Completion rate', data.completionRate == null ? '—' : `${data.completionRate.toFixed(1)}%`, null, 'Completed ÷ enrolled']] : []),
+    ['Total hours completed', data.hours, null, 'Course hours × completions']
   ] : [];
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Overview</h1></div></section>
     {account && <div className="shell dashboard-content"><div className="view-heading"><div>
       <span className="account-label">{admin ? 'TPW overview' : 'Organization'}</span>
       <h2 id="profile-heading">{admin ? 'Collective overview' : data?.name || 'Organization overview'}</h2>
+      <p className="overview-scope">Figures below use each program’s most recent report, so a program reported twice is not counted twice.</p>
     </div><Link className="action switch" href="/sign-in/">Switch view <LuArrowUpRight aria-hidden="true" focusable="false" /></Link></div></div>}
     {!account ? <Link href="/sign-in/">Choose an account</Link> : current?.error ?
       <p role="alert">Could not load Overview. <button onClick={() => retry(attempt + 1)}>Try again</button></p> :
       !data ? <div aria-busy="true" className="dashboard-overview"><div className="program-stats">{Array.from({length: admin ? 8 : 5}, (_, index) => <div className="program-stat" key={index}><span className="skeleton-block" style={{height: 30}} /></div>)}</div><div className="participants-chart skeleton-plot" aria-label="Loading overview" /></div> :
       <>
-        <div className="dashboard-overview"><div className="program-stats">{metrics.map(([label, value, href]) => {
-          const content = <><strong>{typeof value === 'string' ? value : number(value)}</strong><span>{label}</span></>;
+        <div className="dashboard-overview"><div className="program-stats">{metrics.map(([label, value, href, definition]) => {
+          const content = <><strong>{typeof value === 'string' ? value : number(value)}</strong><span>{label}</span>{definition && <small>{definition}</small>}</>;
           return href ? <Link key={label} className="program-stat" href={href}>{content}</Link> : <div key={label} className="program-stat">{content}</div>;
         })}</div><Trends points={data.points} /></div>
         <section className="rac-panel">

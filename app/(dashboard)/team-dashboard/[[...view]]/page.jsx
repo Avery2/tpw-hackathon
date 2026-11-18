@@ -8,8 +8,9 @@ import SubmissionHistory from '../submission-history.jsx';
 import Organizations from '../organizations.jsx';
 import ProgramsPage from '../programs.jsx';
 import Members from '../members.jsx';
+import MemberPortal from '../member-portal.jsx';
 
-const views = ['programs', 'organizations', 'submissions', 'submission-data', 'annual-report', 'members'];
+const views = ['programs', 'organizations', 'submissions', 'submission-data', 'annual-report', 'member-portal', 'members'];
 
 export function generateStaticParams() {
   return [{ view: [] }, ...views.map(name => ({ view: [name] }))];
@@ -26,6 +27,7 @@ export default async function Page({ params }) {
     'submission-data': <SubmissionHistory />,
     submissions: <Submissions />,
     'annual-report': <AnnualReport />,
+    'member-portal': <MemberPortal />,
     members: <Members />,
   }[name];
   return <div data-dashboard-view={name} style={{ display: 'contents' }}>{content}</div>;

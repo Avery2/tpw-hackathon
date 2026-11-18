@@ -1,10 +1,9 @@
 'use client';
 
 import { LuChevronDown, LuX } from 'react-icons/lu';
-import { AccountDrawer } from './controls.jsx';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
 
 const validAccount = value => typeof value === 'string' && /^(tpw|org-[a-z0-9-]+)$/.test(value);
 const websiteLinks = [
@@ -89,13 +88,6 @@ export default function Workspace({ children }) {
   const annualReport = account === 'tpw' ? '/report/TPW-Collective-Impact-Report-2026.pdf' :
     `/report/organizations/${account}-annual-report-2026.pdf`;
 
-  const dialog = useRef(null);
-  function openAccount(event) {
-    event.preventDefault();
-    dialog.current.showModal();
-    document.documentElement.classList.add('tpw-account-open');
-  }
-
   function navigateDashboard(event) {
     if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
     const link = event.target.closest('a');
@@ -115,18 +107,20 @@ export default function Workspace({ children }) {
       <nav aria-label="Main navigation">
         {websiteLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
         {account
-          ? <button type="button" className="login" aria-haspopup="dialog" aria-current="location" onClick={openAccount}>Member Portal</button>
+          ? <Link className="login" href={`/team-dashboard/member-portal/#${account}`} aria-current="location">Member Portal</Link>
           : <a className="login" href="/sign-in/">Member Portal</a>}
       </nav>
     </header>
     {account && <nav className="tpw-member-nav noprint" aria-label="Member navigation">
       {tabs.slice(0, 1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path ? 'page' : undefined}>{label}</Link>)}
       <Link href={`/log-data/?account=${account}`} aria-current={pathname === '/log-data/' ? 'page' : undefined}>Log data</Link>
-      {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname === '/team-dashboard/submission-data/') ? 'page' : undefined}>{label}</Link>)}
+      {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path ? 'page' : undefined}>{label}</Link>)}
       {account && account === managedOrg && <Link href={`/team-dashboard/members/?account=${encodeURIComponent(account)}`}
         aria-current={pathname === '/team-dashboard/members/' ? 'page' : undefined}>Members</Link>}
       <Link href={`/team-dashboard/annual-report/#${account}`}
         aria-current={pathname === '/team-dashboard/annual-report/' ? 'page' : undefined}>Annual report</Link>
+      <Link href={`/team-dashboard/member-portal/#${account}`}
+        aria-current={pathname === '/team-dashboard/member-portal/' ? 'page' : undefined}>Portal</Link>
       {organizations.some(org => org.id === account) && <div className="tpw-org-picker-wrap"><select className="tpw-org-picker"
         aria-label="Current organization" value={account} onChange={event => {
           location.assign('/team-dashboard/#' + encodeURIComponent(event.target.value));
@@ -143,7 +137,6 @@ export default function Workspace({ children }) {
         .tpw-invite-toast button { border: 0; background: transparent; color: inherit; font: inherit; font-size: 22px; cursor: pointer; }
       `}</style>
     </div>}
-    <AccountDrawer account={account} dialog={dialog} organizations={organizations} annualReport={annualReport} />
     <div onClick={navigateDashboard}>{children}</div>
   </>;
 }

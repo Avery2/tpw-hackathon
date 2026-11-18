@@ -25,7 +25,9 @@ export default function SubmissionHistory() {
   </div></main>;
 }
 
-function History({ account }) {
+// Shared by /team-dashboard/submissions/ (inline, under the Submissions heading) and the legacy
+// /team-dashboard/submission-data/ route.
+export function History({ account, inline = false }) {
   const [filters, setFilters] = useState(empty);
   const [page, setPage] = useState(1);
   const [mode, setMode] = useState('cards');
@@ -54,6 +56,7 @@ function History({ account }) {
   };
   const active = Boolean(filters.from || filters.to || filters.quarter || filters.year);
   return <div className="shell">
+    {inline && <h2 className="submission-history-heading">Your submission history</h2>}
     <div className="history-toolbar">
       <p id="submission-status" role="status">
         {invalid ? 'The end date must be on or after the start date.' : current?.error ? 'Could not load submissions.' :
@@ -62,7 +65,7 @@ function History({ account }) {
       <div className="view-toggle" role="group" aria-label="Submission display">
         {['cards', 'table'].map(view => <button key={view} aria-pressed={mode === view} onClick={() => setMode(view)}>{view === 'cards' ? 'Card view' : 'Table view'}</button>)}
       </div>
-      <Link id="submission-back" className="action" href={`/team-dashboard/submissions/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Submissions</Link>
+      {!inline && <Link id="submission-back" className="action" href={`/team-dashboard/submissions/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Submissions</Link>}
     </div>
     <details className="history-filters">
       <summary>Filter submissions{active ? ' (filters applied)' : ''}</summary>

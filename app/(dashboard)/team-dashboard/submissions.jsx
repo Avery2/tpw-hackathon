@@ -4,29 +4,20 @@ import Link from 'next/link';
 import { LuArrowLeft, LuArrowRight, LuChevronRight, LuFileText, LuTable2 } from 'react-icons/lu';
 import { useEffect, useState } from 'react';
 import { recentQuarterStatus } from '../../../lib/reporting/submission-tracker.js';
+import { History } from './submission-history.jsx';
 import { useWorkspaceAccount } from './workspace.jsx';
 
 const heading = period => `Q${period.quarter} ${period.year}`;
 const orgLink = org => `/team-dashboard/organizations/?org=${encodeURIComponent(org.id)}#tpw`;
 const defaults = { search: '', quarter: 'all', status: 'all', size: 10 };
 
+// Staff keep the quarterly tracker; members land straight on their own history instead of a
+// two-card chooser that only led here anyway.
 export default function Submissions() {
   const account = useWorkspaceAccount();
   return <main className="dashboard-layout"><div className="workspace-content">
     <section className="dashboard-heading"><div className="shell"><h1>Submissions</h1></div></section>
-    {account === 'tpw' ? <SubmissionTracker /> : account ? <section className="submission-choices" aria-labelledby="submission-choice-heading">
-      <h2 id="submission-choice-heading">What would you like to do?</h2>
-      <p>Explore what you’ve submitted or turn it into a report.</p>
-      <div className="submission-choice-grid">
-        <Link className="submission-choice" href={`/team-dashboard/submission-data/#${account}`}>
-          <ChoiceIcon /><strong>View your data</strong><span>Browse your submissions and program details.</span>
-          <span className="choice-next" aria-hidden="true">Explore data <LuArrowRight size={14} /></span>
-        </Link>
-        <Link className="submission-choice" href={`/team-dashboard/annual-report/#${account}`}><ChoiceIcon report /><strong>Read the annual report</strong>
-          <span>Your yearly program activity and impact, in one document.</span><span className="choice-next" aria-hidden="true">Open report <LuArrowRight size={14} /></span>
-        </Link>
-      </div>
-    </section> : <Link href="/sign-in/">Choose an account</Link>}
+    {account === 'tpw' ? <SubmissionTracker /> : account ? <History key={account} account={account} inline /> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
 

@@ -37,6 +37,47 @@ so treat "untested" items as hypotheses to test in the next round of member inte
   visible download link, matching the rest of the navigation. The previously dead "Generate a
   report" button now points at the same tab.
 
+## Log data: one page instead of a wizard
+
+Log data used to be a wizard: a start chooser, then organisation, quarter, facilities, programs and a
+separate submit view, each hidden until the previous one was finished. This change flattens it into a
+single scrolling report. The click counts below are the shortest path from opening Log data to a
+submitted report, counting only navigation clicks (not typing or ticking boxes).
+
+| | Before | After |
+|---|---|---|
+| Screens | 5 (start choice → reporting period → facilities → programs → submitted) | 1 report page, plus the confirmation that replaces it |
+| Navigation clicks | 5 (`Use previous entries` → `Continue` → `Continue to programs` → `Done with program` → `Finish and submit`) | 2 (`Done with program` → `Finish and submit`) |
+| Clicks before the whole form is visible | 0 for the choice screen, but every later step was hidden | 0 — all four sections are on the page from load |
+
+What moved onto the one page:
+
+- The `Use previous entries` / `Start blank` choice is gone. The last report is applied automatically,
+  and a compact banner says `Filled in from your last report (Qx yyyy).` with a `Start blank` link that
+  keeps the existing `?blank=1` behaviour. If the fetch fails, the old retry/blank message appears in the
+  same banner.
+- The organisation question is gone for signed-in members: the server already resolves and checks the
+  organisation, so the name is read-only text in the sticky summary. Only the TPW staff view keeps an
+  editable organisation name.
+- Quarter and year, facilities and yards, the program editor, the program list and the submit action are
+  now four sections (`Reporting period`, `Facilities and yards`, `Programs`, `Submit`) on one page.
+- The per-step `Back` buttons are replaced by one anchor nav at the top, and a sticky summary keeps the
+  organisation and reporting period visible while scrolling.
+
+The submission-recovery path is unchanged: the same `tpw.react.submission:<account>` localStorage entry
+still restores an unsent attempt and still shows the confirmation screen when a receipt exists.
+
+The Submissions tab also stopped showing members a two-card `What would you like to do?` chooser; the
+submission history is now rendered inline there. `/team-dashboard/submission-data/` redirects to
+`/team-dashboard/submissions/`, and the old link is no longer in the member navigation. The staff
+tracker is unchanged.
+
+**This is a hypothesis, not a proven improvement.** Cutting steps and making one dense page is an
+assumption about what members want; it has not been tested with members. A tall single page can be
+harder to scan than short steps for people with low literacy or attention difficulties, and automatic
+prefill can hide what was filled in. The next round of member interviews should A/B test the dense
+single page against the step-by-step version before this is treated as settled.
+
 ## Judgement calls, not requirements
 
 These follow the design system or common practice but have **no study behind them here**. Do not
@@ -61,7 +102,9 @@ cite this file as evidence that they help:
 ## How this was checked
 
 - `npm run test:browser` asserts the header structure, the portal drawer, the collapsed export
-  disclosure, the annual report tab and embedding, and no overflow at 390px.
+  disclosure, the annual report tab and embedding, and no overflow at 390px. It also walks the new Log
+  data flow: no `Use previous entries` button, all four sections on one page, explicit yard numbers,
+  submit, reload, receipt, inline submission history on the Submissions tab, and the embedded PDF.
 - A browser pass at 320px measured `document.documentElement.scrollWidth <= innerWidth` on Overview,
   Programs, Your submissions and Annual report.
 - Contrast ratios were computed from the CSS colour values; recheck them if a colour changes.

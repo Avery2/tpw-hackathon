@@ -51,6 +51,7 @@ export function AccountDrawer({ account, dialog, organizations, annualReport }) 
   }
 
   const portalLinks = [
+    ['Member Portal home', `/team-dashboard/member-portal/#${account}`],
     ['Log data', `/log-data/?account=${account}`],
     ['Overview', `/team-dashboard/#${account}`],
     ['Programs', `/team-dashboard/programs/#${account}`],

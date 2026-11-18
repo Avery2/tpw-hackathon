@@ -1,8 +1,8 @@
 'use client';
 
-import { LuArrowLeft, LuArrowRight, LuCheck, LuChevronRight, LuCircleAlert, LuMinus, LuPlus, LuX } from 'react-icons/lu';
+import { LuCheck, LuChevronRight, LuCircleAlert, LuPlus, LuX } from 'react-icons/lu';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { currentReportingPeriod } from '../../../lib/reporting/reporting-period.js';
 
 function SuccessMetric({ value, label, roll }) {
@@ -45,6 +45,7 @@ const counts = sites => sites.reduce((total, site) => ({
   participants: total.participants + Number(site.participants || 0),
   participantsCompleted: total.participantsCompleted + Number(site.completed || 0)
 }), { participants: 0, participantsCompleted: 0 });
+const isReady = program => Boolean(program.status) && program.sites.length > 0;
 
 export default function Intake(props) {
   const [hashAccount, setHashAccount] = useState('');
@@ -57,65 +58,25 @@ export default function Intake(props) {
   return <IntakeForm key={account} {...props} account={account} />;
 }
 
+// One scrolling report instead of a wizard: every section is on the page from the start, the
+// organisation is resolved by the server for signed-in members, and prefill from the last report
+// happens automatically. The only choice left is "start blank", which is a link, not a screen.
 function IntakeForm({ account, blank, organizationName, facilities = [] }) {
   const [period, setPeriod] = useState(null);
-  const [step, setStep] = useState(blank || account === 'tpw' ? 'organization' : 'choice');
   const [organization, setOrganization] = useState(organizationName ?? (account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1'));
   const [locations, setLocations] = useState([]);
   const [programs, setPrograms] = useState([]);
-  const formRoot = useRef(null);
-  const transitioning = useRef(false);
-  const enteringStep = useRef(null);
-
-  function waitForAnimation(element) {
-    return Promise.all(element.getAnimations().map(animation => animation.finished.catch(() => {})));
-  }
-
-  async function goToStep(next) {
-    if (transitioning.current) return;
-    const outgoing = formRoot.current?.querySelector(':scope > .question-step');
-    if (!outgoing) {
-      setStep(next);
-      return;
-    }
-    transitioning.current = true;
-    outgoing.inert = true;
-    outgoing.classList.add('leaving');
-    await waitForAnimation(outgoing);
-    if (!outgoing.isConnected) return;
-    enteringStep.current = next;
-    setStep(next);
-  }
-
-  useLayoutEffect(() => {
-    if (enteringStep.current !== step) return;
-    const incoming = formRoot.current.querySelector(':scope > .question-step');
-    enteringStep.current = null;
-    if (!incoming) {
-      transitioning.current = false;
-      return;
-    }
-    incoming.classList.add('entering');
-    const heading = incoming.querySelector('h2');
-    if (heading) {
-      heading.tabIndex = -1;
-      heading.focus({ preventScroll: true });
-      heading.scrollIntoView({ block: 'nearest' });
-    }
-    waitForAnimation(incoming).then(() => {
-      incoming.classList.remove('entering');
-      transitioning.current = false;
-    });
-  }, [step]);
-
   const [editing, setEditing] = useState(null);
+  const [problems, setProblems] = useState([]);
   const [pending, setPending] = useState(null);
   const [receipt, setReceipt] = useState('');
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [prefilling, setPrefilling] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [prefillFailed, setPrefillFailed] = useState(false);
-  const [usePrevious, setUsePrevious] = useState(false);
+  const [prefilledFrom, setPrefilledFrom] = useState(null);
   const [prefillAttempt, setPrefillAttempt] = useState(0);
+  const [done, setDone] = useState(false);
   const key = 'tpw.react.submission:' + account;
 
   useEffect(() => {
@@ -130,12 +91,12 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
         setLocations(saved.submission.prisons);
         setPrograms(saved.submission.programs);
         setReceipt(saved.receipt || '');
-        setStep(saved.receipt ? 'done' : 'review');
+        setDone(Boolean(saved.receipt));
         return;
       }
     } catch { setError('Could not read the saved attempt.'); }
     if (!blank && account !== 'tpw') {
-      setBusy(true);
+      setPrefilling(true);
       setPrefillFailed(false);
       fetch('/api/dashboard/?org=' + account, { signal: controller.signal }).then(response => {
         if (!response.ok) throw new Error();
@@ -157,20 +118,31 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
         setOrganization(data.org.name);
         setLocations([...locations.values()]);
         setPrograms(previous);
+        if (latest?.reportingPeriod?.quarter) setPrefilledFrom(latest.reportingPeriod);
 
       }).catch(() => { if (!controller.signal.aborted) setPrefillFailed(true); })
-        .finally(() => { if (!controller.signal.aborted) setBusy(false); });
+        .finally(() => { if (!controller.signal.aborted) setPrefilling(false); });
     }
     return () => controller.abort();
   }, [account, blank, key, prefillAttempt]);
 
+  // Open a first program only once loading has finished. Running this before prefill or a
+  // recovered attempt arrives left a stray blank editor that blocked "Retry submission".
   useEffect(() => {
-    if (step === 'choice' && usePrevious && !busy && !prefillFailed) setStep('quarter');
-  }, [step, usePrevious, busy, prefillFailed]);
+    if (prefilling || prefillFailed || done || pending || editing || programs.length) return;
+    setEditing(newProgram());
+  }, [prefilling, prefillFailed, done, pending, editing, programs.length]);
+
+  function retryPrefill() {
+    setPrefillFailed(false);
+    setPrefilling(true);
+    setPrefillAttempt(attempt => attempt + 1);
+  }
 
   async function submit() {
     setError('');
-    setBusy(true);
+    if (!organization.trim()) { setError('Enter an organization name.'); return; }
+    setSubmitting(true);
     const attempt = pending || {
       id: crypto.randomUUID(),
       submission: {
@@ -198,10 +170,10 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
       }
       if (!response.ok || result.id !== attempt.id) throw new Error('Could not confirm the submission. Retry to check the same attempt.');
       setReceipt(result.id);
-      goToStep('done');
+      setDone(true);
       localStorage.setItem(key, JSON.stringify({ ...attempt, receipt: result.id }));
     } catch (error) { setError(error.message || 'Could not save the submission.'); }
-    finally { setBusy(false); }
+    finally { setSubmitting(false); }
   }
 
   const submittedPrograms = pending?.submission.programs || programs;
@@ -211,225 +183,82 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
 
   function cancelProgramEdit() {
     setError('');
+    setProblems([]);
     setEditing(programs.length ? null : newProgram());
+  }
+
+  function removeLocation(location) {
+    setLocations(list => list.filter(item => item.code !== location.code));
+    setPrograms(list => list.map(program => ({ ...program, sites: program.sites.filter(site => site.facilityCode !== location.code) })));
+    setEditing(current => current ? {
+      ...current,
+      selectedFacilityCodes: (current.selectedFacilityCodes ?? [...new Set(current.sites.map(site => site.facilityCode))]).filter(code => code !== location.code),
+      sites: current.sites.filter(site => site.facilityCode !== location.code)
+    } : current);
+  }
+
+  function toggleYard(location, yard, checked) {
+    setLocations(list => list.map(item => item === location
+      ? { ...item, yards: checked ? [...item.yards, yard] : item.yards.filter(value => value !== yard) }
+      : item));
+    if (checked) return;
+    const drop = site => !(site.facilityCode === location.code && site.yard === yard);
+    setPrograms(list => list.map(program => ({ ...program, sites: program.sites.filter(drop) })));
+    setEditing(current => current ? { ...current, sites: current.sites.filter(drop) } : current);
+  }
+
+  // Every problem is listed in one place at the top of the editor, in the order the fields appear,
+  // and each line moves focus to the field it is about. Native validation bubbles are off, so
+  // nothing is reported in a place a member has already scrolled past.
+  function collectProblems(program) {
+    const found = [];
+    if (!program.name.trim()) found.push({ id: 'program-name', text: 'Enter the program’s name.' });
+    if (!program.status) found.push({ id: 'program-status', text: 'Choose a schedule status.' });
+    if (program.status !== 'Planned' && !program.startDate) found.push({ id: 'program-start', text: 'Enter the date the program started.' });
+    if (program.status === 'Completed' && !program.endDate) found.push({ id: 'program-end', text: 'Enter the date the program ended.' });
+    if (program.startDate && program.endDate && program.endDate < program.startDate) {
+      found.push({ id: 'program-end', text: 'The end date is before the start date.' });
+    }
+    if (!program.sites.length) found.push({ id: 'program-facilities', text: 'Tick at least one yard where this program runs.' });
+    for (const site of program.sites) {
+      const where = site.facilityCode + ' ' + site.yard;
+      const enrolledId = 'count-' + site.facilityCode + '-' + site.yard + '-participants';
+      const completedId = 'count-' + site.facilityCode + '-' + site.yard + '-completed';
+      if (String(site.participants).trim() === '') found.push({ id: enrolledId, text: 'Enter how many were enrolled at ' + where + '.' });
+      if (String(site.completed).trim() === '') found.push({ id: completedId, text: 'Enter how many completed at ' + where + '.' });
+      if (String(site.participants).trim() !== '' && Number(site.completed) > Number(site.participants)) {
+        found.push({ id: completedId, text: 'At ' + where + ', completed is more than enrolled.' });
+      }
+    }
+    return found;
   }
 
   function saveProgram(event) {
     event.preventDefault();
-    if (!editing.name.trim()) { setError('Enter a program name.'); return; }
-    if (!editing.sites.length) { setError('Select at least one yard.'); return; }
-    if (editing.sites.some(site => Number(site.completed) > Number(site.participants))) {
-      setError('Completed cannot exceed enrollment at a yard.'); return;
-    }
+    const found = collectProblems(editing);
+    setProblems(found);
+    if (found.length) { setError(''); return; }
     const { selectedFacilityCodes, ...program } = editing;
     setPrograms(list => list.some(item => item.id === program.id)
       ? list.map(item => item.id === program.id ? program : item) : [...list, program]);
     setEditing(null);
     setError('');
+    setProblems([]);
   }
 
+  const missing = [
+    ...(locations.length ? [] : ['Add at least one facility']),
+    ...(locations.length && locations.some(location => !location.yards.length) ? ['Choose at least one yard at each facility'] : []),
+    ...(programs.length ? [] : ['Add at least one program']),
+    ...(programs.some(program => !isReady(program)) ? ['Finish each program’s status and yards'] : [])
+  ];
+  const canSubmit = !prefilling && !submitting && !editing && !missing.length;
+
   return <main className="tpw-workspace"><div className="tpw-workspace-content">
-    <h1 className="tpw-page-title">Log data</h1>
-    <div className="quarter-preview"><div className="demo-form" ref={formRoot}>
-      {error && !editing && <p role="alert">{error}</p>}
-      {step === 'choice' && <section className="question-step prefill-loading">
-        <h2 className="form-title">How would you like to start?</h2>
-        {prefillFailed && <p role="alert">Could not load previous entries. Try again or start blank.</p>}
-        <button type="button" className="continue-button" onClick={() => {
-          setUsePrevious(true);
-          if (prefillFailed) {
-            setPrefillFailed(false);
-            setBusy(true);
-            setPrefillAttempt(attempt => attempt + 1);
-          }
-        }}>{prefillFailed ? 'Retry loading' : 'Use previous entries'}</button>
-        <span>or</span>
-        <a href={`?account=${account}&blank=1`}>Start blank</a>
-      </section>}
-      {step === 'organization' && <form id="organization-step" className="question-step" onSubmit={event => {
-        event.preventDefault();
-        if (organization.trim()) goToStep('quarter');
-      }}>
-        <p className="step-label">Step 1 · Organization</p>
-        <h2 className="form-title">What is your organization’s name?</h2>
-        <div className="form-field">
-          <label htmlFor="organization">Organization</label>
-          <input id="organization" autoComplete="organization" maxLength={120} placeholder="Start typing to pick a TPW member"
-            aria-describedby="organization-help" required readOnly={account !== 'tpw'} value={organization}
-            onChange={event => setOrganization(event.target.value)} />
-          <p className="yard-hint" id="organization-help">Pick your organization from the list so your numbers are filed under one name. If it isn’t listed, type it in full.</p>
-        </div>
-        <button className="continue-button" type="submit">Continue <LuArrowRight aria-hidden="true" /></button>
-      </form>}
-      {step === 'quarter' && period && !busy && !prefillFailed && <form className="question-step entering" onSubmit={event => { event.preventDefault(); goToStep('facilities'); }}>
-        {usePrevious && <div className="prefill-note">
-          This form is prefilled with your previous entries. <a href={`?account=${account}&blank=1`}>Start blank instead</a>.
-        </div>}
-        <p className="step-label">Reporting period</p><h2 className="form-title">Which quarter are you reporting for?</h2>
-        <p className="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
-        <fieldset className="quarter-options"><legend className="sr-only">Reporting quarter</legend>
-          {['Jan – Mar', 'Apr – Jun', 'Jul – Sep', 'Oct – Dec'].map((months, index) => <label key={months}>
-            <input type="radio" name="quarter" checked={period.quarter === index + 1} onChange={() => setPeriod({ ...period, quarter: index + 1 })} />
-            <span><strong>Q{index + 1}</strong><small>{months}</small></span>
-          </label>)}
-        </fieldset>
-        <div className="form-field"><label htmlFor="reporting-year">Year</label><input id="reporting-year" type="number" required min="2000" max="2200" value={period.year} onChange={event => setPeriod({ ...period, year: event.target.value })} /></div>
-        <div className="next-actions"><button className="continue-button" disabled={busy || prefillFailed}>Continue <LuArrowRight aria-hidden="true" /></button></div>
-      </form>}
-      {step === 'facilities' && <section className="question-step" id="facilities-step">
-
-        <div className="organization-summary"><span>Organization: <strong>{organization}</strong></span></div>
-        <div className="organization-summary"><span>Reporting period: <strong>Q{period?.quarter} {period?.year}</strong></span>
-        </div>
-        <div className="form-step-header">
-          <p className="step-label">Step 2 · Facilities</p>
-          <button type="button" className="continue-button" onClick={() => goToStep('quarter')}><LuArrowLeft aria-hidden="true" /> Back</button>
-        </div>
-        <h2 className="form-title">Which facilities do you operate in?</h2>
-        <p className="form-hint">Select each facility where you operate, then check all the yards you work in at that facility.</p>
-        <div id="facility-cards" className="facility-cards">
-        {locations.map((location, index) => <div className="facility-card active" style={facilityStyle(index)} key={location.code}><div className="prison-card-header"><strong className="choose">{location.name}</strong>
-          <button type="button" className="remove" aria-label={`Remove ${location.name}`} onClick={() => setLocations(locations.filter(item => item.code !== location.code))}><LuX aria-hidden="true" /></button></div>
-          <fieldset className="yard-choices"><legend>Yards you operate in</legend><p className="yard-hint">Select all that apply.</p>{[...new Set(['A Yard', 'B Yard', 'C Yard', 'D Yard', 'E Yard', 'F Yard', 'North', 'South', 'Reception', 'Ad Seg', ...location.yards])].map(yard =>
-            <label key={yard}><input type="checkbox" checked={location.yards.includes(yard)}
-              onChange={event => setLocations(locations.map(item => item === location ? { ...item, yards: event.target.checked ? [...item.yards, yard] : item.yards.filter(value => value !== yard) } : item))} />{yard}</label>)}
-          </fieldset>
-          <form className="yard-add" onSubmit={event => {
-            event.preventDefault();
-            const yard = new FormData(event.currentTarget).get('yard').trim();
-            if (yard && !location.yards.includes(yard)) setLocations(locations.map(item => item === location ? { ...item, yards: [...item.yards, yard] } : item));
-            event.currentTarget.reset();
-          }}><label htmlFor={`yard-${location.code}`}>Yard not listed?</label><div className="yard-add-row"><input id={`yard-${location.code}`} name="yard" required maxLength={100} /><button aria-label="Add yard">Add</button></div></form>
-        </div>)}
-        </div>
-        <label className="form-field"><span className="field-label">Add a facility</span> <select value="" onChange={event => {
-          const code = event.target.value;
-          const facility = facilities.find(item => item.code === code);
-          if (facility) setLocations([...locations, { ...facility, yards: [] }]);
-        }}><option value="">Select a facility</option>{facilities.filter(item => !locations.some(location => location.code === item.code)).map(item =>
-          <option value={item.code} key={item.code}>{item.name}</option>)}</select></label>
-        <div className="next-actions">
-          <button className="continue-button" disabled={!locations.length || locations.some(item => !item.yards.length)} onClick={() => {
-            setPrograms(programs.map(program => ({ ...program, sites: program.sites.filter(site => locations.some(item => item.code === site.facilityCode && item.yards.includes(site.yard))) })));
-            if (!programs.length && !editing) setEditing(newProgram());
-            goToStep('review');
-          }}>Continue to programs <LuArrowRight aria-hidden="true" /></button>
-        </div>
-      </section>}
-      {step === 'review' && <section id="programs-step" className="question-step">
-        <aside className="program-sidebar" aria-label="Facilities and yards">
-          <div className="organization-summary"><span>Your facilities &amp; yards</span>{!pending && <button onClick={() => goToStep('facilities')}>Edit facilities</button>}</div>
-          <ul id="prison-summary" className="prison-summary">{locations.map((location, index) => <li style={facilityStyle(index)} className="facility-card active" key={location.code}><details open={locations.length < 3}><summary className="intake-disclosure"><LuChevronRight aria-hidden="true" /><strong>{location.name}</strong> <span className="program-count">{programs.filter(program => program.sites.some(site => site.facilityCode === location.code)).length} programs</span></summary>
-            {location.yards.map(yard => <div className="summary-yard" key={yard}><h4>{yard}</h4>{programs.filter(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)).map(program => <p key={program.id}>{program.name}</p>)}{!programs.some(program => program.sites.some(site => site.facilityCode === location.code && site.yard === yard)) && <p className="yard-hint">No programs added yet</p>}</div>)}</details>
-          </li>)}</ul>
-        </aside>
-        <div className="program-editor">
-        <div className="form-step-header">
-          <p className="step-label">Step 3 · Programs</p>
-          {!pending && <button type="button" className="continue-button" onClick={() => goToStep('facilities')}><LuArrowLeft aria-hidden="true" /> Back</button>}
-        </div>
-        <h2 className="form-title">What programs do you run?</h2>
-        <p className="form-hint">Add each program, select a facility, then choose the yards where that program runs.</p>
-        {editing && <ol className="added-programs"><li className="is-open"><form className="program-card question-step" onSubmit={saveProgram} onChange={() => setError('')} onInvalid={event => {
-          if (!event.target.form.querySelector('input:invalid, select:invalid, textarea:invalid')?.isSameNode(event.target)) return;
-          const label = event.target.labels?.[0]?.querySelector('.field-label, .yard-count-label')?.textContent;
-          setError(label ? `${label}: ${event.target.validationMessage}` : event.target.validationMessage);
-        }}><div className="organization-summary"><h3 className="form-title">{editing.name || 'New program'}</h3>
-          <button className="program-remove" type="button" onClick={cancelProgramEdit}>{programs.some(program => program.id === editing.id) ? 'Cancel editing' : 'Remove'}</button></div>
-          <label className="form-field"><span className="field-label">Program Name</span> <input required maxLength={120} placeholder="Enter your program name" value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} /></label>
-          <fieldset className="prison-options"><legend>Which facilities does this program apply to?</legend>
-          <div className="program-assignments">{locations.map((location, index) => {
-            const selectedCodes = editing.selectedFacilityCodes ?? [...new Set(editing.sites.map(site => site.facilityCode))];
-            const selected = selectedCodes.includes(location.code);
-            const siteFor = yard => ({ facilityCode: location.code, yard, participants: '', completed: '' });
-            return <div className="assignment-row" style={facilityStyle(index)} key={location.code}>
-              <label><input type="checkbox" checked={selected} onChange={() => setEditing({
-                ...editing,
-                selectedFacilityCodes: selected ? selectedCodes.filter(code => code !== location.code) : [...selectedCodes, location.code],
-                sites: selected ? editing.sites.filter(site => site.facilityCode !== location.code) : editing.sites
-              })} />{location.name}</label>
-              {selected && <fieldset className="program-yards"><legend>Yards for this program</legend>
-                <p className="yard-hint">Choose the yards where this program runs.</p>
-                {location.yards.map(yard => {
-                  const site = editing.sites.find(item => item.facilityCode === location.code && item.yard === yard);
-                  return <label key={yard}><input type="checkbox" checked={!!site} onChange={() => setEditing({
-                    ...editing, sites: site ? editing.sites.filter(item => item !== site) : [...editing.sites, siteFor(yard)]
-                  })} />{yard}</label>;
-                })}
-              </fieldset>}
-            </div>;
-          })}</div>
-          </fieldset>
-          <div className="count-row"><label className="form-field">
-            <span className="field-label">Course Hours <span className="label-note">(per participant)</span></span>
-            <NumberStepper value={editing.courseHours} onChange={courseHours => setEditing({ ...editing, courseHours })} fractional />
-          </label></div>
-          <label className="form-field"><span className="field-label">Schedule Status</span> <select required value={editing.status} onChange={event => setEditing({ ...editing, status: event.target.value })}>
-            <option value="" disabled>Select a status</option>
-            {['Planned', 'In Progress', 'Completed'].map(status => <option key={status}>{status}</option>)}</select></label>
-          <div className="date-row">{[[ 'startDate', 'Start Date'], ['endDate', 'End Date']].map(([key, label]) =>
-            <label className="form-field" key={key}><span className="field-label">{label}</span> <input type={key === 'courseHours' ? 'number' : 'date'} min={key === 'courseHours' ? 0 : key === 'endDate' ? editing.startDate : undefined} step="any"
-              required={key === 'startDate' ? ['In Progress', 'Completed'].includes(editing.status) : key === 'endDate' && editing.status === 'Completed'}
-              value={editing[key]} onChange={event => setEditing({ ...editing, [key]: event.target.value })} /></label>)}</div>
-
-          <fieldset className="yard-numbers"><legend>Participants at each yard</legend>
-            <div className="yard-number-rows">{editing.sites.map(site =>
-              <div className={`yard-number-row${Number(site.completed) > Number(site.participants || 0) ? ' yard-number-invalid' : ''}`} style={facilityStyle(locations.findIndex(location => location.code === site.facilityCode))} key={JSON.stringify([site.facilityCode, site.yard])}>
-                <strong className="yard-number-place">{site.facilityCode} · {site.yard}</strong>
-                {[['participants', 'Participants enrolled'], ['completed', 'Completed']].map(([key, label]) =>
-                  <label className="yard-count" key={key}><span className="yard-count-label">{label}</span>
-                    <NumberStepper value={site[key]} onChange={value => setEditing({
-                      ...editing, sites: editing.sites.map(item => item === site ? { ...item, [key]: value } : item)
-                    })} />
-                  </label>)}
-                {Number(site.completed) > Number(site.participants || 0) &&
-                  <>
-                    <LuCircleAlert className="yard-warning-icon" aria-hidden="true" />
-                    <p className="yard-count-error">Completed cannot exceed enrollment at this yard.</p>
-                  </>}
-              </div>)}</div>
-            {!editing.sites.length && <p className="yard-hint">Choose a facility and yard above first.</p>}
-          </fieldset>
-          {error && <p className="program-error" role="alert">{error}</p>}
-          <div className="next-actions">
-            <button type="submit" className="continue-button">Done with program</button>
-            {programs.some(program => program.id === editing.id) &&
-              <button className="program-remove" type="button" onClick={cancelProgramEdit}>Cancel editing</button>}
-          </div>
-        </form></li></ol>}
-        <section id="program-next" className="question-step" aria-labelledby="program-next-heading" hidden={!!editing}>
-          <h3 id="program-next-heading" className="form-title">Program added. What’s next?</h3>
-          <ol className="added-programs" role="list" aria-label="Programs this quarter">
-            {programs.map(program => {
-              const { participants, participantsCompleted } = counts(program.sites);
-              return <li key={program.id}>
-                <div className="program-row">
-                  <div className="program-toggle" style={{ cursor: 'inherit' }}>
-                    <span className="added-name">{program.name}</span>
-                    <span className={`program-state${program.status && program.sites.length ? ' is-ready' : ''}`}>
-                      {!program.status ? 'Needs review' : program.sites.length ? <><LuCheck aria-hidden="true" />{`Ready · ${participants} enrolled · ${participantsCompleted} completed`}</> : 'Choose facilities & yards'}
-                    </span>
-                  </div>
-                  {!pending &&
-                    <button type="button" className={`continue-button program-review${program.status ? ' program-edit' : ''}`} aria-label={`${program.status ? 'Edit' : 'Review'} ${program.name}`} onClick={() => setEditing(program)}>{program.status ? 'Edit' : 'Review'}</button>}
-                  {!pending && <button type="button" className="continue-button program-delete" aria-label={`Remove ${program.name}`} onClick={() => {
-                    setPrograms(programs.filter(item => item.id !== program.id));
-                    if (programs.length === 1) setEditing(newProgram());
-                  }}>Remove</button>}
-                </div>
-              </li>;
-            })}
-          </ol>
-          <div className="next-actions">
-            {!pending && <button type="button" id="another-program" className="continue-button" onClick={() => setEditing(newProgram())}><LuPlus aria-hidden="true" /> Add another program</button>}
-            <button type="button" id="finish-form" className="continue-button" disabled={busy || !!editing || !programs.length || programs.some(program => !program.status || !program.sites.length)} onClick={submit}>
-              {busy ? <><span className="submit-spinner" aria-hidden="true" />Submitting…</> : pending ? 'Retry submission' : 'Finish and submit'}
-            </button>
-            <span className="sr-only" role="status">{busy ? 'Submitting your report' : ''}</span>
-          </div>
-        </section></div>
-      </section>}
-      {step === 'done' && <section id="submission-result" className="question-step" aria-labelledby="submission-heading">
+    <h1 className="tpw-page-title" id="report-top">Log data</h1>
+    <div className="quarter-preview">
+      <div className="demo-form">
+      {done ? <section id="submission-result" aria-labelledby="submission-heading">
         <div className="success-check" aria-hidden="true"><LuCheck /></div>
         <h2 className="form-title" id="submission-heading">You’re all set!</h2>
         <p className="submission-context">{organization} · Q{period.quarter} {period.year}</p>
@@ -492,16 +321,218 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
             })}
           </div>
         </details>
-      </section>}
-    </div></div>
+      </section> : <>
+        <nav className="report-jump" aria-label="Report sections">
+          <a href="#reporting-period">Reporting period</a>
+          <a href="#facilities">Facilities and yards</a>
+          <a href="#programs">Programs</a>
+          <a href="#submit">Submit</a>
+        </nav>
+        <div className="report-summary">
+          <div className="report-summary-item">
+            <span className="report-summary-label">Organization</span>
+            {account === 'tpw'
+              ? <input id="organization" autoComplete="organization" maxLength={120} aria-label="Organization"
+                placeholder="Organization name" value={organization} onChange={event => setOrganization(event.target.value)} />
+              : <strong id="report-organization">{organization || 'Not set'}</strong>}
+          </div>
+          <div className="report-summary-item">
+            <span className="report-summary-label">Reporting period</span>
+            <strong id="report-period">{period ? `Q${period.quarter} ${period.year}` : '—'}</strong>
+          </div>
+        </div>
+        {!pending && (prefilling || prefilledFrom || prefillFailed) && <div className="report-banner" role={prefillFailed ? 'alert' : 'status'}>
+          {prefilling && <span>Loading your last report…</span>}
+          {!prefilling && prefilledFrom && <>
+            <span>Filled in from your last report (Q{prefilledFrom.quarter} {prefilledFrom.year}).</span>
+            <a href={`?account=${account}&blank=1`}>Start blank</a>
+          </>}
+          {!prefilling && prefillFailed && <>
+            <span>Could not load previous entries. Try again or start blank.</span>
+            <button type="button" onClick={retryPrefill}>Retry loading</button>
+            <a href={`?account=${account}&blank=1`}>Start blank</a>
+          </>}
+        </div>}
+
+        <section id="reporting-period" className="report-section" aria-labelledby="reporting-period-heading">
+          <h2 id="reporting-period-heading" className="report-heading">Reporting period</h2>
+          {period ? <>
+            <p className="form-hint">We’ve selected the current quarter. Change it to report for a different period.</p>
+            <fieldset className="quarter-options"><legend className="sr-only">Reporting quarter</legend>
+              {['Jan – Mar', 'Apr – Jun', 'Jul – Sep', 'Oct – Dec'].map((months, index) => <label key={months}>
+                <input type="radio" name="quarter" checked={period.quarter === index + 1} onChange={() => setPeriod({ ...period, quarter: index + 1 })} />
+                <span><strong>Q{index + 1}</strong><small>{months}</small></span>
+              </label>)}
+            </fieldset>
+            <div className="form-field"><label htmlFor="reporting-year">Year</label><input id="reporting-year" type="number" required min="2000" max="2200" value={period.year} onChange={event => setPeriod({ ...period, year: event.target.value })} /></div>
+          </> : <p className="form-hint">Loading the reporting period…</p>}
+        </section>
+
+        <section id="facilities" className="report-section" aria-labelledby="facilities-heading">
+          <h2 id="facilities-heading" className="report-heading">Facilities and yards</h2>
+          <p className="form-hint">Select each facility where you operate, then check all the yards you work in at that facility.</p>
+          <div id="facility-rows" className="facility-rows">
+            {locations.map(location => <div className="facility-row" key={location.code}>
+              <div className="facility-row-header">
+                <strong>{location.name}</strong>
+                <button type="button" className="facility-remove" aria-label={`Remove ${location.name}`} onClick={() => removeLocation(location)}><LuX aria-hidden="true" /></button>
+              </div>
+              <fieldset className="yard-choices"><legend>Yards you operate in</legend><p className="yard-hint">Select all that apply.</p>
+                {[...new Set(['A Yard', 'B Yard', 'C Yard', 'D Yard', 'E Yard', 'F Yard', 'North', 'South', 'Reception', 'Ad Seg', ...location.yards])].map(yard =>
+                  <label key={yard}><input type="checkbox" checked={location.yards.includes(yard)}
+                    onChange={event => toggleYard(location, yard, event.target.checked)} />{yard}</label>)}
+              </fieldset>
+              <form className="yard-add" onSubmit={event => {
+                event.preventDefault();
+                const yard = new FormData(event.currentTarget).get('yard').trim();
+                if (yard && !location.yards.includes(yard)) setLocations(list => list.map(item => item === location ? { ...item, yards: [...item.yards, yard] } : item));
+                event.currentTarget.reset();
+              }}><label htmlFor={`yard-${location.code}`}>Yard not listed?</label><div className="yard-add-row"><input id={`yard-${location.code}`} name="yard" required maxLength={100} /><button aria-label="Add yard">Add</button></div></form>
+            </div>)}
+          </div>
+          {!locations.length && <p className="form-hint">No facilities yet. Add one below.</p>}
+          <label className="form-field"><span className="field-label">Add a facility</span> <select value="" onChange={event => {
+            const code = event.target.value;
+            const facility = facilities.find(item => item.code === code);
+            if (facility) setLocations([...locations, { ...facility, yards: [] }]);
+          }}><option value="">Select a facility</option>{facilities.filter(item => !locations.some(location => location.code === item.code)).map(item =>
+            <option value={item.code} key={item.code}>{item.name}</option>)}</select></label>
+        </section>
+
+        <section id="programs" className="report-section" aria-labelledby="programs-heading">
+          <h2 id="programs-heading" className="report-heading">Programs</h2>
+          <p className="form-hint">Add each program, then choose the yards where it runs and how many people attended.</p>
+          {!!programs.length && <ol className="added-programs" role="list" aria-label="Programs this quarter">
+            {programs.map(program => {
+              const { participants, participantsCompleted } = counts(program.sites);
+              return <li key={program.id}>
+                <div className="program-row">
+                  <div className="program-toggle" style={{ cursor: 'inherit' }}>
+                    <span className="added-name">{program.name}</span>
+                    <span className={`program-state${isReady(program) ? ' is-ready' : ''}`}>
+                      {!program.status ? 'Needs review' : program.sites.length ? <><LuCheck aria-hidden="true" />{`Ready · ${participants} enrolled · ${participantsCompleted} completed`}</> : 'Choose facilities & yards'}
+                    </span>
+                  </div>
+                  {!pending &&
+                    <button type="button" className={`continue-button program-review${program.status ? ' program-edit' : ''}`} aria-label={`${program.status ? 'Edit' : 'Review'} ${program.name}`} onClick={() => { setProblems([]); setEditing(program); }}>{program.status ? 'Edit' : 'Review'}</button>}
+                  {!pending && <button type="button" disabled={!!editing && editing.id !== program.id} className="continue-button program-delete" aria-label={`Remove ${program.name}`} onClick={() => {
+                    setPrograms(programs.filter(item => item.id !== program.id));
+                    if (programs.length === 1) setEditing(newProgram());
+                  }}>Remove</button>}
+                </div>
+              </li>;
+            })}
+          </ol>}
+          {editing ? <form className="program-card" onSubmit={saveProgram} noValidate onChange={() => { setError(''); setProblems([]); }}>
+            <div className="organization-summary"><h3 className="form-title">{editing.name || 'New program'}</h3>
+              <button className="program-remove" type="button" onClick={cancelProgramEdit}>{programs.some(program => program.id === editing.id) ? 'Cancel editing' : 'Remove'}</button></div>
+            {problems.length > 0 && <div className="error-summary" id="program-problems" role="alert" tabIndex={-1}>
+              <h4><LuCircleAlert aria-hidden="true" /> Check {problems.length === 1 ? 'this answer' : `these ${problems.length} answers`}</h4>
+              <ol>{problems.map(problem => <li key={problem.id}>
+                <button type="button" onClick={() => document.getElementById(problem.id)?.focus()}>{problem.text}</button>
+              </li>)}</ol>
+            </div>}
+
+            <fieldset className="editor-section">
+              <legend>1. The program</legend>
+              <label className="form-field"><span className="field-label">Program name</span>
+                <input id="program-name" maxLength={120} placeholder="Enter your program name" aria-required="true"
+                  value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} /></label>
+              <label className="form-field"><span className="field-label">Schedule status</span>
+                <select id="program-status" aria-required="true" value={editing.status} onChange={event => setEditing({ ...editing, status: event.target.value })}>
+                  <option value="" disabled>Select a status</option>
+                  {['Planned', 'In Progress', 'Completed'].map(status => <option key={status}>{status}</option>)}</select></label>
+              <div className="date-row">{[[ 'startDate', 'Start date', 'program-start'], ['endDate', 'End date', 'program-end']].map(([key, label, id]) =>
+                <label className="form-field" key={key}><span className="field-label">{label}</span>
+                  <input id={id} type="date" min={key === 'endDate' ? editing.startDate : undefined}
+                    value={editing[key]} onChange={event => setEditing({ ...editing, [key]: event.target.value })} /></label>)}</div>
+              <label className="form-field"><span className="field-label">Course hours <span className="label-note">(per participant)</span></span>
+                <NumberStepper id="program-hours" value={editing.courseHours} onChange={courseHours => setEditing({ ...editing, courseHours })} fractional /></label>
+            </fieldset>
+
+            <fieldset className="editor-section" id="program-facilities" tabIndex={-1}>
+              <legend>2. Where it ran</legend>
+              <p className="form-hint">Tick each facility, then tick the yards where this program runs.</p>
+              <div className="program-assignments">{locations.map(location => {
+                const selectedCodes = editing.selectedFacilityCodes ?? [...new Set(editing.sites.map(site => site.facilityCode))];
+                const selected = selectedCodes.includes(location.code);
+                const siteFor = yard => ({ facilityCode: location.code, yard, participants: '', completed: '' });
+                return <div className="assignment-row" key={location.code}>
+                  <label><input type="checkbox" checked={selected} onChange={() => setEditing({
+                    ...editing,
+                    selectedFacilityCodes: selected ? selectedCodes.filter(code => code !== location.code) : [...selectedCodes, location.code],
+                    sites: selected ? editing.sites.filter(site => site.facilityCode !== location.code) : editing.sites
+                  })} />{location.name}</label>
+                  {selected && <fieldset className="program-yards"><legend>Yards for this program</legend>
+                    <p className="yard-hint">Choose the yards where this program runs.</p>
+                    {location.yards.map(yard => {
+                      const site = editing.sites.find(item => item.facilityCode === location.code && item.yard === yard);
+                      return <label key={yard}><input type="checkbox" checked={!!site} onChange={() => setEditing({
+                        ...editing, sites: site ? editing.sites.filter(item => item !== site) : [...editing.sites, siteFor(yard)]
+                      })} />{yard}</label>;
+                    })}
+                  </fieldset>}
+                </div>;
+              })}</div>
+              {!locations.length && <p className="yard-hint">Add a facility in the section above first.</p>}
+            </fieldset>
+
+            <fieldset className="editor-section">
+              <legend>3. How many people</legend>
+              <p className="form-hint">One row per yard. Type the numbers; use 0 if nobody attended.</p>
+              <div className="yard-number-rows">{editing.sites.map(site =>
+                <div className={`yard-number-row${Number(site.completed) > Number(site.participants || 0) && site.participants !== '' ? ' yard-number-invalid' : ''}`} key={JSON.stringify([site.facilityCode, site.yard])}>
+                  <strong className="yard-number-place">{site.facilityCode} · {site.yard}</strong>
+                  {[['participants', 'Participants enrolled'], ['completed', 'Completed']].map(([key, label]) =>
+                    <label className="yard-count" key={key}><span className="yard-count-label">{label}</span>
+                      <NumberStepper id={'count-' + site.facilityCode + '-' + site.yard + '-' + key} value={site[key]} onChange={value => setEditing({
+                        ...editing, sites: editing.sites.map(item => item === site ? { ...item, [key]: value } : item)
+                      })} />
+                    </label>)}
+                  {Number(site.completed) > Number(site.participants || 0) && site.participants !== '' &&
+                    <>
+                      <LuCircleAlert className="yard-warning-icon" aria-hidden="true" />
+                      <p className="yard-count-error">Completed cannot exceed enrollment at this yard.</p>
+                    </>}
+                </div>)}</div>
+              {!editing.sites.length && <p className="yard-hint">Tick a facility and yard in section 2 first.</p>}
+            </fieldset>
+            <div className="next-actions">
+              <button type="submit" className="continue-button">Done with program</button>
+              {programs.some(program => program.id === editing.id) &&
+                <button className="program-remove" type="button" onClick={cancelProgramEdit}>Cancel editing</button>}
+            </div>
+          </form> : !pending && <div className="next-actions">
+            <button type="button" id="another-program" className="continue-button secondary" onClick={() => { setProblems([]); setEditing(newProgram()); }}><LuPlus aria-hidden="true" /> Add another program</button>
+          </div>}
+        </section>
+
+        <section id="submit" className="report-section" aria-labelledby="submit-heading">
+          <h2 id="submit-heading" className="report-heading">Submit</h2>
+          <div className="submit-totals">
+            <span><strong>{programs.length}</strong> {programs.length === 1 ? 'program' : 'programs'}</span>
+            <span><strong>{counts(programs.flatMap(program => program.sites)).participants}</strong> enrolled</span>
+            <span><strong>{counts(programs.flatMap(program => program.sites)).participantsCompleted}</strong> completed</span>
+          </div>
+          {!!missing.length && <ul className="submit-requirements">{missing.map(item => <li key={item}>{item}</li>)}</ul>}
+          {error && <p className="program-error" role="alert">{error}</p>}
+          <div className="next-actions">
+            <button type="button" id="finish-form" className="continue-button" disabled={!canSubmit} onClick={submit}>
+              {submitting ? <><span className="submit-spinner" aria-hidden="true" />Submitting…</> : pending ? 'Retry submission' : 'Finish and submit'}
+            </button>
+            <span className="sr-only" role="status">{submitting ? 'Submitting your report' : ''}</span>
+          </div>
+        </section>
+      </>}
+      </div>
+    </div>
   </div></main>;
 }
 
-function NumberStepper({ value, onChange, fractional = false }) {
-  return <span className="stepper">
-    <button type="button" aria-label="Decrease" onClick={() => onChange(Math.max(0, Number(value) - 1))}><LuMinus aria-hidden="true" /></button>
-    <input type="number" min="0" max="10000000" step={fractional ? 'any' : '1'} placeholder="0" value={value}
-      onChange={event => onChange(event.target.value)} />
-    <button type="button" aria-label="Increase" onClick={() => onChange(Number(value) + 1)}><LuPlus aria-hidden="true" /></button>
-  </span>;
+// One plain number box instead of a −/+ spinner: typing is what people already do, the box is
+// large enough to hit, and its size does not change between courses and participant counts.
+function NumberStepper({ value, onChange, fractional = false, id }) {
+  return <input id={id} className="count-input" type="number" inputMode={fractional ? 'decimal' : 'numeric'}
+    min="0" max="10000000" step={fractional ? 'any' : '1'} placeholder="0" value={value}
+    onChange={event => onChange(event.target.value)} />;
 }

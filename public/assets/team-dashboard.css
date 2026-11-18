@@ -465,7 +465,7 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 
 }
 
-@scope ([data-dashboard-view="submission-data"]) {
+@scope (:is([data-dashboard-view="submission-data"], [data-dashboard-view="submissions"])) {
 .program-page { padding-top: 40px; padding-bottom: 70px; max-width: 1440px; }
 .table-search { display: grid; gap: 8px; max-width: 440px; font-weight: 700; font-size: 15px; margin: 24px 0; }
 .table-search input { font: inherit; border: 1px solid #7e8a7a; border-radius: 8px; min-height: 44px; padding: 10px 14px; }
@@ -570,3 +570,38 @@ a.program-stat:hover { background: #edf5e8; border-color: var(--sage); }
 .history-filters { margin: 0 0 24px; }
 .history-filters > summary { font-size: 16px; font-weight: 700; cursor: pointer; }
 .history-filters[open] > summary { margin-bottom: 8px; }
+
+/* Inline submission history under the Submissions tab. */
+.submission-history-heading { font-family: var(--text); font-size: 24px; font-weight: 700; margin: 0 0 18px; }
+
+/* Member Portal content moved from TPW's Squarespace page. */
+.portal-page { max-width: 78ch; padding-bottom: 64px; }
+.portal-intro { margin: 0 0 28px; font-size: 20px; line-height: 1.5; }
+.portal-jump { display: flex; flex-wrap: wrap; gap: 10px 22px; margin: 0 0 40px; font-size: 16px; }
+.portal-jump a { display: inline-flex; align-items: center; min-height: 44px; color: #214c30; font-weight: 700; }
+.portal-page section + section { margin-top: 48px; }
+.portal-page h2 { margin: 0 0 8px; font-size: 26px; }
+.portal-entry { margin: 24px 0 0; padding: 20px 22px; border: 1px solid #dce4d8; border-radius: 12px; background: #fff; }
+.portal-entry h3 { margin: 0 0 8px; font-size: 20px; }
+.portal-entry p { margin: 0 0 10px; font-size: 17px; line-height: 1.55; color: #2f2f2f; }
+.portal-entry p:last-child { margin-bottom: 0; }
+.portal-note { color: #4c4c4c !important; font-size: 15px !important; }
+.portal-list { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 18px; }
+.portal-list li { padding-bottom: 16px; border-bottom: 1px solid #e6e6e6; }
+.portal-list h3 { margin: 0 0 4px; font-size: 18px; }
+.portal-list p { margin: 0; font-size: 16px; color: #3e3e3e; }
+.portal-announcements { gap: 0; }
+.portal-announcements li { padding: 0; border-bottom: 0; }
+.portal-announcements a { display: flex; align-items: center; min-height: 48px; font-size: 17px; }
+.portal-page a { text-underline-offset: 3px; }
+.program-stat strong { font-size: 28px; }
+.program-stat small { color: #4c4c4c; font-size: 14px; line-height: 1.4; }
+.chart-pills button { display: inline-flex; align-items: baseline; gap: 8px; }
+.chart-pills .pill-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+.overview-scope { margin: 6px 0 0; color: #3e3e3e; font-size: 16px; max-width: 70ch; }
+.portal-account { margin: 0 0 40px; padding: 20px 22px; border: 1px solid #dce4d8; border-radius: 12px; background: #f6f9f5; }
+.portal-account h2 { margin: 0 0 6px; font-size: 22px; }
+.portal-account p { margin: 0 0 12px; font-size: 17px; }
+.portal-account-actions { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; }
+.portal-account-actions a, .portal-account-actions button { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font: inherit; font-size: 17px; color: #214c30; }
+.portal-account-actions button { border: 1px solid #7e8a7a; border-radius: 999px; padding: 0 20px; background: #fff; cursor: pointer; }
