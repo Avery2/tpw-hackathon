@@ -1,5 +1,5 @@
-import { getAuth } from '../../../server/auth.js';
-import { developmentAccounts, developmentLoginEnabled } from '../../../server/development-login.js';
+import { getAuth } from '../../../lib/server/auth.js';
+import { developmentAccounts, developmentLoginEnabled } from '../../../lib/server/development-login.js';
 
 export async function POST(request) {
   if (!developmentLoginEnabled()) return new Response(null, { status: 404 });
