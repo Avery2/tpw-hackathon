@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LuExternalLink, LuX } from 'react-icons/lu';
 import { authClient } from '../../../lib/server/auth-client.js';
 
-export function AccountDrawer({ account, dialog, organizations }) {
+export function AccountDrawer({ account, dialog, organizations, annualReport }) {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -50,19 +50,32 @@ export function AccountDrawer({ account, dialog, organizations }) {
     }
   }
 
+  const portalLinks = [
+    ['Log data', `/log-data/?account=${account}`],
+    ['Overview', `/team-dashboard/#${account}`],
+    ['Programs', `/team-dashboard/programs/#${account}`],
+    ['Submissions', `/team-dashboard/submissions/#${account}`],
+    ['Annual report', annualReport]
+  ];
   return <dialog ref={dialog} className="tpw-account-drawer" aria-labelledby="tpw-account-title"
     onClose={() => document.documentElement.classList.remove('tpw-account-open')}
     onClick={event => {
       const box = event.currentTarget.getBoundingClientRect();
       if (event.target === event.currentTarget && (event.clientX < box.left || event.clientX > box.right || event.clientY < box.top || event.clientY > box.bottom)) event.currentTarget.close();
     }}>
-    <header className="tpw-account-header"><h2 id="tpw-account-title">Account</h2>
+    <header className="tpw-account-header"><h2 id="tpw-account-title">Member Portal</h2>
       <button autoFocus className="tpw-account-close" onClick={() => dialog.current.close()}><LuX aria-hidden="true" size={16} style={{ verticalAlign: "middle", marginInlineEnd: 4 }} />Close</button>
     </header>
     <div className="tpw-account-body">
-      <section className="tpw-account-greeting"><h3>{user?.name ? `Hi, ${user.name}` : 'Hi' }</h3>
+      <section className="tpw-account-greeting"><h3>{user?.name ? `Hi, ${user.name}` : organizations.find(org => org.id === account)?.name || 'Welcome'}</h3>
         <button className="tpw-account-signout" disabled={busy} onClick={signOut}>Sign out</button>
       </section>
+      <nav className="tpw-account-row" aria-label="Member portal">
+        <h3>Your tools</h3>
+        <ul className="tpw-account-organizations">{portalLinks.map(([label, href]) => <li key={label}>
+          <a href={href} onClick={() => dialog.current.close()}>{label}<span aria-hidden="true">→</span></a>
+        </li>)}</ul>
+      </nav>
       {organizations.length > 0 && <section className="tpw-account-row">
         <h3>Your organizations</h3>
         <ul className="tpw-account-organizations">{organizations.map(org => <li key={org.id}>
@@ -73,6 +86,9 @@ export function AccountDrawer({ account, dialog, organizations }) {
         </li>)}</ul>
       </section>}
       <section className="tpw-account-row"><h3>Profile</h3><p>{user?.email || 'Member'}</p></section>
+      <section className="tpw-account-row"><h3>Need help?</h3>
+        <p>Questions about reporting, grants or the portal? <a href="mailto:membership@thetpw.org">membership@thetpw.org</a> · <a href="tel:+18332438135">833-243-8135</a>, weekdays 9am–5pm.</p>
+      </section>
       <p className="tpw-account-preview" role="alert">{error}</p>
     </div>
   </dialog>;

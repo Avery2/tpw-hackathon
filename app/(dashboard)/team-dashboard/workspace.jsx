@@ -114,9 +114,9 @@ export default function Workspace({ children }) {
       </a>
       <nav aria-label="Main navigation">
         {websiteLinks.map(([label, href]) => <a key={href} href={href}>{label}</a>)}
-        <Link href={account ? `/team-dashboard/#${account}` : '/sign-in/'} aria-current="location">Member tools</Link>
-        {account ? <a className="login" href={`/log-data/?account=${account}`} aria-haspopup="dialog" onClick={openAccount}>Account</a>
-          : <a className="login" href="/sign-in/">Members Login</a>}
+        {account
+          ? <button type="button" className="login" aria-haspopup="dialog" aria-current="location" onClick={openAccount}>Member Portal</button>
+          : <a className="login" href="/sign-in/">Member Portal</a>}
       </nav>
     </header>
     {account && <nav className="tpw-member-nav noprint" aria-label="Member navigation">
@@ -142,7 +142,7 @@ export default function Workspace({ children }) {
         .tpw-invite-toast button { border: 0; background: transparent; color: inherit; font: inherit; font-size: 22px; cursor: pointer; }
       `}</style>
     </div>}
-    <AccountDrawer account={account} dialog={dialog} organizations={organizations} />
+    <AccountDrawer account={account} dialog={dialog} organizations={organizations} annualReport={annualReport} />
     <div onClick={navigateDashboard}>{children}</div>
   </>;
 }
