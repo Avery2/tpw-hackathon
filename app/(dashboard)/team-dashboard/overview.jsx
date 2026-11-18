@@ -15,31 +15,41 @@ function OverviewSummary({ children }) {
   </summary>;
 }
 
+// Axis labels are real text on the page, not scale-dependent SVG <text>: at phone widths a
+// 960-unit viewBox shrank 14px labels to about 4 CSS pixels. The chart itself is decorative;
+// the numbers are in the "View chart data" table, which screen readers reach directly.
 export function Trends({ points }) {
   const [metric, setMetric] = useState('participants');
   const color = metric === 'completionRate' ? '#aa741d' : '#5d8d67';
   const fill = metric === 'completionRate' ? '#faf2e3' : '#edf5e9';
-  const max = metric === 'completionRate' ? 100 : 4 * Math.max(1, Math.ceil(Math.max(1, ...points.map(point => point[metric] || 0)) / 4));
+  const peak = Math.max(1, ...points.map(point => point[metric] || 0));
+  const max = metric === 'completionRate' ? 100 : 4 * Math.ceil(peak / 4);
   const first = Date.parse(points[0]?.day), last = Date.parse(points.at(-1)?.day);
-  const x = point => first === last ? 500 : 64 + (Date.parse(point.day) - first) / (last - first) * 872;
-  const baseline = 252;
-  const y = value => baseline - value / max * 228;
-  const plotted = points.flatMap(point => point[metric] == null ? [] : [{ point, x: x(point), y: y(point[metric]) }]);
+  const percent = point => first === last ? 50 : (Date.parse(point.day) - first) / (last - first) * 100;
+  const height = 240, width = 900;
+  const y = value => height - value / max * height;
+  const plotted = points.flatMap(point => point[metric] == null ? [] : [{ point, x: percent(point) / 100 * width, y: y(point[metric]) }]);
   const line = plotted.map(dot => `${dot.x},${dot.y}`).join(' ');
   const format = value => value == null ? 'N/A' : metric === 'completionRate' ? `${value.toFixed(1)}%` : number(value);
+  const ticks = [4, 3, 2, 1, 0].map(index => max * index / 4);
+  const step = Math.max(1, Math.ceil(points.length / 5));
   return <section className="participants-chart">
     <div className="chart-heading"><h3>Program trends</h3><div className="chart-pills" role="group" aria-label="Chart metric">
       {modes.map(([key, label]) => <button key={key} aria-pressed={metric === key} onClick={() => setMetric(key)}>{label}</button>)}
     </div></div>
     <strong className="chart-current">{points.length ? format(points.at(-1)[metric]) : 'No history yet'}</strong>
-    <p className="chart-caption">Latest reported program data for each quarter. Select a metric to explore its trend.</p>
-    {plotted.length > 0 && <svg key={metric} viewBox="0 0 960 300" width="100%" role="img" aria-label={modes.find(([key]) => key === metric)[1]}>
-      {[0, 1, 2, 3, 4].map(index => <g key={index}><line x1="64" x2="936" y1={y(max * index / 4)} y2={y(max * index / 4)} stroke="#e3e9df" /><text x="52" y={y(max * index / 4) + 4} textAnchor="end" className="chart-axis">{format(max * index / 4)}</text></g>)}
-      <path d={`M ${line} L ${plotted.at(-1).x},${baseline} L ${plotted[0].x},${baseline} Z`} className="chart-area-enter" fill={fill} />
-      <polyline points={line} className="chart-line-enter" fill="none" stroke={color} strokeWidth="3" />
-      {plotted.map((dot, index) => <circle key={dot.point.day} className="chart-dot-enter" style={{ animationDelay: `${120 + index * Math.min(35, 450 / plotted.length)}ms` }} cx={dot.x} cy={dot.y} r="5" fill={color} tabIndex={0}><title>{dot.point.quarterLabel}: {format(dot.point[metric])}</title></circle>)}
-      {points.map((point,index) => (index % Math.ceil(points.length / 5) === 0) && <text key={point.day} x={x(point)} y="284" textAnchor="middle" className="chart-axis">{point.quarterLabel}</text>)}
-    </svg>}
+    <p className="chart-caption">Latest reported data for each quarter. Choose a measure, or open “View chart data” for the numbers.</p>
+    {plotted.length > 0 && <div className="chart-figure">
+      <ul className="chart-y-axis" aria-hidden="true">{ticks.map(value => <li key={value}>{format(value)}</li>)}</ul>
+      <svg key={metric} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
+        {ticks.map(value => <line key={value} x1="0" x2={width} y1={y(value)} y2={y(value)} stroke="#e3e9df" vectorEffect="non-scaling-stroke" />)}
+        <path d={`M ${line} L ${plotted.at(-1).x},${height} L ${plotted[0].x},${height} Z`} className="chart-area-enter" fill={fill} />
+        <polyline points={line} className="chart-line-enter" fill="none" stroke={color} strokeWidth="3" vectorEffect="non-scaling-stroke" />
+        {plotted.map((dot, index) => <circle key={dot.point.day} className="chart-dot-enter" style={{ animationDelay: `${120 + index * Math.min(35, 450 / plotted.length)}ms` }} cx={dot.x} cy={dot.y} r="5" fill={color}><title>{dot.point.quarterLabel}: {format(dot.point[metric])}</title></circle>)}
+      </svg>
+      <div className="chart-x-axis" aria-hidden="true">{points.map((point, index) => index % step === 0 &&
+        <span key={point.day} style={{ left: `${3 + percent(point) * 0.94}%` }}>{point.quarterLabel}</span>)}</div>
+    </div>}
     {points.length > 0 && <details><OverviewSummary>View chart data</OverviewSummary><table><thead><tr><th>Quarter</th><th>{modes.find(([key]) => key === metric)[1]}</th></tr></thead><tbody>
       {points.map(point => <tr key={point.day}><td>{point.quarterLabel}</td><td>{format(point[metric])}</td></tr>)}
     </tbody></table></details>}
@@ -110,7 +120,7 @@ export default function Overview() {
     ['Total hours completed', data.hours]
   ] : [];
   return <main className="dashboard-layout"><div className="workspace-content">
-    <section className="dashboard-heading"><div className="shell"><h1>Overview</h1>{account && <DashboardExports key={account} account={account} />}</div></section>
+    <section className="dashboard-heading"><div className="shell"><h1>Overview</h1></div></section>
     {account && <div className="shell dashboard-content"><div className="view-heading"><div>
       <span className="account-label">{admin ? 'TPW overview' : 'Organization'}</span>
       <h2 id="profile-heading">{admin ? 'Collective overview' : data?.name || 'Organization overview'}</h2>
@@ -141,5 +151,8 @@ export default function Overview() {
           <a href="https://www.cdcr.ca.gov/proposition57/">CDCR credit-earning rules</a>
         </section>
       </>}
+    {account && <div className="shell"><details className="export-panel"><OverviewSummary>Download your data</OverviewSummary>
+      <DashboardExports key={account} account={account} />
+    </details></div>}
   </div></main>;
 }

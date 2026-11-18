@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 
 import { notFound } from 'next/navigation';
+import AnnualReport from '../annual-report.jsx';
 import Overview from '../overview.jsx';
 import Submissions from '../submissions.jsx';
 import SubmissionHistory from '../submission-history.jsx';
@@ -8,7 +9,7 @@ import Organizations from '../organizations.jsx';
 import ProgramsPage from '../programs.jsx';
 import Members from '../members.jsx';
 
-const views = ['programs', 'organizations', 'submissions', 'submission-data', 'members'];
+const views = ['programs', 'organizations', 'submissions', 'submission-data', 'annual-report', 'members'];
 
 export function generateStaticParams() {
   return [{ view: [] }, ...views.map(name => ({ view: [name] }))];
@@ -24,6 +25,7 @@ export default async function Page({ params }) {
     organizations: <Suspense><Organizations /></Suspense>,
     'submission-data': <SubmissionHistory />,
     submissions: <Submissions />,
+    'annual-report': <AnnualReport />,
     members: <Members />,
   }[name];
   return <div data-dashboard-view={name} style={{ display: 'contents' }}>{content}</div>;

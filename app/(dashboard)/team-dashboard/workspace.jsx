@@ -125,7 +125,8 @@ export default function Workspace({ children }) {
       {tabs.slice(1).map(([label, path]) => <Link key={path} href={path + '#' + account} aria-current={pathname === path || (label === 'Submissions' && pathname === '/team-dashboard/submission-data/') ? 'page' : undefined}>{label}</Link>)}
       {account && account === managedOrg && <Link href={`/team-dashboard/members/?account=${encodeURIComponent(account)}`}
         aria-current={pathname === '/team-dashboard/members/' ? 'page' : undefined}>Members</Link>}
-      <a href={annualReport} target="_blank" rel="noopener noreferrer">Annual report</a>
+      <Link href={`/team-dashboard/annual-report/#${account}`}
+        aria-current={pathname === '/team-dashboard/annual-report/' ? 'page' : undefined}>Annual report</Link>
       {organizations.some(org => org.id === account) && <div className="tpw-org-picker-wrap"><select className="tpw-org-picker"
         aria-label="Current organization" value={account} onChange={event => {
           location.assign('/team-dashboard/#' + encodeURIComponent(event.target.value));

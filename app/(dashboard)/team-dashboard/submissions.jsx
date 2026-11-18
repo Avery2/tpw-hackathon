@@ -22,9 +22,9 @@ export default function Submissions() {
           <ChoiceIcon /><strong>View your data</strong><span>Browse your submissions and program details.</span>
           <span className="choice-next" aria-hidden="true">Explore data <LuArrowRight size={14} /></span>
         </Link>
-        <button type="button" className="submission-choice"><ChoiceIcon report /><strong>Generate a report</strong>
-          <span>Bring your program activity and impact together.</span><span className="choice-next" aria-hidden="true">Create report <LuArrowRight size={14} /></span>
-        </button>
+        <Link className="submission-choice" href={`/team-dashboard/annual-report/#${account}`}><ChoiceIcon report /><strong>Read the annual report</strong>
+          <span>Your yearly program activity and impact, in one document.</span><span className="choice-next" aria-hidden="true">Open report <LuArrowRight size={14} /></span>
+        </Link>
       </div>
     </section> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;

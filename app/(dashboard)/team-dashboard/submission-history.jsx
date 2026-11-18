@@ -20,7 +20,7 @@ async function request(query, signal) {
 export default function SubmissionHistory() {
   const account = useWorkspaceAccount();
   return <main className="dashboard-layout"><div className="workspace-content">
-    <section className="dashboard-heading"><div className="shell"><h1>Your data</h1></div></section>
+    <section className="dashboard-heading"><div className="shell"><h1>Your submissions</h1></div></section>
     {account ? <History key={account} account={account} /> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
@@ -52,25 +52,32 @@ function History({ account }) {
     setFilters({ ...filters, [name]: event.target.value });
     setPage(1);
   };
-  return <>
-    <div className="view-heading"><div><h2>Your submissions</h2><p id="submission-status" role="status">
-      {invalid ? 'The end date must be on or after the start date.' : current?.error ? 'Could not load submissions.' :
-        data ? `${data.count} of ${data.total} submissions` : 'Loading submissions…'}
-    </p></div><Link id="submission-back" className="action" href={`/team-dashboard/submissions/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Submissions</Link></div>
-    <section className="submission-filters" aria-label="Filter submissions">
-      <label>From<input type="date" value={filters.from} onChange={change('from')} /></label>
-      <label>To<input type="date" value={filters.to} onChange={change('to')} /></label>
-      <label>Quarter<select value={filters.quarter} onChange={change('quarter')}><option value="">All quarters</option>
-        {[1, 2, 3, 4].map(quarter => <option key={quarter} value={quarter}>Q{quarter}</option>)}</select></label>
-      <label>Year<select value={filters.year} onChange={change('year')}><option value="">All years</option>
-        {years.map(year => <option key={year}>{year}</option>)}</select></label>
-      <button type="button" onClick={() => { setFilters(empty); setPage(1); }}>Clear filters</button>
-    </section>
+  const active = Boolean(filters.from || filters.to || filters.quarter || filters.year);
+  return <div className="shell">
+    <div className="history-toolbar">
+      <p id="submission-status" role="status">
+        {invalid ? 'The end date must be on or after the start date.' : current?.error ? 'Could not load submissions.' :
+          data ? `${data.count} of ${data.total} submissions` : 'Loading submissions…'}
+      </p>
+      <div className="view-toggle" role="group" aria-label="Submission display">
+        {['cards', 'table'].map(view => <button key={view} aria-pressed={mode === view} onClick={() => setMode(view)}>{view === 'cards' ? 'Card view' : 'Table view'}</button>)}
+      </div>
+      <Link id="submission-back" className="action" href={`/team-dashboard/submissions/#${account}`}><LuArrowLeft aria-hidden="true" size={16} /> Submissions</Link>
+    </div>
+    <details className="history-filters">
+      <summary>Filter submissions{active ? ' (filters applied)' : ''}</summary>
+      <section className="submission-filters" aria-label="Filter submissions">
+        <label>From<input type="date" value={filters.from} onChange={change('from')} /></label>
+        <label>To<input type="date" value={filters.to} onChange={change('to')} /></label>
+        <label>Quarter<select value={filters.quarter} onChange={change('quarter')}><option value="">All quarters</option>
+          {[1, 2, 3, 4].map(quarter => <option key={quarter} value={quarter}>Q{quarter}</option>)}</select></label>
+        <label>Year<select value={filters.year} onChange={change('year')}><option value="">All years</option>
+          {years.map(year => <option key={year}>{year}</option>)}</select></label>
+        <button type="button" onClick={() => { setFilters(empty); setPage(1); }}>Clear filters</button>
+      </section>
+    </details>
     <div id="submission-summary" className="submission-summary">{data && [['Submissions', data.count], ['Programs', data.totals.programs], ['Participants', data.totals.participants], ['Hours completed', data.totals.hours]].map(([label, value]) =>
       <div key={label}><strong>{format(value)}</strong><span>{label}</span></div>)}</div>
-    <div className="submission-list-toolbar"><h3>Submission history</h3><div className="view-toggle" role="group" aria-label="Submission display">
-      {['cards', 'table'].map(view => <button key={view} aria-pressed={mode === view} onClick={() => setMode(view)}>{view === 'cards' ? 'Card view' : 'Table view'}</button>)}
-    </div></div>
     <div id="submission-results" aria-live="polite" aria-busy={!invalid && !current}>
       {!invalid && !current && <HistorySkeleton mode={mode} />}
       {current?.error && <button onClick={() => retry(attempt + 1)}>Try again</button>}
@@ -86,7 +93,7 @@ function History({ account }) {
         </nav>}
       </>}
     </div>
-  </>;
+  </div>;
 }
 
 function SubmissionTable({ records }) {

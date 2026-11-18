@@ -35,8 +35,11 @@ export function ProgramCard({ program, staff }) {
 export default function ProgramsPage() {
   const account = useWorkspaceAccount();
   return <main className="dashboard-layout"><div className="workspace-content">
-    <section className="dashboard-heading"><div className="shell"><h1>Programs</h1><p>All your program details in one place.</p>{account && <DashboardExports key={account} account={account} />}</div></section>
-    {account ? <Register key={account} account={account} /> : <Link href="/sign-in/">Choose an account</Link>}
+    <section className="dashboard-heading"><div className="shell"><h1>Programs</h1></div></section>
+    {account ? <><Register key={account} account={account} />
+      <div className="shell"><details className="export-panel"><summary className="dashboard-disclosure">Download your data</summary>
+        <DashboardExports key={account} account={account} />
+      </details></div></> : <Link href="/sign-in/">Choose an account</Link>}
   </div></main>;
 }
 
