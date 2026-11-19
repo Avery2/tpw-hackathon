@@ -65,6 +65,8 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
   const [period, setPeriod] = useState(null);
   const [organization, setOrganization] = useState(organizationName ?? (account === 'tpw' ? '' : account === 'org-2' ? 'Org 2' : 'Org 1'));
   const [locations, setLocations] = useState([]);
+  // Set as soon as the member edits anything, so a slow prefill response cannot overwrite it.
+  const userChanged = useRef(false);
   const [programs, setPrograms] = useState([]);
   const [editing, setEditing] = useState(null);
   const [problems, setProblems] = useState([]);
@@ -115,6 +117,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
           });
           return { ...newProgram(), id: program.id || crypto.randomUUID(), name: program.name, courseHours: program.courseHours ?? 0, sites };
         });
+        if (userChanged.current) return;
         setOrganization(data.org.name);
         setLocations([...locations.values()]);
         setPrograms(previous);
@@ -188,6 +191,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
   }
 
   function removeLocation(location) {
+    userChanged.current = true;
     setLocations(list => list.filter(item => item.code !== location.code));
     setPrograms(list => list.map(program => ({ ...program, sites: program.sites.filter(site => site.facilityCode !== location.code) })));
     setEditing(current => current ? {
@@ -198,6 +202,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
   }
 
   function toggleYard(location, yard, checked) {
+    userChanged.current = true;
     setLocations(list => list.map(item => item === location
       ? { ...item, yards: checked ? [...item.yards, yard] : item.yards.filter(value => value !== yard) }
       : item));
@@ -235,6 +240,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
 
   function saveProgram(event) {
     event.preventDefault();
+    userChanged.current = true;
     const found = collectProblems(editing);
     setProblems(found);
     if (found.length) { setError(''); return; }
@@ -385,6 +391,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
               <form className="yard-add" onSubmit={event => {
                 event.preventDefault();
                 const yard = new FormData(event.currentTarget).get('yard').trim();
+                if (yard && !location.yards.includes(yard)) { userChanged.current = true; }
                 if (yard && !location.yards.includes(yard)) setLocations(list => list.map(item => item === location ? { ...item, yards: [...item.yards, yard] } : item));
                 event.currentTarget.reset();
               }}><label htmlFor={`yard-${location.code}`}>Yard not listed?</label><div className="yard-add-row"><input id={`yard-${location.code}`} name="yard" required maxLength={100} /><button aria-label="Add yard">Add</button></div></form>
@@ -392,6 +399,7 @@ function IntakeForm({ account, blank, organizationName, facilities = [] }) {
           </div>
           {!locations.length && <p className="form-hint">No facilities yet. Add one below.</p>}
           <label className="form-field"><span className="field-label">Add a facility</span> <select value="" onChange={event => {
+            userChanged.current = true;
             const code = event.target.value;
             const facility = facilities.find(item => item.code === code);
             if (facility) setLocations([...locations, { ...facility, yards: [] }]);

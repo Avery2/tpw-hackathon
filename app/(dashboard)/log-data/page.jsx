@@ -11,7 +11,7 @@ export default async function Page({ searchParams }) {
     ? (['org-1', 'org-2', 'tpw'].includes(query.account) ? query.account : 'org-1')
     : access.orgId;
   if (!access.demo && (access.status || !access.canSubmit)) {
-    return <><link rel="stylesheet" href="/assets/workspace-log-data.css" /><main className="tpw-workspace"><div className="tpw-workspace-content">
+    return <><link rel="stylesheet" href="/assets/workspace-log-data.css?v=dense-2" /><main className="tpw-workspace"><div className="tpw-workspace-content">
       <h1 className="tpw-page-title">Log data</h1>
       <section className="log-data-access" aria-labelledby="log-data-access-heading">
       <h2 id="log-data-access-heading">{access.status === 401 ? 'Sign in to log data' : access.status ? 'Organization access required' : 'Submission access required'}</h2>
@@ -22,5 +22,5 @@ export default async function Page({ searchParams }) {
       </section>
     </div></main></>;
   }
-  return <><link rel="stylesheet" href="/assets/workspace-log-data.css" /><Intake organizationName={access.orgName} allowHashAccount={access.demo} key={account + String(query.blank)} facilities={facilities} account={account} blank={query.blank === '1'} /></>;
+  return <><link rel="stylesheet" href="/assets/workspace-log-data.css?v=dense-2" /><Intake organizationName={access.orgName} allowHashAccount={access.demo} key={account + String(query.blank)} facilities={facilities} account={account} blank={query.blank === '1'} /></>;
 }

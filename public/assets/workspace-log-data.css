@@ -442,7 +442,6 @@
 .report-program-notes { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* Starting blank, the "Your facilities" heading says it; the question stays for screen readers and focus. */
-#demo-form:not(
 
 @media(max-width: 500px) {
 
@@ -450,7 +449,6 @@
       .quarter-preview .intake-disclosure { list-style: none; }
       .quarter-preview .intake-disclosure::-webkit-details-marker { display: none; }
       .quarter-preview .intake-disclosure > svg { width: 16px; height: 16px; margin-inline-end: 4px; vertical-align: middle; }
-      .quarter-preview
       .quarter-preview details[open] > .intake-disclosure > svg { transform: rotate(90deg); }
       .quarter-preview .success-check > svg { vertical-align: middle; }
 
@@ -554,6 +552,7 @@
 .editor-section { border: 0; margin: 0; padding: 0; display: grid; gap: 18px; min-width: 0; }
 .editor-section > legend { padding: 0; margin-bottom: 2px; font-size: 19px; font-weight: 700; }
 .editor-section > legend + .form-hint { margin-top: -10px; }
+.editor-section + .editor-section { margin-top: 4px; padding-top: 20px; border-top: 1px solid #e6e6e6; }
 .error-summary { border: 2px solid #b3261e; border-radius: 10px; padding: 16px 18px; background: #fdf3f2; }
 .error-summary h4 { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 19px; }
 .error-summary ol { margin: 0; padding-left: 22px; }
@@ -567,7 +566,7 @@
 /* Dense single-page report: compact sections instead of full-height wizard steps. */
 .report-jump { display: flex; flex-wrap: wrap; gap: 2px 20px; margin: 0; font-size: 16px; }
 .report-jump a { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; color: #214c30; text-underline-offset: 3px; }
-.report-summary { position: sticky; top: 0; z-index: 6; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 10px 16px; margin: 0; border: 1px solid #d4e2d6; border-radius: 10px; background: #f0f5f0; }
+.report-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 28px; padding: 10px 16px; margin: 0; border: 1px solid #d4e2d6; border-radius: 10px; background: #f0f5f0; }
 .report-summary-item { display: grid; gap: 2px; min-width: 0; }
 .report-summary-label { font-size: 13px; font-weight: 700; color: #3d6b48; }
 .report-summary strong { font-size: 16px; overflow-wrap: anywhere; }
@@ -594,4 +593,16 @@
 @media (max-width: 700px) {
   .yard-number-row { grid-template-columns: 1fr; gap: 6px; padding: 12px 0; }
   .report-jump { gap: 2px 14px; }
+}
+
+/* Single-page report: section rhythm. Kept outside any @media, or the sections fall back to
+   inline flow at desktop width and headings run together ("Reporting periodFacilities and yards"). */
+.report-section { display: grid; gap: 16px; margin-top: 32px; padding-top: 28px; border-top: 2px solid #e6e6e6; min-width: 0; }
+.report-section:first-of-type { margin-top: 8px; border-top: 0; padding-top: 0; }
+.report-heading { margin: 0; font-family: var(--display); font-weight: 400; font-size: 1.6rem; line-height: 1.2; }
+.report-section .form-hint { margin: 0; }
+.report-banner { padding: 12px 16px; border: 1px solid #cfe0c6; border-radius: 10px; background: #eef4ea; font-size: 16px; }
+.quarter-options span { padding: 12px 8px; border-radius: 8px; }
+.quarter-options strong { font-size: 20px; }
+.quarter-options small { font-size: 13px; }
 }
